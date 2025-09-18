@@ -43,11 +43,20 @@
   </div>
 
   <div class="input-group">
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" placeholder="John" required />
+  </div>
+  <div class="input-group">
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" placeholder="Doe" required />
+  </div>
+
+  <div class="input-group">
     <label for="email">Email to receive tracking #</label>
     <input type="email" id="email" placeholder="example@email.com" required />
   </div>
   <div class="input-group">
-    <label for="address">Shipping Address (number, street name, city & zipcode)</label>
+    <label for="address">Shipping Address (number, street name, city, state & zipcode)</label>
     <input type="text" id="address" placeholder="123 Main St, City" required />
   </div>
   <div class="input-group">
@@ -58,13 +67,13 @@
   <div id="card-container"></div>
   <input type="number" id="amount" style="display:none;" />
   <button id="pay-button" class="pay-button">Pay now</button>
-  <a href="index.html" class="back-home">Back to menu</a>
+  <a href="shop.html" class="back-home">Back to menu</a>
   <div id="payment-status"></div>
 
   <h6 class="small-paragraph">
     Give us 24 hours from the date and time of purchase to process the shipment. We will provide you with the tracking number and send it to the email address you provided above. Please make sure to enter the shipping address correctly — including street number, street name, city, state, and zip code — so we can complete the delivery without any issues. Refunds are not accepted after 24 hours from the time of purchase. LaTRONIC LLC.
   </h6>
-</div>
+</div> 
 
 <script>
 // --- Cargar carrito desde localStorage ---
@@ -97,11 +106,9 @@ function cargarCarrito() {
     });
   }
 
-  // Estado del cliente
   const estadoCliente = localStorage.getItem("estado-cliente") || "CT";
   document.getElementById("estado").value = estadoCliente;
 
-  // TAX para CT
   let taxes = 0;
   const taxRateCT = 0.0635; 
   if (estadoCliente === "CT") {
@@ -110,12 +117,9 @@ function cargarCarrito() {
 
   const total = subtotal + taxes;
 
-  // Mostrar
   document.getElementById("subtotal").textContent = subtotal.toFixed(2);
   document.getElementById("taxes").textContent = taxes.toFixed(2);
   document.getElementById("total-display").textContent = `Total: $${total.toFixed(2)}`;
-
-  // Mandamos subtotal (el backend calcula impuestos de nuevo)
   document.getElementById("amount").value = subtotal;
 }
 
@@ -125,8 +129,8 @@ setInterval(cargarCarrito, 2000);
 // --- Square Payments ---
 async function initSquare() {
   try {
-    const applicationId = "sq0idp--rNNME6Cy0VtaEKmHUTldQ"; // ⚠️ pon tu Square Application ID
-    const locationId = "LBXYJCC3X1GRS"; // ⚠️ pon tu Location ID
+    const applicationId = "sq0idp--rNNME6Cy0VtaEKmHUTldQ";
+    const locationId = "LBXYJCC3X1GRS";
 
     const payments = Square.payments(applicationId, locationId);
     const card = await payments.card();
@@ -136,27 +140,57 @@ async function initSquare() {
     payButton.addEventListener("click", async function() {
       payButton.disabled = true;
       try {
+        const firstName = document.getElementById("firstName").value.trim();
+        const lastName = document.getElementById("lastName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const address = document.getElementById("address").value.trim();
+
+        if (!firstName || !lastName || !email || !address) {
+          alert("Please fill all required fields.");
+          payButton.disabled = false;
+          return;
+        }
+
         const result = await card.tokenize();
         if (result.status === "OK") {
-          // Enviar al backend con los nombres correctos
-          const res = await fetch("/process-payment", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    sourceId: result.token,
-    total: document.getElementById("amount").value,
-    email: document.getElementById("email").value,
-    address: document.getElementById("address").value,
-    estado: document.getElementById("estado").value
-  })
-});
+          const productos = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
 
+          const res = await fetch("/process-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sourceId: result.token,
+              total: document.getElementById("amount").value,
+              email,
+              address,
+              firstName,
+              lastName,
+              productos: productos.map(p => ({
+                titulo: p.titulo,
+                quantity: p.quantity || 1,
+                price: p.price
+              }))
+            })
+          });
 
           const data = await res.json();
-          document.getElementById("payment-status").textContent =
-            data.payment && data.payment.status === "COMPLETED"
-              ? "✅ Pago exitoso"
-              : "❌ Error: " + (data.error || "Intenta de nuevo");
+          const statusEl = document.getElementById("payment-status");
+          if (data.payment && data.payment.status === "COMPLETED") {
+            statusEl.textContent = "✅ Pago exitoso";
+
+            productos.forEach(p => {
+              if (p.stock !== undefined) {
+                p.stock -= p.quantity || 1;
+                if (p.stock <= 0) p.soldOut = true;
+              }
+            });
+            localStorage.setItem("productos-en-cart", JSON.stringify(productos));
+
+            setTimeout(() => { window.location.href = "Home.html"; }, 2000);
+          } else {
+            statusEl.textContent = "❌ Error: " + (data.error || "Intenta de nuevo");
+          }
+
         } else {
           document.getElementById("payment-status").textContent =
             "❌ Error al tokenizar la tarjeta";
@@ -175,5 +209,6 @@ async function initSquare() {
 
 initSquare();
 </script>
+
 </body>
 </html>
