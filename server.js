@@ -3,8 +3,8 @@ import path from "path";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import crypto from "crypto";
-import nodemailer from "nodemailer"; // ✅ Import de Nodemailer
-import fetch from "node-fetch"; // Si usas Node 18+, fetch ya está incluido, sino instala node-fetch
+import nodemailer from "nodemailer"; 
+import fetch from "node-fetch"; 
 
 dotenv.config();
 
@@ -13,11 +13,9 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(process.cwd(), "public")));
 
 const NODE_ENV = process.env.NODE_ENV || "sandbox";
-const APPLICATION_ID = process.env.SQUARE_APPLICATION_ID;
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
 
-// Elegir endpoint según entorno
 const SQUARE_API = NODE_ENV === "production"
   ? "https://connect.squareup.com/v2/payments"
   : "https://connect.squareupsandbox.com/v2/payments";
@@ -25,24 +23,23 @@ const SQUARE_API = NODE_ENV === "production"
 // Endpoint para procesar pagos
 app.post("/process-payment", async (req, res) => {
   try {
-    const { sourceId, total, email, address } = req.body;
-    if (!sourceId || !total) return res.status(400).json({ error: "Faltan datos del pago" });
+    console.log("📥 Datos recibidos del cliente:", req.body);
 
-    // --- TAX SOLO PARA CONNECTICUT ---
+    const { sourceId, total, email, address, firstName, lastName, productos } = req.body;
+
+    if (!sourceId || !total || !firstName || !lastName || !email || !address) {
+      return res.status(400).json({ error: "Faltan datos del pago o datos del cliente" });
+    }
+
     let finalTotal = Number(total);
-    const taxRateCT = 0.0635; // 6.35%
-
+    const taxRateCT = 0.0635;
     if (address && address.toUpperCase().includes("CT")) {
       const taxAmount = finalTotal * taxRateCT;
       finalTotal += taxAmount;
-      console.log(`💰 Tax aplicado (CT): $${taxAmount.toFixed(2)} | Total con tax: $${finalTotal.toFixed(2)}`);
-    } else {
-      console.log("ℹ️ No se aplica tax (solo CT paga impuestos)");
     }
 
     const amountCents = Math.round(finalTotal * 100);
 
-    // Llamada al API de Square
     const response = await fetch(SQUARE_API, {
       method: "POST",
       headers: {
@@ -64,38 +61,38 @@ app.post("/process-payment", async (req, res) => {
     const data = await response.json();
 
     if (data.payment && data.payment.status === "COMPLETED") {
-      // ✅ PAGO EXITOSO
-
-      // ---- ENVIAR EMAIL AL ADMIN ----
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
           user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS, // App Password recomendado
+          pass: process.env.EMAIL_PASS,
         },
       });
+
+      const itemsList = (productos || [])
+        .map(p => `- ${p.titulo} | Cantidad: ${p.quantity || 1} | Precio: $${p.price}`)
+        .join("\n");
 
       const mailOptions = {
         from: `"LaTRONIC" <${process.env.EMAIL_USER}>`,
         to: process.env.ADMIN_EMAIL,
         subject: "🛒 New sale in LaTRONIC LLC",
         text: `
-✅ Payment proccess succesfull
+✅ Payment processed successfully
 
 💰 Total: $${finalTotal.toFixed(2)}
 📧 Client email: ${email}
+👤 Client name: ${firstName} ${lastName}
 📦 Shipping address: ${address}
+
+📝 Ordered products:
+${itemsList || "No products found"}
         `,
       };
 
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log("📩 Email sent correctly");
-      } catch (mailErr) {
-        console.error("❌ Error sending email:", mailErr);
-      }
+      await transporter.sendMail(mailOptions);
+      console.log("📩 Email sent correctly");
 
-      // ---- RESPUESTA AL FRONTEND ----
       res.json({ payment: data.payment });
     } else {
       res.status(500).json({ error: data.errors || "Payment not completed" });
@@ -107,12 +104,14 @@ app.post("/process-payment", async (req, res) => {
   }
 });
 
-// Ruta principal
 app.get("/", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "Home.html"));
+});
+
+app.get("/card-charge", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "card-charge.html"));
 });
 
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT} - Entorno: ${NODE_ENV}`);
