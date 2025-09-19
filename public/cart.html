@@ -46,7 +46,7 @@
 
   .input-group { margin-top:1rem; }
   .input-group label { font-size:0.9rem; font-weight:600; margin-bottom:4px; display:block; }
-  .input-group select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:0.9rem; }
+  .input-group select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:0.9rem; background:#1e1e1e; color:#fff; }
 </style>
 </head>
 <body>
@@ -82,7 +82,7 @@
 </aside>
 
 <main>
-  <button class="back-menu" onclick="window.location.href='index.html'">← Back to Menu</button>
+  <button class="back-menu" onclick="window.location.href='shop.html'">← Back to Menu</button>
   <h1 class="titulo-principal">Your Cart</h1>
   <div id="cart-vacio" style="display:none;">Your cart is empty <i class="bi bi-emoji-frown"></i></div>
   <div id="cart-productos"></div>
@@ -148,6 +148,7 @@
       </select>
     </div>
   </div>
+  
 </main>
 
 <script>
@@ -215,6 +216,11 @@ function actualizarCarrito() {
 
   document.getElementById("cart-count").textContent = cart.reduce((acc,p)=>acc+p.quantity,0);
 }
+
+// Restaurar estado si ya fue seleccionado
+const estadoSelect = document.getElementById("estado");
+const estadoGuardado = localStorage.getItem("estado-cliente");
+if(estadoGuardado) estadoSelect.value = estadoGuardado;
 
 document.getElementById("cart-acciones-vaciar").onclick=()=>{
   localStorage.removeItem("productos-en-cart");

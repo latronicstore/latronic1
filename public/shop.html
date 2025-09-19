@@ -8,7 +8,20 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
   body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
-  aside { width:150px; background:#1e1e1e; padding:1rem; position:sticky; top:0; height:100vh; display:flex; flex-direction:column; justify-content:space-between; }
+ aside {
+  width: 150px;
+  background: #1e1e1e;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  max-height: 100vh; /* máximo de altura igual a la ventana */
+  overflow-y: auto;  /* habilita scroll solo si es necesario */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+
   aside h2 { font-size:1.5rem; margin-bottom:1rem; }
   .menu { list-style:none; padding:0; margin:0; }
   .menu>li { margin-bottom:0.5rem; position:relative; }
@@ -117,8 +130,7 @@
     </li>
   </ul>
 
-  
-  ]
+
 </aside>
 
 <main>
@@ -315,7 +327,7 @@ const productosDefault = [
 
   // Used items of Pokemon
 // Used items
-{ id:"used-p1", titulo:"Charmeleon 1999", imagenes:["./img/used/pokemonused/charmeleon1995.jpg","./img/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:10, descripcion:"Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)" },
+{ id:"used-p1", titulo:"Charmeleon 1999", imagenes:["./img/used/pokemonused/charmeleon1995.jpg","./img/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:0, price:10, descripcion:"Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)" },
 
 { id:"used-p2", titulo:"Snorlax #XY179 Holo 2013 PSA 2", imagenes:["./img/used/pokemonused/snorlax2016.jpg","./img/used/pokemonused/snorlax2016back.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:15, descripcion:"Snorlax #XY179 PSA 2, year: 2013, Series Name: XY Black Star Promos" },
 
@@ -464,6 +476,13 @@ actualizarContadorCarrito
 // INICIO
 renderizarProductos(productos);
 actualizarContadorCarrito();
+</script>
+
+<script>
+  // Nuevo código, ej: alert al agregar producto
+  document.querySelectorAll(".producto-add").forEach(btn => {
+    btn.addEventListener("click", () => alert("Producto agregado al carrito!"));
+  });
 </script>
 </body>
 </html>
