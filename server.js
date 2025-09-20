@@ -3,8 +3,8 @@ import path from "path";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import crypto from "crypto";
-import nodemailer from "nodemailer"; 
-import fetch from "node-fetch"; 
+import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 
 dotenv.config();
 
@@ -20,7 +20,9 @@ const SQUARE_API = NODE_ENV === "production"
   ? "https://connect.squareup.com/v2/payments"
   : "https://connect.squareupsandbox.com/v2/payments";
 
-// Endpoint para procesar pagos
+// --------------------
+// 📌 ENDPOINT: Procesar pagos
+// --------------------
 app.post("/process-payment", async (req, res) => {
   try {
     console.log("📥 Datos recibidos del cliente:", req.body);
@@ -91,7 +93,7 @@ ${itemsList || "No products found"}
       };
 
       await transporter.sendMail(mailOptions);
-      console.log("📩 Email sent correctly");
+      console.log("📩 Email de venta enviado correctamente");
 
       res.json({ payment: data.payment });
     } else {
@@ -99,11 +101,57 @@ ${itemsList || "No products found"}
     }
 
   } catch (err) {
-    console.error("❌ Error in the payment:", err);
+    console.error("❌ Error en el pago:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
+// --------------------
+// 📌 ENDPOINT: Contacto (formulario About/Contact)
+// --------------------
+app.post("/contact", async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Faltan datos del formulario" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"LaTRONIC Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: "📨 Nuevo mensaje desde Contact Form",
+      text: `
+👤 Nombre: ${name}
+📧 Email: ${email}
+
+📝 Mensaje:
+${message}
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("📩 Email de contacto enviado correctamente");
+
+    res.json({ success: true, message: "Mensaje enviado correctamente" });
+
+  } catch (err) {
+    console.error("❌ Error en contacto:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// 📌 Rutas frontend
+// --------------------
 app.get("/", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "Home.html"));
 });
