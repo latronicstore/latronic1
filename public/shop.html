@@ -7,15 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
-  body { 
-    margin:0; 
-    font-family:Arial,sans-serif; 
-    background:#121212; 
-    color:#fff; 
-    display:flex; 
-    min-height:100vh; 
-  }
-
+  body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
   aside {
     width: 150px;
     background: #1e1e1e;
@@ -32,118 +24,18 @@
   aside h2 { font-size:1.5rem; margin-bottom:1rem; }
   .menu { list-style:none; padding:0; margin:0; }
   .menu>li { margin-bottom:0.5rem; position:relative; }
-
-  .boton-categoria { 
-    display:block; 
-    background:none; 
-    border:none; 
-    color:#fff; 
-    text-align:left; 
-    width:100%;  
-    padding:0.5rem; 
-    font-size:1rem; 
-    cursor:pointer; 
-    transition: background 0.3s; 
-    text-decoration:none; 
-    border-radius:5px; 
-  }
-  .boton-categoria:hover, .boton-categoria.active { 
-    background:#e28e2fa9; 
-    color:black; 
-    border-radius:5px; 
-  }
-
+  .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%;  padding:0.5rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; border-radius:5px; }
+  .boton-categoria:hover, .boton-categoria.active { background:#e28e2fa9; color:black; border-radius:5px; }
   .submenu { list-style:none; padding-left:0.5rem; margin:0; display:none; }
   .submenu li { margin-bottom:0.3rem; }
-  .submenu .boton-categoria { 
-    font-size:0.9rem; 
-    color:#e28f2f; 
-    background:none; 
-    border:none; 
-    text-align:left; 
-    width:100%; 
-    padding:0.3rem 0.5rem; 
-    cursor:pointer; 
-  }
-  .submenu .boton-categoria:hover { 
-    background:#f16413b9; 
-    color:#e7d809; 
-    border-radius:5px; 
-  }
+  .submenu .boton-categoria { font-size:0.9rem; color:#e28f2f; background:none; border:none; text-align:left; width:100%; padding:0.3rem 0.5rem; cursor:pointer; }
+  .submenu .boton-categoria:hover { background:#f16413b9; color:#e7d809; border-radius:5px; }
 
   main { flex:1; padding:2rem; }
   footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.7rem; }
   #contenedor-productos { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; }
 
-  /* PRODUCTOS CON BORDES GRADIENTE */
-  .producto { 
-    background:#1e1e1e80; 
-    border-radius:10px; 
-    padding:1rem; 
-    box-shadow:0 4px 12px rgba(0, 0, 0, 0.534); 
-    text-align:center; 
-    position:relative; z
-    overflow:hidden;
-    z-index:0;
-    border: 3px solid transparent;
-    border-image: linear-gradient(45deg, #f16413, #e28f2f, #f1c40f) 1;
-    transition: border-image 0.5s ease-in-out;
-  }
-  .producto:hover {
-    border-image: linear-gradient(135deg, #f1c40f, #f16413, #e28f2f) 1;
-  }
-
-  .out-of-stock { position:absolute; top:10px; left:10px; background:rgba(255,0,0,0.8); color:white; padding:0.2rem 0.5rem; font-size:0.8rem; border-radius:5px; z-index:10; }
-  .producto-imagenes { position:relative; height:200px; display:flex; justify-content:center; align-items:center; overflow:hidden; }
-  .producto-imagenes img { max-width:100%; max-height:100%; border-radius:8px; cursor:pointer; }
-
-  .producto-detalles { margin-top:0.5rem; }
-  .producto-titulo { font-size:1.1rem; margin:0.5rem 0; }
-  .producto-price { font-weight:bold; color:#e28f2f; }
-  .producto-stock { font-size:0.9rem; margin:0.3rem 0; }
-  .producto-add { margin-top:0.5rem; background:#e28f2f; color:white; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; transition:background 0.3s; }
-  .producto-add:hover { background:#f16413b9; }
-  .producto-add:disabled { background:#555; cursor:not-allowed; color:#ccc; }
-
-  .title { font-family:"Bebas Neue",sans-serif; font-size:2.5rem; text-align:center; color:#f16413b9; margin:0; }
-  .cart-button-container { margin-top:0.5rem; }
-  #ir-carrito { background:#e28f2f; color:black; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; font-weight:bold; width:100%; text-align:left; }
-  #ir-carrito:hover { background:#f16413b9; transition:background 0.3s; }
-
-  .search-container { position:relative; width:100%; max-width:400px; margin:1.5rem 0; }
-  .search-container input { width:100%; padding:0.7rem 2.5rem; border:none; border-radius:25px; font-size:1rem; outline:none; background:#1e1e1e; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.4); transition: all 0.3s ease-in-out; }
-  .search-container input:focus { background:#2a2a2a; box-shadow:0 6px 15px rgba(226,143,47,0.6); }
-  .search-container i { position:absolute; top:50%; left:12px; transform:translateY(-50%); color:#e28f2f; font-size:1.2rem; }
-
-  #producto-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; }
-  #producto-modal .modal-content { background:#1e1e1e; padding:1rem; border-radius:10px; max-width:600px; width:90%; position:relative; text-align:center; display:flex; flex-direction:column; align-items:center; }
-  #producto-modal img { max-width:100%; max-height:400px; border-radius:8px; }
-  #cerrar-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem; color:#e28f2f; z-index:1001; }
-  .modal-flecha { position:absolute; top:50%; transform:translateY(-50%); font-size:1.5rem; background:rgba(0,0,0,0.5); border-radius:50%; padding:0.2rem 0.5rem; color:white; cursor:pointer; z-index:1000; }
-  #flecha-izq { left:10px; }
-  #flecha-der { right:10px; }
-  .zoom-lupa { position:absolute; border:2px solid #f16413b9; border-radius:50%; width:120px; height:120px; display:none; cursor:none; box-shadow:0 0 5px rgba(0,0,0,0.5); background-repeat:no-repeat; z-index:1002; pointer-events:none; }
-
-  .agregar-carrito {
-    background-color: #e28f2f;  
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-family: 'Josefin Sans', sans-serif;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .agregar-carrito:hover:not([disabled]) {
-    background-color: #e65c00;  
-  }
-
-  .agregar-carrito:disabled {
-    background-color: gray;      
-    cursor: not-allowed;
-  }
+  .title { font-family:"Bebas Neue",sans-serif; font-size:2.5rem; text-align:center; color:#f16413b9; margin:0;}
 
   .hamburger {
     display: none;
@@ -166,43 +58,87 @@
       transition: left 0.3s;
       z-index: 1500;
     }
-    aside.active {
-      left: 0;
-    }
+    aside.active { left: 0; }
     main { padding: 1rem; }
     .hamburger { display: block; }
-    #titulo-principal { font-size: 1.8rem; text-align: center; margin-bottom: 1rem; }
   }
 
-  #paginacion button {
-    background-color: #e28f2f;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 2px;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-  }
-  #paginacion button:hover:not(:disabled) {
-    background-color: #f16413b9;
-    color: white;
-  }
-  #paginacion button:disabled {
-    background-color: #f16413b9;
-    font-weight: bold;
-    cursor: default;
-  }
-  #paginacion select {
-    margin-top: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    border: none;
-    background: #1e1e1e;
-    color: #e28f2f;
-  }
+.out-of-stock {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(241, 49, 49, 0.85);
+  color: #fff;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.producto {
+  position: relative; /* Necesario para el badge de out-of-stock */
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  width: 200px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.producto:hover {
+  transform: scale(1.03);
+}
+
+.agregar-carrito[disabled] {
+  background: #888;
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+
+.agregar-carrito {
+  background-color: #e28f2f; /* naranja claro */
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s, color 0.3s;
+  font-weight: bold;
+  margin-top: 10px; /* separa un poco del contenido superior */
+}
+
+.agregar-carrito:hover {
+  background-color: #f16413b9; /* naranja más intenso al pasar el mouse */
+  color: #fff;
+}
+
+#titulo-principal {
+  transition: all 0.3s ease;
+}
+
+/* Cuando el aside tenga clase active, el título se centrará */
+aside.active ~ main #titulo-principal {
+  text-align: center;
+  margin-top: 50px; /* opcional: separa del top */
+}
+#titulo-principal {
+  text-align: center; /* siempre centrado horizontalmente */
+  margin: 0;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.5rem;
+  color: #f16413b9;
+  transition: all 0.3s ease;
+}
+
+
 </style>
-
 </head>
 <body>
 <div class="hamburger">&#9776;</div>
@@ -210,8 +146,7 @@
   <h2 class="title">LaTRONIC</h2>
   <ul class="menu">
     <li><a class="boton-categoria" href="Home.html">Home</a></li>
-    
-    <!-- New -->
+
     <li>
       <button class="boton-categoria toggle-submenu">New</button>
       <ul class="submenu">
@@ -219,44 +154,40 @@
         <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="racecar">Race Car</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="wrestling">Wrestling</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="boxing">Boxing</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
       </ul>
     </li>
 
-    <!-- Used -->
     <li>
       <button class="boton-categoria toggle-submenu">Used</button>
       <ul class="submenu">
-        <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="racecar">Race Car</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="wrestling">Wrestling</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="boxing">Boxing</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
       </ul>
     </li>
 
-    <!-- More -->
     <li>
       <button class="boton-categoria toggle-submenu">More</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="history">History Collection</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="souvenirs">Souvenirs</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="clothes">Clothes</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="Souvenirs">Souvenirs</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
       </ul>
     </li>
 
@@ -265,20 +196,16 @@
     </li>
   </ul>
 
-<footer>
-  <a href="aboutus.html" class="">About Us</a> | <a href="contactus.html">Contact Us</a><br>
-  Email-latronicstore@gmail.com<br>
-  Located in Connecticut, USA<br>
-  &copy; 2024 LaTRONIC Store. All rights reserved.
-</footer>
+  <footer>
+    <a href="aboutus.html">About Us</a> | <a href="contactus.html">Contact Us</a><br>
+    Email-latronicstore@gmail.com<br>
+    Located in Connecticut, USA<br>
+    &copy; 2024 LaTRONIC Store. All rights reserved.
+  </footer>
 </aside>
 
 <main>
   <h1 id="titulo-principal">All Products</h1>
-  <div class="search-container">
-    <i class="bi bi-search"></i>
-    <input type="text" id="search-bar" placeholder="Search by name">
-  </div>
   <div id="contenedor-productos"></div>
 </main>
 
@@ -555,14 +482,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       imagenesHTML += "</div>";
 
-      div.innerHTML = `
-        ${producto.stock===0?'<div style="color:red;font-weight:bold;">Out of Stock</div>':''}
-        ${imagenesHTML}
-        <h3>${producto.titulo}</h3>
-        <p style="font-weight:bold;">$${producto.price}</p>
-        <p class="descripcion" style="font-size:12px;">${producto.descripcion}</p>
-        <button class="agregar-carrito" ${producto.stock===0?'disabled':''}>Add</button>
-      `;
+     div.innerHTML = `
+  ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
+  ${imagenesHTML}
+  <h3>${producto.titulo}</h3>
+  <p style="font-weight:bold;">$${producto.price}</p>
+  <p class="descripcion" style="font-size:12px;">${producto.descripcion}</p>
+  <button class="agregar-carrito" ${producto.stock===0 ? 'disabled' : ''}>Add</button>
+`;
+
 
       // Agregar evento al botón de carrito
       div.querySelector(".agregar-carrito").addEventListener("click", ()=>agregarAlCarrito(producto));
@@ -674,15 +602,50 @@ document.addEventListener("DOMContentLoaded", () => {
       renderizarProductos();
     });
   }
+// ----------------------
+// Inicializar
+// ---------------------- 
+tituloPrincipal.textContent = "ALL PRODUCTS";
+renderizarProductos();
+actualizarContadorCarrito();
 
-  // ----------------------
-  // Inicializar
-  // ----------------------
-  tituloPrincipal.textContent = "ALL PRODUCTS";
-  renderizarProductos();
-  actualizarContadorCarrito();
+// ----------------------
+// Submenu y Hamburger
+// ----------------------
+const toggles = document.querySelectorAll(".toggle-submenu");
+toggles.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const submenu = btn.nextElementSibling;
+    const isVisible = submenu.style.display === "block";
+    submenu.style.display = isVisible ? "none" : "block";
+  });
+});
+
+// Hamburger
+const hamburger = document.querySelector(".hamburger");
+const aside = document.querySelector("aside");
+hamburger.addEventListener("click", () => {
+  aside.classList.toggle("active");
+});
+
+// Opcional: cerrar submenús al cerrar el menú lateral
+// (Esto es útil si quieres que los submenús se cierren cuando cierras el aside)
+aside.addEventListener("transitionend", () => {
+  if (!aside.classList.contains("active")) {
+    toggles.forEach(btn => {
+      btn.nextElementSibling.style.display = "none";
+    });
+  }
+});
+// Carrito dummy count (si quieres un contador inicial aparte)
+
+if(cartCountEl){
+  cartCountEl.textContent = cartCountEl.textContent || 0;
+}
 
 });
+
+
 </script>
 
 
