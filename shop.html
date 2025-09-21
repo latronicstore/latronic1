@@ -621,15 +621,22 @@ toggles.forEach(btn => {
   });
 });
 
-// Hamburger menu toggle
+// Hamburger
 const hamburger = document.querySelector(".hamburger");
 const aside = document.querySelector("aside");
-if(hamburger && aside){
-  hamburger.addEventListener("click", () => {
-    aside.classList.toggle("active");
-  });
-}
+hamburger.addEventListener("click", () => {
+  aside.classList.toggle("active");
+});
 
+// Opcional: cerrar submenús al cerrar el menú lateral
+// (Esto es útil si quieres que los submenús se cierren cuando cierras el aside)
+aside.addEventListener("transitionend", () => {
+  if (!aside.classList.contains("active")) {
+    toggles.forEach(btn => {
+      btn.nextElementSibling.style.display = "none";
+    });
+  }
+});
 // Carrito dummy count (si quieres un contador inicial aparte)
 
 if(cartCountEl){
@@ -637,6 +644,8 @@ if(cartCountEl){
 }
 
 });
+
+
 </script>
 
 
