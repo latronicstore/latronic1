@@ -29,11 +29,14 @@
   footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.7rem; }
 
   /* 🔹 más pequeños */
-  #contenedor-productos { 
-    display:grid; 
-    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); 
-    gap:0.7rem; 
-  }
+  #contenedor-productos img {
+  width: 100%;      /* que llene el ancho del contenedor */
+  max-width: 150px; /* tamaño máximo deseado */
+  height: auto;     /* mantiene la proporción */
+  object-fit: cover; /* recorta si es necesario para llenar el contenedor */
+  border-radius: 5px; /* opcional, para que se vea bonito */
+}
+
 
   .title { font-family:"Bebas Neue",sans-serif; font-size:2.5rem; text-align:center; color:#f16413b9; margin:0;}
 
@@ -186,98 +189,137 @@
     opacity: 0.5;
   }
 
+
+  #image-modal {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    max-width:90%;
+    max-height:90%;
+    padding:10px;
+    background:#1a1a1a;
+    border-radius:10px;
+    box-shadow:0 0 20px rgba(0,0,0,0.8);
+    z-index:3000;
+  }
+  #image-modal img {
+    width:100%;
+    height:auto;
+    object-fit:contain;
+    border-radius:5px;
+  }
+  #image-modal .close-btn {
+    position:absolute;
+    top:5px;
+    right:10px;
+    font-size:1.5rem;
+    color:#fff;
+    cursor:pointer;
+  }
 </style>
 
 
 </head>
 <body>
-<div class="hamburger">&#9776;</div>
-<aside>
-  <h2 class="title">LaTRONIC</h2>
-  <ul class="menu">
-    <li><a class="boton-categoria" href="Home.html">Home</a></li>
+  <!-- Hamburger -->
+  <div class="hamburger">&#9776;</div>
 
-    <li>
-      <button class="boton-categoria toggle-submenu">New</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
-      </ul>
-    </li>
+  <!-- Aside / Menu lateral -->
+  <aside>
+    <h2 class="title">LaTRONIC</h2>
+    <ul class="menu">
+      <li><a class="boton-categoria" href="Home.html">Home</a></li>
 
-    <li>
-      <button class="boton-categoria toggle-submenu">Used</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
-      </ul>
-    </li>
+      <!-- New -->
+      <li>
+        <button class="boton-categoria toggle-submenu">New</button>
+        <ul class="submenu">
+          <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
+          <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
+        </ul>
+      </li>
 
-    <li>
-      <button class="boton-categoria toggle-submenu">More</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="Souvenirs">Souvenirs</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
-      </ul>
-    </li>
+      <!-- Used -->
+      <li>
+        <button class="boton-categoria toggle-submenu">Used</button>
+        <ul class="submenu">
+          <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
+          <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
+        </ul>
+      </li>
 
-    <li class="cart-button-container">
-      <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
-    </li>
-  </ul>
+      <!-- More -->
+      <li>
+        <button class="boton-categoria toggle-submenu">More</button>
+        <ul class="submenu">
+          <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
+          <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
+          <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
+          <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
+          <li><button class="boton-categoria" data-main="more" data-sub="souvenirs">Souvenirs</button></li>
+          <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
+        </ul>
+      </li>
 
-  <footer>
-    <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
-    Email-latronicstore@gmail.com<br>
-    Located in Connecticut, USA<br>
-    &copy; 2024 LaTRONIC LLC. All rights reserved.
-  </footer>
-</aside>
-<header>
-  <div class="hamburger">☰</div>
-</header>
+      <!-- Cart -->
+      <li class="cart-button-container">
+        <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
+      </li>
+    </ul>
 
+    <footer>
+      <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
+      Email-latronicstore@gmail.com<br>
+      Located in Connecticut, USA<br>
+      &copy; 2024 LaTRONIC LLC. All rights reserved.
+    </footer>
+  </aside>
 
-<main>
-  <h1 id="titulo-principal">All Products</h1>
-  <div id="contenedor-productos"></div>
-  <div id="paginacion"></div>
-</main>
+  <header>
+    <div class="hamburger">☰</div>
+  </header>
 
+  <main>
+    <h1 id="titulo-principal">All Products</h1>
+    <div id="contenedor-productos"></div>
+    <div id="paginacion"></div>
+  </main>
 
-<div id="producto-modal">
-  <div class="modal-content">
-    <span id="cerrar-modal">&times;</span>
-    <span class="modal-flecha" id="flecha-izq">&#8249;</span>
-    <img id="modal-imagen" src="" alt="">
-    <span class="modal-flecha" id="flecha-der">&#8250;</span>
-    <div class="zoom-lupa"></div>
-    <h2 id="modal-titulo"></h2>
-    <p id="modal-descripcion"></p>
-    <p id="modal-price" style="font-weight:bold; color:#e28f2f;"></p>
-    <p id="modal-stock" style="font-size:0.9rem;"></p>
+  <!-- Modal -->
+<div id="producto-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000;">
+  <div class="modal-content" style="position:relative;background:#fff;padding:20px;max-width:700px;width:90%;border-radius:10px;display:flex;flex-direction:column;align-items:center;">
+    <span id="cerrar-modal" style="position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;">&times;</span>
+    <div style="position:relative;width:100%;display:flex;align-items:center;justify-content:center;">
+      <button id="prev-img" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:none;border:none;font-size:32px;cursor:pointer;">&#10094;</button>
+      <img id="modal-imagen" src="" style="max-width:100%;max-height:500px;object-fit:contain;">
+      <button id="next-img" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;font-size:32px;cursor:pointer;">&#10095;</button>
+    </div>
+    <h2 id="modal-titulo" style="margin:10px 0;"></h2>
+    <p id="modal-descripcion" style="margin:5px 0;"></p>
+    <p id="modal-price" style="margin:5px 0;color:#e28f2f;font-weight:bold;"></p>
+    <p id="modal-stock" style="margin:5px 0;"></p>
   </div>
 </div>
+
+
 
 
 <script>
@@ -493,223 +535,235 @@ document.addEventListener("DOMContentLoaded", () => {
   { id:"p5", titulo:"1968 Playboy", imagenes:["./img/more/playboy1.jpg"], categoria:{main:"more",sub:"magazines"}, stock:1, price:5, descripcion:"Charmeleon, year: 1999,  Card#: 24, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
 ];
 
- localStorage.setItem("productos-tienda", JSON.stringify(productosDefault));
-  let productos = [...productosDefault];
-  let productosFiltrados = [...productos];
+// ----------------------
+// Inicialización
+// ----------------------
+localStorage.setItem("productos-tienda", JSON.stringify(productosDefault));
+let productos = [...productosDefault];
+let productosFiltrados = [...productos];
 
-  const contenedorProductos = document.getElementById("contenedor-productos");
-  const cartCountEl = document.getElementById("cart-count");
-  const botonIrCarrito = document.getElementById("ir-carrito");
-  const tituloPrincipal = document.getElementById("titulo-principal");
-  const botonesCategoria = document.querySelectorAll(".boton-categoria");
-  const inputBusqueda = document.getElementById("search-input");
+const contenedorProductos = document.getElementById("contenedor-productos");
+const cartCountEl = document.getElementById("cart-count");
+const botonIrCarrito = document.getElementById("ir-carrito");
+const tituloPrincipal = document.getElementById("titulo-principal");
+const botonesCategoria = document.querySelectorAll(".boton-categoria");
+const inputBusqueda = document.getElementById("search-input");
 
-  let currentPage = 1;
-  let productosPorPagina = 14;
+let currentPage = 1;
+let productosPorPagina = 14;
 
-  // ----------------------
-  // Carrito
-  // ----------------------
-  function actualizarContadorCarrito(){
-    const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-    const totalItems = productosEnCart.reduce((acc,p)=>acc+(p.quantity||1),0);
-    cartCountEl.textContent = totalItems;
+// ----------------------
+// Carrito
+// ----------------------
+function actualizarContadorCarrito(){
+  const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+  const totalItems = productosEnCart.reduce((acc,p)=>acc+(p.quantity||1),0);
+  cartCountEl.textContent = totalItems;
+}
+
+botonIrCarrito.addEventListener("click", ()=>window.location.href="cart.html");
+
+function agregarAlCarrito(producto){
+  const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+  const existe = productosEnCart.find(p=>p.id===producto.id);
+  if(existe){
+    if(existe.quantity < producto.stock) existe.quantity++;
+  } else {
+    productosEnCart.push({...producto, quantity:1});
   }
-
-  botonIrCarrito.addEventListener("click", ()=>window.location.href="cart.html");
-
-  function agregarAlCarrito(producto){
-    const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-    const existe = productosEnCart.find(p=>p.id===producto.id);
-    if(existe){
-      if(existe.quantity < producto.stock) existe.quantity++;
-    } else {
-      productosEnCart.push({...producto, quantity:1});
-    }
-    localStorage.setItem("productos-en-cart", JSON.stringify(productosEnCart));
-    actualizarContadorCarrito();
-    alert("Product added to the cart");
-  }
-
-  // ----------------------
-  // Render productos + paginación
-  // ----------------------
-  function renderizarProductos(lista = productosFiltrados){
-    contenedorProductos.innerHTML = "";
-
-    const inicio = (currentPage - 1) * productosPorPagina;
-    const fin = inicio + productosPorPagina;
-    const paginaProductos = lista.slice(inicio, fin);
-
-    paginaProductos.forEach(producto => {
-      const div = document.createElement("div");
-      div.classList.add("producto");
-
-      let imagenesHTML = `
-        <img src="${producto.imagenes[0]}" alt="${producto.titulo}" class="imagen-principal" style="width:100%;cursor:zoom-in;">
-        <div class="miniaturas" style="display:flex;margin-top:5px;gap:5px;">
-      `;
-      producto.imagenes.forEach((img, idx) => {
-          imagenesHTML += `<img src="${img}" alt="${producto.titulo}" class="miniatura" style="width:30px;height:30px;cursor:pointer;border:1px solid #ccc;">`;
-        });
-        imagenesHTML += `</div>`;
-
-      div.innerHTML = `
-        ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
-        ${imagenesHTML}
-        <h3 style="margin:5px 0;">${producto.titulo}</h3>
-        <p style="color:#e28f2f;font-weight:bold;">$${producto.price}</p>
-        <button class="agregar-carrito" ${producto.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
-      `;
-
-      contenedorProductos.appendChild(div);
-
-      // Click en agregar al carrito
-      const btnCarrito = div.querySelector(".agregar-carrito");
-      btnCarrito.addEventListener("click", () => agregarAlCarrito(producto));
-
-      // Click en miniaturas para cambiar imagen principal
-      const miniaturas = div.querySelectorAll(".miniatura");
-      const imgPrincipal = div.querySelector(".imagen-principal");
-      miniaturas.forEach((mini) => {
-        mini.addEventListener("click", () => imgPrincipal.src = mini.src);
-      });
-
-      // Click en imagen principal para abrir modal
-      imgPrincipal.addEventListener("click", () => abrirModal(producto));
-    });
-
-    // 🔹 Mostrar paginación
-    mostrarPaginacion(lista);
-  }
-
-  function mostrarPaginacion(lista = productosFiltrados) {
-    const paginacion = document.getElementById("paginacion");
-    paginacion.innerHTML = "";
-
-    const totalPaginas = Math.ceil(lista.length / productosPorPagina);
-
-    // Botón anterior
-    if (currentPage > 1) {
-      const btnPrev = document.createElement("button");
-      btnPrev.textContent = "«";
-      btnPrev.onclick = () => {
-        currentPage--;
-        renderizarProductos(lista);
-      };
-      paginacion.appendChild(btnPrev);
-    }
-
-    // Botones de números
-    for (let i = 1; i <= totalPaginas; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      if (i === currentPage) btn.style.fontWeight = "bold";
-      btn.onclick = () => {
-        currentPage = i;
-        renderizarProductos(lista);
-      };
-      paginacion.appendChild(btn);
-    }
-
-    // Botón siguiente
-    if (currentPage < totalPaginas) {
-      const btnNext = document.createElement("button");
-      btnNext.textContent = "»";
-      btnNext.onclick = () => {
-        currentPage++;
-        renderizarProductos(lista);
-      };
-      paginacion.appendChild(btnNext);
-    }
-  }
-
-  // ----------------------
-  // Submenu principal y filtrado de subcategorías
-  // ----------------------
-  const toggles = document.querySelectorAll(".toggle-submenu");
-  toggles.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const submenu = btn.nextElementSibling;
-      const isVisible = submenu.style.display === "block";
-      submenu.style.display = isVisible ? "none" : "block";
-    });
-  });
-
-  const submenuItems = document.querySelectorAll(".submenu-item");
-  submenuItems.forEach(item => {
-    item.addEventListener("click", () => {
-      const mainCat = item.dataset.main;
-      const subCat = item.dataset.sub;
-      productosFiltrados = productos.filter(p => 
-        p.categoria.main === mainCat && p.categoria.sub === subCat
-      );
-      currentPage = 1;
-      renderizarProductos();
-    });
-  });
-
-  document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const mainCat = btn.getAttribute("data-main");
-      const subCat = btn.getAttribute("data-sub");
-
-      productosFiltrados = productos.filter(p => 
-        p.categoria.main === mainCat && p.categoria.sub === subCat
-      );
-
-      currentPage = 1;
-      renderizarProductos(productosFiltrados);
-
-      tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
-
-      const submenu = btn.closest(".submenu");
-      if (submenu) submenu.style.display = "none";
-    });
-  });
-
-  // ----------------------
-  // Hamburger menu
-  // ----------------------
-  const hamburguesa = document.querySelectorAll(".hamburger");
-  const aside = document.querySelector("aside");
-  hamburguesa.forEach(h => {
-    h.addEventListener("click", () => {
-      aside.classList.toggle("active");
-    });
-  });
-
-  // ----------------------
-  // Modal
-  // ----------------------
-  const modal = document.getElementById("producto-modal");
-  const cerrarModal = document.getElementById("cerrar-modal");
-  const modalImagen = document.getElementById("modal-imagen");
-  const modalTitulo = document.getElementById("modal-titulo");
-  const modalDescripcion = document.getElementById("modal-descripcion");
-  const modalPrice = document.getElementById("modal-price");
-  const modalStock = document.getElementById("modal-stock");
-
-  function abrirModal(producto) {
-    modal.style.display = "block";
-    modalImagen.src = producto.imagenes[0];
-    modalTitulo.textContent = producto.titulo;
-    modalDescripcion.textContent = producto.descripcion;
-    modalPrice.textContent = `$${producto.price}`;
-    modalStock.textContent = producto.stock > 0 ? `In Stock: ${producto.stock}` : 'Out of Stock';
-  }
-
-  cerrarModal.addEventListener("click", () => modal.style.display = "none");
-
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-
-  // ----------------------
-  // Inicializar
-  // ----------------------
+  localStorage.setItem("productos-en-cart", JSON.stringify(productosEnCart));
   actualizarContadorCarrito();
-  renderizarProductos();
+  alert("Product added to the cart");
+}
+
+// ----------------------
+// Modal
+// ----------------------
+const modal = document.getElementById("producto-modal");
+const cerrarModal = document.getElementById("cerrar-modal");
+const modalImagen = document.getElementById("modal-imagen");
+const modalTitulo = document.getElementById("modal-titulo");
+const modalDescripcion = document.getElementById("modal-descripcion");
+const modalPrice = document.getElementById("modal-price");
+const modalStock = document.getElementById("modal-stock");
+
+let imagenIndex = 0;
+let imagenesActuales = [];
+
+function abrirModal(producto) {
+  imagenesActuales = producto.imagenes;
+  imagenIndex = 0;
+
+  modal.style.display = "block";
+  modalImagen.src = imagenesActuales[imagenIndex];
+  modalTitulo.textContent = producto.titulo;
+  modalDescripcion.textContent = producto.descripcion;
+  modalPrice.textContent = `$${producto.price}`;
+  modalStock.textContent = producto.stock > 0 ? `In Stock: ${producto.stock}` : 'Out of Stock';
+}
+
+// Navegar imágenes haciendo click en la imagen del modal
+modalImagen.addEventListener("click", () => {
+  if(imagenesActuales.length > 1){
+    imagenIndex = (imagenIndex + 1) % imagenesActuales.length;
+    modalImagen.src = imagenesActuales[imagenIndex];
+  }
+});
+
+cerrarModal.addEventListener("click", () => modal.style.display = "none");
+
+window.addEventListener("click", e => {
+  if(e.target === modal) modal.style.display = "none";
+});
+
+// ----------------------
+// Render productos + paginación
+// ----------------------
+function renderizarProductos(lista = productosFiltrados){
+  contenedorProductos.innerHTML = "";
+
+  const inicio = (currentPage - 1) * productosPorPagina;
+  const fin = inicio + productosPorPagina;
+  const paginaProductos = lista.slice(inicio, fin);
+
+  paginaProductos.forEach(producto => {
+    const div = document.createElement("div");
+    div.classList.add("producto");
+
+    let imagenesHTML = `
+      <img src="${producto.imagenes[0]}" alt="${producto.titulo}" class="imagen-principal" style="width:100%;cursor:zoom-in;">
+      <div class="miniaturas" style="display:flex;margin-top:5px;gap:5px;">
+    `;
+    producto.imagenes.forEach((img) => {
+        imagenesHTML += `<img src="${img}" alt="${producto.titulo}" class="miniatura" style="width:30px;height:30px;cursor:pointer;border:1px solid #ccc;">`;
+    });
+    imagenesHTML += `</div>`;
+
+    div.innerHTML = `
+      ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
+      ${imagenesHTML}
+      <h3 style="margin:5px 0;">${producto.titulo}</h3>
+      <p style="color:#e28f2f;font-weight:bold;">$${producto.price}</p>
+      <button class="agregar-carrito" ${producto.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
+    `;
+
+    contenedorProductos.appendChild(div);
+
+    // Click en agregar al carrito
+    const btnCarrito = div.querySelector(".agregar-carrito");
+    btnCarrito.addEventListener("click", () => agregarAlCarrito(producto));
+
+    // Click en miniaturas para cambiar imagen principal
+    const miniaturas = div.querySelectorAll(".miniatura");
+    const imgPrincipal = div.querySelector(".imagen-principal");
+    miniaturas.forEach((mini, index) => {
+      mini.addEventListener("click", () => {
+        imgPrincipal.src = mini.src;
+        abrirModal(producto);
+        imagenIndex = index;
+        modalImagen.src = imagenesActuales[imagenIndex];
+      });
+    });
+
+    // Click en imagen principal para abrir modal
+    imgPrincipal.addEventListener("click", () => abrirModal(producto));
+  });
+
+  mostrarPaginacion(lista);
+}
+
+// ----------------------
+// Paginación
+// ----------------------
+function mostrarPaginacion(lista = productosFiltrados) {
+  const paginacion = document.getElementById("paginacion");
+  paginacion.innerHTML = "";
+
+  const totalPaginas = Math.ceil(lista.length / productosPorPagina);
+
+  if (currentPage > 1) {
+    const btnPrev = document.createElement("button");
+    btnPrev.textContent = "«";
+    btnPrev.onclick = () => { currentPage--; renderizarProductos(lista); };
+    paginacion.appendChild(btnPrev);
+  }
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.style.fontWeight = "bold";
+    btn.onclick = () => { currentPage = i; renderizarProductos(lista); };
+    paginacion.appendChild(btn);
+  }
+
+  if (currentPage < totalPaginas) {
+    const btnNext = document.createElement("button");
+    btnNext.textContent = "»";
+    btnNext.onclick = () => { currentPage++; renderizarProductos(lista); };
+    paginacion.appendChild(btnNext);
+  }
+}
+
+// ----------------------
+// Submenu principal y filtrado
+// ----------------------
+const toggles = document.querySelectorAll(".toggle-submenu");
+toggles.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const submenu = btn.nextElementSibling;
+    const isVisible = submenu.style.display === "block";
+    submenu.style.display = isVisible ? "none" : "block";
+  });
+});
+
+const submenuItems = document.querySelectorAll(".submenu-item");
+submenuItems.forEach(item => {
+  item.addEventListener("click", () => {
+    const mainCat = item.dataset.main;
+    const subCat = item.dataset.sub;
+    productosFiltrados = productos.filter(p => 
+      p.categoria.main === mainCat && p.categoria.sub === subCat
+    );
+    currentPage = 1;
+    renderizarProductos();
+  });
+});
+
+document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const mainCat = btn.getAttribute("data-main");
+    const subCat = btn.getAttribute("data-sub");
+
+    productosFiltrados = productos.filter(p => 
+      p.categoria.main === mainCat && p.categoria.sub === subCat
+    );
+
+    currentPage = 1;
+    renderizarProductos(productosFiltrados);
+
+    tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
+
+    const submenu = btn.closest(".submenu");
+    if (submenu) submenu.style.display = "none";
+  });
+});
+
+// ----------------------
+// Hamburger menu
+// ----------------------
+const hamburguesa = document.querySelectorAll(".hamburger");
+const aside = document.querySelector("aside");
+hamburguesa.forEach(h => {
+  h.addEventListener("click", () => {
+    aside.classList.toggle("active");
+  });
+});
+
+// ----------------------
+// Inicializar
+// ----------------------
+actualizarContadorCarrito();
+renderizarProductos();
 
 });
 
