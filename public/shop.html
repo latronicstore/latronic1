@@ -257,6 +257,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   { id:"new-p12", titulo:"Carmelo Anthony True Colors 2014", imagenes:["./img/new/basketballnew/CarmeloAnthony2014Prestige.jpeg", "./img/new/basketballnew/CarmeloAnthony2014Prestige2.jpeg", "./img/new/basketballnew/CarmeloAnthonyPrestigeBack2.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:130, descripcion:"Carmelo Anthony True Colors Prestige by Panini, year: 2014" },
 
+  { id:"new-p13", titulo:"Kobe BryantMVP 2001", imagenes:["./img/new/basketballnew/KobeBryan2001MVP.jpeg", "./img/new/basketballnew/KobeBryan2001Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:50, descripcion:"Kobe Bryant MVP, year: 2001" },
+
+  { id:"new-p14", titulo:"Carmelo Anthony McDonald's All American 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyMcDOnalds2024.jpeg", "./img/new/basketballnew/CarmeloAnthonyMcDonaldsBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Carmelo Anthony McDonald's All American Topps Chrome, year: 2024" },
+
+  { id:"new-p15", titulo:"Kyshawn George Signature 2024-25", imagenes:["./img/new/basketballnew/ShawnGeorge2024.jpeg", "./img/new/basketballnew/KyshawnGeorgeBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:60, descripcion:"Kyshawn George Autograph Panini, year: 2024" },
+
+  { id:"new-p16", titulo:"Rajon Rondon 2017-18", imagenes:["./img/new/basketballnew/RajonRondon2017.jpeg", "./img/new/basketballnew/RajonRondonBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, descripcion:"Rajon Rondon Prestige Panini, year: 2017-18" },
+
+  { id:"new-p17", titulo:"Kawhi Leonard 2021-22", imagenes:["./img/new/basketballnew/KawhiLeonard2021.jpeg", "./img/new/basketballnew/KawhiLeonard2021Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Kawhi Leonard, year: 2021-22" },
+
+  { id:"new-p18", titulo:"Anthony Edwards Holo 2024-25", imagenes:["./img/new/basketballnew/AnthonyEdwards2024.jpeg", "./img/new/basketballnew/AnthonyEdward2024Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:25, descripcion:"Anthony Edwards Prizm Holo, year: 2024-25" },
+
+  { id:"new-p19", titulo:"Malik Monk Rookie Memorabilia 2019", imagenes:["./img/new/basketballnew/MalikMonk2019.jpeg", "./img/new/basketballnew/MalikMonk2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, descripcion:"Malik Monk Rookie Memorabilia, year: 2019-20" },
+
+  { id:"new-p20", titulo:"Jordan Mickey Memorabilia 2015-16", imagenes:["./img/new/basketballnew/JordanMickey2015.jpeg", "./img/new/basketballnew/JordanMickey2015Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:45, descripcion:"Jordan Mickey Memorabilia, year: 2015-16" },
+
+  { id:"new-p21", titulo:"Kevin Durant 2019-20", imagenes:["./img/new/basketballnew/KevinDurant2019.jpeg", "./img/new/basketballnew/KevinDurant2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Kevin Durant, year: 2019-20" },
+
 
 
 
@@ -615,12 +633,10 @@ actualizarContadorCarrito();
 // ----------------------
 // Submenu y Hamburger
 // ----------------------
-const toggles = document.querySelectorAll(".toggle-submenu");
-toggles.forEach(btn => {
+document.querySelectorAll(".toggle-submenu").forEach(btn => {
   btn.addEventListener("click", () => {
     const submenu = btn.nextElementSibling;
-    const isVisible = submenu.style.display === "block";
-    submenu.style.display = isVisible ? "none" : "block";
+    submenu.style.display = submenu.style.display === "block" ? "none" : "block";
   });
 });
 
@@ -628,7 +644,7 @@ toggles.forEach(btn => {
 const hamburger = document.querySelector(".hamburger");
 const aside = document.querySelector("aside");
 hamburger.addEventListener("click", () => {
-  aside.classList.toggle("active");
+  aside.classList.toggle("open");
 });
 
 // Opcional: cerrar submenús al cerrar el menú lateral
