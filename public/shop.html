@@ -537,19 +537,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  renderizarProductos();
+renderizarProductos();
 
-  // ----------------------
-  // Submenu toggle
-  // ----------------------
-  const toggles = document.querySelectorAll(".toggle-submenu");
-  toggles.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const submenu = btn.nextElementSibling;
-      const isVisible = submenu.style.display === "block";
-      submenu.style.display = isVisible ? "none" : "block";
-    });
+// ----------------------
+// Submenu principal y filtrado de subcategorías
+// ----------------------
+
+// Toggle de submenus principales (New, Used, More)
+document.querySelectorAll(".toggle-submenu").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const submenu = btn.nextElementSibling;
+    const isVisible = submenu.style.display === "block";
+    // Cerramos todos los submenus primero
+    document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
+    // Abrimos o cerramos el submenu clickeado
+    submenu.style.display = isVisible ? "none" : "block";
   });
+});
+
+// Filtrado de productos al hacer click en submenu
+document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const mainCat = btn.getAttribute("data-main");
+    const subCat = btn.getAttribute("data-sub");
+
+    // Filtramos productos
+    productosFiltrados = productos.filter(p => 
+      p.categoria.main === mainCat && p.categoria.sub === subCat
+    );
+
+    currentPage = 1; // opcional si usas paginación
+    renderizarProductos(productosFiltrados);
+
+    // Actualizamos el título principal
+    tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
+
+    // Cerramos el submenu después de seleccionar
+    const submenu = btn.closest(".submenu");
+    if (submenu) submenu.style.display = "none";
+  });
+});
 
   // ----------------------
   // Hamburger menu
