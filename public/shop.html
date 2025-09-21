@@ -169,16 +169,16 @@ aside.active ~ main #titulo-principal {
     <li>
       <button class="boton-categoria toggle-submenu">Used</button>
       <ul class="submenu">
-        <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
       </ul>
     </li>
 
@@ -544,16 +544,38 @@ renderizarProductos();
 // ----------------------
 
 // Toggle de submenus principales (New, Used, More)
-document.querySelectorAll(".toggle-submenu").forEach(btn => {
+// ----------------------
+// Submenu toggle y filtrado Pokémon
+// ----------------------
+
+// Abrir/cerrar submenu al hacer click
+const toggles = document.querySelectorAll(".toggle-submenu");
+toggles.forEach(btn => {
   btn.addEventListener("click", () => {
     const submenu = btn.nextElementSibling;
     const isVisible = submenu.style.display === "block";
-    // Cerramos todos los submenus primero
-    document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
-    // Abrimos o cerramos el submenu clickeado
     submenu.style.display = isVisible ? "none" : "block";
   });
 });
+
+// Filtrar productos al hacer click en un submenu item
+const submenuItems = document.querySelectorAll(".submenu-item");
+
+submenuItems.forEach(item => {
+  item.addEventListener("click", () => {
+    const mainCat = item.dataset.main;  // "new" o "used"
+    const subCat = item.dataset.sub;    // "pokemon"
+    
+    // Filtrar productos según categoría
+    productosFiltrados = productos.filter(p => 
+      p.categoria.main === mainCat && p.categoria.sub === subCat
+    );
+    
+    currentPage = 1; // reset de paginación
+    renderizarProductos();
+  });
+});
+
 
 // Filtrado de productos al hacer click en submenu
 document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
