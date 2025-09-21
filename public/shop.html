@@ -203,9 +203,13 @@ aside.active ~ main #titulo-principal {
     <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
     Email-latronicstore@gmail.com<br>
     Located in Connecticut, USA<br>
-    &copy; 2024 LaTRONIC Store. All rights reserved.
+    &copy; 2024 LaTRONIC LLC. All rights reserved.
   </footer>
 </aside>
+<header>
+  <div class="hamburger">☰</div>
+</header>
+
 
 <main>
   <h1 id="titulo-principal">All Products</h1>
@@ -275,7 +279,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   { id:"new-p21", titulo:"Kevin Durant 2019-20", imagenes:["./img/new/basketballnew/KevinDurant2019.jpeg", "./img/new/basketballnew/KevinDurant2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Kevin Durant, year: 2019-20" },
 
+  { id:"new-p22", titulo:"Dwyane Wade 2018-19", imagenes:["./img/new/basketballnew/DwyaneWade2018.jpeg", "./img/new/basketballnew/DwayeWade2018-19Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Dwyane Wade, year: 2018-19" },
 
+  { id:"new-p23", titulo:"Derrik Rose 2018-19", imagenes:["./img/new/basketballnew/DerrikRose2018.jpeg", "./img/new/basketballnew/DerrikRose2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, descripcion:"Derrik Rose DONRUSS, year: 2018-19" },
+
+  { id:"new-p24", titulo:"Allen Iverson 2018-19", imagenes:["./img/new/basketballnew/AllenIverson2018.jpeg", "./img/new/basketballnew/AllenIverson2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Allen Iverson, year: 2018-19" },
 
 
   // New items of Baseball
@@ -499,171 +507,93 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="miniaturas" style="display:flex;margin-top:5px;gap:5px;">
       `;
       producto.imagenes.forEach((img, idx) => {
-        imagenesHTML += `<img src="${img}" class="miniatura" data-index="${idx}" style="width:30px;cursor:pointer;border:1px solid #ccc;">`;
-      });
-      imagenesHTML += "</div>";
-
-     div.innerHTML = `
-  ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
-  ${imagenesHTML}
-  <h3>${producto.titulo}</h3>
-  <p style="font-weight:bold;">$${producto.price}</p>
-  <p class="descripcion" style="font-size:12px;">${producto.descripcion}</p>
-  <button class="agregar-carrito" ${producto.stock===0 ? 'disabled' : ''}>Add</button>
-`;
-
-
-      // Agregar evento al botón de carrito
-      div.querySelector(".agregar-carrito").addEventListener("click", ()=>agregarAlCarrito(producto));
-
-      // Cambiar imagen principal al hacer clic en miniaturas
-      const imgPrincipal = div.querySelector(".imagen-principal");
-      div.querySelectorAll(".miniatura").forEach(mini => {
-        mini.addEventListener("click", ()=> {
-          imgPrincipal.src = producto.imagenes[mini.dataset.index];
+          imagenesHTML += `<img src="${img}" alt="${producto.titulo}" class="miniatura" style="width:30px;height:30px;cursor:pointer;border:1px solid #ccc;">`;
         });
-      });
+        imagenesHTML += `</div>`;
 
-      // Zoom simple al hacer clic en imagen principal
-      imgPrincipal.addEventListener("click", ()=>{
-        const overlay = document.createElement("div");
-        overlay.style.position="fixed";
-        overlay.style.top="0";
-        overlay.style.left="0";
-        overlay.style.width="100%";
-        overlay.style.height="100%";
-        overlay.style.background="rgba(0,0,0,0.8)";
-        overlay.style.display="flex";
-        overlay.style.alignItems="center";
-        overlay.style.justifyContent="center";
-        overlay.style.cursor="zoom-out";
-        const zoomImg = document.createElement("img");
-        zoomImg.src = imgPrincipal.src;
-        zoomImg.style.maxWidth="90%";
-        zoomImg.style.maxHeight="90%";
-        overlay.appendChild(zoomImg);
-        overlay.addEventListener("click", ()=>overlay.remove());
-        document.body.appendChild(overlay);
-      });
+      div.innerHTML = `
+        ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
+        ${imagenesHTML}
+        <h3 style="margin:5px 0;">${producto.titulo}</h3>
+        <p style="color:#e28f2f;font-weight:bold;">$${producto.price}</p>
+        <button class="agregar-carrito" ${producto.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
+      `;
 
       contenedorProductos.appendChild(div);
-    });
 
-    renderizarPaginacion(lista);
-  }
+      // Click en agregar al carrito
+      const btnCarrito = div.querySelector(".agregar-carrito");
+      btnCarrito.addEventListener("click", () => agregarAlCarrito(producto));
 
-  // ----------------------
-  // Paginación
-  // ----------------------
-  function renderizarPaginacion(lista){
-    let paginacionDiv = document.getElementById("paginacion");
-    if(!paginacionDiv){
-      paginacionDiv = document.createElement("div");
-      paginacionDiv.id = "paginacion";
-      paginacionDiv.style.textAlign = "center";
-      paginacionDiv.style.margin = "20px 0";
-      contenedorProductos.insertAdjacentElement("afterend", paginacionDiv);
-    }
-    paginacionDiv.innerHTML = "";
-
-    const totalPaginas = Math.ceil(lista.length / productosPorPagina);
-
-    if(currentPage > 1){
-      const prevBtn = document.createElement("button");
-      prevBtn.textContent = "⬅️ Back";
-      prevBtn.onclick = ()=>{ currentPage--; renderizarProductos(lista); };
-      paginacionDiv.appendChild(prevBtn);
-    }
-
-    for(let i=1;i<=totalPaginas;i++){
-      const pageBtn = document.createElement("button");
-      pageBtn.textContent = i;
-      if(i===currentPage){
-        pageBtn.disabled=true;
-        pageBtn.style.fontWeight="bold";
-      }
-      pageBtn.onclick = ()=>{ currentPage=i; renderizarProductos(lista); };
-      paginacionDiv.appendChild(pageBtn);
-    }
-
-    if(currentPage < totalPaginas){
-      const nextBtn = document.createElement("button");
-      nextBtn.textContent = "Next ➡️";
-      nextBtn.onclick = ()=>{ currentPage++; renderizarProductos(lista); };
-      paginacionDiv.appendChild(nextBtn);
-    }
-  }
-
-  // ----------------------
-  // Filtros
-  // ----------------------
-  botonesCategoria.forEach(boton => {
-    boton.addEventListener("click", () => {
-      const main = boton.getAttribute("data-main");
-      const sub = boton.getAttribute("data-sub");
-
-      productosFiltrados = productos.filter(p=> p.categoria.main===main && p.categoria.sub===sub );
-
-      tituloPrincipal.textContent = `${main.toUpperCase()} - ${sub.toUpperCase()}`;
-      currentPage=1;
-      renderizarProductos();
-    });
-  });
-
-  // ----------------------
-  // Búsqueda
-  // ----------------------
-  if(inputBusqueda){
-    inputBusqueda.addEventListener("input", ()=>{
-      const texto = inputBusqueda.value.toLowerCase();
-      productosFiltrados = productos.filter(p=>{
-        return p.titulo.toLowerCase().includes(texto) || (p.descripcion && p.descripcion.toLowerCase().includes(texto));
+      // Click en miniaturas para cambiar imagen principal
+      const miniaturas = div.querySelectorAll(".miniatura");
+      const imgPrincipal = div.querySelector(".imagen-principal");
+      miniaturas.forEach((mini) => {
+        mini.addEventListener("click", () => imgPrincipal.src = mini.src);
       });
-      currentPage = 1;
-      renderizarProductos();
+
+      // Click en imagen principal para abrir modal
+      imgPrincipal.addEventListener("click", () => abrirModal(producto));
     });
   }
-// ----------------------
-// Inicializar
-// ---------------------- 
-tituloPrincipal.textContent = "ALL PRODUCTS";
-renderizarProductos();
-actualizarContadorCarrito();
 
-// ----------------------
-// Submenu y Hamburger
-// ----------------------
-document.querySelectorAll(".toggle-submenu").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const submenu = btn.nextElementSibling;
-    submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+  renderizarProductos();
+
+  // ----------------------
+  // Submenu toggle
+  // ----------------------
+  const toggles = document.querySelectorAll(".toggle-submenu");
+  toggles.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const submenu = btn.nextElementSibling;
+      const isVisible = submenu.style.display === "block";
+      submenu.style.display = isVisible ? "none" : "block";
+    });
   });
-});
 
-// Hamburger
-const hamburger = document.querySelector(".hamburger");
-const aside = document.querySelector("aside");
-hamburger.addEventListener("click", () => {
-  aside.classList.toggle("open");
-});
-
-// Opcional: cerrar submenús al cerrar el menú lateral
-// (Esto es útil si quieres que los submenús se cierren cuando cierras el aside)
-aside.addEventListener("transitionend", () => {
-  if (!aside.classList.contains("active")) {
-    toggles.forEach(btn => {
-      btn.nextElementSibling.style.display = "none";
+  // ----------------------
+  // Hamburger menu
+  // ----------------------
+  const hamburguesa = document.querySelectorAll(".hamburger");
+  const aside = document.querySelector("aside");
+  hamburguesa.forEach(h => {
+    h.addEventListener("click", () => {
+      aside.classList.toggle("active");
     });
+  });
+
+  // ----------------------
+  // Modal
+  // ----------------------
+  const modal = document.getElementById("producto-modal");
+  const cerrarModal = document.getElementById("cerrar-modal");
+  const modalImagen = document.getElementById("modal-imagen");
+  const modalTitulo = document.getElementById("modal-titulo");
+  const modalDescripcion = document.getElementById("modal-descripcion");
+  const modalPrice = document.getElementById("modal-price");
+  const modalStock = document.getElementById("modal-stock");
+
+  function abrirModal(producto) {
+    modal.style.display = "block";
+    modalImagen.src = producto.imagenes[0];
+    modalTitulo.textContent = producto.titulo;
+    modalDescripcion.textContent = producto.descripcion;
+    modalPrice.textContent = `$${producto.price}`;
+    modalStock.textContent = producto.stock > 0 ? `In Stock: ${producto.stock}` : 'Out of Stock';
   }
+
+  cerrarModal.addEventListener("click", () => modal.style.display = "none");
+
+  window.addEventListener("click", e => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+
+  // ----------------------
+  // Inicializar carrito
+  // ----------------------
+  actualizarContadorCarrito();
+
 });
-// Carrito dummy count (si quieres un contador inicial aparte)
-
-if(cartCountEl){
-  cartCountEl.textContent = cartCountEl.textContent || 0;
-}
-
-});
-
 
 </script>
 
