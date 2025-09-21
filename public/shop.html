@@ -9,31 +9,31 @@
 <style>
   body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
   aside {
-    width: 150px;
-    background: #1e1e1e;
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    max-height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
+    position: relative; /* o static */
+    top: auto; /* ya no necesario */
+}
 
   aside h2 { font-size:1.5rem; margin-bottom:1rem; }
   .menu { list-style:none; padding:0; margin:0; }
   .menu>li { margin-bottom:0.5rem; position:relative; }
   .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%;  padding:0.5rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; border-radius:5px; }
   .boton-categoria:hover, .boton-categoria.active { background:#e28e2fa9; color:black; border-radius:5px; }
-  .submenu { list-style:none; padding-left:0.5rem; margin:0; display:none; }
+  
+  /* 🔹 SUBMENU OSCURO PARA HAMBURGER 🔹 */
+  .submenu { list-style:none; padding-left:0.5rem; margin:0; display:none; background-color: #1a1a1a; border-radius:5px; }
   .submenu li { margin-bottom:0.3rem; }
-  .submenu .boton-categoria { font-size:0.9rem; color:#e28f2f; background:none; border:none; text-align:left; width:100%; padding:0.3rem 0.5rem; cursor:pointer; }
-  .submenu .boton-categoria:hover { background:#f16413b9; color:#e7d809; border-radius:5px; }
+  .submenu .boton-categoria { font-size:0.9rem; color:#fff; background:none; border:none; text-align:left; width:100%; padding:0.3rem 0.5rem; cursor:pointer; }
+  .submenu .boton-categoria:hover { background:#f16413b9; color:#fff; border-radius:5px; }
 
   main { flex:1; padding:2rem; }
   footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.7rem; }
-  #contenedor-productos { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; }
+
+  /* 🔹 más pequeños */
+  #contenedor-productos { 
+    display:grid; 
+    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); 
+    gap:0.7rem; 
+  }
 
   .title { font-family:"Bebas Neue",sans-serif; font-size:2.5rem; text-align:center; color:#f16413b9; margin:0;}
 
@@ -61,87 +61,134 @@
     aside.active { left: 0; }
     main { padding: 1rem; }
     .hamburger { display: block; }
+
+    /* margen paginación móvil */
+    #paginacion {
+      margin-top: 15px;
+    }
   }
 
-.out-of-stock {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(241, 49, 49, 0.85);
-  color: #fff;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  z-index: 10;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
+  .out-of-stock {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(241, 49, 49, 0.85);
+    color: #fff;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.75rem; /* más pequeño */
+    text-transform: uppercase;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  }
 
-.producto {
-  position: relative; /* Necesario para el badge de out-of-stock */
+  .producto {
+  position: relative;
   border: 1px solid #ccc;
-  padding: 10px;
-  margin: 10px;
-  width: 200px;
-  display: inline-block;
-  vertical-align: top;
+  padding: 8px;
+  margin: 0; /* ya no hace falta margen porque el grid usa gap */
+  display: flex;              /* mejor: flexbox interno */
+  flex-direction: column;     /* ordena título, img, botón en columna */
+  align-items: center;        /* centra contenido */
+  justify-content: space-between;
   text-align: center;
   transition: transform 0.3s;
-}
-
-.producto:hover {
-  transform: scale(1.03);
-}
-
-.agregar-carrito[disabled] {
-  background: #888;
-  color: #ccc;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-
-.agregar-carrito {
-  background-color: #e28f2f; /* naranja claro */
-  color: black;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+  font-size: 0.85rem; /* texto más compacto */
+  background: #1a1a1a; /* opcional: para resaltar las tarjetas */
   border-radius: 5px;
-  transition: background 0.3s, color 0.3s;
-  font-weight: bold;
-  margin-top: 10px; /* separa un poco del contenido superior */
 }
 
-.agregar-carrito:hover {
-  background-color: #f16413b9; /* naranja más intenso al pasar el mouse */
-  color: #fff;
-}
 
-#titulo-principal {
-  transition: all 0.3s ease;
-}
+  .producto:hover {
+    transform: scale(1.03);
+  }
 
-/* Cuando el aside tenga clase active, el título se centrará */
-aside.active ~ main #titulo-principal {
-  text-align: center;
-  margin-top: 50px; /* opcional: separa del top */
-}
-#titulo-principal {
-  text-align: center; /* siempre centrado horizontalmente */
-  margin: 0;
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 2.5rem;
-  color: #f16413b9;
-  transition: all 0.3s ease;
-}
+  .agregar-carrito[disabled] {
+    background: #888;
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 
-.link{
-  color: rgba(255, 0, 0, 0.726);
-}
+  .agregar-carrito {
+    background-color: #e28f2f;
+    color: black;
+    border: none;
+    padding: 0.3rem 0.6rem; /* más pequeño */
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, color 0.3s;
+    font-weight: bold;
+    font-size: 0.8rem; /* más compacto */
+    margin-top: 8px;
+  }
+
+  .agregar-carrito:hover {
+    background-color: #f16413b9;
+    color: #fff;
+  }
+
+  #titulo-principal {
+    transition: all 0.3s ease;
+    text-align: center;
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2.5rem;
+    color: #f16413b9;
+  }
+
+  aside.active ~ main #titulo-principal {
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .link{
+    color: rgba(255, 0, 0, 0.726);
+  }
+
+  /* Contenedor principal de productos + paginación */
+  #productos-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Contenedor de productos */
+  #contenedor-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+  }
+
+  /* Paginación centrada y siempre abajo */
+  #paginacion {
+    margin-top: 40px; /* espacio hacia abajo */
+    text-align: center;
+  }
+
+  /* Botones de paginación */
+  #paginacion button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #000000;
+    color: white;
+    background-color: #e28f2f;
+    transition: background 0.2s;
+  }
+
+  #paginacion button:hover {
+    background-color: #f0f0f0;
+  }
+
+  #paginacion button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 
 </style>
+
+
 </head>
 <body>
 <div class="hamburger">&#9776;</div>
@@ -214,7 +261,9 @@ aside.active ~ main #titulo-principal {
 <main>
   <h1 id="titulo-principal">All Products</h1>
   <div id="contenedor-productos"></div>
+  <div id="paginacion"></div>
 </main>
+
 
 <div id="producto-modal">
   <div class="modal-content">
@@ -444,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
   { id:"p5", titulo:"1968 Playboy", imagenes:["./img/more/playboy1.jpg"], categoria:{main:"more",sub:"magazines"}, stock:1, price:5, descripcion:"Charmeleon, year: 1999,  Card#: 24, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
 ];
 
-  localStorage.setItem("productos-tienda", JSON.stringify(productosDefault));
+ localStorage.setItem("productos-tienda", JSON.stringify(productosDefault));
   let productos = [...productosDefault];
   let productosFiltrados = [...productos];
 
@@ -483,7 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------
-  // Render productos
+  // Render productos + paginación
   // ----------------------
   function renderizarProductos(lista = productosFiltrados){
     contenedorProductos.innerHTML = "";
@@ -495,12 +544,6 @@ document.addEventListener("DOMContentLoaded", () => {
     paginaProductos.forEach(producto => {
       const div = document.createElement("div");
       div.classList.add("producto");
-      div.style.border = "1px solid #ccc";
-      div.style.padding = "10px";
-      div.style.margin = "10px";
-      div.style.width = "200px";
-      div.style.display = "inline-block";
-      div.style.verticalAlign = "top";
 
       let imagenesHTML = `
         <img src="${producto.imagenes[0]}" alt="${producto.titulo}" class="imagen-principal" style="width:100%;cursor:zoom-in;">
@@ -535,70 +578,95 @@ document.addEventListener("DOMContentLoaded", () => {
       // Click en imagen principal para abrir modal
       imgPrincipal.addEventListener("click", () => abrirModal(producto));
     });
+
+    // 🔹 Mostrar paginación
+    mostrarPaginacion(lista);
   }
 
-renderizarProductos();
+  function mostrarPaginacion(lista = productosFiltrados) {
+    const paginacion = document.getElementById("paginacion");
+    paginacion.innerHTML = "";
 
-// ----------------------
-// Submenu principal y filtrado de subcategorías
-// ----------------------
+    const totalPaginas = Math.ceil(lista.length / productosPorPagina);
 
-// Toggle de submenus principales (New, Used, More)
-// ----------------------
-// Submenu toggle y filtrado Pokémon
-// ----------------------
+    // Botón anterior
+    if (currentPage > 1) {
+      const btnPrev = document.createElement("button");
+      btnPrev.textContent = "«";
+      btnPrev.onclick = () => {
+        currentPage--;
+        renderizarProductos(lista);
+      };
+      paginacion.appendChild(btnPrev);
+    }
 
-// Abrir/cerrar submenu al hacer click
-const toggles = document.querySelectorAll(".toggle-submenu");
-toggles.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const submenu = btn.nextElementSibling;
-    const isVisible = submenu.style.display === "block";
-    submenu.style.display = isVisible ? "none" : "block";
+    // Botones de números
+    for (let i = 1; i <= totalPaginas; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      if (i === currentPage) btn.style.fontWeight = "bold";
+      btn.onclick = () => {
+        currentPage = i;
+        renderizarProductos(lista);
+      };
+      paginacion.appendChild(btn);
+    }
+
+    // Botón siguiente
+    if (currentPage < totalPaginas) {
+      const btnNext = document.createElement("button");
+      btnNext.textContent = "»";
+      btnNext.onclick = () => {
+        currentPage++;
+        renderizarProductos(lista);
+      };
+      paginacion.appendChild(btnNext);
+    }
+  }
+
+  // ----------------------
+  // Submenu principal y filtrado de subcategorías
+  // ----------------------
+  const toggles = document.querySelectorAll(".toggle-submenu");
+  toggles.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const submenu = btn.nextElementSibling;
+      const isVisible = submenu.style.display === "block";
+      submenu.style.display = isVisible ? "none" : "block";
+    });
   });
-});
 
-// Filtrar productos al hacer click en un submenu item
-const submenuItems = document.querySelectorAll(".submenu-item");
-
-submenuItems.forEach(item => {
-  item.addEventListener("click", () => {
-    const mainCat = item.dataset.main;  // "new" o "used"
-    const subCat = item.dataset.sub;    // "pokemon"
-    
-    // Filtrar productos según categoría
-    productosFiltrados = productos.filter(p => 
-      p.categoria.main === mainCat && p.categoria.sub === subCat
-    );
-    
-    currentPage = 1; // reset de paginación
-    renderizarProductos();
+  const submenuItems = document.querySelectorAll(".submenu-item");
+  submenuItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const mainCat = item.dataset.main;
+      const subCat = item.dataset.sub;
+      productosFiltrados = productos.filter(p => 
+        p.categoria.main === mainCat && p.categoria.sub === subCat
+      );
+      currentPage = 1;
+      renderizarProductos();
+    });
   });
-});
 
+  document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const mainCat = btn.getAttribute("data-main");
+      const subCat = btn.getAttribute("data-sub");
 
-// Filtrado de productos al hacer click en submenu
-document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const mainCat = btn.getAttribute("data-main");
-    const subCat = btn.getAttribute("data-sub");
+      productosFiltrados = productos.filter(p => 
+        p.categoria.main === mainCat && p.categoria.sub === subCat
+      );
 
-    // Filtramos productos
-    productosFiltrados = productos.filter(p => 
-      p.categoria.main === mainCat && p.categoria.sub === subCat
-    );
+      currentPage = 1;
+      renderizarProductos(productosFiltrados);
 
-    currentPage = 1; // opcional si usas paginación
-    renderizarProductos(productosFiltrados);
+      tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
 
-    // Actualizamos el título principal
-    tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
-
-    // Cerramos el submenu después de seleccionar
-    const submenu = btn.closest(".submenu");
-    if (submenu) submenu.style.display = "none";
+      const submenu = btn.closest(".submenu");
+      if (submenu) submenu.style.display = "none";
+    });
   });
-});
 
   // ----------------------
   // Hamburger menu
@@ -638,9 +706,10 @@ document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn =
   });
 
   // ----------------------
-  // Inicializar carrito
+  // Inicializar
   // ----------------------
   actualizarContadorCarrito();
+  renderizarProductos();
 
 });
 
