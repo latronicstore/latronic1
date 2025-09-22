@@ -30,6 +30,10 @@
     .back-home:hover { color: #f16413; }
     .small-paragraph { font-size: 10px; color:#ccc; }
     @media (max-width: 600px) { .container { width: 95%; padding: 15px; } h2 { font-size: clamp(20px, 6vw, 28px); } .input-group label, .input-group input { font-size: 0.85rem; } #card-container { margin: 15px 0; } button { font-size: 0.95rem; padding: 10px; } }
+
+    .small-paragraph {
+      font
+    }
   </style>
 </head>
 <body>
@@ -57,15 +61,16 @@
   </div>
   <div class="input-group">
     <label for="address">Shipping Address (number, street name, city, state & zipcode)</label>
-    <input type="text" id="address" placeholder="123 Main St, City" required />
+    <input type="text" id="address" placeholder="123 Main St, City, State, Zipcode" required />
   </div>
   <div class="input-group">
-    <label for="estado">State</label>
+    <label for="estado">State "This is just for the taxes"</label>
     <input type="text" id="estado" readonly />
   </div>
 
   <div id="card-container"></div>
-  <input type="number" id="amount" style="display:none;" />
+  <input type="number" id="amount" style="display:none">
+  <h6 class="small-paragraph">By clicking "Pay Now" you agree to the store's Terms & Conditions and our Privacy Policy and Terms & Conditions, and consent to receive email messages about your tracking number as soon as it is available by LaTRONIC LLC.</h6>
   <button id="pay-button" class="pay-button">Pay now</button>
   <a href="shop.html" class="back-home">Back to menu</a>
   <div id="payment-status"></div>
@@ -74,7 +79,6 @@
     Give us 24 hours from the date and time of purchase to process the shipment. We will provide you with the tracking number and send it to the email address you provided above. Please make sure to enter the shipping address correctly — including street number, street name, city, state, and zip code — so we can complete the delivery without any issues. Refunds are not accepted after 24 hours from the time of purchase. LaTRONIC LLC.
   </h6>
 </div> 
-
 <script>
 // --- Cargar carrito desde localStorage ---
 function cargarCarrito() {
@@ -138,6 +142,13 @@ async function initSquare() {
 
     const payButton = document.getElementById("pay-button");
     payButton.addEventListener("click", async function() {
+      // 🔹 Aquí mostramos el aviso antes de procesar el pago
+      const confirmMessage = `By clicking "Pay Now" you agree to the store's Terms & Conditions and our Privacy Policy and Terms & Conditions, and consent to receive email messages about your tracking number as soon as it is available by LaTRONIC LLC.`;
+      
+      if (!confirm(confirmMessage)) {
+        return; // si el cliente cancela, no sigue con el pago
+      }
+
       payButton.disabled = true;
       try {
         const firstName = document.getElementById("firstName").value.trim();
@@ -209,6 +220,8 @@ async function initSquare() {
 
 initSquare();
 </script>
+
+
 
 </body>
 </html>
