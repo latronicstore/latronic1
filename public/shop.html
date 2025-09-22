@@ -7,26 +7,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
-  body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
+  body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#ffffffcb; display:flex; min-height:100vh; }
   aside {
     position: relative; /* o static */
     top: auto; /* ya no necesario */
 }
 
   aside h2 { font-size:1.5rem; margin-bottom:1rem; }
-  .menu { list-style:none; padding:0; margin:0; }
-  .menu>li { margin-bottom:0.5rem; position:relative; }
-  .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%;  padding:0.5rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; border-radius:5px; }
+  .menu { list-style:none; padding:0; margin:0; background: #1a1a1a; }
+  .menu>li { margin-bottom:0.5rem; margin-left:1.2rem; position:relative; }
+  .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%;  padding:0.1rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; border-radius:5px; }
   .boton-categoria:hover, .boton-categoria.active { background:#e28e2fa9; color:black; border-radius:5px; }
   
   /* 🔹 SUBMENU OSCURO PARA HAMBURGER 🔹 */
   .submenu { list-style:none; padding-left:0.5rem; margin:0; display:none; background-color: #1a1a1a; border-radius:5px; }
   .submenu li { margin-bottom:0.3rem; }
   .submenu .boton-categoria { font-size:0.9rem; color:#fff; background:none; border:none; text-align:left; width:100%; padding:0.3rem 0.5rem; cursor:pointer; }
-  .submenu .boton-categoria:hover { background:#f16413b9; color:#fff; border-radius:5px; }
+  .submenu .boton-categoria:hover { background:#f16413b9; color:#050505; border-radius:5px; }
+
+  .carrito{
+    background:#e28f2f;
+    border-radius:5px;
+    border-color: #1a1a1a;
+  }
+  .carrito:hover{
+    background:#f16413b9;
+  }
 
   main { flex:1; padding:2rem; }
-  footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.7rem; }
+  footer { text-align:center; padding:1rem 0; color:#ffffff9f; font-size:0.7rem; }
+
+  
 
   /* 🔹 más pequeños */
   #contenedor-productos img {
@@ -218,6 +229,7 @@
     color:#fff;
     cursor:pointer;
   }
+  
 </style>
 
 
@@ -281,16 +293,15 @@
 
       <!-- Cart -->
       <li class="cart-button-container">
-        <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
-      </li>
-    </ul>
-
-    <footer>
+        <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
+        <footer>
       <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
       Email-latronicstore@gmail.com<br>
       Located in Connecticut, USA<br>
       &copy; 2024 LaTRONIC LLC. All rights reserved.
     </footer>
+      </li>  
+    </ul>
   </aside>
 
   <header>
@@ -304,8 +315,8 @@
   </main>
 
   <!-- Modal -->
-<div id="producto-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000;">
-  <div class="modal-content" style="position:relative;background:#fff;padding:20px;max-width:700px;width:90%;border-radius:10px;display:flex;flex-direction:column;align-items:center;">
+<div id="producto-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:50%;height:50%;justify-content:center;align-items:center;z-index:1000;">
+  <div class="modal-content" style="position:relative;background:#3a3939;padding:20px;max-width:700px;width:90%;border-radius:10px;display:flex;flex-direction:column;align-items:center;">
     <span id="cerrar-modal" style="position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;">&times;</span>
     <div style="position:relative;width:100%;display:flex;align-items:center;justify-content:center;">
       <button id="prev-img" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:none;border:none;font-size:32px;cursor:pointer;">&#10094;</button>
@@ -314,7 +325,7 @@
     </div>
     <h2 id="modal-titulo" style="margin:10px 0;"></h2>
     <p id="modal-descripcion" style="margin:5px 0;"></p>
-    <p id="modal-price" style="margin:5px 0;color:#e28f2f;font-weight:bold;"></p>
+    <p id="modal-price" style="margin:5px 0;font-size:20px;color:#e28f2f;font-weight:bold;"></p>
     <p id="modal-stock" style="margin:5px 0;"></p>
   </div>
 </div>
@@ -550,7 +561,7 @@ const botonesCategoria = document.querySelectorAll(".boton-categoria");
 const inputBusqueda = document.getElementById("search-input");
 
 let currentPage = 1;
-let productosPorPagina = 14;
+let productosPorPagina = 18;
 
 // ----------------------
 // Carrito
