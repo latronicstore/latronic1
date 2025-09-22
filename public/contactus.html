@@ -151,8 +151,12 @@ document.getElementById("contact-form").addEventListener("submit", async (e)=>{
   });
 
   const result = await res.json();
-  if(result.success) alert("✅ Your message has been sent!");
-  else alert("❌ There was an error sending your message.");
+  if(result.success) {
+    alert("✅ Your message has been sent!");
+    window.location.href = "home.html"; // 👈 Redirige a Home.html
+  } else {
+    alert("❌ There was an error sending your message.");
+  }
 });
 </script>
 
