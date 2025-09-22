@@ -8,18 +8,87 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
   body { margin:0; font-family: Arial, sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
-  aside { width:250px; background:#1e1e1e; padding:1rem; position:sticky; top:0; height:100vh; display:flex; flex-direction:column; justify-content:space-between; }
+
+  aside { 
+    width:250px; 
+    background:#1e1e1e; 
+    padding:1rem; 
+    position:sticky; 
+    top:0; 
+    height:100vh; 
+    display:flex; 
+    flex-direction:column; 
+    justify-content:space-between; 
+    overflow-y:auto; /* permite scroll si el menú es largo */
+  }
+
   aside h2 { font-size:1.2rem; margin-bottom:1rem; }
+
   .menu { list-style:none; padding:0; margin:0; }
-  .menu>li { margin-bottom:0.5rem; }
-  .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%; padding:0.5rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; }
-  .boton-categoria:hover, .boton-categoria.active { background:#e28e2fa9; color:black; border-radius:5px; }
-  .submenu { list-style:none; padding-left:1rem; display:none; }
+  .menu>li { margin-bottom:0.5rem; position:relative; }
+
+  .boton-categoria { 
+    display:block; 
+    background:none; 
+    border:none; 
+    color:#fff; 
+    text-align:left; 
+    width:100%; 
+    padding:0.5rem; 
+    font-size:1rem; 
+    cursor:pointer; 
+    transition: background 0.3s; 
+    text-decoration:none; 
+    border-radius:5px; 
+  }
+
+  .boton-categoria:hover, .boton-categoria.active { 
+    background:#e28e2fa9; 
+    color:black; 
+  }
+
+  /* --- SUBMENU OSCURO CON ANIMACIÓN --- */
+  .submenu { 
+    list-style:none; 
+    padding-left:1rem; 
+    margin:0; 
+    display:block; 
+    max-height:0; 
+    opacity:0; 
+    overflow:hidden; 
+    background-color:#1a1a1a; 
+    border-radius:5px; 
+    box-shadow:0 4px 10px rgba(0,0,0,0.7); 
+    transition:max-height 0.3s ease, opacity 0.3s ease; 
+  }
+
+  .submenu.open { 
+    max-height:500px; /* suficiente para todos los items */ 
+    opacity:1; 
+  }
+
   .submenu li { margin-bottom:0.3rem; }
-  .submenu .boton-categoria { font-size:0.9rem; color:#e28f2f; }
-  .submenu .boton-categoria:hover { font-size:0.9rem; background-color:#f16413b9; color:#e7d809; }
+  .submenu .boton-categoria { 
+    font-size:0.95rem; 
+    color:#fff; 
+    background:none; 
+    border:none; 
+    text-align:left; 
+    width:100%; 
+    padding:0.4rem 0.6rem; 
+    cursor:pointer; 
+    transition:background 0.3s; 
+  }
+
+  .submenu .boton-categoria:hover { 
+    background-color:#f16413b9; 
+    color:#fff; 
+    border-radius:5px; 
+  }
+
   main { flex:1; padding:2rem; }
   footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.9rem; }
+
   .logo { font-family:"Bebas Neue",sans-serif; font-size:3rem; letter-spacing:2px; text-align:center; text-transform:uppercase; display:inline-block; position:relative; color:#f16413b9; padding:1rem 2rem; border-radius:12px; }
 
   .cart-producto { display:flex; justify-content:space-between; align-items:center; background:#1e1e1e; padding:1rem; border-radius:10px; margin-bottom:1rem; box-shadow:0 4px 8px rgba(0,0,0,0.5); }
@@ -48,6 +117,7 @@
   .input-group label { font-size:0.9rem; font-weight:600; margin-bottom:4px; display:block; }
   .input-group select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:0.9rem; background:#1e1e1e; color:#fff; }
 </style>
+
 </head>
 <body>
 <aside>
@@ -76,7 +146,7 @@
 
   <footer>
     <div>✉️latronicstore@gmail.com</div>
-    <div>Located in Meriden, Connecticut</div>
+    <div>Located in Connecticut, USA</div>
     <div>ⓒ 2025 LaTRONIC LLC</div>
   </footer>
 </aside>
