@@ -124,21 +124,8 @@
   <h1 class="logo">LaTRONIC</h1>
   <ul class="menu">
     <li><a class="boton-categoria" href="Home.html">Home</a></li>
-    <li><button class="boton-categoria toggle-submenu">New</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" id="new-basketball">Basketball</button></li>
-        <li><button class="boton-categoria" id="new-pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" id="new-baseball">Baseball</button></li>
-      </ul>
-    </li>
-    <li><button class="boton-categoria toggle-submenu">Used</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" id="used-basketball">Basketball</button></li>
-        <li><button class="boton-categoria" id="used-pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" id="used-baseball">Baseball</button></li>
-      </ul>
-    </li>
-    <li><button class="boton-categoria" id="handmade">Handmade</button></li>
+    <!-- New -->
+
     <li class="cart-button-container">
       <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
     </li>
@@ -309,13 +296,8 @@ document.getElementById("cart-acciones-buy").onclick = () => {
   window.location.href = "card-charge.html";
 };
 
-// Submenu toggle
-document.querySelectorAll(".toggle-submenu").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const submenu = btn.nextElementSibling;
-    submenu.style.display = submenu.style.display==="block"?"none":"block";
-  });
-});
+
+
 
 actualizarCarrito();
 </script>

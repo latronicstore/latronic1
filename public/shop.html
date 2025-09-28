@@ -229,7 +229,10 @@
     color:#fff;
     cursor:pointer;
   }
-  
+
+.stock{
+  color: rgba(255, 0, 0, 0.801);
+}
 </style>
 
 
@@ -324,9 +327,9 @@
       
     </div>
     <h2 id="modal-titulo" style="margin:10px 0;"></h2>
-    <p id="modal-descripcion" style="margin:5px 0;"></p>
+    <p id="modal-description" style="margin:5px 0;"></p>
     <p id="modal-price" style="margin:5px 0;font-size:20px;color:#e28f2f;font-weight:bold;"></p>
-    <p id="modal-stock" style="margin:5px 0;"></p>
+    <p id="modal-stock" style="margin:5px 0; font-size:20px;color:rgba(255, 0, 0, 0.801);font-weight:bold;"></p>
   </div>
 </div>
 
@@ -339,57 +342,91 @@ document.addEventListener("DOMContentLoaded", () => {
   const productosDefault = [
 
 // New items of Basketball
-  { id:"new-p1", titulo:"Lebron James 50k points 2024-25", imagenes:["./img/new/basketballnew/50kJamesLebron.jpg", "./img/new/basketballnew/50kJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, descripcion:"Lebron James 50k points, year: 2024-2025, Beckett 9.5 Mint" },
+  { id:"new-p1", titulo:"Lebron James 50k points 2024-25", imagenes:["./img/new/basketballnew/50kJamesLebron.jpg", "./img/new/basketballnew/50kJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James 50k points, year: 2024-2025, Beckett 9.5 Mint" },
 
-  { id:"new-p2", titulo:"Bronny James Jr. 2025", imagenes:["./img/new/basketballnew/BronniJames.jpg", "./img/new/basketballnew/BronniJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, descripcion:"Bronny James Jr., year: 2025" },
+  { id:"new-p2", titulo:"Bronny James Jr. 2025", imagenes:["./img/new/basketballnew/BronniJames.jpg", "./img/new/basketballnew/BronniJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Bronny James Jr., year: 2025" },
 
-  { id:"new-p3", titulo:"Carmelo Anthony, Olympics Games 2016 Rio 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyOlympics2016.jpg", "./img/new/basketballnew/CarmeloAnthonyOlympicBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, descripcion:"Carmelo Anthony, Olympics Games 2016 Rio, year: 2024" },
+  { id:"new-p3", titulo:"Carmelo Anthony, Olympics Games 2016 Rio 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyOlympics2016.jpg", "./img/new/basketballnew/CarmeloAnthonyOlympicBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Carmelo Anthony, Olympics Games 2016 Rio, year: 2024" },
 
-  { id:"new-p4", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesDONRUSS2018.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, descripcion:"Lebron James DONRUSS PSA: Mint 9, year: 2018, card#: 94" },
+  { id:"new-p4", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesDONRUSS2018.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James DONRUSS PSA: Mint 9, year: 2018, card#: 94" },
 
-  { id:"new-p5", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesDONRUSSoptic2019.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSopticback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, descripcion:"Lebron James DONRUSS Optic, PSA: Mint 8, year: 2019, card#: 60" },
+  { id:"new-p5", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesDONRUSSoptic2019.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSopticback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, description:"Lebron James DONRUSS Optic, PSA: Mint 8, year: 2019, card#: 60" },
 
-  { id:"new-p6", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesHoops2019.jpeg", "./img/new/basketballnew/LebronJamesHoopsback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, descripcion:"Lebron James Hoops, PSA: Mint 9, year: 2019, card#: 87" },
+  { id:"new-p6", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesHoops2019.jpeg", "./img/new/basketballnew/LebronJamesHoopsback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James Hoops, PSA: Mint 9, year: 2019, card#: 87" },
 
-  { id:"new-p7", titulo:"Lebron James MVP 2019", imagenes:["./img/new/basketballnew/LebronJamesMVP2019.jpeg", "./img/new/basketballnew/LebronJamesMVPback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:2, price:150, descripcion:"Lebron James Mosaic, PSA: Mint 9, year: 2019, card#: 298" },
+  { id:"new-p7", titulo:"Lebron James MVP 2019", imagenes:["./img/new/basketballnew/LebronJamesMVP2019.jpeg", "./img/new/basketballnew/LebronJamesMVPback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:2, price:150, description:"Lebron James Mosaic, PSA: Mint 9, year: 2019, card#: 298" },
 
-  { id:"new-p8", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesPRIZM2018.jpeg", "./img/new/basketballnew/LebronJamesPrizmback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, descripcion:"Lebron James PRIZM, PSA: Mint 8, year: 2018, card#: 6" },
+  { id:"new-p8", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesPRIZM2018.jpeg", "./img/new/basketballnew/LebronJamesPrizmback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, description:"Lebron James PRIZM, PSA: Mint 8, year: 2018, card#: 6" },
 
-  { id:"new-p9", titulo:"Michael Jordan 1993", imagenes:["./img/new/basketballnew/MichaelJordan1993.jpeg", "./img/new/basketballnew/MichaelJordan1993Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:200, descripcion:"Michael Jordan Fleer, PSA: Mint 7, year: 1993, card#: 224" },
+  { id:"new-p9", titulo:"Michael Jordan 1993", imagenes:["./img/new/basketballnew/MichaelJordan1993.jpeg", "./img/new/basketballnew/MichaelJordan1993Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:200, description:"Michael Jordan Fleer, PSA: Mint 7, year: 1993, card#: 224" },
 
-  { id:"new-p10", titulo:"Carmelo Anthony All-Star 2011 Memorabilia", imagenes:["./img/new/basketballnew/CarmeloAnthonyAllStar2011.jpeg", "./img/new/basketballnew/CarmeloAnthonyAllStarBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, descripcion:"Carmelo Anthony All-Star Memorabilia by Panini, year: 2011" },
+  { id:"new-p10", titulo:"Carmelo Anthony All-Star 2011 Memorabilia", imagenes:["./img/new/basketballnew/CarmeloAnthonyAllStar2011.jpeg", "./img/new/basketballnew/CarmeloAnthonyAllStarBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Carmelo Anthony All-Star Memorabilia by Panini, year: 2011" },
 
-  { id:"new-p11", titulo:"Allen Iverson 2002 Memorabilia", imagenes:["./img/new/basketballnew/AllenIverson2002.jpeg", "./img/new/basketballnew/AllenIverson2002Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:120, descripcion:"Allen Iverson game 76ERS vs. Bucks Memorabilia by Fleer, year: 2002" },
+  { id:"new-p11", titulo:"Allen Iverson 2002 Memorabilia", imagenes:["./img/new/basketballnew/AllenIverson2002.jpeg", "./img/new/basketballnew/AllenIverson2002Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:120, description:"Allen Iverson game 76ERS vs. Bucks Memorabilia by Fleer, year: 2002" },
 
-  { id:"new-p12", titulo:"Carmelo Anthony True Colors 2014", imagenes:["./img/new/basketballnew/CarmeloAnthony2014Prestige.jpeg", "./img/new/basketballnew/CarmeloAnthony2014Prestige2.jpeg", "./img/new/basketballnew/CarmeloAnthonyPrestigeBack2.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:130, descripcion:"Carmelo Anthony True Colors Prestige by Panini, year: 2014" },
+  { id:"new-p12", titulo:"Carmelo Anthony True Colors 2014", imagenes:["./img/new/basketballnew/CarmeloAnthony2014Prestige.jpeg", "./img/new/basketballnew/CarmeloAnthony2014Prestige2.jpeg", "./img/new/basketballnew/CarmeloAnthonyPrestigeBack2.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:130, description:"Carmelo Anthony True Colors Prestige by Panini, year: 2014" },
 
-  { id:"new-p13", titulo:"Kobe BryantMVP 2001", imagenes:["./img/new/basketballnew/KobeBryan2001MVP.jpeg", "./img/new/basketballnew/KobeBryan2001Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:50, descripcion:"Kobe Bryant MVP, year: 2001" },
+  { id:"new-p13", titulo:"Kobe BryantMVP 2001", imagenes:["./img/new/basketballnew/KobeBryan2001MVP.jpeg", "./img/new/basketballnew/KobeBryan2001Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:50, description:"Kobe Bryant MVP, year: 2001" },
 
-  { id:"new-p14", titulo:"Carmelo Anthony McDonald's All American 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyMcDOnalds2024.jpeg", "./img/new/basketballnew/CarmeloAnthonyMcDonaldsBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Carmelo Anthony McDonald's All American Topps Chrome, year: 2024" },
+  { id:"new-p14", titulo:"Carmelo Anthony McDonald's All American 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyMcDOnalds2024.jpeg", "./img/new/basketballnew/CarmeloAnthonyMcDonaldsBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Carmelo Anthony McDonald's All American Topps Chrome, year: 2024" },
 
-  { id:"new-p15", titulo:"Kyshawn George Signature 2024-25", imagenes:["./img/new/basketballnew/ShawnGeorge2024.jpeg", "./img/new/basketballnew/KyshawnGeorgeBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:60, descripcion:"Kyshawn George Autograph Panini, year: 2024" },
+  { id:"new-p15", titulo:"Kyshawn George Signature 2024-25", imagenes:["./img/new/basketballnew/ShawnGeorge2024.jpeg", "./img/new/basketballnew/KyshawnGeorgeBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:60, description:"Kyshawn George Autograph Panini, year: 2024" },
 
-  { id:"new-p16", titulo:"Rajon Rondon 2017-18", imagenes:["./img/new/basketballnew/RajonRondon2017.jpeg", "./img/new/basketballnew/RajonRondonBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, descripcion:"Rajon Rondon Prestige Panini, year: 2017-18" },
+  { id:"new-p16", titulo:"Rajon Rondon 2017-18", imagenes:["./img/new/basketballnew/RajonRondon2017.jpeg", "./img/new/basketballnew/RajonRondonBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, description:"Rajon Rondon Prestige Panini, year: 2017-18" },
 
-  { id:"new-p17", titulo:"Kawhi Leonard 2021-22", imagenes:["./img/new/basketballnew/KawhiLeonard2021.jpeg", "./img/new/basketballnew/KawhiLeonard2021Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Kawhi Leonard, year: 2021-22" },
+  { id:"new-p17", titulo:"Kawhi Leonard 2021-22", imagenes:["./img/new/basketballnew/KawhiLeonard2021.jpeg", "./img/new/basketballnew/KawhiLeonard2021Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Kawhi Leonard, year: 2021-22" },
 
-  { id:"new-p18", titulo:"Anthony Edwards Holo 2024-25", imagenes:["./img/new/basketballnew/AnthonyEdwards2024.jpeg", "./img/new/basketballnew/AnthonyEdward2024Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:25, descripcion:"Anthony Edwards Prizm Holo, year: 2024-25" },
+  { id:"new-p18", titulo:"Anthony Edwards Holo 2024-25", imagenes:["./img/new/basketballnew/AnthonyEdwards2024.jpeg", "./img/new/basketballnew/AnthonyEdward2024Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:25, description:"Anthony Edwards Prizm Holo, year: 2024-25" },
 
-  { id:"new-p19", titulo:"Malik Monk Rookie Memorabilia 2019", imagenes:["./img/new/basketballnew/MalikMonk2019.jpeg", "./img/new/basketballnew/MalikMonk2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, descripcion:"Malik Monk Rookie Memorabilia, year: 2019-20" },
+  { id:"new-p19", titulo:"Malik Monk Rookie Memorabilia 2019", imagenes:["./img/new/basketballnew/MalikMonk2019.jpeg", "./img/new/basketballnew/MalikMonk2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Malik Monk Rookie Memorabilia, year: 2019-20" },
 
-  { id:"new-p20", titulo:"Jordan Mickey Memorabilia 2015-16", imagenes:["./img/new/basketballnew/JordanMickey2015.jpeg", "./img/new/basketballnew/JordanMickey2015Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:45, descripcion:"Jordan Mickey Memorabilia, year: 2015-16" },
+  { id:"new-p20", titulo:"Jordan Mickey Memorabilia 2015-16", imagenes:["./img/new/basketballnew/JordanMickey2015.jpeg", "./img/new/basketballnew/JordanMickey2015Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:45, description:"Jordan Mickey Memorabilia, year: 2015-16" },
 
-  { id:"new-p21", titulo:"Kevin Durant 2019-20", imagenes:["./img/new/basketballnew/KevinDurant2019.jpeg", "./img/new/basketballnew/KevinDurant2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Kevin Durant, year: 2019-20" },
+  { id:"new-p21", titulo:"Kevin Durant 2019-20", imagenes:["./img/new/basketballnew/KevinDurant2019.jpeg", "./img/new/basketballnew/KevinDurant2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Kevin Durant, year: 2019-20" },
 
-  { id:"new-p22", titulo:"Dwyane Wade 2018-19", imagenes:["./img/new/basketballnew/DwyaneWade2018.jpeg", "./img/new/basketballnew/DwayeWade2018-19Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Dwyane Wade, year: 2018-19" },
+  { id:"new-p22", titulo:"Dwyane Wade 2018-19", imagenes:["./img/new/basketballnew/DwyaneWade2018.jpeg", "./img/new/basketballnew/DwayeWade2018-19Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Dwyane Wade, year: 2018-19" },
 
-  { id:"new-p23", titulo:"Derrik Rose 2018-19", imagenes:["./img/new/basketballnew/DerrikRose2018.jpeg", "./img/new/basketballnew/DerrikRose2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, descripcion:"Derrik Rose DONRUSS, year: 2018-19" },
+  { id:"new-p23", titulo:"Derrik Rose 2018-19", imagenes:["./img/new/basketballnew/DerrikRose2018.jpeg", "./img/new/basketballnew/DerrikRose2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, description:"Derrik Rose DONRUSS, year: 2018-19" },
 
-  { id:"new-p24", titulo:"Allen Iverson 2018-19", imagenes:["./img/new/basketballnew/AllenIverson2018.jpeg", "./img/new/basketballnew/AllenIverson2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, descripcion:"Allen Iverson, year: 2018-19" },
+  { id:"new-p24", titulo:"Allen Iverson 2018-19", imagenes:["./img/new/basketballnew/AllenIverson2018.jpeg", "./img/new/basketballnew/AllenIverson2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Allen Iverson, year: 2018-19" },
 
 
   // New items of Baseball
+  { id:"baseball-p1", titulo:"Babe Ruth 1934 All star team 1994", imagenes:["./img/new/baseballnew/BabeRuth1994.jpeg", "./img/new/baseballnew/BabeRuth1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Babe Ruth All star team 1934, year: 1994" },
 
+  { id:"baseball-p2", titulo:"Victor Diaz signature 2004", imagenes:["./img/new/baseballnew/VictorDiazSignature2004.jpeg", "./img/new/baseballnew/VictorDiazSignatureBack.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:40, description:"Victor Diaz Signature, year: 2004" },
+
+  { id:"baseball-p3", titulo:"Yadier Molina 2024", imagenes:["./img/new/baseballnew/YadierMolina2024.jpeg", "./img/new/baseballnew/YadierMolina2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Yadier Molina St. Louis, year: 2024" },
+
+  { id:"baseball-p4", titulo:"Alex Rodriguez 2024", imagenes:["./img/new/baseballnew/AlexRodriguez2024.jpeg", "./img/new/baseballnew/AlexRodriguezBack2024.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:20, description:"Alex Rodriguez New York Yankees, year: 2024" },
+
+  { id:"baseball-p5", titulo:"Chris Gomez 1995", imagenes:["./img/new/baseballnew/ChrisGomez1995.jpeg", "./img/new/baseballnew/ChrisGomez1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Chris Gomez, year: 1995" },
+
+  { id:"baseball-p6", titulo:"Joe Jackson 1912, 2024", imagenes:["./img/new/baseballnew/JoeJackson2024.jpeg", "./img/new/baseballnew/JoeJackson2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Joe Jackson 1912, year: 2024" },
+
+  { id:"baseball-p7", titulo:"Eduardo Perez 1995", imagenes:["./img/new/baseballnew/EduardoPerez1995.jpeg", "./img/new/baseballnew/EduardoPerez1995back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Eduardo Perez, year: 1995" },
+
+  { id:"baseball-p8", titulo:"Albert Belle 1995", imagenes:["./img/new/baseballnew/AlbertBelle1995.jpeg", "./img/new/baseballnew/AlbertBelle1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Albert Belle 2 of 12, year: 1995" },
+
+  { id:"baseball-p9", titulo:"Michael Jordan 1994", imagenes:["./img/new/baseballnew/MichaelJordan1994.jpeg", "./img/new/baseballnew/MichaelJordan1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:20, description:"Michael Jordan, year: 1994" },
+
+  { id:"baseball-p10", titulo:"Armando Benitez 1995", imagenes:["./img/new/baseballnew/ArmandoBenitez1995.jpeg", "./img/new/baseballnew/ArmandoBenitez1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:2, price:10, description:"Armando Benitez, year: 1995" },
+
+  { id:"baseball-p11", titulo:"Roberto Alomar 1993", imagenes:["./img/new/baseballnew/RobertoAlomar1993.jpeg", "./img/new/baseballnew/RobertoAlomar1993Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Roberto Alomar, year: 1993" },
+
+  { id:"baseball-p12", titulo:"Tom Pagnozzi 1995", imagenes:["./img/new/baseballnew/TomPagnozzi1995.jpeg", "./img/new/baseballnew/TomPagnozzi1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Tom Pagnozzi Holo, year: 1995" },
+
+  { id:"baseball-p13", titulo:"Ruben Rivera 1994", imagenes:["./img/new/baseballnew/RubenRivera1994.jpeg", "./img/new/baseballnew/RubenRivera1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Ruben Rivera, year: 1994" },
+
+  { id:"baseball-p14", titulo:"National League 2025", imagenes:["./img/new/baseballnew/NationalLeague2025.jpeg", "./img/new/baseballnew/NationalLeague2025Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"National League, year: 2025" },
+
+  { id:"baseball-p15", titulo:"Robin Ventura 2024", imagenes:["./img/new/baseballnew/RobinVentura2024.jpeg", "./img/new/baseballnew/RobinVentura2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:12, description:"Robin Ventura, year: 2024" },
+
+  { id:"baseball-p16", titulo:"Yanquiel Fernandez 2024", imagenes:["./img/new/baseballnew/YanquielFernandez2024.jpeg", "./img/new/baseballnew/YanquielFernandez2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Yanquiel Fernandez, year: 2024" },
+
+  { id:"baseball-p17", titulo:"Eury Perez 2024", imagenes:["./img/new/baseballnew/EuryPerez2024.jpeg", "./img/new/baseballnew/EuryPerez2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Eury Perez, year: 2024" },
+
+  { id:"baseball-p18", titulo:"Omar Vizquel 2024", imagenes:["./img/new/baseballnew/OmarVizquel2024.jpeg", "./img/new/baseballnew/OmarVizquel2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Omar Vizquel, year: 2024" },
 
   // New items of Football
 
@@ -408,98 +445,98 @@ document.addEventListener("DOMContentLoaded", () => {
   // New items of Boxing
 
   // New items of Pokemon
-  { id:"p1", titulo:"Machamp V Japanese 2022", imagenes:["./img/new/pokemonnew/machampV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion:"Machamp V Japanase, year: 2022,  Card#: 072/067, series Name: Sword & Shield Time Gazer Japanese)" },
+  { id:"p1", titulo:"Machamp V Japanese 2022", imagenes:["./img/new/pokemonnew/machampV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description:"Machamp V Japanese, year: 2022,  Card#: 072/067, series Name: Sword & Shield Time Gazer Japanese)" },
   
-  { id:"p2", titulo:"Misty's Staryu 1999", imagenes:["./img/new/pokemonnew/mistystaryu1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion:"Misty's Staryu, year: 2000,  Card#: 90, series Name: Gym Heroes)" },
+  { id:"p2", titulo:"Misty's Staryu 1999", imagenes:["./img/new/pokemonnew/mistystaryu1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description:"Misty's Staryu, year: 2000,  Card#: 90, series Name: Gym Heroes)" },
 
-  { id:"p3", titulo:"Kadabra 1999", imagenes:["./img/new/pokemonnew/kadabra1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Kadabra, year: 1999,  Card#: 32, series Name: Base Unlimited (Shadow)" },
+  { id:"p3", titulo:"Kadabra 1999", imagenes:["./img/new/pokemonnew/kadabra1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kadabra, year: 1999,  Card#: 32, series Name: Base Unlimited (Shadow)" },
 
-  { id:"p4", titulo:"Ivysaur 1999", imagenes:["./img/new/pokemonnew/ivysaur1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Ivysaur, year: 1999,  Card#: 30, series Name: Base Unlimited (Shadow)" },
+  { id:"p4", titulo:"Ivysaur 1999", imagenes:["./img/new/pokemonnew/ivysaur1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Ivysaur, year: 1999,  Card#: 30, series Name: Base Unlimited (Shadow)" },
 
-  { id:"p5", titulo:"Starmie 2004", imagenes:["./img/new/pokemonnew/starmie2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Starmie, year: 2004,  Card#: 49, series Name:Hidden Legends" },
+  { id:"p5", titulo:"Starmie 2004", imagenes:["./img/new/pokemonnew/starmie2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Starmie, year: 2004,  Card#: 49, series Name:Hidden Legends" },
   
-  { id:"p6", titulo:"Rapid Strike Urshifu VMAX 2021 Japanese", imagenes:["./img/new/pokemonnew/rapidstrikeurshifuVmax2021.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:2, price:15, descripcion: "Rapid Strike Urshifu VMAX Japanese, year: 2021,  Card#: 51, series Name: Pokemon Japanese Sword & Shield Rapid Strike Master" },
+  { id:"p6", titulo:"Rapid Strike Urshifu VMAX 2021 Japanese", imagenes:["./img/new/pokemonnew/rapidstrikeurshifuVmax2021.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:2, price:15, description: "Rapid Strike Urshifu VMAX Japanese, year: 2021,  Card#: 51, series Name: Pokemon Japanese Sword & Shield Rapid Strike Master" },
 
-  { id:"p7", titulo:"Kakuna 1999", imagenes:["./img/new/pokemonnew/kakuna1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Kakuna, year: 1999,  Card#: 33, series Name: Base Unlimited (Shadow)" },
+  { id:"p7", titulo:"Kakuna 1999", imagenes:["./img/new/pokemonnew/kakuna1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kakuna, year: 1999,  Card#: 33, series Name: Base Unlimited (Shadow)" },
 
-  { id:"p8", titulo:"Kleavor V Japanese 2022", imagenes:["./img/new/pokemonnew/kleavorV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Kleavor V Japanese, year: 2022,  Card#: 073/067, series Name:Sword & Shield Space Juggler Japanese" },
+  { id:"p8", titulo:"Kleavor V Japanese 2022", imagenes:["./img/new/pokemonnew/kleavorV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Kleavor V Japanese, year: 2022,  Card#: 073/067, series Name:Sword & Shield Space Juggler Japanese" },
 
-  { id:"p9", titulo:"Butterfree 2000", imagenes:["./img/new/pokemonnew/butterfree1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Butterfree, year: 2000,  Card#: 34, series Name:Base Set 2" },
+  { id:"p9", titulo:"Butterfree 2000", imagenes:["./img/new/pokemonnew/butterfree1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Butterfree, year: 2000,  Card#: 34, series Name:Base Set 2" },
   
-  { id:"p10", titulo:"Dragonair 2000", imagenes:["./img/new/pokemonnew/dragonair1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, descripcion: "Dragonair, year: 2000,  Card#: 22, series Name:Base Set 2" },
+  { id:"p10", titulo:"Dragonair 2000", imagenes:["./img/new/pokemonnew/dragonair1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, description: "Dragonair, year: 2000,  Card#: 22, series Name:Base Set 2" },
  
-  { id:"p11", titulo:"Digglet Holo 2004", imagenes:["./img/new/pokemonnew/diglett2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, descripcion: "Digglet Holo, year: 2004,  Card#: 61, series Name:FireRed & LeafGreen" },
+  { id:"p11", titulo:"Digglet Holo 2004", imagenes:["./img/new/pokemonnew/diglett2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, description: "Digglet Holo, year: 2004,  Card#: 61, series Name:FireRed & LeafGreen" },
 
-  { id:"p12", titulo:"Jynx 1999", imagenes:["./img/new/pokemonnew/jynx1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Jynx, year: 1999,  Card#: 31, series Name:Base Unlimited (Shadow)" },
+  { id:"p12", titulo:"Jynx 1999", imagenes:["./img/new/pokemonnew/jynx1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Jynx, year: 1999,  Card#: 31, series Name:Base Unlimited (Shadow)" },
 
-  { id:"p13", titulo:"Dratini 1999", imagenes:["./img/new/pokemonnew/dratini1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Dratini, year: 1999,  Card#: 26, series Name:Base Unlimited (Shadow)" },
+  { id:"p13", titulo:"Dratini 1999", imagenes:["./img/new/pokemonnew/dratini1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Dratini, year: 1999,  Card#: 26, series Name:Base Unlimited (Shadow)" },
 
-  { id:"p14", titulo:"Blaine's Dodrio 2000", imagenes:["./img/new/pokemonnew/blainesdodrio1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, descripcion: "Blaine's Dodrio, year: 2000,  Card#: 32, series Name: Gym Challenge" },
+  { id:"p14", titulo:"Blaine's Dodrio 2000", imagenes:["./img/new/pokemonnew/blainesdodrio1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Blaine's Dodrio, year: 2000,  Card#: 32, series Name: Gym Challenge" },
 
-  { id:"p15", titulo:"Iron Boulder ex Japanese 2024", imagenes:["./img/new/pokemonnew/ironboulderEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Iron Boulder ex Japanese, year: 2024,  Card#: 100, Series Name: Scarlet & Violet Cyber Judge Japanese" },
+  { id:"p15", titulo:"Iron Boulder ex Japanese 2024", imagenes:["./img/new/pokemonnew/ironboulderEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Iron Boulder ex Japanese, year: 2024,  Card#: 100, Series Name: Scarlet & Violet Cyber Judge Japanese" },
 
-  { id:"p16", titulo:"Iron Hands ex 2024", imagenes:["./img/new/pokemonnew/ironhandsEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Iron Boulder ex Japanese, year: 2024,  Card#: 54, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
+  { id:"p16", titulo:"Iron Hands ex 2024", imagenes:["./img/new/pokemonnew/ironhandsEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Iron Boulder ex Japanese, year: 2024,  Card#: 54, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
 
-  { id:"p17", titulo:"Beedrill 1999", imagenes:["./img/new/pokemonnew/beedrill1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, descripcion: "Beedrill, year: 1999,  Card#: 21, Series Name: Base Set 2" },
+  { id:"p17", titulo:"Beedrill 1999", imagenes:["./img/new/pokemonnew/beedrill1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Beedrill, year: 1999,  Card#: 21, Series Name: Base Set 2" },
 
-  { id:"p20", titulo:"Misty's Seel 2000", imagenes:["./img/new/pokemonnew/mistyseel1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Misty's Seel, year: 2000  Card#: 21, Series Name: Gym Heroes" },
+  { id:"p20", titulo:"Misty's Seel 2000", imagenes:["./img/new/pokemonnew/mistyseel1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Misty's Seel, year: 2000  Card#: 21, Series Name: Gym Heroes" },
 
-  { id:"p21", titulo:"Light Golduck 2002", imagenes:["./img/new/pokemonnew/lightgolduck.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, descripcion: "Light Golduck, year: 2002  Card#: 47, Series Name: Neo Destiny" },
+  { id:"p21", titulo:"Light Golduck 2002", imagenes:["./img/new/pokemonnew/lightgolduck.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Light Golduck, year: 2002  Card#: 47, Series Name: Neo Destiny" },
 
-  { id:"p22", titulo:"Ninetales ex 2023", imagenes:["./img/new/pokemonnew/NineTalesEx2023.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:3, price:14, descripcion: "Ninetales ex, year: 2023, Card#:38 , Series Name: 151" },
+  { id:"p22", titulo:"Ninetales ex 2023", imagenes:["./img/new/pokemonnew/NineTalesEx2023.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:3, price:14, description: "Ninetales ex, year: 2023, Card#:38 , Series Name: 151" },
 
-  { id:"p23", titulo:"Pikachu Japanese 2024 PSA 7.5 near mint ", imagenes:["./img/new/pokemonnew/pikachuPSA7.5.jpg", "./img/new/pokemonnew/PikachubackJapanesePSA.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:70, descripcion: "Pikachu Japanese PSA 7.5 near mint , year: 2024, Card#: 197/SV-P , Series Name: s~Scarlet & Violet Scarlet & Violet Promos Japanese" },
+  { id:"p23", titulo:"Pikachu Japanese 2024 PSA 7.5 near mint ", imagenes:["./img/new/pokemonnew/pikachuPSA7.5.jpg", "./img/new/pokemonnew/PikachubackJapanesePSA.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:70, description: "Pikachu Japanese PSA 7.5 near mint , year: 2024, Card#: 197/SV-P , Series Name: s~Scarlet & Violet Scarlet & Violet Promos Japanese" },
 
-  { id:"p24", titulo:"Eevee Holo 2024", imagenes:["./img/new/pokemonnew/EeveeHolo2024.jpg", "./img/new/pokemonnew/pokemonback2.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Eevee Holo, year: 2024, Card#: 135 , Series Name: 1Twilight Masquerade" },
+  { id:"p24", titulo:"Eevee Holo 2024", imagenes:["./img/new/pokemonnew/EeveeHolo2024.jpg", "./img/new/pokemonnew/pokemonback2.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Eevee Holo, year: 2024, Card#: 135 , Series Name: 1Twilight Masquerade" },
 
-  { id:"p25", titulo:"Loudred Holo Japanese 2023", imagenes:["./img/new/pokemonnew/LoudredJapanese.jpg", "./img/new/pokemonnew/LoudreBackJapanese.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, descripcion: "Loudred Holo Japanese, year: 2023, Card#: 078/066 , Series Name: Scarlet & Violet Ancient Roar Japanese" },
+  { id:"p25", titulo:"Loudred Holo Japanese 2023", imagenes:["./img/new/pokemonnew/LoudredJapanese.jpg", "./img/new/pokemonnew/LoudreBackJapanese.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Loudred Holo Japanese, year: 2023, Card#: 078/066 , Series Name: Scarlet & Violet Ancient Roar Japanese" },
 
-  { id:"p26", titulo:"Plusle Holo 2023", imagenes:["./img/new/pokemonnew/PlusleHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"] , categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, descripcion: "Plusle Holo, year: 2023, Card#: 60 , Series Name: Paradox Rift" },
+  { id:"p26", titulo:"Plusle Holo 2023", imagenes:["./img/new/pokemonnew/PlusleHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"] , categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Plusle Holo, year: 2023, Card#: 60 , Series Name: Paradox Rift" },
   
-  { id:"p27", titulo:"Thundurus Holo corners 2023", imagenes:["./img/new/pokemonnew/Thundurus2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, descripcion: "Thundurus Holo corners, year: 2023, Card#: 70 , Series Name: Obsidian Flames" },
+  { id:"p27", titulo:"Thundurus Holo corners 2023", imagenes:["./img/new/pokemonnew/Thundurus2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Thundurus Holo corners, year: 2023, Card#: 70 , Series Name: Obsidian Flames" },
 
-  { id:"p28", titulo:"Miraidon Holo corners 2023", imagenes:["./img/new/pokemonnew/Miraidon2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Miraidon Holo corners, year: 2023, Card#: 80 , Series Name: Scarlet & Violet" },
+  { id:"p28", titulo:"Miraidon Holo corners 2023", imagenes:["./img/new/pokemonnew/Miraidon2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Miraidon Holo corners, year: 2023, Card#: 80 , Series Name: Scarlet & Violet" },
 
-  { id:"p29", titulo:"Machop 2023", imagenes:["./img/new/pokemonnew/Machop2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Machop, year: 2023, Card#: 66 , Series Name: 151" },
+  { id:"p29", titulo:"Machop 2023", imagenes:["./img/new/pokemonnew/Machop2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Machop, year: 2023, Card#: 66 , Series Name: 151" },
 
-  { id:"p30", titulo:"Trainer Teammates 2015", imagenes:["./img/new/pokemonnew/trainerTeamMates2015.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Trainer Teammates, year: 2015, Card#: 141 , Series Name: Primal Clash" },
+  { id:"p30", titulo:"Trainer Teammates 2015", imagenes:["./img/new/pokemonnew/trainerTeamMates2015.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Trainer Teammates, year: 2015, Card#: 141 , Series Name: Primal Clash" },
   
-  { id:"p31", titulo:"Mankey 2023", imagenes:["./img/new/pokemonnew/Mankey2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, descripcion: "Mankey, year: 2023, Card#: 106 , Series Name: Paldea Envolved" },
+  { id:"p31", titulo:"Mankey 2023", imagenes:["./img/new/pokemonnew/Mankey2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Mankey, year: 2023, Card#: 106 , Series Name: Paldea Envolved" },
 
-  { id:"p32", titulo:"Charmander 1999", imagenes:["./img/new/pokemonnew/Charmander1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, descripcion: "Charmander, year: 1999, Card#: 46 , Series Name: Base Unlimited (SHadow)" },
+  { id:"p32", titulo:"Charmander 1999", imagenes:["./img/new/pokemonnew/Charmander1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Charmander, year: 1999, Card#: 46 , Series Name: Base Unlimited (Shadow)" },
   
-  { id:"p33", titulo:"Mr. Mime 2024", imagenes:["./img/new/pokemonnew/MrMime2024.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Mr. Mime holo, year: 2024, Card#: 63 , Series Name: Temporal Forces" },
+  { id:"p33", titulo:"Mr. Mime 2024", imagenes:["./img/new/pokemonnew/MrMime2024.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Mr. Mime holo, year: 2024, Card#: 63 , Series Name: Temporal Forces" },
 
-  { id:"p34", titulo:"Zapdos Holo Pokemon GO 2022", imagenes:["./img/new/pokemonnew/Zapdos2022.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Zapdos Holo Pokemon GO, year: 2022, Card#: 29 , Series Name: Pokemon Go" },
+  { id:"p34", titulo:"Zapdos Holo Pokemon GO 2022", imagenes:["./img/new/pokemonnew/Zapdos2022.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Zapdos Holo Pokemon GO, year: 2022, Card#: 29 , Series Name: Pokemon Go" },
 
-  { id:"p35", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, descripcion: "Black Kyurem-EX, year: 2013, Card#: 100 , Series Name: Legendary Treasures" },
+  { id:"p35", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Black Kyurem-EX, year: 2013, Card#: 100 , Series Name: Legendary Treasures" },
 
-  { id:"p36", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX20132.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, descripcion: "Black Kyurem-EX, year: 2013, Card#: 95 , Series Name: Plasma Storm" },
+  { id:"p36", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX20132.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Black Kyurem-EX, year: 2013, Card#: 95 , Series Name: Plasma Storm" },
 
-  { id:"p37", titulo:"White Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/WhiteKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, descripcion: "White Kyurem-EX, year: 2013, Card#: 96 , Series Name: Plasma Storm" },
+  { id:"p37", titulo:"White Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/WhiteKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "White Kyurem-EX, year: 2013, Card#: 96 , Series Name: Plasma Storm" },
 
-  { id:"p38", titulo:"Zacian Holo 2023", imagenes:["./img/new/pokemonnew/ZacianHolo2023.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Zacian Holo, year: 2023, Card#: 136 , Series Name: Paradox Rift" },
+  { id:"p38", titulo:"Zacian Holo 2023", imagenes:["./img/new/pokemonnew/ZacianHolo2023.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Zacian Holo, year: 2023, Card#: 136 , Series Name: Paradox Rift" },
 
-  { id:"p39", titulo:"Dark Persian 2000", imagenes:["./img/new/pokemonnew/DarkPersian2000.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, descripcion: "Dark Persian, year: 2000, Card#: 42 , Series Name: Team Rocket" },
+  { id:"p39", titulo:"Dark Persian 2000", imagenes:["./img/new/pokemonnew/DarkPersian2000.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Dark Persian, year: 2000, Card#: 42 , Series Name: Team Rocket" },
 
-  { id:"p40", titulo:"Venomoth 1999", imagenes:["./img/new/pokemonnew/Venomoth1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:30, descripcion: "Venomoth, year: 1999, Card#: 13 , Series Name: Jungle" },
+  { id:"p40", titulo:"Venomoth 1999", imagenes:["./img/new/pokemonnew/Venomoth1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:30, description: "Venomoth, year: 1999, Card#: 13 , Series Name: Jungle" },
   
-  { id:"p41", titulo:"Kingdra 2001", imagenes:["./img/new/pokemonnew/Kingdra2001.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, descripcion: "Kingdra, year: 2001, Card#: 19 , Series Name: Neon Revelation" },
+  { id:"p41", titulo:"Kingdra 2001", imagenes:["./img/new/pokemonnew/Kingdra2001.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Kingdra, year: 2001, Card#: 19 , Series Name: Neon Revelation" },
 
-  { id:"p42", titulo:"Charmander Holo 2023", imagenes:["./img/new/pokemonnew/CharmanderHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:7, descripcion: "Charmander Holo, year: 2023, Card#: 26 , Series Name: Obsidian Flames" },
+  { id:"p42", titulo:"Charmander Holo 2023", imagenes:["./img/new/pokemonnew/CharmanderHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:7, description: "Charmander Holo, year: 2023, Card#: 26 , Series Name: Obsidian Flames" },
 
-  { id:"p43", titulo:"Pikachu Holo 2017", imagenes:["./img/new/pokemonnew/PikachuHoloPromo2017.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:22, descripcion: "Pikachu Holo, year: 2023, Card#: SM04 , Series Name: SM Black Star Promos" },
+  { id:"p43", titulo:"Pikachu Holo 2017", imagenes:["./img/new/pokemonnew/PikachuHoloPromo2017.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:22, description: "Pikachu Holo, year: 2023, Card#: SM04 , Series Name: SM Black Star Promos" },
 
-  { id:"p44", titulo:"Lt. Surge's Pikachu 2000", imagenes:["./img/new/pokemonnew/LtSurge'sPikachu2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, descripcion: "Lt. Surge's Pikachu, year: 2000, Card#: 84 , Series Name: Gym Challenge" },
+  { id:"p44", titulo:"Lt. Surge's Pikachu 2000", imagenes:["./img/new/pokemonnew/LtSurge'sPikachu2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Lt. Surge's Pikachu, year: 2000, Card#: 84 , Series Name: Gym Challenge" },
 
-  { id:"p45", titulo:"Erika's Tangela 2000", imagenes:["./img/new/pokemonnew/ErikasTangela2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Erika's Tangela, year: 2000, Card#: 79 , Series Name: Gym Heroes" },
+  { id:"p45", titulo:"Erika's Tangela 2000", imagenes:["./img/new/pokemonnew/ErikasTangela2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Erika's Tangela, year: 2000, Card#: 79 , Series Name: Gym Heroes" },
 
-  { id:"p46", titulo:"Kangaskhan 2013", imagenes:["./img/new/pokemonnew/Kangaskhan2013.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, descripcion: "Kangaskhan, year: 2013, Card#: 71 , Series Name: Plasma Blast" },
+  { id:"p46", titulo:"Kangaskhan 2013", imagenes:["./img/new/pokemonnew/Kangaskhan2013.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kangaskhan, year: 2013, Card#: 71 , Series Name: Plasma Blast" },
 
 
  
   // Used items of Basketball
-  { id:"p100", titulo:"Basketball (Used)", imagenes:["./img/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, descripcion:"Balón usado en buen estado, ideal para práctica casual." },
+  { id:"p100", titulo:"Basketball (Used)", imagenes:["./img/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, description:"Balón usado en buen estado, ideal para práctica casual." },
 
     // Used items of Baseball
 
@@ -526,24 +563,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Used items of Pokemon
 // Used items
-{ id:"used-p1", titulo:"Charmeleon 1999", imagenes:["./img/used/pokemonused/charmeleon1995.jpg","./img/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:10, descripcion:"Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)" },
+{ id:"used-p1", titulo:"Charmeleon 1999", imagenes:["./img/used/pokemonused/charmeleon1995.jpg","./img/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:10, description:"Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)" },
 
-{ id:"used-p2", titulo:"Snorlax #XY179 Holo 2013 PSA 2", imagenes:["./img/used/pokemonused/snorlax2016.jpeg","./img/used/pokemonused/snorlax2016back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:18, descripcion:"Snorlax #XY179 PSA 2, year: 2013, Series Name: XY Black Star Promos" },
+{ id:"used-p2", titulo:"Snorlax #XY179 Holo 2013 PSA 2", imagenes:["./img/used/pokemonused/snorlax2016.jpeg","./img/used/pokemonused/snorlax2016back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:18, description:"Snorlax #XY179 PSA 2, year: 2013, Series Name: XY Black Star Promos" },
 
-{ id:"used-p3", titulo:"Rayquaza-GX 2018 PSA 5", imagenes:["./img/used/pokemonused/rayquaza2018.jpeg","./img/used/pokemonused/rayquazaback.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:35, descripcion:"Rayquaza-GX PSA 5, year: 2018, Series Name: Celestial Storm" },
+{ id:"used-p3", titulo:"Rayquaza-GX 2018 PSA 5", imagenes:["./img/used/pokemonused/rayquaza2018.jpeg","./img/used/pokemonused/rayquazaback.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:35, description:"Rayquaza-GX PSA 5, year: 2018, Series Name: Celestial Storm" },
 
-{ id:"used-p4", titulo:"Ivysaur 1999 Used", imagenes:["./img/used/pokemonused/ivysaur1995.jpg","./img/used/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:8, descripcion:"Ivysaur, year: 1999, Series Name: Base Unlimited (Shadow)" },
+{ id:"used-p4", titulo:"Ivysaur 1999 Used", imagenes:["./img/used/pokemonused/ivysaur1995.jpg","./img/used/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:8, description:"Ivysaur, year: 1999, Series Name: Base Unlimited (Shadow)" },
 
-{ id:"used-p5", titulo:"Weepinbell 2021 Used", imagenes:["./img/used/pokemonused/Weepinbell2021.jpg","./img/used/pokemonused/pokemondamageBack.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:4, descripcion:"Weepinbell, year: 2023, Series Name: Battle Styles" },
+{ id:"used-p5", titulo:"Weepinbell 2021 Used", imagenes:["./img/used/pokemonused/Weepinbell2021.jpg","./img/used/pokemonused/pokemondamageBack.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:4, description:"Weepinbell, year: 2023, Series Name: Battle Styles" },
 
-{ id:"used-p6", titulo:"Charizard EX Black Star Promo 2014 PSA 1 mint", imagenes:["./img/used/pokemonused/charizardEX2014PSA.jpeg","./img/used/pokemonused/charizardEX2014back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:20, descripcion:"Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos" },
+{ id:"used-p6", titulo:"Charizard EX Black Star Promo 2014 PSA 1 mint", imagenes:["./img/used/pokemonused/charizardEX2014PSA.jpeg","./img/used/pokemonused/charizardEX2014back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:20, description:"Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos" },
 
 
 // Used Basketball example
-{ id:"used-basketball1", titulo:"Basketball (Used)", imagenes:["./img/used/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, descripcion:"Balón usado en buen estado, ideal para práctica casual." },
+{ id:"used-basketball1", titulo:"Basketball (Used)", imagenes:["./img/used/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, description:"Balón usado en buen estado, ideal para práctica casual." },
 
   // More items used and new
-  { id:"p5", titulo:"1968 Playboy", imagenes:["./img/more/playboy1.jpg"], categoria:{main:"more",sub:"magazines"}, stock:1, price:5, descripcion:"Charmeleon, year: 1999,  Card#: 24, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
+  { id:"p5", titulo:"1968 Playboy", imagenes:["./img/more/playboy1.jpg"], categoria:{main:"more",sub:"magazines"}, stock:1, price:5, description:"Charmeleon, year: 1999,  Card#: 24, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
 ];
 
 // ----------------------
@@ -594,9 +631,10 @@ const modal = document.getElementById("producto-modal");
 const cerrarModal = document.getElementById("cerrar-modal");
 const modalImagen = document.getElementById("modal-imagen");
 const modalTitulo = document.getElementById("modal-titulo");
-const modalDescripcion = document.getElementById("modal-descripcion");
+const modalDescripcion = document.getElementById("modal-description");
 const modalPrice = document.getElementById("modal-price");
 const modalStock = document.getElementById("modal-stock");
+
 
 let imagenIndex = 0;
 let imagenesActuales = [];
@@ -608,7 +646,7 @@ function abrirModal(producto) {
   modal.style.display = "block";
   modalImagen.src = imagenesActuales[imagenIndex];
   modalTitulo.textContent = producto.titulo;
-  modalDescripcion.textContent = producto.descripcion;
+  modalDescripcion.textContent = producto.description;
   modalPrice.textContent = `$${producto.price}`;
   modalStock.textContent = producto.stock > 0 ? `In Stock: ${producto.stock}` : 'Out of Stock';
 }
@@ -655,6 +693,7 @@ function renderizarProductos(lista = productosFiltrados){
       ${imagenesHTML}
       <h3 style="margin:5px 0;">${producto.titulo}</h3>
       <p style="color:#e28f2f;font-weight:bold;">$${producto.price}</p>
+      <p class="stock">In stock: ${producto.stock}</p>
       <button class="agregar-carrito" ${producto.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
     `;
 
