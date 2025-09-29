@@ -533,6 +533,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   { id:"p46", titulo:"Kangaskhan 2013", imagenes:["./img/new/pokemonnew/Kangaskhan2013.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kangaskhan, year: 2013, Card#: 71 , Series Name: Plasma Blast" },
 
+  
+  //New items of Disney 
+
+    { id:"Disney-p1", titulo:"Mickey Mouse 1992 World tour", imagenes:["./img/new/disneynew/Disneytour1992.jpeg", "./img/new/disneynew/Disneytour1992Back.jpeg"], categoria:{main:"new",sub:"disney"}, stock:2, price:25, description:"Mickey Mouse 1992 World Tour, year: 1992" },
+
+
 
  
   // Used items of Basketball
@@ -814,6 +820,21 @@ hamburguesa.forEach(h => {
 // ----------------------
 actualizarContadorCarrito();
 renderizarProductos();
+
+// Scroll al producto filtrado desde carrusel
+// ----------------------
+const filtro = localStorage.getItem("filtro-producto");
+if (filtro) {
+  // esperar a que renderice los productos
+  setTimeout(() => {
+    const target = document.getElementById(filtro);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.add("highlighted");
+    }
+    localStorage.removeItem("filtro-producto");
+  }, 500); // medio segundo para dar tiempo al render
+}
 
 });
 

@@ -79,10 +79,10 @@ topProducts.forEach(p => {
     slide.classList.add("aside-carousel-slide");
     slide.innerHTML = `<img src="${p.imagenes[0]}" alt="${p.titulo}"><div>${p.titulo} - $${p.price}</div>`;
     slide.addEventListener("click", () => {
-        // Guardar id del producto en localStorage y abrir index.html
-        localStorage.setItem("filtro-producto", p.id);
-        window.location.href = "index.html";
-    });
+    localStorage.setItem("filtro-producto", p.id);
+    window.location.href = "shop.html"; // redirige al shop
+});
+
     track.appendChild(slide);
 });
 
