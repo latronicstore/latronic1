@@ -240,7 +240,8 @@ function actualizarCarrito() {
         <p>Price: $${p.price.toFixed(2)}</p>
         <p>Quantity: 
           <button class="boton-cantidad" data-id="${p.id}" data-action="minus">−</button>
-          <span>${p.quantity}</span>
+          <span>${p.quantity || 1}</span>
+
           <button class="boton-cantidad" data-id="${p.id}" data-action="plus" ${p.quantity>=productoStock?'disabled':''}>+</button>
         </p>
       </div>
@@ -271,7 +272,8 @@ function actualizarCarrito() {
     }
   });
 
-  document.getElementById("cart-count").textContent = cart.reduce((acc,p)=>acc+p.quantity,0);
+  document.getElementById("cart-count").textContent = cart.reduce((acc,p)=>acc+(p.quantity||1),0);
+
 }
 
 // Restaurar estado si ya fue seleccionado

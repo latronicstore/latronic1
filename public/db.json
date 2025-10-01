@@ -833,7 +833,7 @@
 
 
   
-  
+
   {
     "id": "Disney-p1",
     "titulo": "Mickey Mouse 1992 World tour",
@@ -848,6 +848,86 @@
     "stock": 2,
     "price": 25,
     "description": "Mickey Mouse 1992 World Tour, year: 1992"
+  },
+
+
+
+
+
+  [
+  {
+    "id": "used-p1",
+    "titulo": "Charmeleon 1999",
+    "imagenes": [
+      "./img/used/pokemonused/charmeleon1995.jpg",
+      "./img/pokemonused/backpokemon2.jpg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 10,
+    "description": "Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)"
+  },
+  {
+    "id": "used-p2",
+    "titulo": "Snorlax #XY179 Holo 2013 PSA 2",
+    "imagenes": [
+      "./img/used/pokemonused/snorlax2016.jpeg",
+      "./img/used/pokemonused/snorlax2016back.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 18,
+    "description": "Snorlax #XY179 PSA 2, year: 2013, Series Name: XY Black Star Promos"
+  },
+  {
+    "id": "used-p3",
+    "titulo": "Rayquaza-GX 2018 PSA 5",
+    "imagenes": [
+      "./img/used/pokemonused/rayquaza2018.jpeg",
+      "./img/used/pokemonused/rayquazaback.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 35,
+    "description": "Rayquaza-GX PSA 5, year: 2018, Series Name: Celestial Storm"
+  },
+  {
+    "id": "used-p4",
+    "titulo": "Ivysaur 1999 Used",
+    "imagenes": [
+      "./img/used/pokemonused/ivysaur1995.jpg",
+      "./img/used/pokemonused/backpokemon2.jpg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 8,
+    "description": "Ivysaur, year: 1999, Series Name: Base Unlimited (Shadow)"
+  },
+  {
+    "id": "used-p5",
+    "titulo": "Weepinbell 2021 Used",
+    "imagenes": [
+      "./img/used/pokemonused/Weepinbell2021.jpg",
+      "./img/used/pokemonused/pokemondamageBack.jpg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 4,
+    "description": "Weepinbell, year: 2023, Series Name: Battle Styles"
+  },
+  {
+    "id": "used-p6",
+    "titulo": "Charizard EX Black Star Promo 2014 PSA 1 mint",
+    "imagenes": [
+      "./img/used/pokemonused/charizardEX2014PSA.jpeg",
+      "./img/used/pokemonused/charizardEX2014back.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "pokemon" },
+    "stock": 1,
+    "price": 20,
+    "description": "Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos"
   }
+]
+
 
 ]

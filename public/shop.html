@@ -7,838 +7,761 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
-  body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#ffffffcb; display:flex; min-height:100vh; }
-  aside {
-    position: relative; /* o static */
-    top: auto; /* ya no necesario */
+/* --- BODY --- */
+body { 
+  margin: 0; 
+  font-family: Arial, sans-serif; 
+  background: #121212; 
+  color: #ffffffcb; 
+  display: flex; 
+  min-height: 100vh; 
 }
 
-  aside h2 { font-size:1.5rem; margin-bottom:1rem; }
-  .menu { list-style:none; padding:0; margin:0; background: #1a1a1a; }
-  .menu>li { margin-bottom:0.5rem; margin-left:1.2rem; position:relative; }
-  .boton-categoria { display:block; background:none; border:none; color:#fff; text-align:left; width:100%;  padding:0.1rem; font-size:1rem; cursor:pointer; transition: background 0.3s; text-decoration:none; border-radius:5px; }
-  .boton-categoria:hover, .boton-categoria.active { background:#e28e2fa9; color:black; border-radius:5px; }
-  
-  /* 🔹 SUBMENU OSCURO PARA HAMBURGER 🔹 */
-  .submenu { list-style:none; padding-left:0.5rem; margin:0; display:none; background-color: #1a1a1a; border-radius:5px; }
-  .submenu li { margin-bottom:0.3rem; }
-  .submenu .boton-categoria { font-size:0.9rem; color:#fff; background:none; border:none; text-align:left; width:100%; padding:0.3rem 0.5rem; cursor:pointer; }
-  .submenu .boton-categoria:hover { background:#f16413b9; color:#050505; border-radius:5px; }
-
-  .carrito{
-    background:#e28f2f;
-    border-radius:5px;
-    border-color: #1a1a1a;
-  }
-  .carrito:hover{
-    background:#f16413b9;
-  }
-
-  main { flex:1; padding:2rem; }
-  footer { text-align:center; padding:1rem 0; color:#ffffff9f; font-size:0.7rem; }
-
-  
-
-  /* 🔹 más pequeños */
-  #contenedor-productos img {
-  width: 100%;      /* que llene el ancho del contenedor */
-  max-width: 150px; /* tamaño máximo deseado */
-  height: auto;     /* mantiene la proporción */
-  object-fit: cover; /* recorta si es necesario para llenar el contenedor */
-  border-radius: 5px; /* opcional, para que se vea bonito */
+/* --- ASIDE --- */
+aside { 
+  position: relative; 
+  top: auto; 
+  z-index: 1500; 
+}
+aside h2 { 
+  font-size: 1.5rem; 
+  margin-bottom: 1rem; 
+}
+.menu { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  background: #1a1a1a; 
+}
+.menu>li { 
+  margin-bottom: 0.5rem; 
+  margin-left: 1.2rem; 
+  position: relative; 
+}
+.boton-categoria { 
+  display: block; 
+  background: none; 
+  border: none; 
+  color: #fff; 
+  text-align: left; 
+  width: 100%; 
+  padding: 0.1rem; 
+  font-size: 1rem; 
+  cursor: pointer; 
+  transition: background 0.3s; 
+  text-decoration: none; 
+  border-radius: 5px; 
+}
+.boton-categoria:hover, .boton-categoria.active { 
+  background: #e28e2fa9; 
+  color: black; 
+  border-radius: 5px; 
+}
+.submenu { 
+  list-style: none; 
+  padding-left: 0.5rem; 
+  margin: 0; 
+  display: none; 
+  background-color: #1a1a1a; 
+  border-radius: 5px; 
+  position: relative; 
+  z-index: 1501; 
+}
+.submenu li { 
+  margin-bottom: 0.3rem; 
+}
+.submenu .boton-categoria { 
+  font-size: 0.9rem; 
+  color: #fff; 
+  background: none; 
+  border: none; 
+  text-align: left; 
+  width: 100%; 
+  padding: 0.3rem 0.5rem; 
+  cursor: pointer; 
+}
+.submenu .boton-categoria:hover { 
+  background: #f16413b9; 
+  color: #050505; 
+  border-radius: 5px; 
 }
 
+/* --- CARRITO --- */
+.cart-button-container { 
+  position: relative; 
+  z-index: 2000; 
+}
+.carrito { 
+  background: #e28f2f; 
+  border-radius: 5px; 
+  border-color: #1a1a1a; 
+  position: relative; 
+  z-index: 2001; 
+  cursor: pointer;
+}
+.carrito:hover { 
+  background: #f16413b9; 
+}
 
-  .title { font-family:"Bebas Neue",sans-serif; font-size:2.5rem; text-align:center; color:#f16413b9; margin:0;}
+/* --- MAIN --- */
+main { 
+  flex: 1; 
+  padding: 2rem; 
+}
+footer { 
+  text-align: center; 
+  padding: 1rem 0; 
+  color: #ffffff9f; 
+  font-size: 0.7rem; 
+}
 
+/* --- PRODUCTOS --- */
+#contenedor-productos {
+  display: flex;           
+  flex-wrap: wrap;         
+  gap: 15px;               
+  justify-content: flex-start;
+}
+.title { 
+  font-family: "Bebas Neue", sans-serif; 
+  font-size: 2.5rem; 
+  text-align: center; 
+  color: #f16413b9; 
+  margin: 0;
+}
+#titulo-principal { 
+  transition: all 0.3s ease; 
+  text-align: center; 
+  margin: 0; 
+  font-family: "Bebas Neue", sans-serif; 
+  font-size: 2.5rem; 
+  color: #f16413b9; 
+}
+aside.active ~ main #titulo-principal { 
+  text-align: center; 
+  margin-top: 50px; 
+}
+
+.producto { 
+  flex: 0 0 120px;          
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: space-between; 
+  text-align: center; 
+  border: 1px solid #ccc; 
+  padding: 6px;            
+  margin: 0; 
+  background: #1a1a1a; 
+  border-radius: 5px; 
+  transition: transform 0.3s; 
+  overflow: hidden; 
+}
+.producto:hover { 
+  transform: scale(1.03); 
+}
+.agregar-carrito[disabled] { 
+  background: #888; 
+  color: #ccc; 
+  cursor: not-allowed; 
+  opacity: 0.7;
+  position: relative; 
+  z-index: 1; 
+}
+.agregar-carrito { 
+  background-color: #e28f2f; 
+  color: black; 
+  border: none; 
+  padding: 0.3rem 0.6rem; 
+  cursor: pointer; 
+  border-radius: 5px; 
+  transition: background 0.3s, color 0.3s; 
+  font-weight: bold; 
+  font-size: 0.8rem; 
+  margin-top: 8px; 
+}
+.agregar-carrito:hover { 
+  background-color: #f16413b9; 
+  color: #fff; 
+}
+
+/* --- SUBMENU TOGGLE --- */
+.toggle-submenu.active { 
+  background: #e28e2fa9; 
+  color: black; 
+}
+
+/* --- GALERÍA DE PRODUCTOS --- */
+.galeria { 
+  width: 100%; 
+  max-width: 120px;        
+  aspect-ratio: 1/1;       
+  margin: 0 auto 6px;      
+  position: relative; 
+  overflow: hidden;       
+  border-radius: 6px;
+}
+
+.main-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;      
+  border-radius: 6px; 
+  cursor: zoom-in; 
+  display: block;
+}
+.arrow { 
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  background: rgba(0,0,0,0.4); 
+  color: #fff; 
+  border: none; 
+  width: 24px; 
+  height: 24px; 
+  cursor: pointer; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  font-size: 16px; 
+  z-index: 10; 
+  transition: background 0.2s; 
+}
+.arrow:hover { 
+  background: rgba(0,0,0,0.7); 
+}
+.arrow.prev { left: 2px; }
+.arrow.next { right: 2px; }
+
+/* --- MODAL ZOOM --- */
+#zoom-modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.85); 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 5000; 
+}
+#zoom-modal.show { 
+  display: flex; 
+}
+#zoom-modal img { 
+  max-width: 90%; 
+  max-height: 90%; 
+  object-fit: contain; 
+  border-radius: 8px; 
+  cursor: zoom-out; 
+}
+#zoom-modal .close-btn { 
+  position: absolute; 
+  top: 15px; 
+  right: 20px; 
+  font-size: 30px; 
+  color: #fff; 
+  cursor: pointer; 
+}
+
+/* --- HAMBURGER --- */
+.hamburger {
+  display: none; 
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 30px;
+  color: #e28f2f; 
+  cursor: pointer;
+  z-index: 3000;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
   .hamburger {
-    display: none;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #e28f2f;
+    display: block;
+
+}
+   aside {
     position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 2000;
+    left: -250px;
+    top: 0;
+    height: 100%;
+    width: 200px;
+    transition: left 0.3s;
+    z-index: 1500;
+  }
+  aside.active { left: 0; }
+
+  main { padding: 1rem; }
+
+  .galeria { 
+    width: 100px; 
+    aspect-ratio: 1/1; 
+  }
+  .producto { 
+    flex: 0 0 100px;       
+    padding: 5px;
+  }
+  .arrow { width: 20px; height: 20px; font-size: 14px; }
+  #contenedor-productos { justify-content: center; }
+}
+
+.link{
+  color: #e28f2f;
+  text-decoration: none;
+}
+
+.link:hover{
+  text-decoration: underline;
+  color: whitesmoke;
   }
 
-  @media (max-width: 768px) {
-    aside {
-      position: fixed;
-      left: -250px;
-      top: 0;
-      height: 100%;
-      width: 200px;
-      transition: left 0.3s;
-      z-index: 1500;
-    }
-    aside.active { left: 0; }
-    main { padding: 1rem; }
-    .hamburger { display: block; }
+  /* --- MODAL PRODUCTO --- */
+#producto-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  z-index: 5000;
+}
 
-    /* margen paginación móvil */
-    #paginacion {
-      margin-top: 15px;
-    }
-  }
-
-  .out-of-stock {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(241, 49, 49, 0.85);
-    color: #fff;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.75rem; /* más pequeño */
-    text-transform: uppercase;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-  }
-
-  .producto {
+#producto-modal .modal-content {
   position: relative;
-  border: 1px solid #ccc;
-  padding: 8px;
-  margin: 0; /* ya no hace falta margen porque el grid usa gap */
-  display: flex;              /* mejor: flexbox interno */
-  flex-direction: column;     /* ordena título, img, botón en columna */
-  align-items: center;        /* centra contenido */
-  justify-content: space-between;
+  background: #2a2a2a;
+  padding: 15px;
+  margin: 60px auto 20px auto;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#producto-modal .modal-content img {
+  width: 80%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+#producto-modal #modal-titulo {
+  margin: 5px 0;
+  font-size: 1.1rem;
   text-align: center;
-  transition: transform 0.3s;
-  font-size: 0.85rem; /* texto más compacto */
-  background: #1a1a1a; /* opcional: para resaltar las tarjetas */
-  border-radius: 5px;
+  color: #e28f2f;
+}
+
+#producto-modal #modal-description {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #fff;
+}
+
+#producto-modal #modal-price {
+  margin: 5px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e28f2f;
+}
+
+#producto-modal #modal-stock {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: rgba(255,0,0,0.8);
+}
+
+#producto-modal #cerrar-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* --- MODAL PRODUCTO RESPONSIVE --- */
+@media (max-width:768px){
+  #producto-modal .modal-content img {
+    width: 70%;
+    max-width: 250px;
+  }
+  #producto-modal .modal-content {
+    margin-top: 80px;
+  }
+  #producto-modal #cerrar-modal {
+    font-size: 32px;
+    top: 8px;
+    right: 12px;
+  }
+}
+
+#search-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#search-input {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 2px solid #e28f2f;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+}
+
+#search-input::placeholder {
+  color: #8f8d8dbe;
+}
+
+#search-input:focus {
+  border-color: #f16413b9;
+  box-shadow: 0 0 8px #f16413b9;
 }
 
 
-  .producto:hover {
-    transform: scale(1.03);
-  }
-
-  .agregar-carrito[disabled] {
-    background: #888;
-    color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-
-  .agregar-carrito {
-    background-color: #e28f2f;
-    color: black;
-    border: none;
-    padding: 0.3rem 0.6rem; /* más pequeño */
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s, color 0.3s;
-    font-weight: bold;
-    font-size: 0.8rem; /* más compacto */
-    margin-top: 8px;
-  }
-
-  .agregar-carrito:hover {
-    background-color: #f16413b9;
-    color: #fff;
-  }
-
-  #titulo-principal {
-    transition: all 0.3s ease;
-    text-align: center;
-    margin: 0;
-    font-family: "Bebas Neue", sans-serif;
-    font-size: 2.5rem;
-    color: #f16413b9;
-  }
-
-  aside.active ~ main #titulo-principal {
-    text-align: center;
-    margin-top: 50px;
-  }
-
-  .link{
-    color: rgba(255, 0, 0, 0.726);
-  }
-
-  /* Contenedor principal de productos + paginación */
-  #productos-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Contenedor de productos */
-  #contenedor-productos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-  }
-
-  /* Paginación centrada y siempre abajo */
-  #paginacion {
-    margin-top: 40px; /* espacio hacia abajo */
-    text-align: center;
-  }
-
-  /* Botones de paginación */
-  #paginacion button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    border: 1px solid #000000;
-    color: white;
-    background-color: #e28f2f;
-    transition: background 0.2s;
-  }
-
-  #paginacion button:hover {
-    background-color: #f0f0f0;
-  }
-
-  #paginacion button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-
-  #image-modal {
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    max-width:90%;
-    max-height:90%;
-    padding:10px;
-    background:#1a1a1a;
-    border-radius:10px;
-    box-shadow:0 0 20px rgba(0,0,0,0.8);
-    z-index:3000;
-  }
-  #image-modal img {
-    width:100%;
-    height:auto;
-    object-fit:contain;
-    border-radius:5px;
-  }
-  #image-modal .close-btn {
-    position:absolute;
-    top:5px;
-    right:10px;
-    font-size:1.5rem;
-    color:#fff;
-    cursor:pointer;
-  }
-
-.stock{
-  color: rgba(255, 0, 0, 0.801);
-}
 </style>
-
-
 </head>
 <body>
-  <!-- Hamburger -->
-  <div class="hamburger">&#9776;</div>
+<div class="hamburger">&#9776;</div>
 
-  <!-- Aside / Menu lateral -->
-  <aside>
-    <h2 class="title">LaTRONIC</h2>
-    <ul class="menu">
-      <li><a class="boton-categoria" href="Home.html">Home</a></li>
+<aside>
+  <h2 class="title">LaTRONIC</h2>
+  <ul class="menu">
+    <li><a class="boton-categoria" href="Home.html">Home</a></li>
+    <li>
+      <button class="boton-categoria toggle-submenu">New</button>
+      <ul class="submenu">
+        <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
+      </ul>
+    </li>
+    <li>
+      <button class="boton-categoria toggle-submenu">Used</button>
+      <ul class="submenu">
+        <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
+      </ul>
+    </li>
+    <li>
+      <button class="boton-categoria toggle-submenu">More</button>
+      <ul class="submenu">
+        <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="souvenirs">Souvenirs</button></li>
+        <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
+      </ul>
+    </li>
+    <li class="cart-button-container">
+      <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
+      <footer>
+        <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
+        Email-latronicstore@gmail.com<br>
+        Located in Connecticut, USA<br>
+        &copy; 2024 LaTRONIC LLC. All rights reserved.
+      </footer>
+    </li>  
+  </ul>
+</aside>
 
-      <!-- New -->
-      <li>
-        <button class="boton-categoria toggle-submenu">New</button>
-        <ul class="submenu">
-          <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
-          <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
-        </ul>
-      </li>
+<main>
+  <h1 id="titulo-principal">All Products</h1>
 
-      <!-- Used -->
-      <li>
-        <button class="boton-categoria toggle-submenu">Used</button>
-        <ul class="submenu">
-          <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
-          <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
-        </ul>
-      </li>
+  <!-- Barra de búsqueda -->
+  <input type="text" id="search-input" placeholder="Search" style="width: 100%; max-width: 400px; padding: 6px; margin: 10px auto; display: block; border-radius:5px; border:none; font-size:1rem; color: rgba(112, 110, 110, 0.507);">
 
-      <!-- More -->
-      <li>
-        <button class="boton-categoria toggle-submenu">More</button>
-        <ul class="submenu">
-          <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
-          <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
-          <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
-          <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
-          <li><button class="boton-categoria" data-main="more" data-sub="souvenirs">Souvenirs</button></li>
-          <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
-        </ul>
-      </li>
+  <div id="contenedor-productos"></div>
+  <div id="paginacion"></div>
+</main>
 
-      <!-- Cart -->
-      <li class="cart-button-container">
-        <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
-        <footer>
-      <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
-      Email-latronicstore@gmail.com<br>
-      Located in Connecticut, USA<br>
-      &copy; 2024 LaTRONIC LLC. All rights reserved.
-    </footer>
-      </li>  
-    </ul>
-  </aside>
 
-  <header>
-    <div class="hamburger">☰</div>
-  </header>
-
-  <main>
-    <h1 id="titulo-principal">All Products</h1>
-    <div id="contenedor-productos"></div>
-    <div id="paginacion"></div>
-  </main>
-
-  <!-- Modal -->
-<div id="producto-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:50%;height:50%;justify-content:center;align-items:center;z-index:1000;">
-  <div class="modal-content" style="position:relative;background:#3a3939;padding:20px;max-width:700px;width:90%;border-radius:10px;display:flex;flex-direction:column;align-items:center;">
-    <span id="cerrar-modal" style="position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;">&times;</span>
-    <div style="position:relative;width:100%;display:flex;align-items:center;justify-content:center;">
-      
-      <img id="modal-imagen" src="" style="max-width:100%;max-height:500px;object-fit:contain;">
-      
-    </div>
-    <h2 id="modal-titulo" style="margin:10px 0;"></h2>
-    <p id="modal-description" style="margin:5px 0;"></p>
-    <p id="modal-price" style="margin:5px 0;font-size:20px;color:#e28f2f;font-weight:bold;"></p>
-    <p id="modal-stock" style="margin:5px 0; font-size:20px;color:rgba(255, 0, 0, 0.801);font-weight:bold;"></p>
+<!-- Modal -->
+<!-- Modal para descripción -->
+<div id="producto-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:flex-start;overflow:auto;z-index:5000;">
+  <div style="position:relative;background:#2a2a2a;padding:15px;margin:60px auto 20px auto;border-radius:10px;max-width:400px;width:90%;display:flex;flex-direction:column;align-items:center;">
+    <span id="cerrar-modal" style="position:absolute;top:10px;right:15px;font-size:28px;font-weight:bold;color:#fff;cursor:pointer;">&times;</span>
+    
+    <img id="modal-imagen" src="" style="width:80%;max-width:300px;height:auto;margin-bottom:10px;border-radius:6px;">
+    <h2 id="modal-titulo" style="margin:5px 0;font-size:1.1rem;text-align:center;color:#e28f2f;"></h2>
+    <p id="modal-description" style="margin:5px 0;font-size:0.9rem;text-align:center;color:#fff;"></p>
+    <p id="modal-price" style="margin:5px 0;font-size:1rem;font-weight:bold;color:#e28f2f;"></p>
+    <p id="modal-stock" style="margin:5px 0;font-size:0.9rem;font-weight:bold;color:rgba(255,0,0,0.8);"></p>
   </div>
 </div>
 
-
-
+<!-- Modal para zoom -->
+  <div id="zoom-modal">
+    <span class="close-btn">&times;</span>
+    <img src="" alt="Zoom">
+  </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  const productosDefault = [
-
-// New items of Basketball
-  { id:"new-p1", titulo:"Lebron James 50k points 2024-25", imagenes:["./img/new/basketballnew/50kJamesLebron.jpg", "./img/new/basketballnew/50kJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James 50k points, year: 2024-2025, Beckett 9.5 Mint" },
-
-  { id:"new-p2", titulo:"Bronny James Jr. 2025", imagenes:["./img/new/basketballnew/BronniJames.jpg", "./img/new/basketballnew/BronniJamesBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Bronny James Jr., year: 2025" },
-
-  { id:"new-p3", titulo:"Carmelo Anthony, Olympics Games 2016 Rio 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyOlympics2016.jpg", "./img/new/basketballnew/CarmeloAnthonyOlympicBack.jpg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Carmelo Anthony, Olympics Games 2016 Rio, year: 2024" },
-
-  { id:"new-p4", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesDONRUSS2018.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James DONRUSS PSA: Mint 9, year: 2018, card#: 94" },
-
-  { id:"new-p5", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesDONRUSSoptic2019.jpeg", "./img/new/basketballnew/LebronJamesDONRUSSopticback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, description:"Lebron James DONRUSS Optic, PSA: Mint 8, year: 2019, card#: 60" },
-
-  { id:"new-p6", titulo:"Lebron James 2019", imagenes:["./img/new/basketballnew/LebronJamesHoops2019.jpeg", "./img/new/basketballnew/LebronJamesHoopsback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Lebron James Hoops, PSA: Mint 9, year: 2019, card#: 87" },
-
-  { id:"new-p7", titulo:"Lebron James MVP 2019", imagenes:["./img/new/basketballnew/LebronJamesMVP2019.jpeg", "./img/new/basketballnew/LebronJamesMVPback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:2, price:150, description:"Lebron James Mosaic, PSA: Mint 9, year: 2019, card#: 298" },
-
-  { id:"new-p8", titulo:"Lebron James 2018", imagenes:["./img/new/basketballnew/LebronJamesPRIZM2018.jpeg", "./img/new/basketballnew/LebronJamesPrizmback.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:125, description:"Lebron James PRIZM, PSA: Mint 8, year: 2018, card#: 6" },
-
-  { id:"new-p9", titulo:"Michael Jordan 1993", imagenes:["./img/new/basketballnew/MichaelJordan1993.jpeg", "./img/new/basketballnew/MichaelJordan1993Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:200, description:"Michael Jordan Fleer, PSA: Mint 7, year: 1993, card#: 224" },
-
-  { id:"new-p10", titulo:"Carmelo Anthony All-Star 2011 Memorabilia", imagenes:["./img/new/basketballnew/CarmeloAnthonyAllStar2011.jpeg", "./img/new/basketballnew/CarmeloAnthonyAllStarBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:150, description:"Carmelo Anthony All-Star Memorabilia by Panini, year: 2011" },
-
-  { id:"new-p11", titulo:"Allen Iverson 2002 Memorabilia", imagenes:["./img/new/basketballnew/AllenIverson2002.jpeg", "./img/new/basketballnew/AllenIverson2002Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:120, description:"Allen Iverson game 76ERS vs. Bucks Memorabilia by Fleer, year: 2002" },
-
-  { id:"new-p12", titulo:"Carmelo Anthony True Colors 2014", imagenes:["./img/new/basketballnew/CarmeloAnthony2014Prestige.jpeg", "./img/new/basketballnew/CarmeloAnthony2014Prestige2.jpeg", "./img/new/basketballnew/CarmeloAnthonyPrestigeBack2.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:130, description:"Carmelo Anthony True Colors Prestige by Panini, year: 2014" },
-
-  { id:"new-p13", titulo:"Kobe BryantMVP 2001", imagenes:["./img/new/basketballnew/KobeBryan2001MVP.jpeg", "./img/new/basketballnew/KobeBryan2001Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:50, description:"Kobe Bryant MVP, year: 2001" },
-
-  { id:"new-p14", titulo:"Carmelo Anthony McDonald's All American 2024", imagenes:["./img/new/basketballnew/CarmeloAnthonyMcDOnalds2024.jpeg", "./img/new/basketballnew/CarmeloAnthonyMcDonaldsBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Carmelo Anthony McDonald's All American Topps Chrome, year: 2024" },
-
-  { id:"new-p15", titulo:"Kyshawn George Signature 2024-25", imagenes:["./img/new/basketballnew/ShawnGeorge2024.jpeg", "./img/new/basketballnew/KyshawnGeorgeBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:60, description:"Kyshawn George Autograph Panini, year: 2024" },
-
-  { id:"new-p16", titulo:"Rajon Rondon 2017-18", imagenes:["./img/new/basketballnew/RajonRondon2017.jpeg", "./img/new/basketballnew/RajonRondonBack.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, description:"Rajon Rondon Prestige Panini, year: 2017-18" },
-
-  { id:"new-p17", titulo:"Kawhi Leonard 2021-22", imagenes:["./img/new/basketballnew/KawhiLeonard2021.jpeg", "./img/new/basketballnew/KawhiLeonard2021Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Kawhi Leonard, year: 2021-22" },
-
-  { id:"new-p18", titulo:"Anthony Edwards Holo 2024-25", imagenes:["./img/new/basketballnew/AnthonyEdwards2024.jpeg", "./img/new/basketballnew/AnthonyEdward2024Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:25, description:"Anthony Edwards Prizm Holo, year: 2024-25" },
-
-  { id:"new-p19", titulo:"Malik Monk Rookie Memorabilia 2019", imagenes:["./img/new/basketballnew/MalikMonk2019.jpeg", "./img/new/basketballnew/MalikMonk2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:40, description:"Malik Monk Rookie Memorabilia, year: 2019-20" },
-
-  { id:"new-p20", titulo:"Jordan Mickey Memorabilia 2015-16", imagenes:["./img/new/basketballnew/JordanMickey2015.jpeg", "./img/new/basketballnew/JordanMickey2015Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:45, description:"Jordan Mickey Memorabilia, year: 2015-16" },
-
-  { id:"new-p21", titulo:"Kevin Durant 2019-20", imagenes:["./img/new/basketballnew/KevinDurant2019.jpeg", "./img/new/basketballnew/KevinDurant2019Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Kevin Durant, year: 2019-20" },
-
-  { id:"new-p22", titulo:"Dwyane Wade 2018-19", imagenes:["./img/new/basketballnew/DwyaneWade2018.jpeg", "./img/new/basketballnew/DwayeWade2018-19Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Dwyane Wade, year: 2018-19" },
-
-  { id:"new-p23", titulo:"Derrik Rose 2018-19", imagenes:["./img/new/basketballnew/DerrikRose2018.jpeg", "./img/new/basketballnew/DerrikRose2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:15, description:"Derrik Rose DONRUSS, year: 2018-19" },
-
-  { id:"new-p24", titulo:"Allen Iverson 2018-19", imagenes:["./img/new/basketballnew/AllenIverson2018.jpeg", "./img/new/basketballnew/AllenIverson2018Back.jpeg"], categoria:{main:"new",sub:"basketball"}, stock:1, price:20, description:"Allen Iverson, year: 2018-19" },
-
-
-  // New items of Baseball
-  { id:"baseball-p1", titulo:"Babe Ruth 1934 All star team 1994", imagenes:["./img/new/baseballnew/BabeRuth1994.jpeg", "./img/new/baseballnew/BabeRuth1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Babe Ruth All star team 1934, year: 1994" },
-
-  { id:"baseball-p2", titulo:"Victor Diaz signature 2004", imagenes:["./img/new/baseballnew/VictorDiazSignature2004.jpeg", "./img/new/baseballnew/VictorDiazSignatureBack.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:40, description:"Victor Diaz Signature, year: 2004" },
-
-  { id:"baseball-p3", titulo:"Yadier Molina 2024", imagenes:["./img/new/baseballnew/YadierMolina2024.jpeg", "./img/new/baseballnew/YadierMolina2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Yadier Molina St. Louis, year: 2024" },
-
-  { id:"baseball-p4", titulo:"Alex Rodriguez 2024", imagenes:["./img/new/baseballnew/AlexRodriguez2024.jpeg", "./img/new/baseballnew/AlexRodriguezBack2024.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:20, description:"Alex Rodriguez New York Yankees, year: 2024" },
-
-  { id:"baseball-p5", titulo:"Chris Gomez 1995", imagenes:["./img/new/baseballnew/ChrisGomez1995.jpeg", "./img/new/baseballnew/ChrisGomez1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Chris Gomez, year: 1995" },
-
-  { id:"baseball-p6", titulo:"Joe Jackson 1912, 2024", imagenes:["./img/new/baseballnew/JoeJackson2024.jpeg", "./img/new/baseballnew/JoeJackson2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Joe Jackson 1912, year: 2024" },
-
-  { id:"baseball-p7", titulo:"Eduardo Perez 1995", imagenes:["./img/new/baseballnew/EduardoPerez1995.jpeg", "./img/new/baseballnew/EduardoPerez1995back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Eduardo Perez, year: 1995" },
-
-  { id:"baseball-p8", titulo:"Albert Belle 1995", imagenes:["./img/new/baseballnew/AlbertBelle1995.jpeg", "./img/new/baseballnew/AlbertBelle1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:15, description:"Albert Belle 2 of 12, year: 1995" },
-
-  { id:"baseball-p9", titulo:"Michael Jordan 1994", imagenes:["./img/new/baseballnew/MichaelJordan1994.jpeg", "./img/new/baseballnew/MichaelJordan1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:20, description:"Michael Jordan, year: 1994" },
-
-  { id:"baseball-p10", titulo:"Armando Benitez 1995", imagenes:["./img/new/baseballnew/ArmandoBenitez1995.jpeg", "./img/new/baseballnew/ArmandoBenitez1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:2, price:10, description:"Armando Benitez, year: 1995" },
-
-  { id:"baseball-p11", titulo:"Roberto Alomar 1993", imagenes:["./img/new/baseballnew/RobertoAlomar1993.jpeg", "./img/new/baseballnew/RobertoAlomar1993Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Roberto Alomar, year: 1993" },
-
-  { id:"baseball-p12", titulo:"Tom Pagnozzi 1995", imagenes:["./img/new/baseballnew/TomPagnozzi1995.jpeg", "./img/new/baseballnew/TomPagnozzi1995Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Tom Pagnozzi Holo, year: 1995" },
-
-  { id:"baseball-p13", titulo:"Ruben Rivera 1994", imagenes:["./img/new/baseballnew/RubenRivera1994.jpeg", "./img/new/baseballnew/RubenRivera1994Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Ruben Rivera, year: 1994" },
-
-  { id:"baseball-p14", titulo:"National League 2025", imagenes:["./img/new/baseballnew/NationalLeague2025.jpeg", "./img/new/baseballnew/NationalLeague2025Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"National League, year: 2025" },
-
-  { id:"baseball-p15", titulo:"Robin Ventura 2024", imagenes:["./img/new/baseballnew/RobinVentura2024.jpeg", "./img/new/baseballnew/RobinVentura2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:12, description:"Robin Ventura, year: 2024" },
-
-  { id:"baseball-p16", titulo:"Yanquiel Fernandez 2024", imagenes:["./img/new/baseballnew/YanquielFernandez2024.jpeg", "./img/new/baseballnew/YanquielFernandez2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Yanquiel Fernandez, year: 2024" },
-
-  { id:"baseball-p17", titulo:"Eury Perez 2024", imagenes:["./img/new/baseballnew/EuryPerez2024.jpeg", "./img/new/baseballnew/EuryPerez2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Eury Perez, year: 2024" },
-
-  { id:"baseball-p18", titulo:"Omar Vizquel 2024", imagenes:["./img/new/baseballnew/OmarVizquel2024.jpeg", "./img/new/baseballnew/OmarVizquel2024Back.jpeg"], categoria:{main:"new",sub:"baseball"}, stock:1, price:10, description:"Omar Vizquel, year: 2024" },
-
-  // New items of Football
-
-
-  // New items of Hockey 
-
-
-  // New items of Soccer
-
-  // New items of Race Car
-
-
-  // New items of Wrestling
-
-
-  // New items of Boxing
-
-  // New items of Pokemon
-  { id:"p1", titulo:"Machamp V Japanese 2022", imagenes:["./img/new/pokemonnew/machampV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description:"Machamp V Japanese, year: 2022,  Card#: 072/067, series Name: Sword & Shield Time Gazer Japanese)" },
-  
-  { id:"p2", titulo:"Misty's Staryu 1999", imagenes:["./img/new/pokemonnew/mistystaryu1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description:"Misty's Staryu, year: 2000,  Card#: 90, series Name: Gym Heroes)" },
-
-  { id:"p3", titulo:"Kadabra 1999", imagenes:["./img/new/pokemonnew/kadabra1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kadabra, year: 1999,  Card#: 32, series Name: Base Unlimited (Shadow)" },
-
-  { id:"p4", titulo:"Ivysaur 1999", imagenes:["./img/new/pokemonnew/ivysaur1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Ivysaur, year: 1999,  Card#: 30, series Name: Base Unlimited (Shadow)" },
-
-  { id:"p5", titulo:"Starmie 2004", imagenes:["./img/new/pokemonnew/starmie2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Starmie, year: 2004,  Card#: 49, series Name:Hidden Legends" },
-  
-  { id:"p6", titulo:"Rapid Strike Urshifu VMAX 2021 Japanese", imagenes:["./img/new/pokemonnew/rapidstrikeurshifuVmax2021.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:2, price:15, description: "Rapid Strike Urshifu VMAX Japanese, year: 2021,  Card#: 51, series Name: Pokemon Japanese Sword & Shield Rapid Strike Master" },
-
-  { id:"p7", titulo:"Kakuna 1999", imagenes:["./img/new/pokemonnew/kakuna1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kakuna, year: 1999,  Card#: 33, series Name: Base Unlimited (Shadow)" },
-
-  { id:"p8", titulo:"Kleavor V Japanese 2022", imagenes:["./img/new/pokemonnew/kleavorV2022.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Kleavor V Japanese, year: 2022,  Card#: 073/067, series Name:Sword & Shield Space Juggler Japanese" },
-
-  { id:"p9", titulo:"Butterfree 2000", imagenes:["./img/new/pokemonnew/butterfree1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Butterfree, year: 2000,  Card#: 34, series Name:Base Set 2" },
-  
-  { id:"p10", titulo:"Dragonair 2000", imagenes:["./img/new/pokemonnew/dragonair1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, description: "Dragonair, year: 2000,  Card#: 22, series Name:Base Set 2" },
- 
-  { id:"p11", titulo:"Digglet Holo 2004", imagenes:["./img/new/pokemonnew/diglett2004.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:16, description: "Digglet Holo, year: 2004,  Card#: 61, series Name:FireRed & LeafGreen" },
-
-  { id:"p12", titulo:"Jynx 1999", imagenes:["./img/new/pokemonnew/jynx1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Jynx, year: 1999,  Card#: 31, series Name:Base Unlimited (Shadow)" },
-
-  { id:"p13", titulo:"Dratini 1999", imagenes:["./img/new/pokemonnew/dratini1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Dratini, year: 1999,  Card#: 26, series Name:Base Unlimited (Shadow)" },
-
-  { id:"p14", titulo:"Blaine's Dodrio 2000", imagenes:["./img/new/pokemonnew/blainesdodrio1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Blaine's Dodrio, year: 2000,  Card#: 32, series Name: Gym Challenge" },
-
-  { id:"p15", titulo:"Iron Boulder ex Japanese 2024", imagenes:["./img/new/pokemonnew/ironboulderEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Iron Boulder ex Japanese, year: 2024,  Card#: 100, Series Name: Scarlet & Violet Cyber Judge Japanese" },
-
-  { id:"p16", titulo:"Iron Hands ex 2024", imagenes:["./img/new/pokemonnew/ironhandsEx2024.jpg", "./img/new/pokemonnew/chineeseback.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Iron Boulder ex Japanese, year: 2024,  Card#: 54, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
-
-  { id:"p17", titulo:"Beedrill 1999", imagenes:["./img/new/pokemonnew/beedrill1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Beedrill, year: 1999,  Card#: 21, Series Name: Base Set 2" },
-
-  { id:"p20", titulo:"Misty's Seel 2000", imagenes:["./img/new/pokemonnew/mistyseel1995.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Misty's Seel, year: 2000  Card#: 21, Series Name: Gym Heroes" },
-
-  { id:"p21", titulo:"Light Golduck 2002", imagenes:["./img/new/pokemonnew/lightgolduck.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Light Golduck, year: 2002  Card#: 47, Series Name: Neo Destiny" },
-
-  { id:"p22", titulo:"Ninetales ex 2023", imagenes:["./img/new/pokemonnew/NineTalesEx2023.jpg", "./img/new/pokemonnew/backpokemon.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:3, price:14, description: "Ninetales ex, year: 2023, Card#:38 , Series Name: 151" },
-
-  { id:"p23", titulo:"Pikachu Japanese 2024 PSA 7.5 near mint ", imagenes:["./img/new/pokemonnew/pikachuPSA7.5.jpg", "./img/new/pokemonnew/PikachubackJapanesePSA.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:70, description: "Pikachu Japanese PSA 7.5 near mint , year: 2024, Card#: 197/SV-P , Series Name: s~Scarlet & Violet Scarlet & Violet Promos Japanese" },
-
-  { id:"p24", titulo:"Eevee Holo 2024", imagenes:["./img/new/pokemonnew/EeveeHolo2024.jpg", "./img/new/pokemonnew/pokemonback2.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Eevee Holo, year: 2024, Card#: 135 , Series Name: 1Twilight Masquerade" },
-
-  { id:"p25", titulo:"Loudred Holo Japanese 2023", imagenes:["./img/new/pokemonnew/LoudredJapanese.jpg", "./img/new/pokemonnew/LoudreBackJapanese.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Loudred Holo Japanese, year: 2023, Card#: 078/066 , Series Name: Scarlet & Violet Ancient Roar Japanese" },
-
-  { id:"p26", titulo:"Plusle Holo 2023", imagenes:["./img/new/pokemonnew/PlusleHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"] , categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Plusle Holo, year: 2023, Card#: 60 , Series Name: Paradox Rift" },
-  
-  { id:"p27", titulo:"Thundurus Holo corners 2023", imagenes:["./img/new/pokemonnew/Thundurus2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Thundurus Holo corners, year: 2023, Card#: 70 , Series Name: Obsidian Flames" },
-
-  { id:"p28", titulo:"Miraidon Holo corners 2023", imagenes:["./img/new/pokemonnew/Miraidon2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Miraidon Holo corners, year: 2023, Card#: 80 , Series Name: Scarlet & Violet" },
-
-  { id:"p29", titulo:"Machop 2023", imagenes:["./img/new/pokemonnew/Machop2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Machop, year: 2023, Card#: 66 , Series Name: 151" },
-
-  { id:"p30", titulo:"Trainer Teammates 2015", imagenes:["./img/new/pokemonnew/trainerTeamMates2015.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Trainer Teammates, year: 2015, Card#: 141 , Series Name: Primal Clash" },
-  
-  { id:"p31", titulo:"Mankey 2023", imagenes:["./img/new/pokemonnew/Mankey2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:6, description: "Mankey, year: 2023, Card#: 106 , Series Name: Paldea Envolved" },
-
-  { id:"p32", titulo:"Charmander 1999", imagenes:["./img/new/pokemonnew/Charmander1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:12, description: "Charmander, year: 1999, Card#: 46 , Series Name: Base Unlimited (Shadow)" },
-  
-  { id:"p33", titulo:"Mr. Mime 2024", imagenes:["./img/new/pokemonnew/MrMime2024.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Mr. Mime holo, year: 2024, Card#: 63 , Series Name: Temporal Forces" },
-
-  { id:"p34", titulo:"Zapdos Holo Pokemon GO 2022", imagenes:["./img/new/pokemonnew/Zapdos2022.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Zapdos Holo Pokemon GO, year: 2022, Card#: 29 , Series Name: Pokemon Go" },
-
-  { id:"p35", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Black Kyurem-EX, year: 2013, Card#: 100 , Series Name: Legendary Treasures" },
-
-  { id:"p36", titulo:"Black Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/BlackKyuremEX20132.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Black Kyurem-EX, year: 2013, Card#: 95 , Series Name: Plasma Storm" },
-
-  { id:"p37", titulo:"White Kyurem-EX 2013", imagenes:["./img/new/pokemonnew/WhiteKyuremEX2013.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "White Kyurem-EX, year: 2013, Card#: 96 , Series Name: Plasma Storm" },
-
-  { id:"p38", titulo:"Zacian Holo 2023", imagenes:["./img/new/pokemonnew/ZacianHolo2023.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Zacian Holo, year: 2023, Card#: 136 , Series Name: Paradox Rift" },
-
-  { id:"p39", titulo:"Dark Persian 2000", imagenes:["./img/new/pokemonnew/DarkPersian2000.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:10, description: "Dark Persian, year: 2000, Card#: 42 , Series Name: Team Rocket" },
-
-  { id:"p40", titulo:"Venomoth 1999", imagenes:["./img/new/pokemonnew/Venomoth1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:30, description: "Venomoth, year: 1999, Card#: 13 , Series Name: Jungle" },
-  
-  { id:"p41", titulo:"Kingdra 2001", imagenes:["./img/new/pokemonnew/Kingdra2001.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:20, description: "Kingdra, year: 2001, Card#: 19 , Series Name: Neon Revelation" },
-
-  { id:"p42", titulo:"Charmander Holo 2023", imagenes:["./img/new/pokemonnew/CharmanderHolo2023.jpg", "./img/new/pokemonnew/pokemonback3.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:7, description: "Charmander Holo, year: 2023, Card#: 26 , Series Name: Obsidian Flames" },
-
-  { id:"p43", titulo:"Pikachu Holo 2017", imagenes:["./img/new/pokemonnew/PikachuHoloPromo2017.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:22, description: "Pikachu Holo, year: 2023, Card#: SM04 , Series Name: SM Black Star Promos" },
-
-  { id:"p44", titulo:"Lt. Surge's Pikachu 2000", imagenes:["./img/new/pokemonnew/LtSurge'sPikachu2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:15, description: "Lt. Surge's Pikachu, year: 2000, Card#: 84 , Series Name: Gym Challenge" },
-
-  { id:"p45", titulo:"Erika's Tangela 2000", imagenes:["./img/new/pokemonnew/ErikasTangela2000.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Erika's Tangela, year: 2000, Card#: 79 , Series Name: Gym Heroes" },
-
-  { id:"p46", titulo:"Kangaskhan 2013", imagenes:["./img/new/pokemonnew/Kangaskhan2013.jpg", "./img/new/pokemonnew/pokemonback4.jpg"], categoria:{main:"new",sub:"pokemon"}, stock:1, price:8, description: "Kangaskhan, year: 2013, Card#: 71 , Series Name: Plasma Blast" },
-
-  
-  //New items of Disney 
-
-    { id:"Disney-p1", titulo:"Mickey Mouse 1992 World tour", imagenes:["./img/new/disneynew/Disneytour1992.jpeg", "./img/new/disneynew/Disneytour1992Back.jpeg"], categoria:{main:"new",sub:"disney"}, stock:2, price:25, description:"Mickey Mouse 1992 World Tour, year: 1992" },
-
-
-
- 
-  // Used items of Basketball
-  { id:"p100", titulo:"Basketball (Used)", imagenes:["./img/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, description:"Balón usado en buen estado, ideal para práctica casual." },
-
-    // Used items of Baseball
-
-
-  // Used items of Football
-
-
-  // Used items of Hockey 
-
-
-  // Used items of Soccer
-
-
-  // Used items of Race Car
-
-
-  // Used items of Wrestling
-
-
-  // Used items of Boxing
-
-  // Used items of Olympics
-
-
-  // Used items of Pokemon
-// Used items
-{ id:"used-p1", titulo:"Charmeleon 1999", imagenes:["./img/used/pokemonused/charmeleon1995.jpg","./img/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:10, description:"Charmeleon, year: 1999, Series Name: Base Unlimited (Shadow)" },
-
-{ id:"used-p2", titulo:"Snorlax #XY179 Holo 2013 PSA 2", imagenes:["./img/used/pokemonused/snorlax2016.jpeg","./img/used/pokemonused/snorlax2016back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:18, description:"Snorlax #XY179 PSA 2, year: 2013, Series Name: XY Black Star Promos" },
-
-{ id:"used-p3", titulo:"Rayquaza-GX 2018 PSA 5", imagenes:["./img/used/pokemonused/rayquaza2018.jpeg","./img/used/pokemonused/rayquazaback.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:35, description:"Rayquaza-GX PSA 5, year: 2018, Series Name: Celestial Storm" },
-
-{ id:"used-p4", titulo:"Ivysaur 1999 Used", imagenes:["./img/used/pokemonused/ivysaur1995.jpg","./img/used/pokemonused/backpokemon2.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:8, description:"Ivysaur, year: 1999, Series Name: Base Unlimited (Shadow)" },
-
-{ id:"used-p5", titulo:"Weepinbell 2021 Used", imagenes:["./img/used/pokemonused/Weepinbell2021.jpg","./img/used/pokemonused/pokemondamageBack.jpg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:4, description:"Weepinbell, year: 2023, Series Name: Battle Styles" },
-
-{ id:"used-p6", titulo:"Charizard EX Black Star Promo 2014 PSA 1 mint", imagenes:["./img/used/pokemonused/charizardEX2014PSA.jpeg","./img/used/pokemonused/charizardEX2014back.jpeg"], categoria:{main:"used",sub:"pokemon"}, stock:1, price:20, description:"Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos" },
-
-
-// Used Basketball example
-{ id:"used-basketball1", titulo:"Basketball (Used)", imagenes:["./img/used/basketballused/basketball2.jpg"], categoria:{main:"used",sub:"basketball"}, stock:1, price:10, description:"Balón usado en buen estado, ideal para práctica casual." },
-
-  // More items used and new
-  { id:"p5", titulo:"1968 Playboy", imagenes:["./img/more/playboy1.jpg"], categoria:{main:"more",sub:"magazines"}, stock:1, price:5, description:"Charmeleon, year: 1999,  Card#: 24, Series Name: Scarlet & Violet Terastal Festival ex Japanese" },
-];
-
-// ----------------------
-// Inicialización
-// ----------------------
-localStorage.setItem("productos-tienda", JSON.stringify(productosDefault));
-let productos = [...productosDefault];
-let productosFiltrados = [...productos];
-
-const contenedorProductos = document.getElementById("contenedor-productos");
-const cartCountEl = document.getElementById("cart-count");
-const botonIrCarrito = document.getElementById("ir-carrito");
-const tituloPrincipal = document.getElementById("titulo-principal");
-const botonesCategoria = document.querySelectorAll(".boton-categoria");
-const inputBusqueda = document.getElementById("search-input");
-
-let currentPage = 1;
-let productosPorPagina = 18;
-
-// ----------------------
-// Carrito
-// ----------------------
-function actualizarContadorCarrito(){
-  const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-  const totalItems = productosEnCart.reduce((acc,p)=>acc+(p.quantity||1),0);
-  cartCountEl.textContent = totalItems;
-}
-
-botonIrCarrito.addEventListener("click", ()=>window.location.href="cart.html");
-
-function agregarAlCarrito(producto){
-  const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-  const existe = productosEnCart.find(p=>p.id===producto.id);
-  if(existe){
-    if(existe.quantity < producto.stock) existe.quantity++;
-  } else {
-    productosEnCart.push({...producto, quantity:1});
-  }
-  localStorage.setItem("productos-en-cart", JSON.stringify(productosEnCart));
-  actualizarContadorCarrito();
-  alert("Product added to the cart");
-}
-
-// ----------------------
-// Modal
-// ----------------------
-const modal = document.getElementById("producto-modal");
-const cerrarModal = document.getElementById("cerrar-modal");
-const modalImagen = document.getElementById("modal-imagen");
-const modalTitulo = document.getElementById("modal-titulo");
-const modalDescripcion = document.getElementById("modal-description");
-const modalPrice = document.getElementById("modal-price");
-const modalStock = document.getElementById("modal-stock");
-
-
-let imagenIndex = 0;
-let imagenesActuales = [];
-
-function abrirModal(producto) {
-  imagenesActuales = producto.imagenes;
-  imagenIndex = 0;
-
-  modal.style.display = "block";
-  modalImagen.src = imagenesActuales[imagenIndex];
-  modalTitulo.textContent = producto.titulo;
-  modalDescripcion.textContent = producto.description;
-  modalPrice.textContent = `$${producto.price}`;
-  modalStock.textContent = producto.stock > 0 ? `In Stock: ${producto.stock}` : 'Out of Stock';
-}
-
-// Navegar imágenes haciendo click en la imagen del modal
-modalImagen.addEventListener("click", () => {
-  if(imagenesActuales.length > 1){
-    imagenIndex = (imagenIndex + 1) % imagenesActuales.length;
-    modalImagen.src = imagenesActuales[imagenIndex];
-  }
-});
-
-cerrarModal.addEventListener("click", () => modal.style.display = "none");
-
-window.addEventListener("click", e => {
-  if(e.target === modal) modal.style.display = "none";
-});
-
-// ----------------------
-// Render productos + paginación
-// ----------------------
-function renderizarProductos(lista = productosFiltrados){
-  contenedorProductos.innerHTML = "";
-
-  const inicio = (currentPage - 1) * productosPorPagina;
-  const fin = inicio + productosPorPagina;
-  const paginaProductos = lista.slice(inicio, fin);
-
-  paginaProductos.forEach(producto => {
-    const div = document.createElement("div");
-    div.classList.add("producto");
-
-    let imagenesHTML = `
-      <img src="${producto.imagenes[0]}" alt="${producto.titulo}" class="imagen-principal" style="width:100%;cursor:zoom-in;">
-      <div class="miniaturas" style="display:flex;margin-top:5px;gap:5px;">
-    `;
-    producto.imagenes.forEach((img) => {
-        imagenesHTML += `<img src="${img}" alt="${producto.titulo}" class="miniatura" style="width:30px;height:30px;cursor:pointer;border:1px solid #ccc;">`;
-    });
-    imagenesHTML += `</div>`;
-
-    div.innerHTML = `
-      ${producto.stock === 0 ? '<div class="out-of-stock">Out of Stock</div>' : ''}
-      ${imagenesHTML}
-      <h3 style="margin:5px 0;">${producto.titulo}</h3>
-      <p style="color:#e28f2f;font-weight:bold;">$${producto.price}</p>
-      <p class="stock">In stock: ${producto.stock}</p>
-      <button class="agregar-carrito" ${producto.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
-    `;
-
-    contenedorProductos.appendChild(div);
-
-    // Click en agregar al carrito
-    const btnCarrito = div.querySelector(".agregar-carrito");
-    btnCarrito.addEventListener("click", () => agregarAlCarrito(producto));
-
-    // Click en miniaturas para cambiar imagen principal
-    const miniaturas = div.querySelectorAll(".miniatura");
-    const imgPrincipal = div.querySelector(".imagen-principal");
-    miniaturas.forEach((mini, index) => {
-      mini.addEventListener("click", () => {
-        imgPrincipal.src = mini.src;
-        abrirModal(producto);
-        imagenIndex = index;
-        modalImagen.src = imagenesActuales[imagenIndex];
-      });
-    });
-
-    // Click en imagen principal para abrir modal
-    imgPrincipal.addEventListener("click", () => abrirModal(producto));
-  });
-
-  mostrarPaginacion(lista);
-}
-
-// ----------------------
-// Paginación
-// ----------------------
-function mostrarPaginacion(lista = productosFiltrados) {
-  const paginacion = document.getElementById("paginacion");
-  paginacion.innerHTML = "";
-
-  const totalPaginas = Math.ceil(lista.length / productosPorPagina);
-
-  if (currentPage > 1) {
-    const btnPrev = document.createElement("button");
-    btnPrev.textContent = "«";
-    btnPrev.onclick = () => { currentPage--; renderizarProductos(lista); };
-    paginacion.appendChild(btnPrev);
-  }
-
-  for (let i = 1; i <= totalPaginas; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    if (i === currentPage) btn.style.fontWeight = "bold";
-    btn.onclick = () => { currentPage = i; renderizarProductos(lista); };
-    paginacion.appendChild(btn);
-  }
-
-  if (currentPage < totalPaginas) {
-    const btnNext = document.createElement("button");
-    btnNext.textContent = "»";
-    btnNext.onclick = () => { currentPage++; renderizarProductos(lista); };
-    paginacion.appendChild(btnNext);
-  }
-}
-
-// ----------------------
-// Submenu principal y filtrado
-// ----------------------
-const toggles = document.querySelectorAll(".toggle-submenu");
-toggles.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const submenu = btn.nextElementSibling;
-    const isVisible = submenu.style.display === "block";
-    submenu.style.display = isVisible ? "none" : "block";
-  });
-});
-
-const submenuItems = document.querySelectorAll(".submenu-item");
-submenuItems.forEach(item => {
-  item.addEventListener("click", () => {
-    const mainCat = item.dataset.main;
-    const subCat = item.dataset.sub;
-    productosFiltrados = productos.filter(p => 
-      p.categoria.main === mainCat && p.categoria.sub === subCat
-    );
-    currentPage = 1;
-    renderizarProductos();
-  });
-});
-
-document.querySelectorAll(".boton-categoria[data-main][data-sub]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const mainCat = btn.getAttribute("data-main");
-    const subCat = btn.getAttribute("data-sub");
-
-    productosFiltrados = productos.filter(p => 
-      p.categoria.main === mainCat && p.categoria.sub === subCat
-    );
-
-    currentPage = 1;
-    renderizarProductos(productosFiltrados);
-
-    tituloPrincipal.textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat.charAt(0).toUpperCase() + mainCat.slice(1)})`;
-
-    const submenu = btn.closest(".submenu");
-    if (submenu) submenu.style.display = "none";
-  });
-});
-
-// ----------------------
-// Hamburger menu
-// ----------------------
-const hamburguesa = document.querySelectorAll(".hamburger");
-const aside = document.querySelector("aside");
-hamburguesa.forEach(h => {
-  h.addEventListener("click", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  const contenedor = document.getElementById("contenedor-productos");
+  const cartCountEl = document.getElementById("cart-count");
+  const toggleButtons = document.querySelectorAll(".toggle-submenu");
+  const hamburger = document.querySelector(".hamburger");
+  const aside = document.querySelector("aside");
+
+  // --- MENU HAMBURGUESA RESPONSIVE ---
+  hamburger.addEventListener("click", () => {
     aside.classList.toggle("active");
   });
-});
 
-// ----------------------
-// Inicializar
-// ----------------------
-actualizarContadorCarrito();
-renderizarProductos();
+  // --- ABRIR/CERRAR SUBMENUS ---
+  toggleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const submenu = btn.nextElementSibling;
+      const isVisible = submenu.style.display === "block";
+      
+      // Cerrar todos los submenus
+      document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
+      document.querySelectorAll(".toggle-submenu").forEach(b => b.classList.remove("active"));
+      
+      // Abrir el submenu clickeado
+      if (!isVisible) {
+        submenu.style.display = "block";
+        btn.classList.add("active");
+      }
+    });
+  });
 
-// Scroll al producto filtrado desde carrusel
-// ----------------------
-const filtro = localStorage.getItem("filtro-producto");
-if (filtro) {
-  // esperar a que renderice los productos
-  setTimeout(() => {
-    const target = document.getElementById(filtro);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.classList.add("highlighted");
+  // --- OBTENER PRODUCTOS ---
+  async function obtenerProductos() {
+    try {
+      const res = await fetch("db.json");
+      if (!res.ok) throw new Error("No se pudo cargar db.json");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return [];
     }
-    localStorage.removeItem("filtro-producto");
-  }, 500); // medio segundo para dar tiempo al render
-}
+  }
+
+  let productos = await obtenerProductos();
+  let productosFiltrados = [...productos]; // copia para filtrar
+
+  // --- MODAL ZOOM ---
+  const zoomModal = document.getElementById("zoom-modal");
+  const zoomImg = zoomModal.querySelector("img");
+  const zoomClose = zoomModal.querySelector(".close-btn");
+
+  function abrirZoom(src) {
+    zoomImg.src = src;
+    zoomModal.classList.add("show");
+  }
+
+  function cerrarZoom() {
+    zoomModal.classList.remove("show");
+  }
+
+  zoomClose.addEventListener("click", cerrarZoom);
+  zoomModal.addEventListener("click", e => {
+    if (e.target === zoomModal || e.target === zoomImg) cerrarZoom();
+  });
+
+  // --- RENDER PRODUCTOS ---
+  function renderProductos(lista) {
+    contenedor.innerHTML = "";
+
+    lista.forEach(prod => {
+      const div = document.createElement("div");
+      div.className = "producto";
+
+      // --- GALERÍA DE IMÁGENES ---
+      const galeria = document.createElement("div");
+      galeria.className = "galeria";
+
+      const mainImg = document.createElement("img");
+      mainImg.className = "main-img";
+      mainImg.src = prod.imagenes[0];
+      mainImg.dataset.index = 0;
+
+      const prev = document.createElement("button");
+      prev.className = "arrow prev";
+      prev.innerHTML = "&#9664;";
+
+      const next = document.createElement("button");
+      next.className = "arrow next";
+      next.innerHTML = "&#9654;";
+
+      if (prod.imagenes.length <= 1) {
+        prev.style.display = "none";
+        next.style.display = "none";
+      }
+
+      prev.addEventListener("click", e => {
+        e.stopPropagation();
+        let idx = parseInt(mainImg.dataset.index);
+        idx = (idx - 1 + prod.imagenes.length) % prod.imagenes.length;
+        mainImg.dataset.index = idx;
+        mainImg.src = prod.imagenes[idx];
+      });
+
+      next.addEventListener("click", e => {
+        e.stopPropagation();
+        let idx = parseInt(mainImg.dataset.index);
+        idx = (idx + 1) % prod.imagenes.length;
+        mainImg.dataset.index = idx;
+        mainImg.src = prod.imagenes[idx];
+      });
+
+      galeria.appendChild(prev);
+      galeria.appendChild(mainImg);
+      galeria.appendChild(next);
+
+      // --- INFO PRODUCTO ---
+      const h3 = document.createElement("h3");
+      h3.textContent = prod.titulo;
+
+      const pStock = document.createElement("p");
+      pStock.className = "stock";
+      pStock.textContent = prod.stock > 0 ? "Stock: " + prod.stock : "Out of stock";
+
+      const pPrice = document.createElement("p");
+      pPrice.style.color = "#e28f2f";
+      pPrice.style.fontWeight = "bold";
+      pPrice.textContent = "$" + prod.price;
+
+      const btn = document.createElement("button");
+      btn.className = "agregar-carrito";
+      btn.textContent = "Agregar";
+      btn.dataset.id = prod.id;
+      if (prod.stock === 0) btn.disabled = true;
+
+      div.appendChild(galeria);
+      div.appendChild(h3);
+      div.appendChild(pStock);
+      div.appendChild(pPrice);
+      div.appendChild(btn);
+
+      contenedor.appendChild(div);
+
+      // --- MODAL DE DESCRIPCIÓN ---
+      mainImg.addEventListener("click", () => {
+        const modal = document.getElementById("producto-modal");
+        document.getElementById("modal-imagen").src = prod.imagenes[0];
+        document.getElementById("modal-titulo").textContent = prod.titulo;
+        document.getElementById("modal-description").textContent = prod.description;
+        document.getElementById("modal-price").textContent = "$" + prod.price;
+        document.getElementById("modal-stock").textContent = prod.stock > 0 ? "Stock: " + prod.stock : "Out of stock";
+        modal.style.display = "flex";
+      });
+    });
+  }
+
+  // --- CERRAR MODAL ---
+  document.getElementById("cerrar-modal").addEventListener("click", () => {
+    document.getElementById("producto-modal").style.display = "none";
+  });
+
+  // --- CERRAR MODAL AL HACER CLICK FUERA ---
+  document.getElementById("producto-modal").addEventListener("click", e => {
+    if (e.target.id === "producto-modal") {
+      e.target.style.display = "none";
+    }
+  });
+
+  // --- RENDER INICIAL ---
+  renderProductos(productosFiltrados);
+
+  // --- AGREGAR AL CARRITO ---
+  contenedor.addEventListener("click", e => {
+    if (!e.target.classList.contains("agregar-carrito")) return;
+
+    const id = e.target.dataset.id;
+    const prod = productos.find(p => p.id === id);
+    if (!prod || prod.stock === 0) return;
+
+    let carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+    const existente = carrito.find(p => p.id === id);
+    if (existente) existente.quantity += 1;
+    else carrito.push({ ...prod, quantity: 1 });
+
+    localStorage.setItem("productos-en-cart", JSON.stringify(carrito));
+
+    prod.stock -= 1;
+    renderProductos(productosFiltrados);
+
+    cartCountEl.textContent = carrito.reduce((acc, p) => acc + p.quantity, 0);
+  });
+
+  // --- INICIALIZAR CONTADOR ---
+  let carritoInicial = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+  cartCountEl.textContent = carritoInicial.reduce((acc, p) => acc + p.quantity, 0);
+
+  // --- CLICK EN CART ---
+  document.getElementById("ir-carrito").addEventListener("click", () => {
+    window.location.href = "cart.html"; // Cambia a la página de carrito
+  });
+
+  // --- SEARCH ---
+  const searchInput = document.getElementById("search-input");
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    productosFiltrados = productos.filter(p => 
+      p.titulo.toLowerCase().includes(query) ||
+      (p.ano && p.ano.toString().includes(query))
+    );
+    renderProductos(productosFiltrados);
+  });
+
+  // --- FILTRO POR SUBCATEGORÍA ---
+  document.querySelectorAll(".submenu .boton-categoria").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const mainCat = btn.dataset.main;
+      const subCat = btn.dataset.sub;
+      document.getElementById("titulo-principal").textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat})`;
+
+      searchInput.value = "";
+
+      productosFiltrados = productos.filter(p => 
+        p.categoria.main === mainCat && p.categoria.sub === subCat
+      );
+      renderProductos(productosFiltrados);
+
+      aside.classList.remove("active");
+    });
+  });
 
 });
-
 </script>
+
 
 
 
