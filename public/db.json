@@ -1,7 +1,5 @@
 [
 
-
-
   {
     "id": "new-p1",
     "titulo": "Lebron James 50k points 2024-25",
@@ -243,7 +241,141 @@
     "year": "2018-19"
   },
 
+{
+    "id": "new-p25",
+    "titulo": "Michael Jordan 1992 Holographic",
+    "imagenes": ["./img/new/basketballnew/michaelJordanHolo1992.jpeg", "./img/new/basketballnew/michaelJordanHolo1992back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 80,
+    "description": "Michael Jordan Holographic",
+    "year": "1992"
+  },
 
+  {
+    "id": "new-p26",
+    "titulo": "Michael Jordan 1991 Holographic",
+    "imagenes": ["./img/new/basketballnew/michaelJordanHolo21991.jpeg", "./img/new/basketballnew/michaelJordanHolo21991Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 80,
+    "description": "Michael Jordan Holographic",
+    "year": "1991"
+  },
+  
+    {
+    "id": "new-p27",
+    "titulo": "Father/son Debut Lebron James & Bronny James Jr. 2024 ",
+    "imagenes": ["./img/new/basketballnew/Father&sonDebut2024.jpeg", "./img/new/basketballnew/Father&sonDebut2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Father/son Debut Lebron James & Brony James Jr.",
+    "year": "2024"
+  },
+  
+      {
+    "id": "new-p28",
+    "titulo": "Carmelo Anthony & Lebron James 2015-16 ",
+    "imagenes": ["./img/new/basketballnew/CarmeloAnthonyLebronJames2015.jpeg", "./img/new/basketballnew/CarmeloAnthony&LebronJames2015Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Carmelo Anthony & Lebron James",
+    "year": "2015-16"
+  },
+
+    {
+    "id": "new-p29",
+    "titulo": "Yao Ming 2024",
+    "imagenes": ["./img/new/basketballnew/YaoMing.jpeg", "./img/new/basketballnew/YaoMing2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 35,
+    "description": "Yao Ming 078/299",
+    "year": "2024"
+  },
+  
+  {
+    "id": "new-p30",
+    "titulo": "Carmelo Anthony 2016-17",
+    "imagenes": ["./img/new/basketballnew/CarmeloAnthony2016.jpeg", "./img/new/basketballnew/CarmeloAnthony2016Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 2,
+    "price": 20,
+    "description": "Carmelo Anthony",
+    "year": "2016-17"
+  },
+
+  {
+    "id": "new-p31",
+    "titulo": "Michael Jordan Legacy 2008-09",
+    "imagenes": ["./img/new/basketballnew/MichaelJordan2008.jpeg", "./img/new/basketballnew/michaerlJordanLegacy2008.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Michael Jordan Legacy",
+    "year": "2008-09"
+  },
+  
+    {
+    "id": "new-p32",
+    "titulo": "Carmelo Anthony Big Sign 2003-04",
+    "imagenes": ["./img/new/basketballnew/CarmeloAnthonyBigSign.jpeg", "./img/new/basketballnew/CarmeloAnthonyBigSignBack.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "Carmelo Anthony Big Sign, 12/15",
+    "year": "2003-04"
+  },
+
+     {
+    "id": "new-p33",
+    "titulo": "Michael Jordan 1996-97",
+    "imagenes": ["./img/new/basketballnew/MichaelJordan1996.jpeg", "./img/new/basketballnew/MichaelJordan1996Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Michael Jordan",
+    "year": "1996-97"
+  },
+
+     {
+    "id": "new-p34",
+    "titulo": "Lebron James 2023-24",
+    "imagenes": ["./img/new/basketballnew/LebronJames2023.jpeg", "./img/new/basketballnew/LebronJames2023Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 15,
+    "description": "Lebron James",
+    "year": "2023-24"
+  },
+
+   {
+    "id": "new-p35",
+    "titulo": "Michael Jordan 1995",
+    "imagenes": ["./img/new/basketballnew/MichaelJordanGoldcard.jpg", "./img/new/basketballnew/MichaerlJordanGoldcardBack.jpg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 80,
+    "description": "Michael Jordan 4/27",
+    "year": "1995"
+  },
+
+  {
+    "id": "new-p36",
+    "titulo": "Carmelo Anthony Authentic Signature 2024",
+    "imagenes": ["./img/new/basketballnew/CarmeloAnthonySignature2024.jpeg", "./img/new/basketballnew/CarmeloAnthonySignatureMiddle.jpeg", "./img/new/basketballnew/CarmeloAnthonySignature2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 300,
+    "description": "Carmelo Anthony Authentic Signature 49/75",
+    "year": "2024"
+  },
+  
+  
+  
+  
 
  
 

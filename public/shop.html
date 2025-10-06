@@ -265,6 +265,27 @@ aside.active ~ main #titulo-principal {
   cursor: pointer; 
 }
 
+.zoom-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 20px;
+  z-index: 6000;
+}
+.zoom-arrow:hover {
+  background: rgba(0,0,0,0.7);
+}
+.zoom-arrow.prev { left: 20px; }
+.zoom-arrow.next { right: 20px; }
+
+
 /* --- HAMBURGER --- */
 .hamburger {
   display: none; 
@@ -525,10 +546,13 @@ aside.active ~ main #titulo-principal {
 </div>
 
 <!-- Modal para zoom -->
-  <div id="zoom-modal">
-    <span class="close-btn">&times;</span>
-    <img src="" alt="Zoom">
-  </div>
+<div id="zoom-modal">
+  <span class="close-btn">&times;</span>
+  <button class="zoom-arrow prev">&#9664;</button>
+  <img src="" alt="Zoom">
+  <button class="zoom-arrow next">&#9654;</button>
+</div>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
@@ -580,9 +604,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const zoomModal = document.getElementById("zoom-modal");
   const zoomImg = zoomModal.querySelector("img");
   const zoomClose = zoomModal.querySelector(".close-btn");
+  let zoomIndex = 0;
+  let zoomImagenes = [];
 
-  function abrirZoom(src) {
-    zoomImg.src = src;
+  function abrirZoom(imagenes, indexInicial) {
+    zoomImagenes = imagenes;
+    zoomIndex = indexInicial;
+    zoomImg.src = zoomImagenes[zoomIndex];
     zoomModal.classList.add("show");
   }
 
@@ -590,9 +618,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     zoomModal.classList.remove("show");
   }
 
+  function cambiarZoomImg(dir) {
+    zoomIndex = (zoomIndex + dir + zoomImagenes.length) % zoomImagenes.length;
+    zoomImg.src = zoomImagenes[zoomIndex];
+  }
+
+  // Botones dentro del zoom
+  document.querySelector(".zoom-arrow.prev").addEventListener("click", e => {
+    e.stopPropagation();
+    cambiarZoomImg(-1);
+  });
+  document.querySelector(".zoom-arrow.next").addEventListener("click", e => {
+    e.stopPropagation();
+    cambiarZoomImg(1);
+  });
+
   zoomClose.addEventListener("click", cerrarZoom);
   zoomModal.addEventListener("click", e => {
-    if (e.target === zoomModal || e.target === zoomImg) cerrarZoom();
+    if (e.target === zoomModal) cerrarZoom();
   });
 
   // --- RENDER PRODUCTOS ---
@@ -681,6 +724,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("modal-price").textContent = "$" + prod.price;
         document.getElementById("modal-stock").textContent = prod.stock > 0 ? "Stock: " + prod.stock : "Out of stock";
         modal.style.display = "flex";
+
+        // 👉 Abrir zoom desde la imagen del modal
+        document.getElementById("modal-imagen").onclick = () => {
+          abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
+        };
       });
     });
   }
@@ -761,6 +809,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 </script>
+
 
 
 
