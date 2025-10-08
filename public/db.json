@@ -372,6 +372,17 @@
     "description": "Carmelo Anthony Authentic Signature 49/75",
     "year": "2024"
   },
+
+   {
+    "id": "new-p37",
+    "titulo": "Carlos Arroyo 2005",
+    "imagenes": ["./img/new/basketballnew/CarlosArroyo2024.jpeg", "./img/new/basketballnew/CarlosArroyoMiddle.jpeg", "./img/new/basketballnew/CarlosArroyoBack.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "Carlos Arroyo 257/500",
+    "year": "2005"
+  },
   
   
   
@@ -559,6 +570,7 @@
     "description": "Omar Vizquel, year: 2024",
     "year": "2024"
   },
+  
 
 
 

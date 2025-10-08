@@ -81,7 +81,7 @@ main { flex: 1; padding: 2rem; }
 
 .anuncios-track {
   display: flex;
-  animation: scrollAnuncios 15s linear infinite;
+  animation: scrollAnuncios 8s linear infinite;
 }
 
 .anuncio {
@@ -103,6 +103,31 @@ main { flex: 1; padding: 2rem; }
   100% { transform: translateX(0); }
 }
 
+.anuncio1 {
+  flex: 0 0 100%;
+  text-align: center;
+  padding: 0.8rem;
+  font-family: "Oswald", sans-serif;
+  font-size: .9rem;
+  font-weight: bold;
+  color: #e23b2f;
+  white-space: nowrap;
+}
+
+.featured-product{
+  color: rgba(250, 149, 33, 0.918)
+}
+
+.email-link {
+  color: inherit;       /* Usa el mismo color del texto */
+  text-decoration: none; /* Quita el subrayado */
+  font-weight: bold;
+}
+
+.email-link:hover {
+  text-decoration: underline; /* O puedes quitar esto si no quieres el subrayado al pasar el mouse */
+}
+
 </style>
 </head>
 
@@ -115,18 +140,21 @@ main { flex: 1; padding: 2rem; }
 <div class="anuncios-carousel">
   <div class="anuncios-track" id="anuncios-track">
     <div class="anuncio">🚚 Free Shipping</div>
-    <div class="anuncio">LaTRONIC</div>
+    <div class="anuncio">Contact us</div>
    
   </div>
 </div>
 <div class="anuncios-carousel">
   <div class="anuncios-track" id="anuncios-track">
-    <div class="anuncio">🤝 We open to negociate</div>
+    <div class="anuncio">🤝 We’re open to negotiate</div>
+    <div class="anuncio1">
+      ✉️ <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a>
+    </div>
   </div>
 </div>
         
         <!-- Producto destacado -->
-        <div id="featured-product" class="featured-product"></div>
+        <div id="featured-product" class="featured-product">Top items</div>
 
         <!-- Carrusel con los otros top -->
         <div class="aside-carousel">
