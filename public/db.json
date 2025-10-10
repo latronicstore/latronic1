@@ -383,9 +383,51 @@
     "description": "Carlos Arroyo 257/500",
     "year": "2005"
   },
+
+  {
+    "id": "new-p38",
+    "titulo": "Anthony Davis Memorabilia 2024-25",
+    "imagenes": ["./img/new/basketballnew/AnthonyDavisMemorabilia2024.jpeg", "./img/new/basketballnew/AnthonyDavisMemorabilia2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 60,
+    "description": "Anthony Davis Memorabilia 36/99",
+    "year": "2024-25"
+  },
   
+  {
+    "id": "new-p39",
+    "titulo": "Pau Gasol Memorabilia 2024",
+    "imagenes": ["./img/new/basketballnew/PauGasolMemorabilia2024.jpeg", "./img/new/basketballnew/PauGasolMemorabilia2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 50,
+    "description": "Pau Gasol Memorabilia Game used",
+    "year": "2024"
+  },
+
+  {
+    "id": "new-p40",
+    "titulo": "Shawn Marion Memorabilia 2024",
+    "imagenes": ["./img/new/basketballnew/ShawnMarionMemorabilia2024.jpeg", "./img/new/basketballnew/ShawnMarionMemorabilia2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 50,
+    "description": "Shawn Marion Memorabilia Game used",
+    "year": "2024"
+  },
   
-  
+  {
+    "id": "new-p41",
+    "titulo": "Zydrunas Ilgauskas Memorabilia 2024",
+    "imagenes": ["./img/new/basketballnew/ZydrunasIlgauskasMemorabilia2024.jpeg", "./img/new/basketballnew/ZydrunasIlgauskasMemorabilia2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Zydrunas Ilgauskas Memorabilia Game used",
+    "year": "2024"
+  },
+
   
 
  
@@ -574,9 +616,73 @@
 
 
 
+{
+    "id": "soccer-p1",
+    "titulo": "Lamine Yamal, Vamos Seleccion, SGC 7 mint 2024",
+    "imagenes": ["./img/new/soccernew/LamineYamal2024.jpeg", "./img/new/soccernew/LamineYamal2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "soccer" },
+    "stock": 1,
+    "price": 80,
+    "description": "Lamine Yamal, Vamos Seleccion! SGC 7 mint",
+    "year": "2024"
+  },
+
+  {
+    "id": "soccer-p2",
+    "titulo": "Ronalo Araujo signature 2024-25",
+    "imagenes": ["./img/new/soccernew/RonaloAraujoSignature2024.jpeg", "./img/new/soccernew/RonaloAraujoSignatureMiddle.jpeg", "./img/new/soccernew/RonaloAraujoSignature2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "soccer" },
+    "stock": 1,
+    "price": 60,
+    "description": "Ronalo Araujo signature, Champion League 115/299",
+    "year": "2024-25"
+  },
+
+  {
+    "id": "soccer-p3",
+    "titulo": "Lionel Messi & Cristiano Ronaldo 2024",
+    "imagenes": ["./img/new/soccernew/Messi&Ronaldo2024.jpeg", "./img/new/soccernew/Messi&Ronaldo2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "soccer" },
+    "stock": 1,
+    "price": 25,
+    "description": "Lionel Messi & Cristiano Ronaldo",
+    "year": "2024"
+  },
+
+ {
+    "id": "soccer-p4",
+    "titulo": "Cristiano Ronaldo 2023",
+    "imagenes": ["./img/new/soccernew/Ronaldo2023.jpeg", "./img/new/soccernew/Ronaldo2023Back.jpeg"],
+    "categoria": { "main": "new", "sub": "soccer" },
+    "stock": 1,
+    "price": 20,
+    "description": "Cristiano Ronaldo Foward",
+    "year": "2023"
+  },
+
+
+
+
+
+
+{
+    "id": "wrestling-p1",
+    "titulo": "Calito original Signature 2006",
+    "imagenes": ["./img/new/wrestlingnew/CarlitosSignature2006.jpeg", "./img/new/wrestlingnew/CarlitosSignature2006Back.jpeg"],
+    "categoria": { "main": "new", "sub": "wrestling" },
+    "stock": 1,
+    "price": 40,
+    "description": "Carlito Original Signature 2006 WWE Heritage",
+    "year": "2006"
+  },
+
+
+
 
 
   
+
+
   {
     "id": "p1",
     "titulo": "Machamp V Japanese 2022",
@@ -992,6 +1098,22 @@
     "stock": 2,
     "price": 25,
     "description": "Mickey Mouse 1992 World Tour, year: 1992"
+  },
+
+  {
+    "id": "Disney-p2",
+    "titulo": "Mickey Mouse Disney 100 years of wonder ",
+    "imagenes": [
+      "./img/new/disneynew/MickeyMouse2023.jpeg",
+      "./img/new/disneynew/MickeyMouse2023Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "disney"
+    },
+    "stock": 1,
+    "price": 25,
+    "description": "Mickey Mouse 100 Years of Wonder, year: 2023"
   },
 
 
