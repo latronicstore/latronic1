@@ -641,7 +641,7 @@
   {
     "id": "soccer-p3",
     "titulo": "Lionel Messi & Cristiano Ronaldo 2024",
-    "imagenes": ["./img/new/soccernew/Messi&Ronaldo2024.jpeg", "./img/new/soccernew/Messi&Ronaldo2024Back.jpeg"],
+    "imagenes": ["./img/new/soccernew/Messi&Ronaldo2024.jpeg", "./img/new/soccernew/Messi&Ronaldo2024Back.jpg"],
     "categoria": { "main": "new", "sub": "soccer" },
     "stock": 1,
     "price": 25,
