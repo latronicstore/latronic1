@@ -667,7 +667,7 @@
 
 {
     "id": "wrestling-p1",
-    "titulo": "Calito original Signature 2006",
+    "titulo": "Carlito original Signature 2006",
     "imagenes": ["./img/new/wrestling/CarlitosSignature2006.jpeg", "./img/new/wrestling/CarlitosSignature2006Back.jpeg"],
     "categoria": { "main": "new", "sub": "wrestling" },
     "stock": 1,
