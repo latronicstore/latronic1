@@ -652,7 +652,7 @@
  {
     "id": "soccer-p4",
     "titulo": "Cristiano Ronaldo 2023",
-    "imagenes": ["./img/new/soccer/Ronaldo2023.jpeg", "./img/new/soccer/Ronaldo2023Back.jpeg"],
+    "imagenes": ["./img/new/soccer/Ronaldo2023.jpeg", "./img/new/soccer/Ronaldo2023Back.jpg"],
     "categoria": { "main": "new", "sub": "soccer" },
     "stock": 1,
     "price": 20,
