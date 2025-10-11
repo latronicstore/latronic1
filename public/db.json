@@ -1192,5 +1192,23 @@
     "stock": 1,
     "price": 20,
     "description": "Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos"
+  },
+
+
+
+
+
+  {
+    "id": "history-p1",
+    "titulo": "Isaac Newton & Albert Einstein 2025",
+    "imagenes": [
+      "./img/more/history/Isaac&Albert2025.jpeg",
+      "./img/more/history/Isaac&Albert2025Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 600,
+    "description": "What you see in the card is the authentic piece of handwritten #/99",
+    "year": "2025"
   }
 ]
