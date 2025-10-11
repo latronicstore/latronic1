@@ -1079,7 +1079,24 @@
     "price": 8,
     "description": "Kangaskhan, year: 2013, Card#: 71 , Series Name: Plasma Blast"
   },
-
+  {
+    "id": "p47",
+    "titulo": "Pikachu ex Japanese 2024",
+    "imagenes": ["./img/new/pokemonnew/PikachuExJapanese2024.jpeg", "./img/new/pokemonnew/PokemonJapaneseBack.jpeg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Pikachu ex Japanese, year: 2024, Card#: 56 , Series Name: Surging Sparks"
+  },
+{
+    "id": "p48",
+    "titulo": "Snorlax V 2020",
+    "imagenes": ["./img/new/pokemonnew/SnorlaxV2020.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Snorlax V, year: 2020, Card#: 141 , Series Name:Sword & Shield"
+  },
 
 
   
@@ -1115,6 +1132,64 @@
     "price": 25,
     "description": "Mickey Mouse 100 Years of Wonder, year: 2023"
   },
+
+  {
+    "id": "Disney-p3",
+    "titulo": "Joy Pixar 2025",
+    "imagenes": [
+      "./img/new/disneynew/Joy2025.jpeg",
+      "./img/new/disneynew/JoyMiddle2025.jpeg",
+      "./img/new/disneynew/Joy2025Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "disney"
+    },
+    "stock": 1,
+    "price": 50,
+    "description": "Joy Pixar #/100, year: 2025"
+  },
+
+{
+    "id": "Disney-p4",
+    "titulo": "Forky Toy story 4 2025",
+    "imagenes": [
+      "./img/new/disneynew/Forky2025.jpeg",
+      "./img/new/disneynew/Forky2025Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "disney"
+    },
+    "stock": 1,
+    "price": 15,
+    "description": "Forky Toy story 4, year: 2025"
+  },
+
+
+
+
+
+
+
+{
+    "id": "Avenger&Marvel-p1",
+    "titulo": "Iron Man Marvel Icons 2025",
+    "imagenes": [
+      "./img/new/disneynew/Forky2025.jpeg",
+      "./img/new/disneynew/Forky2025Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "avenger/marvel"
+    },
+    "stock": 1,
+    "price": 20,
+    "description": "Iron Man Marvel Icons, year: 2025"
+  },
+
+
+
 
 
 
@@ -1200,7 +1275,7 @@
 
   {
     "id": "history-p1",
-    "titulo": "Isaac Newton & Albert Einstein 2025",
+    "titulo": "Isaac Newton & Albert Einstein Handwritten 2025",
     "imagenes": [
       "./img/more/history/Isaac&Albert2025.jpeg",
       "./img/more/history/Isaac&Albert2025Back.jpeg"
@@ -1208,7 +1283,51 @@
     "categoria": { "main": "more", "sub": "history" },
     "stock": 1,
     "price": 600,
-    "description": "What you see in the card is the authentic piece of handwritten #/99",
+    "description": "What you see in the card is the authentic piece of handwritten of Isaac Newton and Albert Einstein #/99",
     "year": "2025"
+  },
+
+{
+    "id": "history-p2",
+    "titulo": "Albert Einstein Handwritten 2023",
+    "imagenes": [
+      "./img/more/history/AlbertEisntein2023.jpeg",
+      "./img/more/history/AlbertEinstein2023Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 300,
+    "description": "What you see in the card is the authentic piece of handwritten of Albert Einstein #/25",
+    "year": "2023"
+  },
+
+  {
+    "id": "history-p3",
+    "titulo": "Abraham Lincoln and John F. Kennedy Piece of News papers 2024",
+    "imagenes": [
+      "./img/more/history/Abraham&John2024.jpeg",
+      "./img/more/history/Abraham&John2024Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 150,
+    "description": "What you see in the card is the authentic piece of news papers",
+    "year": "2024"
+  },
+
+  {
+    "id": "history-p4",
+    "titulo": "President Donald Trump 2023",
+    "imagenes": [
+      "./img/more/history/DonaldTrump2023.jpeg",
+      "./img/more/history/DonaldTrump2023Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 30,
+    "description": "Donald Trump president of the United States 2017-2021",
+    "year": "2023"
   }
+
+
 ]
