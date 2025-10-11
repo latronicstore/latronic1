@@ -1176,12 +1176,12 @@
     "id": "Avenger&Marvel-p1",
     "titulo": "Iron Man Marvel Icons 2025",
     "imagenes": [
-      "./img/new/disneynew/Forky2025.jpeg",
-      "./img/new/disneynew/Forky2025Back.jpeg"
+      "./img/new/Marvel&Avenger/IronMan2025.jpeg",
+      "./img/new/Marvel&Avenger/IronMan2025Back.jpeg"
     ],
     "categoria": {
       "main": "new",
-      "sub": "avenger/marvel"
+      "sub": "avenger&marvel"
     },
     "stock": 1,
     "price": 20,
