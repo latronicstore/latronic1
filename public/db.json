@@ -429,6 +429,19 @@
   },
 
   
+    {
+      "id": "new-p42",
+    "titulo": "KJ Simpson Jr. Rookie Card Signature 2024-25",
+    "imagenes": ["./img/new/basketballnew/KJSimpson2024.jpeg", "./img/new/basketballnew/KJSimpson2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 60,
+    "description": "KJ Simpson Jr. Rookie Card Signature",
+    "year": "2024-25"
+  },
+
+
+  
 
  
 
@@ -1187,6 +1200,39 @@
     "price": 20,
     "description": "Iron Man Marvel Icons, year: 2025"
   },
+  
+  {
+    "id": "Avenger&Marvel-p2",
+    "titulo": "Red Wolf 55th Anniversary 2025",
+    "imagenes": [
+      "./img/new/marvelavenger/redwolf2025.jpeg",
+      "./img/new/marvelavenger/redwolf2025Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "avenger&marvel"
+    },
+    "stock": 1,
+    "price": 25,
+    "description": "Red Wolf 55th Anniversary Marvel, year: 2025"
+  },
+
+  {
+    "id": "Avenger&Marvel-p3",
+    "titulo": "Iron Man Gold 2025",
+    "imagenes": [
+      "./img/new/marvelavenger/IronManGold2025.jpeg",
+      "./img/new/marvelavenger/IronManGold2025Back.jpeg"
+    ],
+    "categoria": {
+      "main": "new",
+      "sub": "avenger&marvel"
+    },
+    "stock": 1,
+    "price": 25,
+    "description": "Iron Man Gold, year: 2025"
+  },
+
 
 
 
