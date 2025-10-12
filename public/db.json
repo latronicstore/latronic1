@@ -691,6 +691,17 @@
 
 
 
+{
+    "id": "olympics-p1",
+    "titulo": "Shilese Jones - Gymnastics - United States Olympic Team  Signature 2024",
+    "imagenes": ["./img/new/olympicsnew/ShileseJonesSignature2024.jpeg", "./img/new/olympicsnew/ShileseJonesSignature2024.jpeg"],
+    "categoria": { "main": "new", "sub": "olympics" },
+    "stock": 1,
+    "price": 40,
+    "description": "Shilese Jones - Gymnastics - United States Olympic Team Signature #/369",
+    "year": "2024"
+  },
+
 
 
   
