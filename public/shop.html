@@ -18,14 +18,26 @@ body {
 }
 
 /* --- ASIDE --- */
-aside { 
-  position: relative; 
-  top: auto; 
-  z-index: 1500; 
+aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;              /* ocupa toda la altura de la ventana */
+  width: 220px;               /* ancho del menú */
+  overflow-y: auto;
+  background: rgba(26, 26, 26, 0.6); /* fondo semitransparente */
+  backdrop-filter: blur(10px); /* efecto de vidrio borroso */
+  padding: 1rem 0.8rem;
+  z-index: 1500;
+  border-right: 1px solid rgba(226, 143, 47, 0.4);
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
 }
-aside h2 { 
-  font-size: 1.5rem; 
-  margin-bottom: 1rem; 
+aside h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #e28f2f;
+  letter-spacing: 1px;
 }
 .menu { 
   list-style: none; 
@@ -34,51 +46,41 @@ aside h2 {
   background: #1a1a1a; 
 }
 .menu>li { 
-  margin-bottom: 0.5rem; 
+  margin-bottom: 2rem; 
   margin-left: 1.2rem; 
   position: relative; 
 }
-.boton-categoria { 
-  display: block; 
-  background: none; 
-  border: none; 
-  color: #fff; 
-  text-align: left; 
-  width: 100%; 
-  padding: 0.1rem; 
-  font-size: 1rem; 
-  cursor: pointer; 
-  transition: background 0.3s; 
-  text-decoration: none; 
-  border-radius: 5px; 
+.boton-categoria {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: #f0f0f0;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
-.boton-categoria:hover, .boton-categoria.active { 
-  background: #e28e2fa9; 
-  color: black; 
-  border-radius: 5px; 
+.boton-categoria:hover {
+  background: rgba(226, 143, 47, 0.25);
+  transform: translateX(4px);
 }
-.submenu { 
-  list-style: none; 
-  padding-left: 0.5rem; 
-  margin: 0; 
-  display: none; 
-  background-color: #1a1a1a; 
-  border-radius: 5px; 
-  position: relative; 
-  z-index: 1501; 
+.submenu {
+  display: none;         /* 🔒 cerrado por defecto */
+  list-style: none;      /* ❌ sin puntos blancos */
+  margin: 0;
+  padding-left: 1rem;    /* espacio para separación visual */
+  border-left: 2px solid rgba(226, 143, 47, 0.3);
 }
-.submenu li { 
-  margin-bottom: 0.3rem; 
+
+.submenu li {
+  list-style: none;       /* por si acaso hay otro nivel */
 }
-.submenu .boton-categoria { 
-  font-size: 0.9rem; 
-  color: #fff; 
-  background: none; 
-  border: none; 
-  text-align: left; 
-  width: 100%; 
-  padding: 0.3rem 0.5rem; 
-  cursor: pointer; 
+.submenu .boton-categoria {
+  font-size: 1rem;
+  padding: 0.4rem 0.7rem;
 }
 .submenu .boton-categoria:hover { 
   background: #f16413b9; 
@@ -104,9 +106,10 @@ aside h2 {
 }
 
 /* --- MAIN --- */
-main { 
-  flex: 1; 
-  padding: 2rem; 
+main {
+  margin-left: 230px; /* espacio para el menú */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
 }
 footer { 
   text-align: center; 
@@ -455,6 +458,29 @@ aside.active ~ main #titulo-principal {
 #search-input:focus {
   border-color: #f16413b9;
   box-shadow: 0 0 8px #f16413b9;
+}
+aside.scrolled {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(226, 143, 47, 0.6);
+}
+/* --- QUITAR LÍNEA BLANCA DEBAJO DE HOME --- */
+.boton-categoria {
+  border: none;           /* elimina línea inferior si existía */
+  box-shadow: none;       /* elimina sombra si la tuviera */
+}
+
+.boton-categoria:focus,
+.boton-categoria:active {
+  outline: none;          /* elimina contorno blanco al hacer clic */
+}
+
+aside ul,
+aside li {
+  list-style: none;       /* sin puntos */
+  margin: 0;
+  padding: 0;        /* elimina cualquier borde */
+
 }
 
 

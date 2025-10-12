@@ -428,8 +428,7 @@
     "year": "2024"
   },
 
-  
-    {
+  {
       "id": "new-p42",
     "titulo": "KJ Simpson Jr. Rookie Card Signature 2024-25",
     "imagenes": ["./img/new/basketballnew/KJSimpson2024.jpeg", "./img/new/basketballnew/KJSimpson2024Back.jpeg"],
@@ -439,9 +438,73 @@
     "description": "KJ Simpson Jr. Rookie Card Signature",
     "year": "2024-25"
   },
+{
+      "id": "new-p43",
+    "titulo": "Lebron James Holo 2019-20",
+    "imagenes": ["./img/new/basketballnew/LebronJames2019.jpeg", "./img/new/basketballnew/LebronJames2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Lebron James Holo",
+    "year": "2019-20"
+  },
+{
+      "id": "new-p44",
+    "titulo": "Michael Jordan North Carolina's 1989",
+    "imagenes": ["./img/new/basketballnew/MichaelJordan1989.jpeg", "./img/new/basketballnew/MichaelJordan1989Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Michael Jordan North Carolina's College Rockie of the year",
+    "year": "1989"
+  },
+  {
+      "id": "new-p45",
+    "titulo": "Curry, James & Durant Olympics 2024",
+    "imagenes": ["./img/new/basketballnew/CurryJamesDurantOlympics.jpeg", "./img/new/basketballnew/CurryJamesDurantOlympicsBacks.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Curry, James & Durant Olympics",
+    "year": "2024"
+  },
+    {
+      "id": "new-p46",
+    "titulo": "Max Strus Signature 2021-22 ",
+    "imagenes": ["./img/new/basketballnew/MaxStrusSignature.jpeg", "./img/new/basketballnew/MaxStrusSignature2021Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Max Strus Signature",
+    "year": "2021-22"
+  },
+  {
+      "id": "new-p47",
+    "titulo": "Mark Aguire, Signature 2023-24",
+    "imagenes": ["./img/new/basketballnew/MarkAguiree2023.jpeg", "./img/new/basketballnew/MarkAguireSigantureBack.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Mark Aguire was the first pick in the draft 1981, Signature",
+    "year": "2023-24"
+  },
+{
+      "id": "new-p48",
+    "titulo": "Nate Archibald, Kareem Abdul-Jabbar & Spencer Haywood 1972-73",
+    "imagenes": ["./img/new/basketballnew/NateKareemSpencer.jpeg", "./img/new/basketballnew/NateKareemSpencerBack.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 50,
+    "description": "Nate Archibald, Kareem Abdul-Jabbar & Spencer Haywood",
+    "year": "1972-73"
+  },
 
 
-  
+
+
+
+
+
 
  
 
@@ -452,7 +515,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 15,
-    "description": "Babe Ruth All star team 1934, year: 1994",
+    "description": "Babe Ruth All star team 1934",
     "year": "1994"
   },
   {
@@ -462,7 +525,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 40,
-    "description": "Victor Diaz Signature, year: 2004",
+    "description": "Victor Diaz Signature",
     "year": "2004"
   },
   {
@@ -472,7 +535,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 15,
-    "description": "Yadier Molina St. Louis, year: 2024",
+    "description": "Yadier Molina St. Louis",
     "year": "2024"
   },
   {
@@ -482,7 +545,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 20,
-    "description": "Alex Rodriguez New York Yankees, year: 2024",
+    "description": "Alex Rodriguez New York Yankees",
     "year": "2024"
   },
   {
@@ -492,7 +555,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Chris Gomez, year: 1995",
+    "description": "Chris Gomez",
     "year": "1995"
   },
   {
@@ -502,7 +565,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Joe Jackson 1912, year: 2024",
+    "description": "Joe Jackson 1912",
     "year": "2024"
   },
   {
@@ -512,7 +575,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Eduardo Perez, year: 1995",
+    "description": "Eduardo Perez",
     "year": "1995"
   },
   {
@@ -522,7 +585,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 15,
-    "description": "Albert Belle 2 of 12, year: 1995",
+    "description": "Albert Belle 2 of 12",
     "year": "1995"
   },
   {
@@ -532,7 +595,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 20,
-    "description": "Michael Jordan, year: 1994",
+    "description": "Michael Jordan",
     "year": "1994"
   },
   {
@@ -542,7 +605,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 2,
     "price": 10,
-    "description": "Armando Benitez, year: 1995",
+    "description": "Armando Benitez",
     "year": "1995"
   },
   {
@@ -552,7 +615,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Roberto Alomar, year: 1993",
+    "description": "Roberto Alomar",
     "year": "1993"
   },
   {
@@ -562,7 +625,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Tom Pagnozzi Holo, year: 1995",
+    "description": "Tom Pagnozzi Holo",
     "year": "1995"
   },
   {
@@ -572,7 +635,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Ruben Rivera, year: 1994",
+    "description": "Ruben Rivera",
     "year": "1994"
   },
   {
@@ -582,7 +645,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "National League, year: 2025",
+    "description": "National League",
     "year": "2025"
   },
   {
@@ -592,7 +655,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 12,
-    "description": "Robin Ventura, year: 2024",
+    "description": "Robin Ventura",
     "year": "2024"
   },
   {
@@ -602,7 +665,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Yanquiel Fernandez, year: 2024",
+    "description": "Yanquiel Fernandez",
     "year": "2024"
   },
   {
@@ -612,7 +675,7 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Eury Perez, year: 2024",
+    "description": "Eury Perez",
     "year": "2024"
   },
   {
@@ -622,10 +685,66 @@
     "categoria": { "main": "new", "sub": "baseball" },
     "stock": 1,
     "price": 10,
-    "description": "Omar Vizquel, year: 2024",
+    "description": "Omar Vizquel",
     "year": "2024"
   },
+
+  {
+    "id": "baseball-p19",
+    "titulo": "Gabe Gross 2001",
+    "imagenes": ["./img/new/baseballnew/GabeGross2001.jpeg", "./img/new/baseballnew/GabeGross2001Back.jpg"],
+    "categoria": { "main": "new", "sub": "baseball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Gabe Gross PSA 7 Mint",
+    "year": "2001"
+  },
+
+    {
+    "id": "baseball-p20",
+    "titulo": "Bud Smith Draft Pick 2001",
+    "imagenes": ["./img/new/baseballnew/BudSmith2001.jpeg", "./img/new/baseballnew/BudSmith2001Back.jpeg"],
+    "categoria": { "main": "new", "sub": "baseball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Bud Smith Draft Pick, PSA 8 Mint",
+    "year": "2001"
+  },
+
+  {
+    "id": "baseball-p21",
+    "titulo": "Mark McGwire 1991",
+    "imagenes": ["./img/new/baseballnew/MarkMcGwire1991.jpeg", "./img/new/baseballnew/MarkMcGwire1991Back.jpeg"],
+    "categoria": { "main": "new", "sub": "baseball" },
+    "stock": 1,
+    "price": 30,
+    "description": "BMark McGwire, PSA 7 Mint",
+    "year": "1991"
+  },
   
+  
+
+
+  
+
+
+
+
+{
+    "id": "football-p1",
+    "titulo": "Dez White 2000",
+    "imagenes": ["./img/new/footballnew/DezWhite2000.jpeg", "./img/new/footballnew/DezWhite2000Back.jpeg"],
+    "categoria": { "main": "new", "sub": "football" },
+    "stock": 1,
+    "price": 50,
+    "description": "Dez White #/1000, year: 2000",
+    "year": "2024"
+  },
+
+
+
+
+
 
 
 
@@ -1121,6 +1240,74 @@
     "price": 20,
     "description": "Snorlax V, year: 2020, Card#: 141 , Series Name:Sword & Shield"
   },
+{
+    "id": "p49",
+    "titulo": "Pikachu 1st edition 1999",
+    "imagenes": ["./img/new/pokemonnew/pikachu1stediton.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 80,
+    "description": "Pikachu First edition, year: 1999, Card#: 60 , Series Name: Jungle 1st edition"
+  },
+{
+    "id": "p50",
+    "titulo": "Mega Venusaur ex Japanese",
+    "imagenes": ["./img/new/pokemonnew/MegaVenusaurEx.jpeg", "./img/new/pokemonnew/PokemonJapaneseBack.jpeg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 30,
+    "description": "Mega Venusaur ex Japanese, year: 2025, Card#: 3 , Series Name: Mega Evolution Mega Brave Japanese"
+  },
+{
+    "id": "p51",
+    "titulo": "Charizard ex Japanese",
+    "imagenes": ["./img/new/pokemonnew/Charizardex2024.jpg", "./img/new/pokemonnew/japaneseBack6.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 30,
+    "description": "Charizard ex Japanese, year: 2024, Card#: 54 , Series Name: Paldean Fates"
+  },
+{
+    "id": "p52",
+    "titulo": "Vaporeon GX 2019",
+    "imagenes": ["./img/new/pokemonnew/Vaporeon2019.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Vaporeon GX, year: 2019, Card#: SM172 , Series Name: SM Black Star promos"
+  },
+{
+    "id": "p53",
+    "titulo": "Jolteon GX 2019",
+    "imagenes": ["./img/new/pokemonnew/JolteonGX2019.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Jolteon GX, year: 2019, Card#: SM173 , Series Name: SM Black Star promos"
+  },
+{
+    "id": "p54",
+    "titulo": "Flareon GX 2019",
+    "imagenes": ["./img/new/pokemonnew/FlareonGX2019.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Jolteon GX, year: 2019, Card#: SM171 , Series Name: SM Black Star promos"
+  },
+{
+    "id": "p55",
+    "titulo": "Pikachu 1999",
+    "imagenes": ["./img/new/pokemonnew/PikachuFat1999.jpg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Pikachu, year: 1999, Card#: 58 , Series Name: Base Unlimited (Shadow)"
+  },
+
+
+
+
+  
 
 
   
