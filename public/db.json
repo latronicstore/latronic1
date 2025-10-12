@@ -508,7 +508,16 @@
     "description": "Michael Jordan, Dominique Wilkins & Karl Malone",
     "year": "1993"
   },
-
+{
+    "id": "new-p50",
+    "titulo": "Larry Bird Holographic 1992 Special Edition, Yesterday, Today, Forever",
+    "imagenes": ["./img/new/basketballnew/LarryBird1992All.jpeg", "./img/new/basketballnew/LarryBird1992Cardsmiddle.jpeg", "./img/new/basketballnew/LarryBirdcards1992.jpeg", "./img/new/basketballnew/LarryBird1992cardsBack.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 60,
+    "description": "Larry Bird Holographic Special Edition ",
+    "year": "1993"
+  },
 
 
 
