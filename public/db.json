@@ -498,7 +498,16 @@
     "description": "Nate Archibald, Kareem Abdul-Jabbar & Spencer Haywood",
     "year": "1972-73"
   },
-
+{
+      "id": "new-p49",
+    "titulo": "Jordan, D. Wilkins & K. Malone 1993",
+    "imagenes": ["./img/new/basketballnew/JordanWilkinsMalone1993.jpeg", "./img/new/basketballnew/JordanWilkinsMalone1993Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Michael Jordan, Dominique Wilkins & Karl Malone",
+    "year": "1993"
+  },
 
 
 
@@ -1571,6 +1580,97 @@
     "price": 30,
     "description": "Donald Trump president of the United States 2017-2021",
     "year": "2023"
+  },
+
+
+
+
+
+
+
+  {
+    "id": "toys-p1",
+    "titulo": "Beanie Baby, USA July 4, 2000",
+    "imagenes": [
+      "./img/more/toys/July42000.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 100,
+    "description": "Ty Beanie Baby rare, USA July 4, 2000 ",
+    "year": "2000"
+  },
+  {
+    "id": "toys-p2",
+    "titulo": "Ty Beanie Baby-Glacier The pink penguin, 2007",
+    "imagenes": [
+      "./img/more/toys/BabyGlacierPenguin.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 40,
+    "description": "Ty Beanie rare, Baby Glacier The Pink Penguin",
+    "year": "2007"
+  },
+    {
+    "id": "toys-p3",
+    "titulo": "Ty Beanie rare, December Birthday Bear Beanie Baby, 2001-2002",
+    "imagenes": [
+      "./img/more/toys/DecemberBirthdayBearBeanie.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 30,
+    "description": "Ty Beanie rare, December Birthday Bear Beanie Baby",
+    "year": "2001-02"
+  },
+     {
+    "id": "toys-p4",
+    "titulo": "Ty Beanie rare, Baby 1999 signature Bear",
+    "imagenes": [
+      "./img/more/toys/TyBeanieBaby1999.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 300,
+    "description": "Ty Beanie rare, Baby 1999 signature Bear",
+    "year": "1999"
+  },
+     {
+    "id": "toys-p5",
+    "titulo": "Ty Beanie rare, Baby Holiday, 2001",
+    "imagenes": [
+      "./img/more/toys/TyBeanieHoliday2001.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 300,
+    "description": "Ty Beanie rare, Baby Holiday",
+    "year": "2001"
+  },
+    {
+    "id": "toys-p6",
+    "titulo": "Ty Beanie rare, Baby Ted-e and old face, 2002",
+    "imagenes": [
+      "./img/more/toys/TyBeanieOldface.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 20,
+    "description": "Ty Beanie rare, Baby Ted-e and old face",
+    "year": "2002"
+  },
+   {
+    "id": "toys-p7",
+    "titulo": "Ty Beanie rare, Baby Echo The Dolphin, 1996",
+    "imagenes": [
+      "./img/more/toys/EchoTheDolphin.jpg"
+    ],
+    "categoria": { "main": "more", "sub": "toys" },
+    "stock": 1,
+    "price": 200,
+    "description": "Ty Beanie rare, Baby Echo The Dolphin",
+    "year": "1996"
   }
 
 
