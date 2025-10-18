@@ -1534,7 +1534,7 @@
   {
     "id": "p60",
     "titulo": "Lapras Scarlet Violet Japanese 2023",
-    "imagenes": ["./img/new/pokemonnew/LaprasJapanese2025.jpeg", "./img/new/pokemonnew/LaprasJapanese2025Back.jpg"],
+    "imagenes": ["./img/new/pokemonnew/LaprasJapanese2025.jpeg", "./img/new/pokemonnew/PokemonJapaneseBack.jpeg"],
     "categoria": {"main": "new", "sub": "pokemon"},
     "stock": 1,
     "price": 20,
@@ -1574,7 +1574,7 @@
   {
     "id": "p64",
     "titulo": "Oinkologne ex 2023",
-    "imagenes": ["./img/new/pokemonnew/Parasect2022.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "imagenes": ["./img/new/pokemonnew/OinkologneEx2023.jpeg", "./img/new/pokemonnew/PokemonJapaneseBack.jpg"],
     "categoria": {"main": "new", "sub": "pokemon"},
     "stock": 1,
     "price": 20,
