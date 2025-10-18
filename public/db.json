@@ -675,16 +675,6 @@
   },
 
 {
-    "id": "new-p66",
-    "titulo": "Stephen Curry 2020-21",
-    "imagenes": ["./img/new/basketballnew/StephenCurry2020.jpeg", "./img/new/basketballnew/StephenCurryBack2019.jpeg"],
-    "categoria": { "main": "new", "sub": "basketball" },
-    "stock": 1,
-    "price": 30,
-    "description": "Stephen Curry Golden State Warriors since 2010",
-    "year": "2020-21"
-  },
-{
     "id": "new-p67",
     "titulo": "Karl Malone Memorabilia 2001-02",
     "imagenes": ["./img/new/basketballnew/KarlMalone2002.jpeg", "./img/new/basketballnew/KarlMalone2002Back.jpeg"],
