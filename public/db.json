@@ -518,8 +518,186 @@
     "description": "Larry Bird Holographic Special Edition ",
     "year": "1993"
   },
+{
+    "id": "new-p51",
+    "titulo": "Carmelo Anthony Authentic Profiles 2008",
+    "imagenes": ["./img/new/basketballnew/CarmeloAnthony2008.jpeg", "./img/new/basketballnew/CarmeloAnthony2008Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "Carmelo Anthony Authentic profile",
+    "year": "2008"
+  },
+  {
+    "id": "new-p52",
+    "titulo": "Lebron James Intriguing Players 2021-22",
+    "imagenes": ["./img/new/basketballnew/LebronJamesIntriguingPlayers2021.jpeg", "./img/new/basketballnew/LebronJamesIntriguinPlayer2021Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "Lebron James Intriguing Players",
+    "year": "2021-22"
+  },
+{
+    "id": "new-p53",
+    "titulo": "Allen Iverson Finest Sterling 1997",
+    "imagenes": ["./img/new/basketballnew/AllenIverson1997.jpeg", "./img/new/basketballnew/AllenIverson1997Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Allen Iverson Finest Sterling",
+    "year": "1997"
+  },
+{
+    "id": "new-p54",
+    "titulo": "NBA East All-Stars Team 2012",
+    "imagenes": ["./img/new/basketballnew/NBAEastAllStartTeam2012.jpeg", "./img/new/basketballnew/NBAEastAllStartTeam2012Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "NBA East All-Starts Team",
+    "year": "2012"
+  },
+  {
+    "id": "new-p55",
+    "titulo": "Michael Jordan Point men 1997",
+    "imagenes": ["./img/new/basketballnew/MichaelJordanPointman1997.jpeg", "./img/new/basketballnew/MichaelJordanPointmen1997Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 2,
+    "price": 20,
+    "description": "Jordan Point men",
+    "year": "1997"
+  },
+{
+    "id": "new-p56",
+    "titulo": "Kobe Bryant 2001",
+    "imagenes": ["./img/new/basketballnew/KobeBryant2001.jpeg", "./img/new/basketballnew/KobeBryant2001Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Kobe Bryant",
+    "year": "2001"
+  },
+{
+    "id": "new-p57",
+    "titulo": "Chicago Bull NBA Champions 1990-91",
+    "imagenes": ["./img/new/basketballnew/MichaelJordanChampion1991.jpeg", "./img/new/basketballnew/MichaelJordanChampion1991Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Chicago Bull NBA Champions",
+    "year": "1990-91"
+  },
+{
+    "id": "new-p58",
+    "titulo": "Michael Jordan 1994",
+    "imagenes": ["./img/new/basketballnew/MichaelJordancartoon1994.jpeg", "./img/new/basketballnew/MichaelJordanCartoon1994Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 2,
+    "price": 15,
+    "description": "Michael Jordan",
+    "year": "1994"
+  },
+
+{
+    "id": "new-p59",
+    "titulo": "Victor Wembanyama 2024-25",
+    "imagenes": ["./img/new/basketballnew/VictorWembanyama.jpeg", "./img/new/basketballnew/VictorWembanyama2024Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 15,
+    "description": "Victor Wenbanyama defensive player of the year",
+    "year": "2024-25"
+  },
+
+{
+    "id": "new-p60",
+    "titulo": "Luka Doncic 2019-20",
+    "imagenes": ["./img/new/basketballnew/LukaDoncic2019.jpeg", "./img/new/basketballnew/LukaDoncic2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 18,
+    "description": "Luka Doncic a player who like to have an extra pair of shoes",
+    "year": "2019-20"
+  },
+{
+    "id": "new-p61",
+    "titulo": "Nikola Jokic 2024-25",
+    "imagenes": ["./img/new/basketballnew/NikolaJokic2019.jpeg", "./img/new/basketballnew/NikolaJokic2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 18,
+    "description": "Nikola Jokic defense player",
+    "year": "2019-20"
+  },
+  {
+    "id": "new-p62",
+    "titulo": "Ray Allen 2019-20",
+    "imagenes": ["./img/new/basketballnew/RayAllen2019.jpeg", "./img/new/basketballnew/RayAllen2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Ray Allen is the only player who give clear shots and all-time leader in 3 pointer ",
+    "year": "2019-20"
+  },
+
+{
+    "id": "new-p63",
+    "titulo": "Stephen Curry Davison College 2022",
+    "imagenes": ["./img/new/basketballnew/StephenCurry2022.jpeg", "./img/new/basketballnew/StephenCurry2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Stephen Curry Davison College ",
+    "year": "2019-20"
+  },
 
 
+{
+    "id": "new-p64",
+    "titulo": "Lebron James & Carmelo Anthony NBA All-Star",
+    "imagenes": ["./img/new/basketballnew/Lebron&CarmeloAllstar2004.jpeg", "./img/new/basketballnew/Lebron&CarmeloAllstar2004Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 25,
+    "description": "Lebron James & Carmelo Anthony Rookie team NBA All-Star in Los Angeles",
+    "year": "2004"
+  },
+{
+    "id": "new-p65",
+    "titulo": "Stephen Curry 2020-21",
+    "imagenes": ["./img/new/basketballnew/StephenCurry2020.jpeg", "./img/new/basketballnew/StephenCurryBack2019.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Stephen Curry Golden State Warriors since 2010",
+    "year": "2020-21"
+  },
+
+{
+    "id": "new-p66",
+    "titulo": "Stephen Curry 2020-21",
+    "imagenes": ["./img/new/basketballnew/StephenCurry2020.jpeg", "./img/new/basketballnew/StephenCurryBack2019.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 30,
+    "description": "Stephen Curry Golden State Warriors since 2010",
+    "year": "2020-21"
+  },
+{
+    "id": "new-p67",
+    "titulo": "Karl Malone Memorabilia 2001-02",
+    "imagenes": ["./img/new/basketballnew/KarlMalone2002.jpeg", "./img/new/basketballnew/KarlMalone2002Back.jpeg"],
+    "categoria": { "main": "new", "sub": "basketball" },
+    "stock": 1,
+    "price": 40,
+    "description": "Karl Malone warm-up pants Utah Jazz",
+    "year": "2001-02"
+  },
+
+
+
+  
 
 
 
@@ -1322,10 +1500,96 @@
     "description": "Pikachu, year: 1999, Card#: 58 , Series Name: Base Unlimited (Shadow)"
   },
 
+  {
+    "id": "p56",
+    "titulo": "Eevee Japanese 2025",
+    "imagenes": ["./img/new/pokemonnew/EeveeJapanese2025.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Eevee Japanese, year: 2025, Card#: 125 , Series Name: Envolving Skies"
+  },
 
+  {
+    "id": "p57",
+    "titulo": "Flareon Japanese 2025",
+    "imagenes": ["./img/new/pokemonnew/FlareonJapanese2025.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Flareon  Japanese, year: 2025, Card#: SWSH041 , Series Name: SWSH Black Star Promos"
+  },
 
+  {
+    "id": "p58",
+    "titulo": "Vaporeon Japanese 2025",
+    "imagenes": ["./img/new/pokemonnew/vaporeonJapanese2025.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Vaporeon Japanese, year: 2025, Card#: 30 , Series Name: Vivid Voltage"
+  },
+
+  {
+    "id": "p59",
+    "titulo": "Seaking 2025",
+    "imagenes": ["./img/new/pokemonnew/Seaking2025.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 12,
+    "description": "Seaking, year: 2025, Card#: 21 , Series Name: Prismatic Evolutions"
+  },
 
   
+  {
+    "id": "p60",
+    "titulo": "Lapras Scarlet Violet Japanese 2023",
+    "imagenes": ["./img/new/pokemonnew/LaprasJapanese2025.jpeg", "./img/new/pokemonnew/LaprasJapanese2025Back.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Lapras, year: 2023, Card#: 131/165 , Series Name: Scarlet & Violet Pokemon Card 151(japanese)"
+  },
+
+{
+    "id": "p61",
+    "titulo": "Aerodactyl 1999",
+    "imagenes": ["./img/new/pokemonnew/Aerodactyl1999.jpg", "./img/new/pokemonnew/pokemonBack4.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 15,
+    "description": "Lapras, year: 1999, Card#: 16 , Series Name: Base Set"
+  },
+
+  {
+    "id": "p62",
+    "titulo": "Gyarados ex 2023",
+    "imagenes": ["./img/new/pokemonnew/GyaradosEx2023.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 15,
+    "description": "Gyarados ex, year: 2023, Card#: 45 , Series Name: Scarlet & Violet"
+  },
+  
+  {
+    "id": "p63",
+    "titulo": "Parasect 2022",
+    "imagenes": ["./img/new/pokemonnew/Parasect2022.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Gyarados ex, year: 2022, Card#: TG01 , Series Name: Lost Origin Trainer Gallery"
+  },
+
+  {
+    "id": "p64",
+    "titulo": "Oinkologne ex 2023",
+    "imagenes": ["./img/new/pokemonnew/Parasect2022.jpeg", "./img/new/pokemonnew/PokemonBack5.jpg"],
+    "categoria": {"main": "new", "sub": "pokemon"},
+    "stock": 1,
+    "price": 20,
+    "description": "Oingcologne ex, year: 2023, Card#: 158, Series Name: Scarlet & Violet"
+  },
 
 
   
@@ -1460,7 +1724,7 @@
   
   {
     "id": "used-p1",
-    "titulo": "Charmeleon 1999",
+    "titulo": "Charmeleon 1999 Used",
     "imagenes": [
       "./img/used/pokemonused/charmeleon1995.jpg",
       "./img/pokemonused/backpokemon2.jpg"
@@ -1472,7 +1736,7 @@
   },
   {
     "id": "used-p2",
-    "titulo": "Snorlax #XY179 Holo 2013 PSA 2",
+    "titulo": "Snorlax #XY179 Holo 2013 PSA 2 Used",
     "imagenes": [
       "./img/used/pokemonused/snorlax2016.jpeg",
       "./img/used/pokemonused/snorlax2016back.jpeg"
@@ -1484,7 +1748,7 @@
   },
   {
     "id": "used-p3",
-    "titulo": "Rayquaza-GX 2018 PSA 5",
+    "titulo": "Rayquaza-GX 2018 PSA 5 Used",
     "imagenes": [
       "./img/used/pokemonused/rayquaza2018.jpeg",
       "./img/used/pokemonused/rayquazaback.jpeg"
@@ -1520,7 +1784,7 @@
   },
   {
     "id": "used-p6",
-    "titulo": "Charizard EX Black Star Promo 2014 PSA 1 mint",
+    "titulo": "Charizard EX Black Star Promo 2014 PSA 1 mint Used",
     "imagenes": [
       "./img/used/pokemonused/charizardEX2014PSA.jpeg",
       "./img/used/pokemonused/charizardEX2014back.jpeg"
@@ -1572,7 +1836,7 @@
     ],
     "categoria": { "main": "more", "sub": "history" },
     "stock": 1,
-    "price": 150,
+    "price": 80,
     "description": "What you see in the card is the authentic piece of news papers",
     "year": "2024"
   },
@@ -1591,7 +1855,32 @@
     "year": "2023"
   },
 
-
+{
+    "id": "history-p5",
+    "titulo": "Morgan, Rockefeller, Carnegie and Vanderbilt 1800s edition, 2024",
+    "imagenes": [
+      "./img/more/history/MorganRockefellerCarnegieVanderbilt2024.jpeg",
+      "./img/more/history/MorganRockefellerCarnegieVanderbilt2024Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 200,
+    "description": "Morgan, Rockefeller, Carnegie and Vanderbilt 1800s edition newspaper and handwrittend pieces",
+    "year": "2024"
+  },
+{
+    "id": "history-p5",
+    "titulo": "George Washington and Abraham Lincoln 2024",
+    "imagenes": [
+      "./img/more/history/George&Abraham2024.jpeg",
+      "./img/more/history/George&Abraham2024Back.jpeg"
+    ],
+    "categoria": { "main": "more", "sub": "history" },
+    "stock": 1,
+    "price": 500,
+    "description": "George Washington and Abraham Lincoln authentic pieces of handwritten",
+    "year": "2024"
+  },
 
 
 
