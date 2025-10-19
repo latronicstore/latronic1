@@ -217,6 +217,10 @@ main { flex: 1; padding: 2rem; }
   }
 }
 
+.title-up{
+  margin-top:-25rem;
+}
+
 
 </style>
 </head>
@@ -224,10 +228,32 @@ main { flex: 1; padding: 2rem; }
 <body>
 <div class="wrapper">
     <aside>
-         <div class="mobile-home" style="display: none;">
-           <h1>Welcome to LaTRONIC Store</h1>
-           <a href="shop.html"><button class="shop-btn">Shop Now</button></a>
+      <!-- Ticker de anuncios -->
+<div class="ticker-container">
+  <div class="ticker-track">
+    <div class="ticker-item">🚀 New arrivals every week!</div>
+    <div class="ticker-item">💳 Debit or Credit card</div>
+    <div class="ticker-item">📦 Free shipping on all orders</div>
+    <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
+  </div>
+</div>
+
+<!-- Producto destacado -->
+        <div id="featured-product" class="featured-product">Top items</div>
+
+        <!-- Carrusel con los otros top -->
+        <div class="aside-carousel">
+            <div class="aside-carousel-track" id="aside-carousel-track"></div>
+            <button class="carousel-btn carousel-btn-left" id="prev">&#8249;</button>
+            <button class="carousel-btn carousel-btn-right" id="next">&#8250;</button>
         </div>
+
+         <div class="mobile-home" style="display: none;">
+  <h1 class="title-up">Welcome to LaTRONIC Store</h1>
+  <a href="shop.html"><button class="shop-btn">Shop Now</button></a>
+  
+</div>
+
         
 
         <!-- Carrusel de Anuncios -->
@@ -246,17 +272,7 @@ main { flex: 1; padding: 2rem; }
     </div>
   </div>
 </div>
-        <!-- Producto destacado -->
-        <div id="featured-product" class="featured-product">Top items</div>
-
-        <!-- Carrusel con los otros top -->
-        <div class="aside-carousel">
-            <div class="aside-carousel-track" id="aside-carousel-track"></div>
-            <button class="carousel-btn carousel-btn-left" id="prev">&#8249;</button>
-            <button class="carousel-btn carousel-btn-right" id="next">&#8250;</button>
-        </div>
-
-       
+     
 
 
         <footer>
@@ -265,16 +281,6 @@ main { flex: 1; padding: 2rem; }
             <div>ⓒ 2025 LaTRONIC LLC</div>
         </footer>
     </aside>
-
-    <!-- Barra de anuncios estilo bolsa -->
-<div class="ticker-container">
-  <div class="ticker-track">
-    <div class="ticker-item">🚀 New arrivals every week!</div>
-    <div class="ticker-item">💳 Debit or Credit card</div>
-    <div class="ticker-item">📦 Free shipping on all orders</div>
-    <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
-  </div>
-</div>
 
 
     <main>
