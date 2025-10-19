@@ -500,10 +500,79 @@ aside li {
 
 }
 
+/* --- TICKER SOLO EN MÓVILES --- */
+.mobile-ticker {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-ticker {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #e28f2f, #f16413b9);
+    color: #fff;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 4000;
+    padding: 10px 0;
+  }
+
+  /* Contenedor animado */
+  .mobile-ticker span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: tickerScroll 60s linear infinite; /* ← Duración ajustable */
+  }
+
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* Efecto de entrada suave */
+  @keyframes fadeInTicker {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mobile-ticker {
+    animation: fadeInTicker 1.5s ease-in forwards;
+  }
+}
+
+  /* Mueve el botón hamburguesa un poco más abajo para que no se tape */
+  .hamburger {
+    top: 45px;
+  }
+
+  /* Ajusta el menú al abrir */
+  aside.active {
+    margin-top: 45px;
+  }
+
+  /* Baja el contenido principal */
+  main {
+    margin-top: 45px;
+  }
+
 
 </style>
 </head>
 <body>
+<div class="mobile-ticker">
+  <span>
+    🚀 Welcome to LaTRONIC Store — Your #1 Source for New and Used Trading Cards, Collectibles, History Pieces and more! 
+    💥 Discover new arrivals every week — Pokémon, NBA, MLB, NFL, Games, History pieces and more! 
+    🎯 Free shipping — We're open to negotiate with you 24/7 — ✉️Email us at: latronicstore@gmail.com — Shop now and join the LaTRONIC community! 🏆
+  </span>
+</div>
+
+
 <div class="hamburger">&#9776;</div>
 
 <aside>
@@ -567,6 +636,7 @@ aside li {
     </li>  
   </ul>
 </aside>
+
 
 <main>
   <h1 id="titulo-principal">All Products</h1>
