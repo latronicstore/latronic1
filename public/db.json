@@ -908,6 +908,17 @@
     "year": "1991"
   },
   
+    {
+    "id": "baseball-p22",
+    "titulo": "Mike Cameron 2004",
+    "imagenes": ["./img/new/baseballnew/MikeCameron2004.jpeg", "./img/new/baseballnew/MikeCameron2004Middle.jpeg", "./img/new/baseballnew/MikeCameron2004back.jpeg"],
+    "categoria": { "main": "new", "sub": "baseball" },
+    "stock": 1,
+    "price": 20,
+    "description": "Mike Cameron the two-time gold glove recipient, 633/750",
+    "year": "2004"
+  },
+  
   
 
 
@@ -927,6 +938,18 @@
     "year": "2024"
   },
 
+
+
+{
+    "id": "Hockey-p1",
+    "titulo": "Kieffer Bellows Rookie Memorabilia 2020-21 ",
+    "imagenes": ["./img/new/hockeynew/KiefferBellows2020meorabilia.jpeg", "./img/new/hockeynew/KiefferBellows2020MemorabiliaBack.jpeg"],
+    "categoria": { "main": "new", "sub": "hockey" },
+    "stock": 1,
+    "price": 50,
+    "description": "Kieffer Bellows Rookie Memorabilia 373/599,",
+    "year": "2020-21"
+  },
 
 
 
@@ -980,6 +1003,40 @@
 
 
 
+
+
+ {
+    "id": "racecar-p1",
+    "titulo": "Joey Logano 2019 NASCAR",
+    "imagenes": ["./img/new/racecarnew/JoeyLogano2019.jpeg", "./img/new/racecarnew/JoeyLogano2019Back.jpeg"],
+    "categoria": { "main": "new", "sub": "race-car" },
+    "stock": 1,
+    "price": 15,
+    "description": "Joey Logano, Nascar, Velocity",
+    "year": "2019"
+  },
+  
+   {
+    "id": "racecar-p2",
+    "titulo": "Bud Moore Engineering 1994",
+    "imagenes": ["./img/new/racecarnew/BudMoore1994.jpeg", "./img/new/racecarnew/BudMooreBack.jpeg"],
+    "categoria": { "main": "new", "sub": "race-car" },
+    "stock": 1,
+    "price": 10,
+    "description": "Bud Moore Engineering Ford quality care Ford 1994",
+    "year": "1994"
+  },
+
+ {
+    "id": "racecar-p3",
+    "titulo": "Mark Martin winner of 1993 races",
+    "imagenes": ["./img/new/racecarnew/MarkMartin1994.jpeg", "./img/new/racecarnew/MarkMartin1994Back.jpeg"],
+    "categoria": { "main": "new", "sub": "race-car" },
+    "stock": 1,
+    "price": 15,
+    "description": "Mark Martin winner 1993 races",
+    "year": "1994"
+  },
 
 
 
@@ -1783,6 +1840,62 @@
     "stock": 1,
     "price": 20,
     "description": "Charizard EX Black Star Promo 2014 PSA 1 mint, year: 2014, Series Name: XY Black Star Promos"
+  },
+
+
+
+
+ {
+    "id": "game-p1",
+    "titulo": "Pokemon Ultra Moon 2017 Nintendo 3DS-Used",
+    "imagenes": [
+      "./img/used/Games/PokemonUltraMoon2017.jpeg",
+      "./img/used/Games/PokemonUltraMoon2017Back.jpeg",
+      "./img/used/Games/PokemonUltraMoon2017Case.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "games" },
+    "stock": 1,
+    "price": 70,
+    "description": "Pokemon Ultra Moon 2017 for Nintendo 3DS console-Used"
+  },
+   {
+    "id": "game-p2",
+    "titulo": "Pokemon 2013 Nintendo 3DS-Used",
+    "imagenes": [
+      "./img/used/Games/pokemon2013.jpeg",
+      "./img/used/Games/pokemon2013Back.jpeg",
+      "./img/used/Games/pokemon2013Case.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "games" },
+    "stock": 1,
+    "price": 30,
+    "description": "Pokemon 2013 for Nintendo 3DS console-Used"
+  },
+{
+    "id": "game-p3",
+    "titulo": "Pokemon Omega Ruby 2014 Nintendo 3DS-Used",
+    "imagenes": [
+      "./img/used/Games/PokemonOmegaRuby2014.jpeg",
+      "./img/used/Games/PokemonOmegaRuby2014Back.jpeg",
+      "./img/used/Games/PokemonOmegaRuby2014Case.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "games" },
+    "stock": 1,
+    "price": 40,
+    "description": "Pokemon Omega Ruby 2014 for Nintendo 3DS console-Used"
+  },
+  {
+    "id": "game-p4",
+    "titulo": "Pokemon Sun 2016 Nintendo 3DS-Used",
+    "imagenes": [
+      "./img/used/Games/PokemonSun2016.jpeg",
+      "./img/used/Games/PokemonSun2016Back.jpeg",
+      "./img/used/Games/PokemonSun2016Case.jpeg"
+    ],
+    "categoria": { "main": "used", "sub": "games" },
+    "stock": 1,
+    "price": 20,
+    "description": "Pokemon Sun 2016 for Nintendo 3DS console-Used"
   },
 
 
