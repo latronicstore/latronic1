@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaTRONIC Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+<style>
+/* --- BODY --- */
+body { 
+  margin: 0; 
+  font-family: Arial, sans-serif; 
+  background: #121212; 
+  color: #ffffffcb; 
+  display: flex; 
+  min-height: 100vh; 
+}
+
+/* --- ASIDE --- */
+aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;              /* ocupa toda la altura de la ventana */
+  width: 220px;               /* ancho del menú */
+  overflow-y: auto;
+  background: rgba(26, 26, 26, 0.6); /* fondo semitransparente */
+  -webkit-backdrop-filter: blur(10px); /* soporte Safari */
+  backdrop-filter: blur(10px); /* efecto de vidrio borroso */
+  padding: 1rem 0.8rem;
+  z-index: 1500;
+  border-right: 1px solid rgba(226, 143, 47, 0.4);
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+aside h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #e28f2f;
+  letter-spacing: 1px;
+}
+.menu { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  background: #1a1a1a; 
+}
+.menu>li { 
+  margin-bottom: 2rem; 
+  margin-left: 1.2rem; 
+  position: relative; 
+}
+.boton-categoria {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: #e28f2f;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.boton-categoria:hover {
+  background: rgba(226, 143, 47, 0.25);
+  transform: translateX(4px);
+  color: #f0f0f0;
+}
+.submenu {
+  display: none;         /* 🔒 cerrado por defecto */
+  list-style: none;      /* ❌ sin puntos blancos */
+  margin: 0;
+  padding-left: 1rem;    /* espacio para separación visual */
+  border-left: 2px solid rgba(226, 143, 47, 0.3);
+}
+
+.submenu li {
+  list-style: none;       /* por si acaso hay otro nivel */
+}
+.submenu .boton-categoria {
+  font-size: 1rem;
+  padding: 0.4rem 0.7rem;
+}
+.submenu .boton-categoria:hover { 
+  background: #f16413b9; 
+  color: #050505; 
+  border-radius: 5px; 
+}
+
+/* --- CARRITO --- */
+.cart-button-container { 
+  position: relative; 
+  z-index: 2000; 
+}
+.carrito { 
+  background: #e28f2f; 
+  border-radius: 5px; 
+  border-color: #1a1a1a; 
+  position: relative; 
+  z-index: 2001; 
+  cursor: pointer;
+}
+.carrito:hover { 
+  background: #f16413b9; 
+}
+
+/* --- MAIN --- */
+main {
+  margin-left: 230px; /* espacio para el menú */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+footer { 
+  text-align: center; 
+  padding: 1rem 0; 
+  color: #ffffff9f; 
+  font-size: 0.7rem; 
+}
+
+/* --- PRODUCTOS --- */
+#contenedor-productos {
+  display: flex;           
+  flex-wrap: wrap;         
+  gap: 15px;               
+  justify-content: flex-start;
+}
+.title { 
+  font-family: "Bebas Neue", sans-serif; 
+  font-size: 2.5rem; 
+  text-align: center; 
+  color: #f16413b9; 
+  margin: 0;
+  
+}
+#titulo-principal { 
+  transition: all 0.3s ease; 
+  text-align: center; 
+  margin: 0; 
+  font-family: "Bebas Neue", sans-serif; 
+  font-size: 2.5rem; 
+  color: #f16413b9; 
+}
+aside.active ~ main #titulo-principal { 
+  text-align: center; 
+  margin-top: 50px; 
+}
+
+.producto { 
+  flex: 0 0 120px;          
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: space-between; 
+  text-align: center; 
+  border: 1px solid #ccc; 
+  padding: 6px;            
+  margin: 0; 
+  background: #1a1a1a; 
+  border-radius: 5px; 
+  transition: transform 0.3s; 
+  overflow: hidden; 
+}
+.producto:hover { 
+  transform: scale(1.03); 
+}
+.agregar-carrito[disabled] { 
+  background: #888; 
+  color: #ccc; 
+  cursor: not-allowed; 
+  opacity: 0.7;
+  position: relative; 
+  z-index: 1; 
+}
+.agregar-carrito { 
+  background-color: #e28f2f; 
+  color: black; 
+  border: none; 
+  padding: 0.3rem 0.6rem; 
+  cursor: pointer; 
+  border-radius: 5px; 
+  transition: background 0.3s, color 0.3s; 
+  font-weight: bold; 
+  font-size: 0.8rem; 
+  margin-top: 8px; 
+}
+.agregar-carrito:hover { 
+  background-color: #f16413b9; 
+  color: #fff; 
+}
+
+/* --- SUBMENU TOGGLE --- */
+.toggle-submenu.active { 
+  background: #e28e2fa9; 
+  color: black; 
+}
+
+/* --- GALERÍA DE PRODUCTOS --- */
+.galeria { 
+  width: 100%; 
+  max-width: 120px;        
+  aspect-ratio: 1/1;       
+  margin: 0 auto 6px;      
+  position: relative; 
+  overflow: hidden;       
+  border-radius: 6px;
+}
+
+.main-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;      
+  border-radius: 6px; 
+  cursor: zoom-in; 
+  display: block;
+}
+.arrow { 
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  background: rgba(0,0,0,0.4); 
+  color: #fff; 
+  border: none; 
+  width: 24px; 
+  height: 24px; 
+  cursor: pointer; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  font-size: 16px; 
+  z-index: 10; 
+  transition: background 0.2s; 
+}
+.arrow:hover { 
+  background: rgba(0,0,0,0.7); 
+}
+.arrow.prev { left: 2px; }
+.arrow.next { right: 2px; }
+
+/* --- MODAL ZOOM --- */
+#zoom-modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.85); 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 5000; 
+}
+#zoom-modal.show { 
+  display: flex; 
+}
+#zoom-modal img { 
+  max-width: 90%; 
+  max-height: 90%; 
+  object-fit: contain; 
+  border-radius: 8px; 
+  cursor: zoom-out; 
+}
+#zoom-modal .close-btn { 
+  position: absolute; 
+  top: 15px; 
+  right: 20px; 
+  font-size: 30px; 
+  color: #fff; 
+  cursor: pointer; 
+}
+
+.zoom-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 20px;
+  z-index: 6000;
+}
+.zoom-arrow:hover {
+  background: rgba(0,0,0,0.7);
+}
+.zoom-arrow.prev { left: 20px; }
+.zoom-arrow.next { right: 20px; }
+
+
+/* --- HAMBURGER --- */
+.hamburger {
+  display: none; 
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 30px;
+  color: #e28f2f; 
+  cursor: pointer;
+  z-index: 3000;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0; /* quitar margen para que productos queden debajo */
+    padding: 1rem;
+    position: relative;
+    z-index: 1;     /* aseguramos que esté detrás del aside */
+  }
+
+  aside {
+    position: fixed;
+    top: 0;
+    left: -250px;  /* fuera de pantalla inicialmente */
+    width: 220px;
+    height: 100%;
+    z-index: 2000; /* por encima de main */
+    transition: left 0.3s ease;
+  }
+  aside.active {
+    left: 0;       /* entra encima de los productos */
+    box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+  }
+
+  .hamburger {
+    display: block;
+    position: fixed;
+    top: 45px;
+    left: 15px;
+    font-size: 30px;
+    z-index: 3000; /* por encima del aside */
+  }
+
+  main { padding: 1rem; }
+
+  .galeria { 
+    width: 100px; 
+    aspect-ratio: 1/1; 
+  }
+  .producto { 
+    flex: 0 0 100px;       
+    padding: 5px;
+  }
+  .arrow { width: 20px; height: 20px; font-size: 14px; }
+  #contenedor-productos { justify-content: center; }
+}
+
+.link{
+  color: #e28f2f;
+  text-decoration: none;
+}
+
+.link:hover{
+  text-decoration: underline;
+  color: whitesmoke;
+  }
+
+  /* --- MODAL PRODUCTO --- */
+#producto-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  z-index: 5000;
+}
+
+#producto-modal .modal-content {
+  position: relative;
+  background: #2a2a2a;
+  padding: 15px;
+  margin: 60px auto 20px auto;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#producto-modal .modal-content img {
+  width: 80%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+#producto-modal #modal-titulo {
+  margin: 5px 0;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #e28f2f;
+}
+
+#producto-modal #modal-description {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #fff;
+}
+
+#producto-modal #modal-price {
+  margin: 5px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e28f2f;
+}
+
+#producto-modal #modal-stock {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: rgba(255,0,0,0.8);
+}
+
+#producto-modal #cerrar-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* --- MODAL PRODUCTO RESPONSIVE --- */
+@media (max-width:768px){
+  #producto-modal .modal-content img {
+    width: 70%;
+    max-width: 250px;
+  }
+  #producto-modal .modal-content {
+    margin-top: 80px;
+  }
+  #producto-modal #cerrar-modal {
+    font-size: 32px;
+    top: 8px;
+    right: 12px;
+  }
+}
+
+#search-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#search-input {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 2px solid #e28f2f;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+}
+
+#search-input::placeholder {
+  color: #8f8d8dbe;
+}
+
+#search-input:focus {
+  border-color: #f16413b9;
+  box-shadow: 0 0 8px #f16413b9;
+}
+aside.scrolled {
+  background: rgba(26, 26, 26, 0.8);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(226, 143, 47, 0.6);
+}
+/* --- QUITAR LÍNEA BLANCA DEBAJO DE HOME --- */
+.boton-categoria {
+  border: none;           /* elimina línea inferior si existía */
+  box-shadow: none;       /* elimina sombra si la tuviera */
+}
+
+.boton-categoria:focus,
+.boton-categoria:active {
+  outline: none;          /* elimina contorno blanco al hacer clic */
+}
+
+aside ul,
+aside li {
+  list-style: none;       /* sin puntos */
+  margin: 0;
+  padding: 0;        /* elimina cualquier borde */
+
+}
+
+/* --- TICKER SOLO EN MÓVILES --- */
+.mobile-ticker {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-ticker {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #e28f2f, #f16413b9);
+    color: #020101;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 4000;
+    padding: 10px 0;
+  }
+
+  /* Contenedor animado */
+  .mobile-ticker span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: tickerScroll 40s linear infinite; /* ← Duración ajustable */
+  }
+
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* Efecto de entrada suave */
+  @keyframes fadeInTicker {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mobile-ticker {
+    animation: fadeInTicker 1s ease-in forwards;
+  }
+}
+
+  /* Mueve el botón hamburguesa un poco más abajo para que no se tape */
+
+
+  /* Ajusta el menú al abrir */
+  aside.active {
+    margin-top: 45px;
+  }
+
+  /* Baja el contenido principal */
+  main {
+    margin-top: 45px;
+  }
+
+  .negociar {
+  background: linear-gradient(135deg, #f16413, #e28f2f);
+  color: #050505;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  transition: transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.negociar:hover {
+  transform: translateY(-2px);
+  color: white;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, #e28f2f, #f16413);
+}
+
+/* --- BOTÓN ADMIN FLOTANTE --- */
+#admin-access {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e28f2f, #f16413);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 9999; /* encima de todo, pero sin interferir con productos */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: transform 0.25s, box-shadow 0.3s, background 0.3s;
+}
+
+#admin-access:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #f16413, #e28f2f);
+  color: white;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+}
+
+/* Versión más pequeña y ajustada en móviles */
+@media (max-width: 768px) {
+  #admin-access {
+    width: 34px;
+    height: 34px;
+    bottom: 12px;
+    right: 12px;
+    font-size: 18px;
+  }
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="mobile-ticker">
+  <span>
+    🚀 Welcome to LaTRONIC Store — Your #1 Source for New and Used Trading Cards, Collectibles, History Pieces and more! 
+    💥 Discover new arrivals every week — Pokémon, NBA, MLB, NFL, Games, History pieces and more! 
+    🎯 Free shipping — We're open to negotiate with you 24/7 — ✉️Email us at: latronicstore@gmail.com — Shop now and join the LaTRONIC community! 🏆
+  </span>
+</div>
+
+<div class="hamburger">&#9776;</div>
+
+<aside>
+  <h2 class="title">LaTRONIC</h2>
+  <ul class="menu">
+    <li><a class="boton-categoria" href="Home.html">Home</a></li>
+    <li>
+  <button class="boton-categoria toggle-submenu">New</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="ufc">UFC</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="boxing">Boxing</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="racecar">Racecar</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="avengers">Avenger & Marvel</button></li>
+  </ul>
+</li>
+
+<li>
+  <button class="boton-categoria toggle-submenu">Used</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="ufc">UFC</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="boxing">Boxing</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="racecar">Racecar</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="avengers">Avenger & Marvel</button></li>
+  </ul>
+</li>
+
+<li>
+  <button class="boton-categoria toggle-submenu">More</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
+  </ul>
+</li>
+
+    <!-- Copia aquí todos tus submenús de New, Used, More -->
+    <li class="cart-button-container">
+      <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
+      <footer>
+        <a href="aboutus.html" class="link">About Us</a> | <a href="contactus.html" class="link">Contact Us</a><br>
+        Email-latronicstore@gmail.com<br>
+        Located in Connecticut, USA<br>
+        &copy; 2024 LaTRONIC LLC. All rights reserved.
+      </footer>
+    </li>  
+  </ul>
+</aside>
+
+<main>
+  <h1 id="titulo-principal">All Products</h1>
+  <input type="text" id="search-input" placeholder="Search" style="width: 100%; max-width: 400px; padding: 6px; margin: 10px auto; display: block; border-radius:5px; border:none; font-size:1rem; color: rgba(112, 110, 110, 0.507);">
+  <div id="contenedor-productos"></div>
+  <div id="paginacion"></div>
+
+  <!-- Botón Admin dentro del layout -->
+  <div class="admin-container">
+    <button id="admin-access" title="Admin Panel">⚙️</button>
+  </div>
+</main>
+
+<!-- Modal Producto -->
+<div id="producto-modal">
+  <div class="modal-content">
+    <span id="cerrar-modal">&times;</span>
+    <img id="modal-imagen" src="">
+    <h2 id="modal-titulo"></h2>
+    <p id="modal-description"></p>
+    <p id="modal-price"></p>
+    <p id="modal-stock"></p>
+  </div>
+</div>
+
+<!-- Modal Zoom -->
+<div id="zoom-modal">
+  <span class="close-btn">&times;</span>
+  <button class="zoom-arrow prev">&#9664;</button>
+  <img src="" alt="Zoom">
+  <button class="zoom-arrow next">&#9654;</button>
+</div>
+
+<!-- MODAL NEGOCIAR -->
+<div id="negociar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:6000;">
+  <div style="background:#2a2a2a;padding:15px;border-radius:10px;width:90%;max-width:350px;display:flex;flex-direction:column;align-items:center;">
+    <span id="cerrar-negociar" style="align-self:flex-end;font-size:24px;color:#fff;cursor:pointer;">&times;</span>
+    <h2 style="color:#e28f2f;margin-bottom:10px;text-align:center;">Negotiate Price</h2>
+    <p id="negociar-producto" style="color:#fff;text-align:center;"></p>
+    <input type="email" id="negociar-email" placeholder="Your Email" style="width:100%;margin-bottom:8px;padding:8px;border-radius:5px;border:none;">
+    <input type="number" id="negociar-precio" placeholder="Your Offer" style="width:100%;margin-bottom:8px;padding:8px;border-radius:5px;border:none;">
+    <button id="enviar-negociacion" style="width:100%;padding:8px;border:none;border-radius:5px;background:#e28f2f;color:#000;font-weight:bold;cursor:pointer;">Send</button>
+    <p id="negociar-status" style="color:#fff;margin-top:6px;text-align:center;"></p>
+  </div>
+</div>
+
+<!-- BOTÓN ADMIN -->
+
+
+
+<!-- Incluye la librería EmailJS antes de tu script -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+
+<script>
+emailjs.init("g62s-TyalISrbYkzz"); // Ejemplo: emailjs.init("7aBcdEFGhijkLmnOp");
+// Reemplaza con tu ID de EmailJS
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const contenedor = document.getElementById("contenedor-productos");
+  const cartCountEl = document.getElementById("cart-count");
+  const toggleButtons = document.querySelectorAll(".toggle-submenu");
+  const hamburger = document.querySelector(".hamburger");
+  const aside = document.querySelector("aside");
+
+  // --- MENU HAMBURGUESA ---
+  hamburger.addEventListener("click", () => aside.classList.toggle("active"));
+
+  // --- SUBMENUS ---
+  toggleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const submenu = btn.nextElementSibling;
+      const isVisible = submenu.style.display === "block";
+      document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
+      document.querySelectorAll(".toggle-submenu").forEach(b => b.classList.remove("active"));
+      if (!isVisible) { submenu.style.display = "block"; btn.classList.add("active"); }
+    });
+  });
+
+  // --- OBTENER PRODUCTOS ---
+  async function obtenerProductos() {
+    return JSON.parse(localStorage.getItem("productos")) || [];
+  }
+
+  let productos = await obtenerProductos();
+  let productosFiltrados = [...productos];
+
+  // --- RENDER PRODUCTOS ---
+  function renderProductos(lista) {
+    contenedor.innerHTML = "";
+    lista.forEach(prod => {
+      const div = document.createElement("div");
+      div.className = "producto";
+
+      // GALERIA
+      const galeria = document.createElement("div");
+      galeria.className = "galeria";
+      const mainImg = document.createElement("img");
+      mainImg.className = "main-img";
+      mainImg.src = prod.imagenes[0];
+      mainImg.dataset.index = 0;
+
+      const prev = document.createElement("button");
+      prev.className = "arrow prev"; prev.innerHTML = "&#9664;";
+      const next = document.createElement("button");
+      next.className = "arrow next"; next.innerHTML = "&#9654;";
+      if (prod.imagenes.length <= 1) { prev.style.display = "none"; next.style.display = "none"; }
+
+      prev.addEventListener("click", e => {
+        e.stopPropagation();
+        let idx = parseInt(mainImg.dataset.index);
+        idx = (idx - 1 + prod.imagenes.length) % prod.imagenes.length;
+        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx];
+      });
+      next.addEventListener("click", e => {
+        e.stopPropagation();
+        let idx = parseInt(mainImg.dataset.index);
+        idx = (idx + 1) % prod.imagenes.length;
+        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx];
+      });
+
+      galeria.appendChild(prev);
+      galeria.appendChild(mainImg);
+      galeria.appendChild(next);
+
+      const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
+      const pStock = document.createElement("p"); pStock.className = "stock"; 
+      pStock.textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+      const pPrice = document.createElement("p"); 
+      pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; pPrice.textContent="$"+prod.price;
+
+      const btn = document.createElement("button"); 
+      btn.className="agregar-carrito"; btn.textContent="Add"; btn.dataset.id=prod.id;
+      if(prod.stock===0) btn.disabled=true;
+
+      const btnNegociar = document.createElement("button"); 
+      btnNegociar.className="negociar"; btnNegociar.textContent="Send Offer"; btnNegociar.dataset.id=prod.id;
+
+      div.appendChild(galeria); 
+      div.appendChild(h3); 
+      div.appendChild(pStock); 
+      div.appendChild(pPrice); 
+      div.appendChild(btn); 
+      div.appendChild(btnNegociar);
+      contenedor.appendChild(div);
+
+      // --- MODAL PRODUCTO ---
+      mainImg.addEventListener("click", () => {
+        const modal = document.getElementById("producto-modal");
+        document.getElementById("modal-imagen").src = prod.imagenes[0];
+        document.getElementById("modal-titulo").textContent = prod.titulo;
+        document.getElementById("modal-description").textContent = prod.description;
+        document.getElementById("modal-price").textContent = "$"+prod.price;
+        document.getElementById("modal-stock").textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+        modal.style.display="flex";
+        document.getElementById("modal-imagen").onclick = () => abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
+      });
+    });
+  }
+
+  // --- MODAL ZOOM ---
+  const zoomModal = document.getElementById("zoom-modal");
+  const zoomImg = zoomModal.querySelector("img");
+  const zoomClose = zoomModal.querySelector(".close-btn");
+  let zoomIndex=0, zoomImagenes=[];
+  function abrirZoom(imagenes,indexInicial){zoomImagenes=imagenes;zoomIndex=indexInicial;zoomImg.src=zoomImagenes[zoomIndex];zoomModal.classList.add("show");}
+  function cerrarZoom(){zoomModal.classList.remove("show");}
+  function cambiarZoomImg(dir){zoomIndex=(zoomIndex+dir+zoomImagenes.length)%zoomImagenes.length;zoomImg.src=zoomImagenes[zoomIndex];}
+  document.querySelector(".zoom-arrow.prev").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(-1);});
+  document.querySelector(".zoom-arrow.next").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(1);});
+  zoomClose.addEventListener("click",cerrarZoom);
+  zoomModal.addEventListener("click", e=>{if(e.target===zoomModal) cerrarZoom();});
+
+  renderProductos(productosFiltrados);
+
+  // --- CARRITO ---
+  contenedor.addEventListener("click", e=>{
+    if(e.target.classList.contains("agregar-carrito")){
+      const id = e.target.dataset.id;
+      const prod = productos.find(p=>p.id===id);
+      if(!prod||prod.stock===0) return;
+      let carrito = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
+      const existente=carrito.find(p=>p.id===id);
+      if(existente) existente.quantity+=1; else carrito.push({...prod,quantity:1});
+      localStorage.setItem("productos-en-cart",JSON.stringify(carrito));
+      prod.stock-=1;
+      localStorage.setItem("productos", JSON.stringify(productos)); // <-- guarda cambios de stock
+      renderProductos(productosFiltrados);
+      cartCountEl.textContent = carrito.reduce((acc,p)=>acc+p.quantity,0);
+    }
+  });
+
+  cartCountEl.textContent = (JSON.parse(localStorage.getItem("productos-en-cart"))||[]).reduce((acc,p)=>acc+p.quantity,0);
+  document.getElementById("ir-carrito").addEventListener("click",()=>{window.location.href="cart.html";});
+
+  // --- SEARCH ---
+  document.getElementById("search-input").addEventListener("input",()=>{
+    const query = document.getElementById("search-input").value.toLowerCase();
+    productosFiltrados = productos.filter(p=>p.titulo.toLowerCase().includes(query) || (p.ano && p.ano.toString().includes(query)));
+    renderProductos(productosFiltrados);
+  });
+
+  // --- FILTROS DE SUBMENÚ ---
+  document.querySelectorAll(".submenu .boton-categoria").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const mainCat=btn.dataset.main, subCat=btn.dataset.sub;
+      document.getElementById("titulo-principal").textContent=`${subCat.charAt(0).toUpperCase()+subCat.slice(1)} (${mainCat})`;
+      document.getElementById("search-input").value="";
+      productosFiltrados=productos.filter(p=>p.categoria.main===mainCat && p.categoria.sub===subCat);
+      renderProductos(productosFiltrados);
+    });
+  });
+
+  // --- BOTÓN ADMIN ---
+  document.getElementById("admin-access").addEventListener("click", () => {
+    const password = prompt("Enter admin password:");
+    if(password === "161824") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Incorrect password!");
+    }
+  });
+
+  // --- ESCUCHA CAMBIOS EN LOCALSTORAGE ---
+  window.addEventListener("storage", (e) => {
+    if (e.key === "productos") {
+      productos = JSON.parse(e.newValue);
+      productosFiltrados = [...productos];
+      renderProductos(productosFiltrados);
+    }
+  });
+
+  // --- NEGOCIATE (EMAIL + PRECIO) ---
+  const negociarModal = document.getElementById("negociar-modal");
+  const cerrarNegociar = document.getElementById("cerrar-negociar");
+  const negociarProductoEl = document.getElementById("negociar-producto");
+  const emailInput = document.getElementById("negociar-email");
+  const precioInput = document.getElementById("negociar-precio");
+  const enviarBtn = document.getElementById("enviar-negociacion");
+  const statusEl = document.getElementById("negociar-status");
+  let productoActual = null;
+
+  contenedor.addEventListener("click", e => {
+    if(!e.target.classList.contains("negociar")) return;
+    const id = e.target.dataset.id;
+    productoActual = JSON.parse(localStorage.getItem("productos")).find(p=>p.id===id);
+    negociarProductoEl.textContent = productoActual.titulo;
+    emailInput.value = "";
+    precioInput.value = "";
+    statusEl.textContent = "";
+    negociarModal.style.display = "flex";
+  });
+
+  cerrarNegociar.addEventListener("click", () => negociarModal.style.display = "none");
+
+  enviarBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const precio = precioInput.value.trim();
+    if(!email || !precio){
+      statusEl.style.color = "red";
+      statusEl.textContent = "Please fill all fields.";
+      return;
+    }
+    emailjs.send("service_kfjnvo6","template_ahlpig3",{
+      producto: productoActual.titulo,
+      email_cliente: email,
+      precio_oferta: precio
+    }).then(()=>{
+      statusEl.style.color = "#0f0";
+      statusEl.textContent = "Offer sent!";
+      setTimeout(()=>negociarModal.style.display="none",1500);
+    }).catch(err=>{
+      console.error(err);
+      statusEl.style.color = "red";
+      statusEl.textContent = "Failed to send.";
+    });
+  });
+
+});
+</script>
+<script>
+document.getElementById("admin-access").addEventListener("click", () => {
+  window.location.href = "admin.html";
+});
+</script>
+
+
+</body>
+</html>
