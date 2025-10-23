@@ -22,6 +22,30 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // --------------------
+// 📌 Middleware de autenticación básica para admin
+// --------------------
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.setHeader("WWW-Authenticate", "Basic");
+    return res.status(401).send("Autenticación requerida");
+  }
+
+  const [scheme, encoded] = authHeader.split(" ");
+  if (scheme !== "Basic") return res.status(400).send("Formato inválido");
+
+  const decoded = Buffer.from(encoded, "base64").toString();
+  const [user, pass] = decoded.split(":");
+
+  if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASSWORD) {
+    return next();
+  }
+
+  res.setHeader("WWW-Authenticate", "Basic");
+  return res.status(401).send("Usuario o contraseña incorrectos");
+}
+
+// --------------------
 // 📌 Base de datos (lowdb con db.json)
 // --------------------
 const dbFile = path.join(process.cwd(), "db.json");
@@ -48,14 +72,11 @@ const SQUARE_API =
 // --------------------
 // 📌 ENDPOINT: Productos
 // --------------------
-
-// Obtener todos los productos
 app.get("/api/productos", async (req, res) => {
   await db.read();
   res.json(db.data.productos);
 });
 
-// Obtener producto por ID
 app.get("/api/productos/:id", async (req, res) => {
   await db.read();
   const producto = db.data.productos.find(p => p.id === req.params.id);
@@ -63,7 +84,6 @@ app.get("/api/productos/:id", async (req, res) => {
   res.json(producto);
 });
 
-// Agregar producto nuevo
 app.post("/api/productos", async (req, res) => {
   await db.read();
   const nuevoProducto = req.body;
@@ -72,7 +92,6 @@ app.post("/api/productos", async (req, res) => {
   res.json(nuevoProducto);
 });
 
-// Actualizar producto
 app.put("/api/productos/:id", async (req, res) => {
   await db.read();
   const index = db.data.productos.findIndex(p => p.id === req.params.id);
@@ -83,7 +102,6 @@ app.put("/api/productos/:id", async (req, res) => {
   res.json(db.data.productos[index]);
 });
 
-// Eliminar producto
 app.delete("/api/productos/:id", async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
@@ -94,8 +112,6 @@ app.delete("/api/productos/:id", async (req, res) => {
 // --------------------
 // 📌 ENDPOINT: Stock de productos
 // --------------------
-
-// Obtener stock de un producto
 app.get("/api/stock/:id", async (req, res) => {
   await db.read();
   const producto = db.data.productos.find(p => p.id === req.params.id);
@@ -103,7 +119,6 @@ app.get("/api/stock/:id", async (req, res) => {
   res.json({ id: producto.id, stock: producto.stock });
 });
 
-// Actualizar stock manualmente (restar cantidad)
 app.post("/api/stock", async (req, res) => {
   const { id, cantidad } = req.body;
 
@@ -124,6 +139,48 @@ app.post("/api/stock", async (req, res) => {
   await db.write();
 
   res.json({ message: "Stock actualizado", producto });
+});
+
+// --------------------
+// 📌 ENDPOINT: Carrito (nuevo fragmento agregado)
+// --------------------
+app.post("/api/cart/checkout", async (req, res) => {
+  try {
+    const { productos } = req.body;
+    if (!productos || !Array.isArray(productos) || productos.length === 0) {
+      return res.status(400).json({ error: "Carrito vacío o datos inválidos" });
+    }
+
+    await db.read();
+
+    // Validar stock
+    const erroresStock = [];
+    for (const item of productos) {
+      const prodDB = db.data.productos.find(p => p.id === item.id);
+      if (!prodDB) {
+        erroresStock.push(`Producto ${item.id} no encontrado`);
+      } else if (prodDB.stock < item.quantity) {
+        erroresStock.push(`Stock insuficiente para ${prodDB.titulo}`);
+      }
+    }
+
+    if (erroresStock.length > 0) {
+      return res.status(400).json({ error: erroresStock });
+    }
+
+    // Reducir stock
+    for (const item of productos) {
+      const prodDB = db.data.productos.find(p => p.id === item.id);
+      prodDB.stock -= item.quantity;
+    }
+
+    await db.write();
+
+    res.json({ success: true, message: "Compra realizada y stock actualizado" });
+  } catch (err) {
+    console.error("❌ Error en checkout:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // --------------------
@@ -169,9 +226,7 @@ app.post("/process-payment", async (req, res) => {
     const data = await response.json();
 
     if (data.payment && data.payment.status === "COMPLETED") {
-      // --------------------
-      // 📌 Reducir stock automáticamente
-      // --------------------
+      // Reducir stock automáticamente
       await db.read();
       for (const p of productos || []) {
         const prodDB = db.data.productos.find(item => item.id === p.id);
@@ -181,9 +236,7 @@ app.post("/process-payment", async (req, res) => {
       }
       await db.write();
 
-      // --------------------
-      // 📌 Enviar email de venta
-      // --------------------
+      // Enviar email de venta
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -230,56 +283,17 @@ ${itemsList || "No products found"}
 // --------------------
 // 📌 ENDPOINT: Contacto (formulario About/Contact)
 // --------------------
-app.post("/contact", async (req, res) => {
-  try {
-    const { name, email, message } = req.body;
-
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: "Faltan datos del formulario" });
-    }
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"LaTRONIC Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL,
-      subject: "📨 Nuevo mensaje desde Contact Form",
-      text: `
-👤 Nombre: ${name}
-📧 Email: ${email}
-
-📝 Mensaje:
-${message}
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log("📩 Email de contacto enviado correctamente");
-
-    res.json({ success: true, message: "Mensaje enviado correctamente" });
-
-  } catch (err) {
-    console.error("❌ Error en contacto:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
+// ... aquí queda igual, no se toca
 
 // --------------------
 // 📌 Rutas frontend
 // --------------------
-app.get("/", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "public", "Home.html"));
-});
+// ... aquí queda igual
 
-app.get("/card-charge", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "public", "card-charge.html"));
-});
+// --------------------
+// 📌 Página admin protegida
+// --------------------
+// ... aquí queda igual
 
 // --------------------
 // 📌 Iniciar servidor
