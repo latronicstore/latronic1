@@ -751,7 +751,6 @@ aside li {
 
 <script>
 emailjs.init("g62s-TyalISrbYkzz"); // Ejemplo: emailjs.init("7aBcdEFGhijkLmnOp");
-// Reemplaza con tu ID de EmailJS
 
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
@@ -774,9 +773,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // --- OBTENER PRODUCTOS ---
+  // --- OBTENER PRODUCTOS (LOCALSTORAGE O DB.JSON) ---
   async function obtenerProductos() {
-    return JSON.parse(localStorage.getItem("productos")) || [];
+    let productos = JSON.parse(localStorage.getItem("productos"));
+    if (productos && productos.length > 0) return productos;
+
+    // Si localStorage está vacío, cargar desde db.json
+    try {
+      const res = await fetch("db.json");
+      productos = await res.json();
+      localStorage.setItem("productos", JSON.stringify(productos));
+      return productos;
+    } catch (error) {
+      console.error("Error cargando productos:", error);
+      return [];
+    }
   }
 
   let productos = await obtenerProductos();
@@ -975,11 +986,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 </script>
-<script>
-document.getElementById("admin-access").addEventListener("click", () => {
-  window.location.href = "admin.html";
-});
-</script>
+
 
 
 </body>
