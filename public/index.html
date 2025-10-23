@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>LaTRONIC Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Libertinus+Keyboard&family=Oswald:wght@200..700&family=Story+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Rubik', sans-serif; background: #121212; color: #fff; display: flex; min-height: 100vh; }
+.wrapper { display: flex; flex: 1; width: 100%; }
+aside {
+    width: 250px; background: #1e1e1e; display: flex; flex-direction: column; padding: 1rem; gap: 1rem;
+}
+.logo { font-family:"Bebas Neue",sans-serif; font-size:3rem; letter-spacing:2px; text-align:center; text-transform:uppercase; display:inline-block; position:relative; color:#f16413b9; padding:1rem 2rem; border-radius:12px; }
+
+/* --- Producto destacado --- */
+.featured-product {
+  background: #1b1b1b;
+  padding: 0.8rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+.featured-product img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+}
+.featured-product h3 {
+  font-family: "Oswald", sans-serif;
+  font-size: 1.1rem;
+  color: #ffcc00;
+}
+.featured-product p {
+  color: #e28f2f;
+  font-size: 1rem;
+  margin: 0.2rem 0 0;
+}
+
+/* --- Carrusel --- */
+.aside-carousel { width: 100%; overflow: hidden; border-radius: 12px; position: relative; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.6); background: #1e1e1e; }
+.aside-carousel-track { display: flex; transition: transform 0.6s ease-in-out; }
+.aside-carousel-slide { min-width: 100%; text-align: center; font-weight: bold; font-family: "Oswald", sans-serif; color: #e28f2f; padding: 0.5rem; cursor:pointer; }
+.aside-carousel-slide img { width: 95%; height: 150px; object-fit: contain; border-radius: 8px; margin-bottom: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+.aside-carousel-slide div { font-size: 0.9rem; }
+.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 50%; z-index: 10; transition: background 0.3s; }
+.carousel-btn:hover { background: rgba(226,143,47,0.8); }
+.carousel-btn-left { left: 5px; }
+.carousel-btn-right { right: 5px; }
+
+footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.9rem; margin-top: auto; }
+main { flex: 1; padding: 2rem; }
+.titulo-principal { font-family: "Bebas Neue", sans-serif; background: linear-gradient(yellow, red); -webkit-background-clip: text; color: transparent; font-size: clamp(24px, 10vw, 96px); text-align: center; margin-top: 2rem; }
+.small-paragraph { font-family: "Story Script", sans-serif; color: #bbb; font-size: 20px; text-align: center; margin-bottom: 2rem; }
+.cta-container { text-align: center; margin: 2rem 0; }
+.cta-button { display: inline-block; padding: 1rem 2.5rem; font-size: 1.5rem; font-family: "Bebas Neue", sans-serif; text-transform: uppercase; background: linear-gradient(135deg, #ffcc00, #ff3300); color: #121212; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
+.cta-button:hover { background: linear-gradient(135deg, #ff9900, #cc0000); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); }
+
+@media(max-width:768px){ 
+  .wrapper { flex-direction: column; } 
+  aside { width: 100%; flex-direction: column; align-items: center; } 
+  .aside-carousel { width: 90%; } 
+  .featured-product img { height: 160px; }
+}
+
+/* --- CARRUSEL DE ANUNCIOS --- */
+.anuncios-carousel {
+  width: 100%;
+  overflow: hidden;
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.anuncios-track {
+  display: flex;
+  animation: scrollAnuncios 8s linear infinite;
+}
+
+.anuncio {
+  flex: 0 0 100%;
+  text-align: center;
+  padding: 0.8rem;
+  font-family: "Oswald", sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e28f2f;
+  white-space: nowrap;
+}
+
+@keyframes scrollAnuncios {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(0); }
+  50% { transform: translateX(-100%); }
+  95% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+.anuncio1 {
+  flex: 0 0 100%;
+  text-align: center;
+  padding: 0.8rem;
+  font-family: "Oswald", sans-serif;
+  font-size: .9rem;
+  font-weight: bold;
+  color: #e23b2f;
+  white-space: nowrap;
+}
+
+.featured-product{
+  color: rgba(250, 149, 33, 0.918)
+}
+
+.email-link {
+  color: inherit;       /* Usa el mismo color del texto */
+  text-decoration: none; /* Quita el subrayado */
+  font-weight: bold;
+}
+
+.email-link:hover {
+  text-decoration: underline; /* O puedes quitar esto si no quieres el subrayado al pasar el mouse */
+}
+/* --- Vista móvil simplificada --- */
+@media (max-width: 768px) {
+  /* Oculta todo excepto el logo, botón y footer */
+  main, .carrusel, .anuncios-carousel, .seccion-productos, .contenido-extra, .hero, header nav {
+    display: none !important;
+  }
+
+  .mobile-home {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 80vh;
+    padding: 20px;
+  }
+
+  .mobile-home h1 {
+    font-size: 1.8rem;
+    background: linear-gradient(yellow, red); -webkit-background-clip: text; color: transparent;
+    margin-bottom: 20px;
+  }
+
+  .mobile-home .shop-btn {
+    background: #ffcc00;
+    color: #111;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .mobile-home .shop-btn:hover {
+    background: #ff9900;
+  }
+
+  .shop-btn { display: inline-block; padding: 1rem 2.5rem; font-size: 1.5rem; font-family: "Bebas Neue", sans-serif; text-transform: uppercase; background: linear-gradient(135deg, #ffcc00, #ff3300); color: #121212; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
+  .shop-btn:hover { background: linear-gradient(135deg, #ff9900, #cc0000); color: #464545; transition: 0.2s; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); }
+
+}
+
+
+/* === Barra de anuncios estilo bolsa === */
+.ticker-container {
+  display: block; /* visible de inmediato */
+  width: 100%;
+  overflow: hidden;
+  background: #111;
+  border-top: 2px solid #e28f2f;
+  border-bottom: 2px solid #e28f2f;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  position: relative;
+  opacity: 1; /* sin transiciones lentas */
+  animation: fadeInFast 0.1s ease-out; /* entra rápido */
+}
+
+/* Texto del ticker */
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: tickerMove 15s linear infinite; /* rápido en PC */
+}
+
+.ticker-item {
+  display: inline-block;
+  margin-right: 3rem;
+  font-family: "Oswald", sans-serif;
+  color: #ffcc00;
+  font-weight: bold;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Movimiento de derecha a izquierda */
+@keyframes tickerMove {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Animación de aparición instantánea */
+@keyframes fadeInFast {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Vista móvil === */
+@media (max-width: 768px) {
+  .ticker-track {
+    animation-duration: 20s; /* más lento para leer en móvil */
+  }
+}
+
+
+
+.title-up{
+  margin-top:-25rem;
+}
+
+
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+    <aside>
+      <!-- Ticker de anuncios -->
+<div class="ticker-container">
+  <div class="ticker-track">
+    <div class="ticker-item">🚀 New arrivals every week!</div>
+    <div class="ticker-item">💳 Payment Debit or Credit card</div>
+    <div class="ticker-item">📦 Free shipping on all orders</div>
+    <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
+  </div>
+</div>
+
+<!-- Producto destacado -->
+        <div id="featured-product" class="featured-product">Top items</div>
+
+        <!-- Carrusel con los otros top -->
+        <div class="aside-carousel">
+            <div class="aside-carousel-track" id="aside-carousel-track"></div>
+            <button class="carousel-btn carousel-btn-left" id="prev">&#8249;</button>
+            <button class="carousel-btn carousel-btn-right" id="next">&#8250;</button>
+        </div>
+
+         <div class="mobile-home" style="display: none;">
+  <h1 class="title-up">Welcome to LaTRONIC Store</h1>
+  <a href="shop.html"><button class="shop-btn">Shop Now</button></a>
+  
+</div>
+
+        
+
+        <!-- Carrusel de Anuncios -->
+<div class="anuncios-carousel">
+  <div class="anuncios-track" id="anuncios-track">
+    <div class="anuncio">🚚 Free Shipping</div>
+    <div class="anuncio">Contact us</div>
+   
+  </div>
+</div>
+<div class="anuncios-carousel">
+  <div class="anuncios-track" id="anuncios-track">
+    <div class="anuncio">🤝 We’re open to negotiate</div>
+    <div class="anuncio1">
+      ✉️ <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a>
+    </div>
+  </div>
+</div>
+     
+
+
+        <footer>
+            <div>✉️ latronicstore@gmail.com</div>
+            <div>Located in Meriden, Connecticut</div>
+            <div>ⓒ 2025 LaTRONIC LLC</div>
+        </footer>
+    </aside>
+
+
+    <main>
+        <h2 class="titulo-principal">Welcome to LaTRONIC store</h2>
+        <h6 class="small-paragraph">From trading cards to unique collectibles — everything you love, all in one place.</h6>
+        <div class="cta-container">
+            <a href="shop.html" class="cta-button">Shop now</a>
+        </div>
+        <div id="contenedor-productos" class="contenedor-productos"></div>
+    </main>
+</div>
+
+<script>
+// --- Cargar productos desde db.json ---
+async function obtenerProductos() {
+  try {
+    const res = await fetch("db.json");
+    if (!res.ok) throw new Error("No se pudo cargar db.json");
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+obtenerProductos().then(productos => {
+  if (productos.length === 0) return;
+
+  // Ordenar por precio (descendente)
+  const topProducts = [...productos].sort((a, b) => b.price - a.price).slice(0, 5);
+
+  // Carrusel
+  const track = document.getElementById("aside-carousel-track");
+  topProducts.forEach(p => {
+    const slide = document.createElement("div");
+    slide.classList.add("aside-carousel-slide");
+    slide.innerHTML = `
+      <img src="${p.imagenes[0]}" alt="${p.titulo}">
+      <div>${p.titulo} - $${p.price}</div>
+    `;
+    slide.addEventListener("click", () => {
+      localStorage.setItem("filtro-producto", p.id);
+      window.location.href = "shop.html";
+    });
+    track.appendChild(slide);
+  });
+
+  // Carrusel animación
+  let index = 0;
+  const totalSlides = topProducts.length;
+  function updateCarousel() {
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  document.getElementById("prev").addEventListener("click", () => {
+    index = (index - 1 + totalSlides) % totalSlides;
+    updateCarousel();
+  });
+  document.getElementById("next").addEventListener("click", () => {
+    index = (index + 1) % totalSlides;
+    updateCarousel();
+  });
+
+  setInterval(() => {
+    index = (index + 1) % totalSlides;
+    updateCarousel();
+  }, 4000);
+});
+</script>
+
+</body>
+</html>
