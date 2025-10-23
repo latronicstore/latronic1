@@ -637,6 +637,53 @@ aside li {
   <h2 class="title">LaTRONIC</h2>
   <ul class="menu">
     <li><a class="boton-categoria" href="Home.html">Home</a></li>
+    <li>
+  <button class="boton-categoria toggle-submenu">New</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="ufc">UFC</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="boxing">Boxing</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="racecar">Racecar</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
+    <li><button class="boton-categoria" data-main="new" data-sub="avengers">Avenger & Marvel</button></li>
+  </ul>
+</li>
+
+<li>
+  <button class="boton-categoria toggle-submenu">Used</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="ufc">UFC</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="boxing">Boxing</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="racecar">Racecar</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
+    <li><button class="boton-categoria" data-main="used" data-sub="avengers">Avenger & Marvel</button></li>
+  </ul>
+</li>
+
+<li>
+  <button class="boton-categoria toggle-submenu">More</button>
+  <ul class="submenu">
+    <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
+    <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
+  </ul>
+</li>
+
     <!-- Copia aquí todos tus submenús de New, Used, More -->
     <li class="cart-button-container">
       <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
@@ -864,7 +911,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- BOTÓN ADMIN ---
   document.getElementById("admin-access").addEventListener("click", () => {
     const password = prompt("Enter admin password:");
-    if(password === "Jaymil2024") {
+    if(password === "161824") {
         window.location.href = "admin.html";
     } else {
         alert("Incorrect password!");
