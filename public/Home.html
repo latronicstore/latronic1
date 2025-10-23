@@ -170,9 +170,10 @@ main { flex: 1; padding: 2rem; }
 
 }
 
+
 /* === Barra de anuncios estilo bolsa === */
 .ticker-container {
-  display: none; /* Oculto por defecto en escritorio */
+  display: block; /* visible de inmediato */
   width: 100%;
   overflow: hidden;
   background: #111;
@@ -182,12 +183,15 @@ main { flex: 1; padding: 2rem; }
   padding: 0.5rem 0;
   margin-bottom: 1rem;
   position: relative;
+  opacity: 1; /* sin transiciones lentas */
+  animation: fadeInFast 0.1s ease-out; /* entra rápido */
 }
 
+/* Texto del ticker */
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: tickerMove 25s linear infinite;
+  animation: tickerMove 15s linear infinite; /* rápido en PC */
 }
 
 .ticker-item {
@@ -200,22 +204,32 @@ main { flex: 1; padding: 2rem; }
   letter-spacing: 0.5px;
 }
 
-/* Efecto continuo izquierda a derecha */
+/* Movimiento de derecha a izquierda */
 @keyframes tickerMove {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
-/* Más lento en móviles */
-@media (max-width: 768px) {
-  .ticker-container {
-    display: block;
+/* Animación de aparición instantánea */
+@keyframes fadeInFast {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  .ticker-track {
-    animation-delay: 1ms; /* espera antes de empezar a moverse */
-    animation-duration: 20s;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+/* === Vista móvil === */
+@media (max-width: 768px) {
+  .ticker-track {
+    animation-duration: 20s; /* más lento para leer en móvil */
+  }
+}
+
+
 
 .title-up{
   margin-top:-25rem;
@@ -232,7 +246,7 @@ main { flex: 1; padding: 2rem; }
 <div class="ticker-container">
   <div class="ticker-track">
     <div class="ticker-item">🚀 New arrivals every week!</div>
-    <div class="ticker-item">💳 Debit or Credit card</div>
+    <div class="ticker-item">💳 Payment by Debit or Credit card</div>
     <div class="ticker-item">📦 Free shipping on all orders</div>
     <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
   </div>

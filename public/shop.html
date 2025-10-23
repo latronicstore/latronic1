@@ -55,7 +55,7 @@ aside h2 {
   display: block;
   width: 100%;
   background: transparent;
-  color: #f0f0f0;
+  color: #e28f2f;
   border: none;
   text-align: left;
   font-size: 1.1rem;
@@ -67,6 +67,7 @@ aside h2 {
 .boton-categoria:hover {
   background: rgba(226, 143, 47, 0.25);
   transform: translateX(4px);
+  color: #f0f0f0;
 }
 .submenu {
   display: none;         /* 🔒 cerrado por defecto */
@@ -132,6 +133,7 @@ footer {
   text-align: center; 
   color: #f16413b9; 
   margin: 0;
+  
 }
 #titulo-principal { 
   transition: all 0.3s ease; 
@@ -328,7 +330,7 @@ aside.active ~ main #titulo-principal {
   .hamburger {
     display: block;
     position: fixed;
-    top: 15px;
+    top: 45px;
     left: 15px;
     font-size: 30px;
     z-index: 3000; /* por encima del aside */
@@ -513,7 +515,7 @@ aside li {
     left: 0;
     width: 100%;
     background: linear-gradient(90deg, #e28f2f, #f16413b9);
-    color: #fff;
+    color: #020101;
     font-family: "Bebas Neue", sans-serif;
     font-size: 1.1rem;
     white-space: nowrap;
@@ -526,7 +528,7 @@ aside li {
   .mobile-ticker span {
     display: inline-block;
     padding-left: 100%;
-    animation: tickerScroll 60s linear infinite; /* ← Duración ajustable */
+    animation: tickerScroll 40s linear infinite; /* ← Duración ajustable */
   }
 
   @keyframes tickerScroll {
@@ -541,14 +543,12 @@ aside li {
   }
 
   .mobile-ticker {
-    animation: fadeInTicker 1.5s ease-in forwards;
+    animation: fadeInTicker 1s ease-in forwards;
   }
 }
 
   /* Mueve el botón hamburguesa un poco más abajo para que no se tape */
-  .hamburger {
-    top: 45px;
-  }
+
 
   /* Ajusta el menú al abrir */
   aside.active {
@@ -560,10 +560,69 @@ aside li {
     margin-top: 45px;
   }
 
+  .negociar {
+  background: linear-gradient(135deg, #f16413, #e28f2f);
+  color: #050505;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  transition: transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.negociar:hover {
+  transform: translateY(-2px);
+  color: white;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, #e28f2f, #f16413);
+}
+
+/* --- BOTÓN ADMIN FLOTANTE --- */
+#admin-access {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e28f2f, #f16413);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 9999; /* encima de todo, pero sin interferir con productos */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: transform 0.25s, box-shadow 0.3s, background 0.3s;
+}
+
+#admin-access:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #f16413, #e28f2f);
+  color: white;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+}
+
+/* Versión más pequeña y ajustada en móviles */
+@media (max-width: 768px) {
+  #admin-access {
+    width: 34px;
+    height: 34px;
+    bottom: 12px;
+    right: 12px;
+    font-size: 18px;
+  }
+}
+
 
 </style>
 </head>
 <body>
+
 <div class="mobile-ticker">
   <span>
     🚀 Welcome to LaTRONIC Store — Your #1 Source for New and Used Trading Cards, Collectibles, History Pieces and more! 
@@ -572,59 +631,13 @@ aside li {
   </span>
 </div>
 
-
 <div class="hamburger">&#9776;</div>
 
 <aside>
   <h2 class="title">LaTRONIC</h2>
   <ul class="menu">
     <li><a class="boton-categoria" href="Home.html">Home</a></li>
-    <li>
-      <button class="boton-categoria toggle-submenu">New</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="golf">Golf</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Race-car</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="wrestling">Wrestling</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="avenger&marvel">Avenger/Marvel</button></li>
-      </ul>
-    </li>
-    <li>
-      <button class="boton-categoria toggle-submenu">Used</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="football">Football</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="hockey">Hockey</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="golf">Golf</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="race-car">Race-car</button></li>
-        <li><button class="boton-categoria" data-main="Used" data-sub="Wrestling">Wrestling</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="avenger&marvel">Avenger/Marvel</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="games">Games</button></li>
-      </ul>
-    </li>
-    <li>
-      <button class="boton-categoria toggle-submenu">More</button>
-      <ul class="submenu">
-        <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="souvenirs">Souvenirs</button></li>
-        <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
-      </ul>
-    </li>
+    <!-- Copia aquí todos tus submenús de New, Used, More -->
     <li class="cart-button-container">
       <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
       <footer>
@@ -637,33 +650,31 @@ aside li {
   </ul>
 </aside>
 
-
 <main>
   <h1 id="titulo-principal">All Products</h1>
-
-  <!-- Barra de búsqueda -->
   <input type="text" id="search-input" placeholder="Search" style="width: 100%; max-width: 400px; padding: 6px; margin: 10px auto; display: block; border-radius:5px; border:none; font-size:1rem; color: rgba(112, 110, 110, 0.507);">
-
   <div id="contenedor-productos"></div>
   <div id="paginacion"></div>
+
+  <!-- Botón Admin dentro del layout -->
+  <div class="admin-container">
+    <button id="admin-access" title="Admin Panel">⚙️</button>
+  </div>
 </main>
 
-
-<!-- Modal -->
-<!-- Modal para descripción -->
-<div id="producto-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:flex-start;overflow:auto;z-index:5000;">
-  <div style="position:relative;background:#2a2a2a;padding:15px;margin:60px auto 20px auto;border-radius:10px;max-width:400px;width:90%;display:flex;flex-direction:column;align-items:center;">
-    <span id="cerrar-modal" style="position:absolute;top:10px;right:15px;font-size:28px;font-weight:bold;color:#fff;cursor:pointer;">&times;</span>
-    
-    <img id="modal-imagen" src="" style="width:80%;max-width:300px;height:auto;margin-bottom:10px;border-radius:6px;">
-    <h2 id="modal-titulo" style="margin:5px 0;font-size:1.1rem;text-align:center;color:#e28f2f;"></h2>
-    <p id="modal-description" style="margin:5px 0;font-size:0.9rem;text-align:center;color:#fff;"></p>
-    <p id="modal-price" style="margin:5px 0;font-size:1rem;font-weight:bold;color:#e28f2f;"></p>
-    <p id="modal-stock" style="margin:5px 0;font-size:0.9rem;font-weight:bold;color:rgba(255,0,0,0.8);"></p>
+<!-- Modal Producto -->
+<div id="producto-modal">
+  <div class="modal-content">
+    <span id="cerrar-modal">&times;</span>
+    <img id="modal-imagen" src="">
+    <h2 id="modal-titulo"></h2>
+    <p id="modal-description"></p>
+    <p id="modal-price"></p>
+    <p id="modal-stock"></p>
   </div>
 </div>
 
-<!-- Modal para zoom -->
+<!-- Modal Zoom -->
 <div id="zoom-modal">
   <span class="close-btn">&times;</span>
   <button class="zoom-arrow prev">&#9664;</button>
@@ -671,8 +682,30 @@ aside li {
   <button class="zoom-arrow next">&#9654;</button>
 </div>
 
+<!-- MODAL NEGOCIAR -->
+<div id="negociar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:6000;">
+  <div style="background:#2a2a2a;padding:15px;border-radius:10px;width:90%;max-width:350px;display:flex;flex-direction:column;align-items:center;">
+    <span id="cerrar-negociar" style="align-self:flex-end;font-size:24px;color:#fff;cursor:pointer;">&times;</span>
+    <h2 style="color:#e28f2f;margin-bottom:10px;text-align:center;">Negotiate Price</h2>
+    <p id="negociar-producto" style="color:#fff;text-align:center;"></p>
+    <input type="email" id="negociar-email" placeholder="Your Email" style="width:100%;margin-bottom:8px;padding:8px;border-radius:5px;border:none;">
+    <input type="number" id="negociar-precio" placeholder="Your Offer" style="width:100%;margin-bottom:8px;padding:8px;border-radius:5px;border:none;">
+    <button id="enviar-negociacion" style="width:100%;padding:8px;border:none;border-radius:5px;background:#e28f2f;color:#000;font-weight:bold;cursor:pointer;">Send</button>
+    <p id="negociar-status" style="color:#fff;margin-top:6px;text-align:center;"></p>
+  </div>
+</div>
+
+<!-- BOTÓN ADMIN -->
+
+
+
+<!-- Incluye la librería EmailJS antes de tu script -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 
 <script>
+emailjs.init("g62s-TyalISrbYkzz"); // Ejemplo: emailjs.init("7aBcdEFGhijkLmnOp");
+// Reemplaza con tu ID de EmailJS
+
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
   const cartCountEl = document.getElementById("cart-count");
@@ -680,257 +713,226 @@ document.addEventListener("DOMContentLoaded", async () => {
   const hamburger = document.querySelector(".hamburger");
   const aside = document.querySelector("aside");
 
-  // --- MENU HAMBURGUESA RESPONSIVE ---
-  hamburger.addEventListener("click", () => {
-    aside.classList.toggle("active");
-  });
+  // --- MENU HAMBURGUESA ---
+  hamburger.addEventListener("click", () => aside.classList.toggle("active"));
 
-  // --- ABRIR/CERRAR SUBMENUS ---
+  // --- SUBMENUS ---
   toggleButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const submenu = btn.nextElementSibling;
       const isVisible = submenu.style.display === "block";
-      
-      // Cerrar todos los submenus
       document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
       document.querySelectorAll(".toggle-submenu").forEach(b => b.classList.remove("active"));
-      
-      // Abrir el submenu clickeado
-      if (!isVisible) {
-        submenu.style.display = "block";
-        btn.classList.add("active");
-      }
+      if (!isVisible) { submenu.style.display = "block"; btn.classList.add("active"); }
     });
   });
 
   // --- OBTENER PRODUCTOS ---
   async function obtenerProductos() {
-    try {
-      const res = await fetch("db.json");
-      if (!res.ok) throw new Error("No se pudo cargar db.json");
-      return await res.json();
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
+    return JSON.parse(localStorage.getItem("productos")) || [];
   }
 
   let productos = await obtenerProductos();
-  let productosFiltrados = [...productos]; // copia para filtrar
-
-  // --- MODAL ZOOM ---
-  const zoomModal = document.getElementById("zoom-modal");
-  const zoomImg = zoomModal.querySelector("img");
-  const zoomClose = zoomModal.querySelector(".close-btn");
-  let zoomIndex = 0;
-  let zoomImagenes = [];
-
-  function abrirZoom(imagenes, indexInicial) {
-    zoomImagenes = imagenes;
-    zoomIndex = indexInicial;
-    zoomImg.src = zoomImagenes[zoomIndex];
-    zoomModal.classList.add("show");
-  }
-
-  function cerrarZoom() {
-    zoomModal.classList.remove("show");
-  }
-
-  function cambiarZoomImg(dir) {
-    zoomIndex = (zoomIndex + dir + zoomImagenes.length) % zoomImagenes.length;
-    zoomImg.src = zoomImagenes[zoomIndex];
-  }
-
-  // Botones dentro del zoom
-  document.querySelector(".zoom-arrow.prev").addEventListener("click", e => {
-    e.stopPropagation();
-    cambiarZoomImg(-1);
-  });
-  document.querySelector(".zoom-arrow.next").addEventListener("click", e => {
-    e.stopPropagation();
-    cambiarZoomImg(1);
-  });
-
-  zoomClose.addEventListener("click", cerrarZoom);
-  zoomModal.addEventListener("click", e => {
-    if (e.target === zoomModal) cerrarZoom();
-  });
+  let productosFiltrados = [...productos];
 
   // --- RENDER PRODUCTOS ---
   function renderProductos(lista) {
     contenedor.innerHTML = "";
-
     lista.forEach(prod => {
       const div = document.createElement("div");
       div.className = "producto";
 
-      // --- GALERÍA DE IMÁGENES ---
+      // GALERIA
       const galeria = document.createElement("div");
       galeria.className = "galeria";
-
       const mainImg = document.createElement("img");
       mainImg.className = "main-img";
       mainImg.src = prod.imagenes[0];
       mainImg.dataset.index = 0;
 
       const prev = document.createElement("button");
-      prev.className = "arrow prev";
-      prev.innerHTML = "&#9664;";
-
+      prev.className = "arrow prev"; prev.innerHTML = "&#9664;";
       const next = document.createElement("button");
-      next.className = "arrow next";
-      next.innerHTML = "&#9654;";
-
-      if (prod.imagenes.length <= 1) {
-        prev.style.display = "none";
-        next.style.display = "none";
-      }
+      next.className = "arrow next"; next.innerHTML = "&#9654;";
+      if (prod.imagenes.length <= 1) { prev.style.display = "none"; next.style.display = "none"; }
 
       prev.addEventListener("click", e => {
         e.stopPropagation();
         let idx = parseInt(mainImg.dataset.index);
         idx = (idx - 1 + prod.imagenes.length) % prod.imagenes.length;
-        mainImg.dataset.index = idx;
-        mainImg.src = prod.imagenes[idx];
+        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx];
       });
-
       next.addEventListener("click", e => {
         e.stopPropagation();
         let idx = parseInt(mainImg.dataset.index);
         idx = (idx + 1) % prod.imagenes.length;
-        mainImg.dataset.index = idx;
-        mainImg.src = prod.imagenes[idx];
+        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx];
       });
 
       galeria.appendChild(prev);
       galeria.appendChild(mainImg);
       galeria.appendChild(next);
 
-      // --- INFO PRODUCTO ---
-      const h3 = document.createElement("h3");
-      h3.textContent = prod.titulo;
+      const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
+      const pStock = document.createElement("p"); pStock.className = "stock"; 
+      pStock.textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+      const pPrice = document.createElement("p"); 
+      pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; pPrice.textContent="$"+prod.price;
 
-      const pStock = document.createElement("p");
-      pStock.className = "stock";
-      pStock.textContent = prod.stock > 0 ? "Stock: " + prod.stock : "Out of stock";
+      const btn = document.createElement("button"); 
+      btn.className="agregar-carrito"; btn.textContent="Add"; btn.dataset.id=prod.id;
+      if(prod.stock===0) btn.disabled=true;
 
-      const pPrice = document.createElement("p");
-      pPrice.style.color = "#e28f2f";
-      pPrice.style.fontWeight = "bold";
-      pPrice.textContent = "$" + prod.price;
+      const btnNegociar = document.createElement("button"); 
+      btnNegociar.className="negociar"; btnNegociar.textContent="Send Offer"; btnNegociar.dataset.id=prod.id;
 
-      const btn = document.createElement("button");
-      btn.className = "agregar-carrito";
-      btn.textContent = "Agregar";
-      btn.dataset.id = prod.id;
-      if (prod.stock === 0) btn.disabled = true;
-
-      div.appendChild(galeria);
-      div.appendChild(h3);
-      div.appendChild(pStock);
-      div.appendChild(pPrice);
-      div.appendChild(btn);
-
+      div.appendChild(galeria); 
+      div.appendChild(h3); 
+      div.appendChild(pStock); 
+      div.appendChild(pPrice); 
+      div.appendChild(btn); 
+      div.appendChild(btnNegociar);
       contenedor.appendChild(div);
 
-      // --- MODAL DE DESCRIPCIÓN ---
+      // --- MODAL PRODUCTO ---
       mainImg.addEventListener("click", () => {
         const modal = document.getElementById("producto-modal");
         document.getElementById("modal-imagen").src = prod.imagenes[0];
         document.getElementById("modal-titulo").textContent = prod.titulo;
         document.getElementById("modal-description").textContent = prod.description;
-        document.getElementById("modal-price").textContent = "$" + prod.price;
-        document.getElementById("modal-stock").textContent = prod.stock > 0 ? "Stock: " + prod.stock : "Out of stock";
-        modal.style.display = "flex";
-
-        // 👉 Abrir zoom desde la imagen del modal
-        document.getElementById("modal-imagen").onclick = () => {
-          abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
-        };
+        document.getElementById("modal-price").textContent = "$"+prod.price;
+        document.getElementById("modal-stock").textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+        modal.style.display="flex";
+        document.getElementById("modal-imagen").onclick = () => abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
       });
     });
   }
 
-  // --- CERRAR MODAL ---
-  document.getElementById("cerrar-modal").addEventListener("click", () => {
-    document.getElementById("producto-modal").style.display = "none";
-  });
+  // --- MODAL ZOOM ---
+  const zoomModal = document.getElementById("zoom-modal");
+  const zoomImg = zoomModal.querySelector("img");
+  const zoomClose = zoomModal.querySelector(".close-btn");
+  let zoomIndex=0, zoomImagenes=[];
+  function abrirZoom(imagenes,indexInicial){zoomImagenes=imagenes;zoomIndex=indexInicial;zoomImg.src=zoomImagenes[zoomIndex];zoomModal.classList.add("show");}
+  function cerrarZoom(){zoomModal.classList.remove("show");}
+  function cambiarZoomImg(dir){zoomIndex=(zoomIndex+dir+zoomImagenes.length)%zoomImagenes.length;zoomImg.src=zoomImagenes[zoomIndex];}
+  document.querySelector(".zoom-arrow.prev").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(-1);});
+  document.querySelector(".zoom-arrow.next").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(1);});
+  zoomClose.addEventListener("click",cerrarZoom);
+  zoomModal.addEventListener("click", e=>{if(e.target===zoomModal) cerrarZoom();});
 
-  // --- CERRAR MODAL AL HACER CLICK FUERA ---
-  document.getElementById("producto-modal").addEventListener("click", e => {
-    if (e.target.id === "producto-modal") {
-      e.target.style.display = "none";
+  renderProductos(productosFiltrados);
+
+  // --- CARRITO ---
+  contenedor.addEventListener("click", e=>{
+    if(e.target.classList.contains("agregar-carrito")){
+      const id = e.target.dataset.id;
+      const prod = productos.find(p=>p.id===id);
+      if(!prod||prod.stock===0) return;
+      let carrito = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
+      const existente=carrito.find(p=>p.id===id);
+      if(existente) existente.quantity+=1; else carrito.push({...prod,quantity:1});
+      localStorage.setItem("productos-en-cart",JSON.stringify(carrito));
+      prod.stock-=1;
+      localStorage.setItem("productos", JSON.stringify(productos)); // <-- guarda cambios de stock
+      renderProductos(productosFiltrados);
+      cartCountEl.textContent = carrito.reduce((acc,p)=>acc+p.quantity,0);
     }
   });
 
-  // --- RENDER INICIAL ---
-  renderProductos(productosFiltrados);
-
-  // --- AGREGAR AL CARRITO ---
-  contenedor.addEventListener("click", e => {
-    if (!e.target.classList.contains("agregar-carrito")) return;
-
-    const id = e.target.dataset.id;
-    const prod = productos.find(p => p.id === id);
-    if (!prod || prod.stock === 0) return;
-
-    let carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-    const existente = carrito.find(p => p.id === id);
-    if (existente) existente.quantity += 1;
-    else carrito.push({ ...prod, quantity: 1 });
-
-    localStorage.setItem("productos-en-cart", JSON.stringify(carrito));
-
-    prod.stock -= 1;
-    renderProductos(productosFiltrados);
-
-    cartCountEl.textContent = carrito.reduce((acc, p) => acc + p.quantity, 0);
-  });
-
-  // --- INICIALIZAR CONTADOR ---
-  let carritoInicial = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-  cartCountEl.textContent = carritoInicial.reduce((acc, p) => acc + p.quantity, 0);
-
-  // --- CLICK EN CART ---
-  document.getElementById("ir-carrito").addEventListener("click", () => {
-    window.location.href = "cart.html"; // Cambia a la página de carrito
-  });
+  cartCountEl.textContent = (JSON.parse(localStorage.getItem("productos-en-cart"))||[]).reduce((acc,p)=>acc+p.quantity,0);
+  document.getElementById("ir-carrito").addEventListener("click",()=>{window.location.href="cart.html";});
 
   // --- SEARCH ---
-  const searchInput = document.getElementById("search-input");
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.toLowerCase();
-    productosFiltrados = productos.filter(p => 
-      p.titulo.toLowerCase().includes(query) ||
-      (p.ano && p.ano.toString().includes(query))
-    );
+  document.getElementById("search-input").addEventListener("input",()=>{
+    const query = document.getElementById("search-input").value.toLowerCase();
+    productosFiltrados = productos.filter(p=>p.titulo.toLowerCase().includes(query) || (p.ano && p.ano.toString().includes(query)));
     renderProductos(productosFiltrados);
   });
 
-  // --- FILTRO POR SUBCATEGORÍA ---
-  document.querySelectorAll(".submenu .boton-categoria").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const mainCat = btn.dataset.main;
-      const subCat = btn.dataset.sub;
-      document.getElementById("titulo-principal").textContent = `${subCat.charAt(0).toUpperCase() + subCat.slice(1)} (${mainCat})`;
-
-      searchInput.value = "";
-
-      productosFiltrados = productos.filter(p => 
-        p.categoria.main === mainCat && p.categoria.sub === subCat
-      );
+  // --- FILTROS DE SUBMENÚ ---
+  document.querySelectorAll(".submenu .boton-categoria").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const mainCat=btn.dataset.main, subCat=btn.dataset.sub;
+      document.getElementById("titulo-principal").textContent=`${subCat.charAt(0).toUpperCase()+subCat.slice(1)} (${mainCat})`;
+      document.getElementById("search-input").value="";
+      productosFiltrados=productos.filter(p=>p.categoria.main===mainCat && p.categoria.sub===subCat);
       renderProductos(productosFiltrados);
+    });
+  });
 
-      aside.classList.remove("active");
+  // --- BOTÓN ADMIN ---
+  document.getElementById("admin-access").addEventListener("click", () => {
+    const password = prompt("Enter admin password:");
+    if(password === "Jaymil2024") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Incorrect password!");
+    }
+  });
+
+  // --- ESCUCHA CAMBIOS EN LOCALSTORAGE ---
+  window.addEventListener("storage", (e) => {
+    if (e.key === "productos") {
+      productos = JSON.parse(e.newValue);
+      productosFiltrados = [...productos];
+      renderProductos(productosFiltrados);
+    }
+  });
+
+  // --- NEGOCIATE (EMAIL + PRECIO) ---
+  const negociarModal = document.getElementById("negociar-modal");
+  const cerrarNegociar = document.getElementById("cerrar-negociar");
+  const negociarProductoEl = document.getElementById("negociar-producto");
+  const emailInput = document.getElementById("negociar-email");
+  const precioInput = document.getElementById("negociar-precio");
+  const enviarBtn = document.getElementById("enviar-negociacion");
+  const statusEl = document.getElementById("negociar-status");
+  let productoActual = null;
+
+  contenedor.addEventListener("click", e => {
+    if(!e.target.classList.contains("negociar")) return;
+    const id = e.target.dataset.id;
+    productoActual = JSON.parse(localStorage.getItem("productos")).find(p=>p.id===id);
+    negociarProductoEl.textContent = productoActual.titulo;
+    emailInput.value = "";
+    precioInput.value = "";
+    statusEl.textContent = "";
+    negociarModal.style.display = "flex";
+  });
+
+  cerrarNegociar.addEventListener("click", () => negociarModal.style.display = "none");
+
+  enviarBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const precio = precioInput.value.trim();
+    if(!email || !precio){
+      statusEl.style.color = "red";
+      statusEl.textContent = "Please fill all fields.";
+      return;
+    }
+    emailjs.send("service_kfjnvo6","template_ahlpig3",{
+      producto: productoActual.titulo,
+      email_cliente: email,
+      precio_oferta: precio
+    }).then(()=>{
+      statusEl.style.color = "#0f0";
+      statusEl.textContent = "Offer sent!";
+      setTimeout(()=>negociarModal.style.display="none",1500);
+    }).catch(err=>{
+      console.error(err);
+      statusEl.style.color = "red";
+      statusEl.textContent = "Failed to send.";
     });
   });
 
 });
 </script>
-
-
-
-
+<script>
+document.getElementById("admin-access").addEventListener("click", () => {
+  window.location.href = "admin.html";
+});
+</script>
 
 
 </body>
