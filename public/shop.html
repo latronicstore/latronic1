@@ -618,6 +618,28 @@ aside li {
   }
 }
 
+.zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.zoom-modal.show {
+  display: flex;
+}
+.zoom-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+   pointer-events: none;
+}
+
 
 </style>
 </head>
@@ -721,13 +743,13 @@ aside li {
   </div>
 </div>
 
-<!-- Modal Zoom -->
-<div id="zoom-modal">
+<div id="zoom-modal" class="zoom-modal">
   <span class="close-btn">&times;</span>
-  <button class="zoom-arrow prev">&#9664;</button>
-  <img src="" alt="Zoom">
-  <button class="zoom-arrow next">&#9654;</button>
+  <img src="" alt="zoom image">
+  <div class="zoom-arrow prev">&#10094;</div>
+  <div class="zoom-arrow next">&#10095;</div>
 </div>
+
 
 <!-- MODAL NEGOCIAR -->
 <div id="negociar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:6000;">
@@ -748,9 +770,8 @@ aside li {
 
 <!-- Incluye la librería EmailJS antes de tu script -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
-
 <script>
-emailjs.init("g62s-TyalISrbYkzz"); // Ejemplo: emailjs.init("7aBcdEFGhijkLmnOp");
+emailjs.init("g62s-TyalISrbYkzz");
 
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
@@ -774,26 +795,63 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // --- OBTENER PRODUCTOS ---
-async function obtenerProductos() {
-  try {
-    const res = await fetch("./db.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("Error cargando productos");
-    const data = await res.json();
-    localStorage.setItem("productos", JSON.stringify(data));
-    return data;
-  } catch (err) {
-    console.warn("⚠️ No se pudo leer db.json, usando datos locales:", err.message);
-    const localData = JSON.parse(localStorage.getItem("productos")) || [];
-    if (localData.length === 0) {
-      alert("No se pudo cargar db.json y no hay productos guardados en el navegador.");
+  async function obtenerProductos() {
+    try {
+      const res = await fetch("./db.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("Error cargando productos");
+      const data = await res.json();
+      const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
+      const productosFinal = data.map(p => {
+        const local = productosGuardados.find(lp => lp.id === p.id);
+        return local ? { ...p, stock: local.stock, price: local.price, soldOut: local.soldOut||false } : p;
+      });
+      localStorage.setItem("productos", JSON.stringify(productosFinal));
+      return productosFinal;
+    } catch (err) {
+      const localData = JSON.parse(localStorage.getItem("productos")) || [];
+      if (localData.length === 0) alert("No se pudo cargar db.json y no hay productos guardados.");
+      return localData;
     }
-    return localData;
   }
-}
 
-let productos = await obtenerProductos();
-let productosFiltrados = [...productos];
+  let productos = await obtenerProductos();
+  let productosFiltrados = [...productos];
 
+  // --- MODAL PRODUCTO ---
+  const modal = document.getElementById("producto-modal");
+  const modalImagen = document.getElementById("modal-imagen");
+  const cerrarModalBtn = document.getElementById("cerrar-modal");
+  const modalTitulo = document.getElementById("modal-titulo");
+  const modalDesc = document.getElementById("modal-description");
+  const modalPrice = document.getElementById("modal-price");
+  const modalStock = document.getElementById("modal-stock");
+
+  cerrarModalBtn.addEventListener("click", () => { modal.style.display = "none"; });
+  modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+
+  // --- MODAL ZOOM ---
+  const zoomModal = document.getElementById("zoom-modal");
+  const zoomImg = zoomModal.querySelector("img");
+  const zoomClose = zoomModal.querySelector(".close-btn");
+  const zoomPrev = zoomModal.querySelector(".zoom-arrow.prev");
+  const zoomNext = zoomModal.querySelector(".zoom-arrow.next");
+  let zoomIndex = 0, zoomImagenes = [];
+
+  function abrirZoom(imagenes, index) {
+    zoomImagenes = imagenes;
+    zoomIndex = index;
+    zoomImg.src = zoomImagenes[zoomIndex];
+    zoomModal.style.display = "flex";
+  }
+  function cerrarZoom() { zoomModal.style.display = "none"; }
+  function cambiarZoomImg(dir) {
+    zoomIndex = (zoomIndex + dir + zoomImagenes.length) % zoomImagenes.length;
+    zoomImg.src = zoomImagenes[zoomIndex];
+  }
+  zoomClose.addEventListener("click", cerrarZoom);
+  zoomPrev.addEventListener("click", e => { e.stopPropagation(); cambiarZoomImg(-1); });
+  zoomNext.addEventListener("click", e => { e.stopPropagation(); cambiarZoomImg(1); });
+  zoomModal.addEventListener("click", e => { if (e.target === zoomModal || e.target === zoomImg) cerrarZoom(); });
 
   // --- RENDER PRODUCTOS ---
   function renderProductos(lista) {
@@ -802,13 +860,14 @@ let productosFiltrados = [...productos];
       const div = document.createElement("div");
       div.className = "producto";
 
-      // GALERIA
       const galeria = document.createElement("div");
       galeria.className = "galeria";
+
       const mainImg = document.createElement("img");
       mainImg.className = "main-img";
       mainImg.src = prod.imagenes[0];
       mainImg.dataset.index = 0;
+      mainImg.style.cursor = "zoom-in";
 
       const prev = document.createElement("button");
       prev.className = "arrow prev"; prev.innerHTML = "&#9664;";
@@ -834,17 +893,25 @@ let productosFiltrados = [...productos];
       galeria.appendChild(next);
 
       const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
-      const pStock = document.createElement("p"); pStock.className = "stock"; 
-      pStock.textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+      const pStock = document.createElement("p"); 
+      pStock.className = "stock"; 
+      pStock.textContent = prod.stock > 0 ? `Stock: ${prod.stock}` : "Out of stock";
+
       const pPrice = document.createElement("p"); 
-      pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; pPrice.textContent="$"+prod.price;
+      pPrice.style.color = "#e28f2f";
+      pPrice.style.fontWeight = "bold";
+      pPrice.textContent = "$"+prod.price;
 
       const btn = document.createElement("button"); 
-      btn.className="agregar-carrito"; btn.textContent="Add"; btn.dataset.id=prod.id;
-      if(prod.stock===0) btn.disabled=true;
+      btn.className = "agregar-carrito"; 
+      btn.textContent = "Add"; 
+      btn.dataset.id = prod.id;
+      btn.disabled = prod.stock === 0;
 
       const btnNegociar = document.createElement("button"); 
-      btnNegociar.className="negociar"; btnNegociar.textContent="Send Offer"; btnNegociar.dataset.id=prod.id;
+      btnNegociar.className = "negociar"; 
+      btnNegociar.textContent = "Send Offer"; 
+      btnNegociar.dataset.id = prod.id;
 
       div.appendChild(galeria); 
       div.appendChild(h3); 
@@ -854,49 +921,67 @@ let productosFiltrados = [...productos];
       div.appendChild(btnNegociar);
       contenedor.appendChild(div);
 
-      // --- MODAL PRODUCTO ---
       mainImg.addEventListener("click", () => {
-        const modal = document.getElementById("producto-modal");
-        document.getElementById("modal-imagen").src = prod.imagenes[0];
-        document.getElementById("modal-titulo").textContent = prod.titulo;
-        document.getElementById("modal-description").textContent = prod.description;
-        document.getElementById("modal-price").textContent = "$"+prod.price;
-        document.getElementById("modal-stock").textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
-        modal.style.display="flex";
-        document.getElementById("modal-imagen").onclick = () => abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
+        modal.style.display = "flex";
+        modalImagen.src = prod.imagenes[parseInt(mainImg.dataset.index)];
+        modalTitulo.textContent = prod.titulo;
+        modalDesc.textContent = prod.description;
+        modalPrice.textContent = "$"+prod.price;
+        modalStock.textContent = prod.stock>0?`Stock: ${prod.stock}`:"Out of stock";
+        modalImagen.onclick = () => abrirZoom(prod.imagenes, parseInt(mainImg.dataset.index));
       });
     });
   }
 
-  // --- MODAL ZOOM ---
-  const zoomModal = document.getElementById("zoom-modal");
-  const zoomImg = zoomModal.querySelector("img");
-  const zoomClose = zoomModal.querySelector(".close-btn");
-  let zoomIndex=0, zoomImagenes=[];
-  function abrirZoom(imagenes,indexInicial){zoomImagenes=imagenes;zoomIndex=indexInicial;zoomImg.src=zoomImagenes[zoomIndex];zoomModal.classList.add("show");}
-  function cerrarZoom(){zoomModal.classList.remove("show");}
-  function cambiarZoomImg(dir){zoomIndex=(zoomIndex+dir+zoomImagenes.length)%zoomImagenes.length;zoomImg.src=zoomImagenes[zoomIndex];}
-  document.querySelector(".zoom-arrow.prev").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(-1);});
-  document.querySelector(".zoom-arrow.next").addEventListener("click", e=>{e.stopPropagation();cambiarZoomImg(1);});
-  zoomClose.addEventListener("click",cerrarZoom);
-  zoomModal.addEventListener("click", e=>{if(e.target===zoomModal) cerrarZoom();});
-
   renderProductos(productosFiltrados);
 
   // --- CARRITO ---
+  function actualizarCarritoUI() {
+    const carrito = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
+
+    // Actualizar contador
+    cartCountEl.textContent = carrito.reduce((acc,p)=>acc+p.quantity,0);
+
+    // Actualizar stock de productos
+    productos.forEach(p => {
+      const enCarrito = carrito.find(c => c.id === p.id);
+      p.stock = enCarrito ? Math.max(0, p.stock - enCarrito.quantity) : p.stock;
+      p.soldOut = p.stock <= 0;
+    });
+
+    productosFiltrados = [...productos];
+    renderProductos(productosFiltrados);
+  }
+
+  // --- CLICK "ADD TO CART" ---
   contenedor.addEventListener("click", e=>{
     if(e.target.classList.contains("agregar-carrito")){
       const id = e.target.dataset.id;
       const prod = productos.find(p=>p.id===id);
       if(!prod||prod.stock===0) return;
+
       let carrito = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
-      const existente=carrito.find(p=>p.id===id);
-      if(existente) existente.quantity+=1; else carrito.push({...prod,quantity:1});
-      localStorage.setItem("productos-en-cart",JSON.stringify(carrito));
-      prod.stock-=1;
-      localStorage.setItem("productos", JSON.stringify(productos)); // <-- guarda cambios de stock
-      renderProductos(productosFiltrados);
-      cartCountEl.textContent = carrito.reduce((acc,p)=>acc+p.quantity,0);
+      const existente = carrito.find(p=>p.id===id);
+      if(existente) existente.quantity+=1; 
+      else carrito.push({...prod,quantity:1});
+
+      prod.stock -= 1;
+      prod.soldOut = prod.stock<=0;
+
+      localStorage.setItem("productos", JSON.stringify(productos));
+      localStorage.setItem("productos-en-cart", JSON.stringify(carrito));
+
+      actualizarCarritoUI();
+  }
+  });
+
+  document.getElementById("ir-carrito").addEventListener("click",()=>{window.location.href="cart.html";});
+
+  // --- ESCUCHAR CAMBIOS DESDE CART.HTML ---
+  window.addEventListener("storage", e => {
+    if(e.key === "productos-en-cart") {
+      productos = JSON.parse(localStorage.getItem("productos")) || productos;
+      actualizarCarritoUI();
     }
   });
 
@@ -910,37 +995,34 @@ let productosFiltrados = [...productos];
     renderProductos(productosFiltrados);
   });
 
-  // --- FILTROS DE SUBMENÚ ---
+  // --- FILTROS ---
   document.querySelectorAll(".submenu .boton-categoria").forEach(btn=>{
     btn.addEventListener("click",()=>{
-      const mainCat=btn.dataset.main, subCat=btn.dataset.sub;
-      document.getElementById("titulo-principal").textContent=`${subCat.charAt(0).toUpperCase()+subCat.slice(1)} (${mainCat})`;
+      const mainCat = btn.dataset.main, subCat = btn.dataset.sub;
+      document.getElementById("titulo-principal").textContent = `${subCat.charAt(0).toUpperCase()+subCat.slice(1)} (${mainCat})`;
       document.getElementById("search-input").value="";
-      productosFiltrados=productos.filter(p=>p.categoria.main===mainCat && p.categoria.sub===subCat);
+      productosFiltrados = productos.filter(p=>p.categoria.main===mainCat && p.categoria.sub===subCat);
       renderProductos(productosFiltrados);
     });
   });
 
-  // --- BOTÓN ADMIN ---
+  // --- ADMIN ---
   document.getElementById("admin-access").addEventListener("click", () => {
     const password = prompt("Enter admin password:");
-    if(password === "161824") {
-        window.location.href = "admin.html";
-    } else {
-        alert("Incorrect password!");
-    }
+    if(password === "161824") window.location.href = "admin.html";
+    else alert("Incorrect password!");
   });
 
-  // --- ESCUCHA CAMBIOS EN LOCALSTORAGE ---
-  window.addEventListener("storage", (e) => {
-    if (e.key === "productos") {
-      productos = JSON.parse(e.newValue);
+  // --- ESCUCHAR CAMBIOS DE STOCK Y PRECIO DESDE ADMIN ---
+  window.addEventListener("storage", e => {
+    if(e.key==="productos" || e.key==="productos-en-cart") {
+      productos = JSON.parse(localStorage.getItem("productos"))||productos;
       productosFiltrados = [...productos];
-      renderProductos(productosFiltrados);
+      actualizarCarritoUI();
     }
   });
 
-  // --- NEGOCIATE (EMAIL + PRECIO) ---
+  // --- NEGOCIAR ---
   const negociarModal = document.getElementById("negociar-modal");
   const cerrarNegociar = document.getElementById("cerrar-negociar");
   const negociarProductoEl = document.getElementById("negociar-producto");
@@ -967,27 +1049,33 @@ let productosFiltrados = [...productos];
     const email = emailInput.value.trim();
     const precio = precioInput.value.trim();
     if(!email || !precio){
-      statusEl.style.color = "red";
-      statusEl.textContent = "Please fill all fields.";
+      statusEl.style.color = "red"; statusEl.textContent = "Please fill all fields.";
       return;
     }
-    emailjs.send("service_kfjnvo6","template_ahlpig3",{
-      producto: productoActual.titulo,
-      email_cliente: email,
-      precio_oferta: precio
-    }).then(()=>{
-      statusEl.style.color = "#0f0";
-      statusEl.textContent = "Offer sent!";
-      setTimeout(()=>negociarModal.style.display="none",1500);
-    }).catch(err=>{
-      console.error(err);
-      statusEl.style.color = "red";
-      statusEl.textContent = "Failed to send.";
-    });
+    emailjs.send("service_kfjnvo6","template_ahlpig3",{ producto: productoActual.titulo, email_cliente: email, precio_oferta: precio })
+    .then(()=>{ statusEl.style.color = "#0f0"; statusEl.textContent = "Offer sent!"; setTimeout(()=>negociarModal.style.display="none",1500); })
+    .catch(err=>{ statusEl.style.color = "red"; statusEl.textContent = "Failed to send."; console.error(err); });
+  });
+
+  // --- NUEVO: SINCRONIZACIÓN EN TIEMPO REAL CON CART.HTML ---
+  window.addEventListener("storage", e => {
+    if(e.key === "productos-en-cart") {
+      const carritoActual = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+      cartCountEl.textContent = carritoActual.reduce((acc,p) => acc + (p.quantity||0), 0);
+
+      // Actualizar botones Add a cart según stock real
+      productos.forEach(p => {
+        const enCarrito = carritoActual.find(c => c.id === p.id);
+        if(enCarrito) p.stock = Math.max(0, p.stock - enCarrito.quantity);
+      });
+      productosFiltrados = [...productos];
+      renderProductos(productosFiltrados);
+    }
   });
 
 });
 </script>
+
 
 
 

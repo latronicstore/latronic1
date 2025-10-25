@@ -186,21 +186,16 @@ body {
 </div>
 
 <script>
-const ADMIN_PASSWORD = "161824"; // Cambia esta contraseña según sea necesario
+const ADMIN_PASSWORD = "161824";
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
 const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const goShopBtn = document.getElementById("go-shop-btn");
-goShopBtn.addEventListener("click", () => {
-  window.location.href = "shop.html";
-});
-
 const passwordInput = document.getElementById("admin-password");
 const listaProductos = document.getElementById("lista-productos");
 const formProducto = document.getElementById("form-producto");
 
-// Productos en memoria / localStorage
 let productos = [];
 
 // LOGIN
@@ -217,7 +212,9 @@ logoutBtn.addEventListener("click", () => {
   adminPanel.style.display = "none";
 });
 
-// Cargar productos desde localStorage o db.json
+goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
+
+// Cargar productos
 async function cargarProductos(){
   const stored = localStorage.getItem("productos");
   if(stored){
@@ -235,9 +232,10 @@ async function cargarProductos(){
   renderProductos();
 }
 
-// Guardar cambios en localStorage
+// Guardar cambios y disparar evento storage
 function guardarProductos(){
   localStorage.setItem("productos", JSON.stringify(productos));
+  window.dispatchEvent(new Event("storage")); // Notifica cambios a otras pestañas
 }
 
 // Renderizar productos
@@ -308,5 +306,6 @@ formProducto.addEventListener("submit", e=>{
   renderProductos();
 });
 </script>
+
 </body>
 </html>
