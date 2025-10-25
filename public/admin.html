@@ -215,16 +215,18 @@ logoutBtn.addEventListener("click", () => {
 goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
 
 // Cargar productos
-async function cargarProductos(){
+async function cargarProductos() {
   const stored = localStorage.getItem("productos");
-  if(stored){
+  if (stored) {
     productos = JSON.parse(stored);
   } else {
     try {
-      const res = await fetch("db.json");
+      const res = await fetch("https://latronic.onrender.com/api/productos", {
+        cache: "no-store"
+      });
       productos = await res.json();
       localStorage.setItem("productos", JSON.stringify(productos));
-    } catch(err){
+    } catch (err) {
       console.error("Error cargando productos:", err);
       productos = [];
     }
