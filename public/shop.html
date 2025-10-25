@@ -773,25 +773,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // --- OBTENER PRODUCTOS (LOCALSTORAGE O DB.JSON) ---
-  async function obtenerProductos() {
-    let productos = JSON.parse(localStorage.getItem("productos"));
-    if (productos && productos.length > 0) return productos;
-
-    // Si localStorage está vacío, cargar desde db.json
-    try {
-      const res = await fetch("db.json");
-      productos = await res.json();
-      localStorage.setItem("productos", JSON.stringify(productos));
-      return productos;
-    } catch (error) {
-      console.error("Error cargando productos:", error);
-      return [];
+  // --- OBTENER PRODUCTOS ---
+async function obtenerProductos() {
+  try {
+    const res = await fetch("./db.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Error cargando productos");
+    const data = await res.json();
+    localStorage.setItem("productos", JSON.stringify(data));
+    return data;
+  } catch (err) {
+    console.warn("⚠️ No se pudo leer db.json, usando datos locales:", err.message);
+    const localData = JSON.parse(localStorage.getItem("productos")) || [];
+    if (localData.length === 0) {
+      alert("No se pudo cargar db.json y no hay productos guardados en el navegador.");
     }
+    return localData;
   }
+}
 
-  let productos = await obtenerProductos();
-  let productosFiltrados = [...productos];
+let productos = await obtenerProductos();
+let productosFiltrados = [...productos];
+
 
   // --- RENDER PRODUCTOS ---
   function renderProductos(lista) {
