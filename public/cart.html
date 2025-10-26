@@ -161,7 +161,7 @@ let cart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
 let productos = JSON.parse(localStorage.getItem("productos")) || [];
 
 // Garantizar stockOriginal
-productos.forEach(p => { if(p.stockOriginal===undefined) p.stockOriginal=p.stock; });
+productos.forEach(p => { if (p.stockOriginal === undefined) p.stockOriginal = p.stock; });
 
 function actualizarCarrito() {
   const cartProductosEl = document.getElementById("cart-productos");
@@ -199,7 +199,7 @@ function actualizarCarrito() {
           <span>${cantidad}</span>
           <button class="boton-cantidad" data-id="${p.id}" data-action="plus">+</button>
         </p>
-        <p class="stock-text">Stock: ${productos.find(pr=>pr.id===p.id)?.stock ?? "N/A"}</p>
+        <p class="stock-text">Stock: ${productos.find(pr => pr.id === p.id)?.stock ?? "N/A"}</p>
       </div>
       <button class="boton-carrito cart-eliminar" data-id="${p.id}">Delete</button>
     `;
@@ -241,13 +241,10 @@ function actualizarCarrito() {
 
 function guardarCarrito() {
   localStorage.setItem("productos-en-cart", JSON.stringify(cart));
-
-  // Restaurar stock original, sin reducir al cargar
   productos.forEach(p => {
-    if(p.stockOriginal===undefined) p.stockOriginal=p.stock;
+    if (p.stockOriginal === undefined) p.stockOriginal = p.stock;
     p.stock = p.stockOriginal;
   });
-
   localStorage.setItem("productos", JSON.stringify(productos));
   window.dispatchEvent(new Event("storage"));
 }
@@ -264,6 +261,15 @@ function actualizarTotales(subtotal) {
   document.getElementById("cart-count").textContent = cart.reduce((a, p) => a + (p.quantity || 1), 0);
 }
 
+// --- EVENTO PARA ACTUALIZAR TAXES AL CAMBIAR ESTADO ---
+const estadoSelect = document.getElementById("estado");
+estadoSelect.addEventListener("change", () => {
+  localStorage.setItem("estado-cliente", estadoSelect.value);
+  // recalcula automáticamente los impuestos al cambiar
+  const subtotal = cart.reduce((acc, p) => acc + (parseFloat(p.price) * (p.quantity || 1)), 0);
+  actualizarTotales(subtotal);
+});
+
 document.getElementById("cart-acciones-vaciar").onclick = () => {
   cart = [];
   guardarCarrito();
@@ -275,23 +281,17 @@ document.getElementById("cart-acciones-buy").onclick = () => {
     alert("Your cart is empty! ❌");
     return;
   }
-  // Reducir stock
   cart.forEach(p => {
     const prod = productos.find(pr => pr.id === p.id);
     if (prod) prod.stock = Math.max(prod.stock - (p.quantity || 1), 0);
   });
 
   localStorage.setItem("productos", JSON.stringify(productos));
-  localStorage.setItem("productos-en-cart", JSON.stringify(cart)); // opcional, si quieres pasar los productos a la página de pago
-  //cart = []; // No limpiar todavía si quieres pasar los productos al pago
-  //window.dispatchEvent(new Event("storage")); // opcional
-
-  // Redirigir al pago
+  localStorage.setItem("productos-en-cart", JSON.stringify(cart));
   window.location.href = "card-charge.html";
 };
 
-
-const estadoSelect = document.getElementById("estado");
+// --- RESTAURAR ESTADO ---
 const estadoGuardado = localStorage.getItem("estado-cliente");
 if (estadoSelect && estadoGuardado) estadoSelect.value = estadoGuardado;
 
