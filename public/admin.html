@@ -1,176 +1,85 @@
-<!-- admin.html con persistencia en localStorage -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Panel - LaTRONIC</title>
-<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
 <style>
-body {
-  margin: 0;
-  font-family: 'Josefin Sans', sans-serif;
-  background: #121212;
-  color: #ffffffcb;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-#login-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-}
-#login-box {
-  background: #1f1f1f;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 0 10px #e28f2f;
-}
-#login-box input {
-  padding: 10px;
-  margin: 10px 0;
-  width: 200px;
-  border-radius: 5px;
-  border: none;
-}
-#login-box button {
-  padding: 10px 20px;
-  background: #e28f2f;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-#admin-panel {
-  display: none;
-  padding: 20px;
-  flex: 1;
-}
-#admin-panel h1 {
-  color: #e28f2f;
-}
-#logout-btn {
-  background: #e28f2f;
-  color: black;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-#form-producto input, 
-#form-producto textarea {
-  width: 100%;
-  max-width: 400px;
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: none;
-  background: #1f1f1f;
-  color: #fff;
-}
-#form-producto button {
-  padding: 10px 20px;
-  background: #e28f2f;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
-}
-.productos {
-  margin-top: 20px;
-}
-.producto {
-  background: #1f1f1f;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #e28f2f;
-}
-.producto h3 {
-  margin: 0 0 5px 0;
-  color: #e28f2f;
-}
-.producto img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  margin-right: 10px;
-  border-radius: 5px;
-}
-.producto .mini-images {
-  display: flex;
-  margin-bottom: 10px;
-}
-.producto p {
-  margin: 3px 0;
-}
-.producto input[type="number"] {
-  width: 80px;
-  background: #121212;
-  color: #fff;
-  border: 1px solid #e28f2f;
-  border-radius: 5px;
-  padding: 2px 5px;
-}
-.producto button {
-  margin-top: 5px;
-  margin-right: 5px;
-  padding: 5px 10px;
-  background: #e28f2f;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  color: black;
-}
+  /* --- RESET BÁSICO --- */
+  * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+  body { background:#1e1e1e; color:#fff; }
 
-#go-shop-btn {
-  background: transparent;
-  border: 1px solid #e28f2f;
-  color: #e28f2f;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-}
-#go-shop-btn:hover {
-  background: #e28f2f;
-  color: black;
-}
+  /* --- LOGIN --- */
+  #login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:#111; }
+  #login-box { background:#2a2a2a; padding:30px; border-radius:10px; text-align:center; width:90%; max-width:350px; }
+  #login-box input, #login-box button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; font-size:1rem; }
+  #login-box button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
 
-.title5{
-    font-size: 10px;
-    color:red;
-    margin: 0;
-}
+  /* --- PANEL ADMIN --- */
+  #admin-panel { display:none; padding:20px; max-width:1200px; margin:0 auto; }
+  #admin-panel h1 { margin-bottom:15px; }
 
+  #form-producto input, #form-producto textarea, #form-producto button {
+    width:100%; padding:10px; margin-bottom:10px; border:none; border-radius:5px; font-size:1rem;
+  }
+  #form-producto input, #form-producto textarea { background:#2a2a2a; color:#fff; }
+  #form-producto button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+
+  /* --- SEARCH --- */
+  #search-input { 
+    width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; 
+    background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease;
+  }
+  #search-input:focus { box-shadow:0 0 10px #e28f2f; }
+
+  /* --- PRODUCTOS --- */
+  .productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+  .producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
+  .producto:hover { transform:scale(1.03); }
+  .producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
+  .mini-images { display:flex; margin-bottom:10px; }
+  .producto h3 { font-size:1.1rem; margin-bottom:5px; }
+  .producto p { font-size:0.9rem; margin-bottom:5px; }
+  .producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
+  .producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
+
+  /* --- MENSAJE GUARDADO --- */
+  #mensaje-guardado {
+    position:fixed; top:20px; right:20px; background:#28a745; color:#000;
+    padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+  }
+
+  /* --- BOTONES ARRIBA --- */
+  .top-buttons { display:flex; gap:10px; margin-bottom:20px; }
+  .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-screen">
   <div id="login-box">
     <h1>🔒 Admin Access</h1>
-    <h6 class="title5">This site is only for the administrator</h6>
+    <h6>This site is only for the administrator</h6>
     <input type="password" id="admin-password" placeholder="Enter Password" />
     <button id="login-btn">Enter</button>
   </div>
 </div>
 
+<!-- PANEL ADMIN -->
 <div id="admin-panel">
-  <div style="display:flex; gap:10px; margin-bottom:20px;">
-  <button id="logout-btn">Logout</button>
-  <button id="go-shop-btn">Go to Shop 🛍️</button>
-</div>
-<h1>Admin Panel</h1>
+  <div class="top-buttons">
+    <button id="logout-btn">Logout</button>
+    <button id="go-shop-btn">Go to Shop 🛍️</button>
+  </div>
 
+  <h1>Admin Panel</h1>
 
+  <!-- SEARCH -->
+  <input type="text" id="search-input" placeholder="Search products..." />
+
+  <!-- FORM AGREGAR PRODUCTO -->
   <form id="form-producto">
     <input type="text" id="titulo" placeholder="Título del producto" required />
     <textarea id="description" placeholder="Descripción" required></textarea>
@@ -185,6 +94,9 @@ body {
   <div class="productos" id="lista-productos"></div>
 </div>
 
+<!-- MENSAJE GUARDADO -->
+<div id="mensaje-guardado">✅ Cambios guardados correctamente</div>
+
 <script>
 const ADMIN_PASSWORD = "161824";
 const loginScreen = document.getElementById("login-screen");
@@ -195,6 +107,8 @@ const goShopBtn = document.getElementById("go-shop-btn");
 const passwordInput = document.getElementById("admin-password");
 const listaProductos = document.getElementById("lista-productos");
 const formProducto = document.getElementById("form-producto");
+const mensajeGuardado = document.getElementById("mensaje-guardado");
+const searchInput = document.getElementById("search-input");
 
 let productos = [];
 
@@ -217,19 +131,13 @@ goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
 // Cargar productos
 async function cargarProductos() {
   const stored = localStorage.getItem("productos");
-  if (stored) {
-    productos = JSON.parse(stored);
-  } else {
+  if (stored) productos = JSON.parse(stored);
+  else {
     try {
-      const res = await fetch("https://latronic.onrender.com/api/productos", {
-        cache: "no-store"
-      });
+      const res = await fetch("https://latronic.onrender.com/api/productos", { cache: "no-store" });
       productos = await res.json();
       localStorage.setItem("productos", JSON.stringify(productos));
-    } catch (err) {
-      console.error("Error cargando productos:", err);
-      productos = [];
-    }
+    } catch (err) { productos = []; console.error(err); }
   }
   renderProductos();
 }
@@ -237,13 +145,20 @@ async function cargarProductos() {
 // Guardar cambios y disparar evento storage
 function guardarProductos(){
   localStorage.setItem("productos", JSON.stringify(productos));
-  window.dispatchEvent(new Event("storage")); // Notifica cambios a otras pestañas
+  window.dispatchEvent(new Event("storage"));
+}
+
+// Mostrar mensaje guardado
+function mostrarMensaje() {
+  mensajeGuardado.style.display = "block";
+  setTimeout(() => mensajeGuardado.style.display = "none", 2000);
 }
 
 // Renderizar productos
-function renderProductos(){
+function renderProductos(filter=""){
   listaProductos.innerHTML = "";
-  productos.forEach(p => {
+  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
+  filtrados.forEach(p => {
     const div = document.createElement("div");
     div.className = "producto";
 
@@ -276,7 +191,8 @@ window.actualizarProducto = function(id){
   prod.price = Number(document.getElementById(`price-${id}`).value);
   prod.stock = Number(document.getElementById(`stock-${id}`).value);
   guardarProductos();
-  renderProductos();
+  mostrarMensaje();
+  renderProductos(searchInput.value);
 }
 
 // Eliminar producto
@@ -284,7 +200,7 @@ window.eliminarProducto = function(id){
   if(!confirm("¿Seguro que quieres eliminar este producto?")) return;
   productos = productos.filter(p=>p.id!==id);
   guardarProductos();
-  renderProductos();
+  renderProductos(searchInput.value);
 }
 
 // Agregar producto
@@ -295,19 +211,20 @@ formProducto.addEventListener("submit", e=>{
     titulo: document.getElementById("titulo").value,
     description: document.getElementById("description").value,
     imagenes: document.getElementById("imagenes").value.split(",").map(s=>s.trim()),
-    categoria:{
-      main: document.getElementById("mainCat").value,
-      sub: document.getElementById("subCat").value
-    },
+    categoria:{ main: document.getElementById("mainCat").value, sub: document.getElementById("subCat").value },
     price: Number(document.getElementById("price").value),
     stock: Number(document.getElementById("stock").value)
   };
   productos.push(nuevo);
   guardarProductos();
+  mostrarMensaje();
   formProducto.reset();
-  renderProductos();
+  renderProductos(searchInput.value);
 });
-</script>
 
+// --- SEARCH --- 
+searchInput.addEventListener("input", () => renderProductos(searchInput.value));
+
+</script>
 </body>
 </html>

@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 <style>
   body { margin:0; font-family: Arial, sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
-
   aside { 
     width:250px; 
     background:#1e1e1e; 
@@ -19,14 +18,11 @@
     display:flex; 
     flex-direction:column; 
     justify-content:space-between; 
-    overflow-y:auto; /* permite scroll si el menú es largo */
+    overflow-y:auto; 
   }
-
   aside h2 { font-size:1.2rem; margin-bottom:1rem; }
-
   .menu { list-style:none; padding:0; margin:0; }
   .menu>li { margin-bottom:0.5rem; position:relative; }
-
   .boton-categoria { 
     display:block; 
     background:none; 
@@ -41,98 +37,43 @@
     text-decoration:none; 
     border-radius:5px; 
   }
-
   .boton-categoria:hover, .boton-categoria.active { 
     background:#e28e2fa9; 
     color:black; 
   }
-
-  /* --- SUBMENU OSCURO CON ANIMACIÓN --- */
-  .submenu { 
-    list-style:none; 
-    padding-left:1rem; 
-    margin:0; 
-    display:block; 
-    max-height:0; 
-    opacity:0; 
-    overflow:hidden; 
-    background-color:#1a1a1a; 
-    border-radius:5px; 
-    box-shadow:0 4px 10px rgba(0,0,0,0.7); 
-    transition:max-height 0.3s ease, opacity 0.3s ease; 
-  }
-
-  .submenu.open { 
-    max-height:500px; /* suficiente para todos los items */ 
-    opacity:1; 
-  }
-
-  .submenu li { margin-bottom:0.3rem; }
-  .submenu .boton-categoria { 
-    font-size:0.95rem; 
-    color:#fff; 
-    background:none; 
-    border:none; 
-    text-align:left; 
-    width:100%; 
-    padding:0.4rem 0.6rem; 
-    cursor:pointer; 
-    transition:background 0.3s; 
-  }
-
-  .submenu .boton-categoria:hover { 
-    background-color:#f16413b9; 
-    color:#fff; 
-    border-radius:5px; 
-  }
-
   main { flex:1; padding:2rem; }
   footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.9rem; }
-
   .logo { font-family:"Bebas Neue",sans-serif; font-size:3rem; letter-spacing:2px; text-align:center; text-transform:uppercase; display:inline-block; position:relative; color:#f16413b9; padding:1rem 2rem; border-radius:12px; }
-
   .cart-producto { display:flex; justify-content:space-between; align-items:center; background:#1e1e1e; padding:1rem; border-radius:10px; margin-bottom:1rem; box-shadow:0 4px 8px rgba(0,0,0,0.5); }
   .cart-producto img { width:80px; height:80px; border-radius:8px; object-fit:cover; margin-right:1rem; }
   .cart-producto-info { flex:1; }
   .cart-producto-info h3 { margin:0 0 0.3rem 0; font-size:1rem; }
   .cart-producto-info p { margin:0.2rem 0; display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; }
-
   .boton-carrito { font-family:"Oswald", sans-serif; border:none; padding:0.8rem 1.2rem; border-radius:8px; cursor:pointer; font-size:0.9rem; transition:0.3s; background:#e28f2f; color:black; font-weight:bold; }
   .boton-carrito:hover { background:#f16413; color:white; }
-
   .boton-cantidad { background:#e28f2f; color:white; border:none; border-radius:5px; padding:0.2rem 0.6rem; cursor:pointer; font-weight:bold; transition:0.3s; }
   .boton-cantidad:hover { background:#f16413b9; color:black; }
   .boton-cantidad:disabled { background:#555; color:#ccc; cursor:not-allowed; }
-
   .cart-acciones { margin-top:2rem; display:flex; justify-content:space-between; align-items:center; background:#1e1e1e; padding:1rem; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.5); flex-wrap:wrap; gap:1rem; }
   #cart-vacio { font-size:1.2rem; text-align:center; margin-top:2rem; color:#ccc; }
-
-  /* Carrito elegante en el menú */
   .cart-button-container button { font-family:"Bebas Neue", sans-serif; background:none; border:none; color:#fff; text-align:left; width:100%; padding:0.6rem 1rem; font-size:1.1rem; cursor:pointer; transition:0.3s; border-radius:5px; }
   .cart-button-container button:hover { background:#e28e2fa9; color:black; }
   .back-menu { margin-bottom:1rem; font-family:"Oswald", sans-serif; background:#e28f2f; color:black; border:none; padding:0.6rem 1rem; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
   .back-menu:hover { background:#f16413; color:white; }
-
   .input-group { margin-top:1rem; }
   .input-group label { font-size:0.9rem; font-weight:600; margin-bottom:4px; display:block; }
   .input-group select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:0.9rem; background:#1e1e1e; color:#fff; }
-
-
 </style>
-
 </head>
 <body>
 <aside>
   <h1 class="logo">LaTRONIC</h1>
   <ul class="menu">
     <li><a class="boton-categoria" href="index.html">Home</a></li>
-    <!-- New -->
-
     <li class="cart-button-container">
       <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
     </li>
   </ul>
-
   <footer>
     <div>✉️latronicstore@gmail.com</div>
     <div>Located in Connecticut, USA</div>
@@ -149,8 +90,6 @@
   <div class="cart-acciones" id="cart-acciones" style="display:none;">
     <button id="cart-acciones-vaciar" class="boton-carrito">Empty Cart</button>
     <button id="cart-acciones-buy" class="boton-carrito">Buy Now</button>
-
-    <!-- NUEVO: Select de estados -->
     <div class="input-group">
       <label for="estado">Select your state:</label>
       <select id="estado">
@@ -207,27 +146,33 @@
       </select>
     </div>
   </div>
-  
+
+  <!-- BLOQUE DE TOTALES AGREGADO -->
+  <div class="cart-totales" style="margin-top:1rem; text-align:right;">
+    <p>Subtotal: $<span id="subtotal">0.00</span></p>
+    <p>Taxes: $<span id="taxes">0.00</span></p>
+    <p id="total-display">Total: $0.00</p>
+  </div>
 </main>
 
 <script>
-// --- Script completo sincronizado con shop.html ---
+// --- CARRITO SINCRONIZADO CON SHOP + CONTROL DE STOCK ---
 let cart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+let productos = JSON.parse(localStorage.getItem("productos")) || [];
 
-// --- FUNCION PARA ACTUALIZAR EL CARRITO ---
+// Garantizar stockOriginal
+productos.forEach(p => { if(p.stockOriginal===undefined) p.stockOriginal=p.stock; });
+
 function actualizarCarrito() {
   const cartProductosEl = document.getElementById("cart-productos");
   const cartAccionesEl = document.getElementById("cart-acciones");
   const cartVacioEl = document.getElementById("cart-vacio");
 
-  if (cart.length === 0) {
+  if (!cart || cart.length === 0) {
     cartVacioEl.style.display = "block";
     cartAccionesEl.style.display = "none";
     cartProductosEl.innerHTML = "";
-    document.getElementById("cart-count").textContent = 0;
-    document.getElementById("subtotal").textContent = "0.00";
-    document.getElementById("taxes").textContent = "0.00";
-    document.getElementById("total-display").textContent = "Total: $0.00";
+    actualizarTotales(0);
     return;
   }
 
@@ -238,9 +183,10 @@ function actualizarCarrito() {
   let subtotal = 0;
 
   cart.forEach(p => {
-    const imagenSrc = p.imagenes && p.imagenes.length > 0
-      ? p.imagenes[0]
-      : "https://via.placeholder.com/80";
+    const imagenSrc = p.imagenes?.[0] || "https://via.placeholder.com/80";
+    const cantidad = p.quantity || 1;
+    subtotal += parseFloat(p.price) * cantidad;
+
     const div = document.createElement("div");
     div.className = "cart-producto";
     div.innerHTML = `
@@ -248,106 +194,109 @@ function actualizarCarrito() {
       <div class="cart-producto-info">
         <h3>${p.titulo}</h3>
         <p>Price: $${parseFloat(p.price).toFixed(2)}</p>
-        <p>Quantity: 
+        <p>Quantity:
           <button class="boton-cantidad" data-id="${p.id}" data-action="minus">−</button>
-          <span>${p.quantity || 1}</span>
+          <span>${cantidad}</span>
           <button class="boton-cantidad" data-id="${p.id}" data-action="plus">+</button>
         </p>
+        <p class="stock-text">Stock: ${productos.find(pr=>pr.id===p.id)?.stock ?? "N/A"}</p>
       </div>
       <button class="boton-carrito cart-eliminar" data-id="${p.id}">Delete</button>
     `;
     cartProductosEl.appendChild(div);
-    subtotal += parseFloat(p.price) * (p.quantity || 1);
   });
 
-  // --- BOTONES ELIMINAR ---
   document.querySelectorAll(".cart-eliminar").forEach(btn => {
     btn.onclick = () => {
-      const id = btn.dataset.id;
-      cart = cart.filter(p => p.id !== id);
-      localStorage.setItem("productos-en-cart", JSON.stringify(cart));
+      cart = cart.filter(p => p.id !== btn.dataset.id);
+      guardarCarrito();
       actualizarCarrito();
-
-      // 🔄 Notifica a shop.html del cambio
-      window.dispatchEvent(new StorageEvent("storage", { key: "productos-en-cart" }));
     };
   });
 
-  // --- BOTONES CANTIDAD ---
   document.querySelectorAll(".boton-cantidad").forEach(btn => {
     btn.onclick = () => {
       const id = btn.dataset.id;
       const accion = btn.dataset.action;
-      const producto = cart.find(p => p.id === id);
-      if (!producto) return;
+      const productoCarrito = cart.find(p => p.id === id);
+      const productoOriginal = productos.find(p => p.id === id);
+      if (!productoCarrito || !productoOriginal) return;
 
-      if (accion === "plus") producto.quantity = (producto.quantity || 1) + 1;
-      if (accion === "minus") producto.quantity = Math.max((producto.quantity || 1) - 1, 1);
-
-      localStorage.setItem("productos-en-cart", JSON.stringify(cart));
+      if (accion === "plus") {
+        if (productoCarrito.quantity >= productoOriginal.stockOriginal) {
+          alert(`Not enough stock for ${productoCarrito.titulo}. Only ${productoOriginal.stockOriginal} left.`);
+          return;
+        }
+        productoCarrito.quantity++;
+      } else if (accion === "minus") {
+        productoCarrito.quantity = Math.max((productoCarrito.quantity || 1) - 1, 1);
+      }
+      guardarCarrito();
       actualizarCarrito();
-
-      // 🔄 Notifica a shop.html del cambio
-      window.dispatchEvent(new StorageEvent("storage", { key: "productos-en-cart" }));
     };
   });
 
-  // --- ACTUALIZAR CONTADOR DE CARRITO ---
-  document.getElementById("cart-count").textContent = cart.reduce(
-    (acc, p) => acc + (p.quantity || 1),
-    0
-  );
+  actualizarTotales(subtotal);
+}
 
-  // --- TOTAL ---
+function guardarCarrito() {
+  localStorage.setItem("productos-en-cart", JSON.stringify(cart));
+
+  // Restaurar stock original, sin reducir al cargar
+  productos.forEach(p => {
+    if(p.stockOriginal===undefined) p.stockOriginal=p.stock;
+    p.stock = p.stockOriginal;
+  });
+
+  localStorage.setItem("productos", JSON.stringify(productos));
+  window.dispatchEvent(new Event("storage"));
+}
+
+function actualizarTotales(subtotal) {
+  const estadoCliente = document.getElementById("estado")?.value || "";
   const taxRateCT = 0.0635;
-  const estadoCliente = document.getElementById("estado").value;
   const taxes = estadoCliente === "CT" ? subtotal * taxRateCT : 0;
+  const total = subtotal + taxes;
 
   document.getElementById("subtotal").textContent = subtotal.toFixed(2);
   document.getElementById("taxes").textContent = taxes.toFixed(2);
-  document.getElementById("total-display").textContent = `Total: $${(
-    subtotal + taxes
-  ).toFixed(2)}`;
+  document.getElementById("total-display").textContent = `Total: $${total.toFixed(2)}`;
+  document.getElementById("cart-count").textContent = cart.reduce((a, p) => a + (p.quantity || 1), 0);
 }
 
-// --- BOTÓN VACÍAR ---
 document.getElementById("cart-acciones-vaciar").onclick = () => {
   cart = [];
-  localStorage.removeItem("productos-en-cart");
+  guardarCarrito();
   actualizarCarrito();
-
-  // 🔄 Notifica a shop.html del cambio
-  window.dispatchEvent(new StorageEvent("storage", { key: "productos-en-cart" }));
 };
 
-// --- BOTÓN COMPRAR ---
 document.getElementById("cart-acciones-buy").onclick = () => {
   if (cart.length === 0) {
     alert("Your cart is empty! ❌");
     return;
   }
+  // Reducir stock
+  cart.forEach(p => {
+    const prod = productos.find(pr => pr.id === p.id);
+    if (prod) prod.stock = Math.max(prod.stock - (p.quantity || 1), 0);
+  });
 
-  const estadoCliente = document.getElementById("estado").value;
-  localStorage.setItem("estado-cliente", estadoCliente);
-  localStorage.setItem("productos-en-cart", JSON.stringify(cart));
+  localStorage.setItem("productos", JSON.stringify(productos));
+  localStorage.setItem("productos-en-cart", JSON.stringify(cart)); // opcional, si quieres pasar los productos a la página de pago
+  //cart = []; // No limpiar todavía si quieres pasar los productos al pago
+  //window.dispatchEvent(new Event("storage")); // opcional
 
-  // 🔄 Notifica al shop.html que hubo cambios en el stock
-  window.dispatchEvent(new StorageEvent("storage", { key: "productos-en-cart" }));
-
-  // Redirige a la página de pago
+  // Redirigir al pago
   window.location.href = "card-charge.html";
 };
 
-// --- RESTAURAR ESTADO GUARDADO ---
+
 const estadoSelect = document.getElementById("estado");
 const estadoGuardado = localStorage.getItem("estado-cliente");
-if (estadoGuardado) estadoSelect.value = estadoGuardado;
+if (estadoSelect && estadoGuardado) estadoSelect.value = estadoGuardado;
 
-// --- INICIALIZAR ---
 actualizarCarrito();
 </script>
-
-
 
 </body>
 </html>
