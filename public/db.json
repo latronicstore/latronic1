@@ -485,7 +485,7 @@
       "titulo": "Michael Jordan Legacy 2008-09",
       "imagenes": [
         "./img/new/basketballnew/MichaelJordan2008.jpeg",
-        "./img/new/basketballnew/michaerlJordanLegacy2008.jpeg"
+        "./img/new/basketballnew/michaelJordanLegacy2008.jpeg"
       ],
       "categoria": {
         "main": "new",
@@ -2631,7 +2631,7 @@
       "titulo": "Charmeleon 1999 Used",
       "imagenes": [
         "./img/used/pokemonused/charmeleon1995.jpg",
-        "./img/pokemonused/backpokemon2.jpg"
+        "./img/used/pokemonused/backpokemon.jpg"
       ],
       "categoria": {
         "main": "used",
