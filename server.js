@@ -24,14 +24,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // Permitir CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
@@ -54,9 +48,7 @@ const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
 
 if (!ACCESS_TOKEN || !LOCATION_ID) {
-  console.error(
-    "❌ Faltan las variables de entorno de Square (ACCESS_TOKEN o LOCATION_ID)"
-  );
+  console.error("❌ Faltan las variables de entorno de Square (ACCESS_TOKEN o LOCATION_ID)");
 }
 
 const SQUARE_API =
@@ -76,46 +68,91 @@ const transporter = nodemailer.createTransport({
 });
 
 // --------------------
-// Funciones para enviar emails
+// ✨ Plantillas HTML elegantes
 // --------------------
-async function enviarEmailATienda({ firstName, lastName, email, address, productos, total }) {
-  const productosHtml = productos.map(p => `<li>${p.titulo} - Cantidad: ${p.quantity} - Precio: $${p.price}</li>`).join("");
+function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
+  const productosHtml = productos
+    .map(
+      p => `
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
+      </tr>`
+    )
+    .join("");
 
+  return `
+  <div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
+    <div style="background:#222;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
+      <h2>🛍️ Nueva Venta - LaTRONIC Store</h2>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:0 0 10px 10px;">
+      <p><strong>Cliente:</strong> ${firstName} ${lastName}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Dirección:</strong> ${address}</p>
+      <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+      <h4 style="margin-top:20px;">Productos:</h4>
+      <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
+      <p style="margin-top:20px;color:#777;">Este mensaje es una notificación automática de venta.</p>
+    </div>
+  </div>`;
+}
+
+function plantillaEmailCliente({ firstName, lastName, productos, total, trackingId }) {
+  const productosHtml = productos
+    .map(
+      p => `
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
+      </tr>`
+    )
+    .join("");
+
+  return `
+  <div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
+    <div style="background:#e64a19;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
+      <h2>Gracias por tu compra 🧡</h2>
+    </div>
+    <div style="background:#fff;padding:25px;border-radius:0 0 10px 10px;">
+      <p>Hola <strong>${firstName} ${lastName}</strong>,</p>
+      <p>Tu pago de <strong>$${total.toFixed(2)}</strong> fue procesado exitosamente.</p>
+      <p>Tu número de seguimiento es: <strong>${trackingId}</strong></p>
+
+      <h4 style="margin-top:20px;">Productos comprados:</h4>
+      <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
+
+      <p style="margin-top:20px;">En breve recibirás un correo cuando tu pedido sea enviado.</p>
+      <div style="text-align:center;margin-top:30px;">
+        <a href="https://latronic1.onrender.com" style="background:#e64a19;color:#fff;padding:10px 20px;text-decoration:none;border-radius:5px;">Visitar Tienda</a>
+      </div>
+      <p style="margin-top:30px;color:#777;">Gracias por confiar en <strong>LaTRONIC Store</strong>.</p>
+    </div>
+  </div>`;
+}
+
+// --------------------
+// Funciones de envío
+// --------------------
+async function enviarEmailATienda(datos) {
   const mailOptions = {
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
-    subject: `Nueva venta de ${firstName} ${lastName}`,
-    html: `
-      <h3>Detalles de la venta</h3>
-      <p><strong>Cliente:</strong> ${firstName} ${lastName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Dirección de envío:</strong> ${address}</p>
-      <p><strong>Total:</strong> $${total.toFixed(2)}</p>
-      <h4>Productos:</h4>
-      <ul>${productosHtml}</ul>
-    `
+    subject: `🛒 Nueva venta de ${datos.firstName} ${datos.lastName}`,
+    html: plantillaEmailTienda(datos)
   };
-
   return transporter.sendMail(mailOptions);
 }
 
-async function enviarEmailACliente({ firstName, lastName, email, productos, total, trackingId }) {
-  const productosHtml = productos.map(p => `<li>${p.titulo} - Cantidad: ${p.quantity} - Precio: $${p.price}</li>`).join("");
-
+async function enviarEmailACliente(datos) {
   const mailOptions = {
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: `Confirmación de tu compra - LaTRONIC Store`,
-    html: `
-      <h3>Gracias por tu compra, ${firstName} ${lastName}!</h3>
-      <p>Hemos recibido tu pago de <strong>$${total.toFixed(2)}</strong>.</p>
-      <p>Tu número de seguimiento es: <strong>${trackingId}</strong></p>
-      <h4>Productos comprados:</h4>
-      <ul>${productosHtml}</ul>
-      <p>En breve recibirás actualizaciones sobre tu envío.</p>
-    `
+    to: datos.email,
+    subject: `💳 Confirmación de tu compra - LaTRONIC Store`,
+    html: plantillaEmailCliente(datos)
   };
-
   return transporter.sendMail(mailOptions);
 }
 
@@ -160,35 +197,19 @@ app.delete("/api/productos/:id", async (req, res) => {
 });
 
 // --------------------
-// 📦 ENDPOINT: Stock
-// --------------------
-app.post("/api/stock", async (req, res) => {
-  const { id, cantidad } = req.body;
-  if (!id || typeof cantidad !== "number") return res.status(400).json({ error: "Datos inválidos" });
-
-  await db.read();
-  const producto = db.data.productos.find(p => p.id === id);
-  if (!producto) return res.status(404).json({ error: "Producto no encontrado" });
-
-  if (producto.stock < cantidad) return res.status(400).json({ error: "Stock insuficiente" });
-
-  producto.stock -= cantidad;
-  await db.write();
-  res.json({ message: "Stock actualizado", producto });
-});
-
-// --------------------
 // 🛒 ENDPOINT: Checkout
 // --------------------
 app.post("/api/cart/checkout", async (req, res) => {
   try {
     const { productos } = req.body;
-    if (!productos || !Array.isArray(productos)) return res.status(400).json({ error: "Carrito vacío o datos inválidos" });
+    if (!productos || !Array.isArray(productos))
+      return res.status(400).json({ error: "Carrito vacío o datos inválidos" });
 
     await db.read();
     for (const item of productos) {
       const prod = db.data.productos.find(p => p.id === item.id);
-      if (!prod || prod.stock < item.quantity) return res.status(400).json({ error: `Stock insuficiente para ${item.id}` });
+      if (!prod || prod.stock < item.quantity)
+        return res.status(400).json({ error: `Stock insuficiente para ${item.id}` });
     }
 
     for (const item of productos) {
@@ -205,12 +226,13 @@ app.post("/api/cart/checkout", async (req, res) => {
 });
 
 // --------------------
-// 💰 ENDPOINT: Pagos Square + Envío de emails
+// 💰 ENDPOINT: Pagos Square + Emails
 // --------------------
 app.post("/process-payment", async (req, res) => {
   try {
     const { sourceId, total, email, address, firstName, lastName, productos } = req.body;
-    if (!sourceId || !total || !email) return res.status(400).json({ error: "Datos de pago incompletos" });
+    if (!sourceId || !total || !email)
+      return res.status(400).json({ error: "Datos de pago incompletos" });
 
     const amountCents = Math.round(Number(total) * 100);
 
@@ -241,7 +263,6 @@ app.post("/process-payment", async (req, res) => {
 
       const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
 
-      // Emails
       await enviarEmailATienda({ firstName, lastName, email, address, productos, total })
         .then(() => console.log("✅ Email a tienda enviado"))
         .catch(err => console.error("⚠️ Error enviando email a tienda:", err));
