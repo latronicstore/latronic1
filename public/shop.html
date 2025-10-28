@@ -798,7 +798,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- OBTENER PRODUCTOS ---
   async function obtenerProductos() {
     try {
-      const res = await fetch("https://latronic.onrender./api/productos", { cache: "no-store" });
+      const res = await fetch("https://latronic1.onrender./api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
