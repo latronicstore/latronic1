@@ -1,4 +1,5 @@
- [
+ {
+  "productos":[
     {
       "id": "new-p1",
       "titulo": "Lebron James 50k points 2024-25",
@@ -2982,3 +2983,4 @@
       "year": "1996"
     }
   ]
+ }
