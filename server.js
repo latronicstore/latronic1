@@ -32,7 +32,10 @@ app.use((req, res, next) => {
 // --------------------
 // 🗝️ Base de datos (LowDB)
 // --------------------
-const dbFile = path.join(__dirname, "db.json");
+const dbFile = process.env.NODE_ENV === "production"
+  ? "/data/db.json"
+  : path.join(__dirname, "db.json");
+
 const adapter = new JSONFile(dbFile);
 const db = new Low(adapter, { productos: [] });
 
