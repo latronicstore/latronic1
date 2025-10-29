@@ -311,7 +311,8 @@ main { flex: 1; padding: 2rem; }
 // --- Cargar productos desde db.json ---
 async function obtenerProductos() {
   try {
-    const res = await fetch("db.json");
+    const res = await fetch("https://latronic1.onrender.com/api/productos");
+
     if (!res.ok) throw new Error("No se pudo cargar db.json");
     return await res.json();
   } catch (err) {
