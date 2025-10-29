@@ -4,8 +4,8 @@
       "id": "new-p1",
       "titulo": "Lebron James 50k points 2024-25",
       "imagenes": [
-        "./img/new/basketballnew/50kJamesLebron.jpg",
-        "./img/new/basketballnew/50kJamesBack.jpg"
+        "https://latronic1.onrender.com/img/new/basketballnew/5kJamesLebron.jpg",
+        "https://latronic1.onrender.com/img/new/basketballnew/50kJamesBack.jpg"
       ],
       "categoria": {
         "main": "new",
