@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LaTRONIC Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
@@ -20,6 +20,12 @@ aside h2 { font-size: 2rem; text-align: center; margin-bottom: 1.5rem; color: #e
 .submenu li { list-style: none; }
 .submenu .boton-categoria { font-size: 1rem; padding: 0.4rem 0.7rem; }
 .submenu .boton-categoria:hover { background: #f16413b9; color: #050505; border-radius: 5px; }
+
+/* --- SEARCH BAR --- */
+.search-bar { display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:12px; }
+#search-input { padding:10px 14px; width:60%; border-radius:24px; border:1px solid #333; background:#141414; color:#fff; outline:none; font-size:0.95rem; box-shadow:none; transition: box-shadow .15s, border-color .15s; }
+#search-input:focus { border-color: #e28f2f; box-shadow: 0 0 8px rgba(226,143,47,0.15); }
+#search-btn { padding:9px 12px; border-radius:50%; border:none; background:#e28f2f; cursor:pointer; font-weight:bold; }
 
 /* --- CARRITO --- */
 .cart-button-container { position: relative; z-index: 2000; }
@@ -46,14 +52,17 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 .arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; z-index: 10; transition: background 0.2s; }
 .arrow:hover { background: rgba(0,0,0,0.7); }
 .arrow.prev { left: 2px; } .arrow.next { right: 2px; }
-/* --- MODAL ZOOM --- */
-#zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 5000; }
-#zoom-modal.show { display: flex; }
-#zoom-modal img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; cursor: zoom-out; }
-#zoom-modal .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; color: #fff; cursor: pointer; }
 
-/* --- HAMBURGER --- */
+/* --- MODAL NEGOCIAR --- */
+.negociar { background: linear-gradient(135deg, #f16413, #e28f2f); color: #050505; border: none; padding: 6px 12px; cursor: pointer; border-radius: 25px; font-weight: bold; font-size: 0.8rem; margin-top: 6px; transition: transform 0.2s, box-shadow 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+.negociar:hover { transform: translateY(-2px); color: white; box-shadow: 0 6px 10px rgba(0,0,0,0.4); background: linear-gradient(135deg, #e28f2f, #f16413); }
+
+/* --- BOTÓN ADMIN --- */
+#admin-access { position: fixed; bottom: 18px; right: 18px; width: 40px; height: 40px; background: linear-gradient(135deg, #e28f2f, #f16413); color: #000; border: none; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.25s, box-shadow 0.3s, background 0.3s; }
+#admin-access:hover { transform: scale(1.1); background: linear-gradient(135deg, #f16413, #e28f2f); color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.6); }
+
 .hamburger { display: none; position: fixed; top: 15px; left: 15px; font-size: 30px; color: #e28f2f; cursor: pointer; z-index: 3000; }
+
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   main { margin-left: 0; padding: 1rem; position: relative; z-index: 1; }
@@ -64,29 +73,14 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   .producto { flex: 0 0 100px; padding: 5px; }
   .arrow { width: 20px; height: 20px; font-size: 14px; }
   #contenedor-productos { justify-content: center; }
-  #admin-access { width: 34px; height: 34px; bottom: 12px; right: 12px; font-size: 18px; }
 }
 
-/* --- BOTÓN NEGOCIAR --- */
-.negociar { background: linear-gradient(135deg, #f16413, #e28f2f); color: #050505; border: none; padding: 6px 12px; cursor: pointer; border-radius: 25px; font-weight: bold; font-size: 0.8rem; margin-top: 6px; transition: transform 0.2s, box-shadow 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-.negociar:hover { transform: translateY(-2px); color: white; box-shadow: 0 6px 10px rgba(0,0,0,0.4); background: linear-gradient(135deg, #e28f2f, #f16413); }
-
-/* --- BOTÓN ADMIN FLOTANTE --- */
-#admin-access { position: fixed; bottom: 18px; right: 18px; width: 40px; height: 40px; background: linear-gradient(135deg, #e28f2f, #f16413); color: #000; border: none; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.25s, box-shadow 0.3s, background 0.3s; }
-#admin-access:hover { transform: scale(1.1); background: linear-gradient(135deg, #f16413, #e28f2f); color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.6); }
-
-/* --- MODAL PRODUCTO --- */
-#producto-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: flex-start; overflow-y: auto; z-index: 5000; }
-#producto-modal .modal-content { position: relative; background: #2a2a2a; padding: 15px; margin: 60px auto 20px auto; border-radius: 10px; max-width: 400px; width: 90%; display: flex; flex-direction: column; align-items: center; }
-#producto-modal .modal-content img { width: 80%; max-width: 300px; height: auto; margin-bottom: 10px; border-radius: 6px; }
-#producto-modal #modal-titulo { margin: 5px 0; font-size: 1.1rem; text-align: center; color: #e28f2f; }
-#producto-modal #modal-description { margin: 5px 0; font-size: 0.9rem; text-align: center; color: #fff; }
-#producto-modal #modal-price { margin: 5px 0; font-size: 1rem; font-weight: bold; color: #e28f2f; }
-#producto-modal #modal-stock { margin: 5px 0; font-size: 0.9rem; font-weight: bold; color: rgba(255,0,0,0.8); }
-#producto-modal #cerrar-modal { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #fff; cursor: pointer; }
+/* --- SEARCH --- */
+#search-bar:focus { border-color: #e28f2f; box-shadow: 0 0 6px #e28f2f; background: #222; }
+#search-bar::placeholder { color: rgba(255,255,255,0.5); }
 
 .link { color: #e28f2f; text-decoration: none; }
-.link:hover { text-decoration: underline; color:red;}
+.link:hover { text-decoration: underline; color: red;}
 </style>
 </head>
 <body>
@@ -96,8 +90,10 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   <h2 class="title">LaTRONIC</h2>
   <ul class="menu">
     <li><a class="boton-categoria" href="index.html">Home</a></li>
+
+    <!-- NEW -->
     <li>
-      <button class="boton-categoria toggle-submenu">New</button>
+      <button class="boton-categoria toggle-submenu" data-main="new">New</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
@@ -113,8 +109,10 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="new" data-sub="avengers">Avenger & Marvel</button></li>
       </ul>
     </li>
+
+    <!-- USED -->
     <li>
-      <button class="boton-categoria toggle-submenu">Used</button>
+      <button class="boton-categoria toggle-submenu" data-main="used">Used</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
@@ -130,8 +128,10 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="used" data-sub="avengers">Avenger & Marvel</button></li>
       </ul>
     </li>
+
+    <!-- MORE -->
     <li>
-      <button class="boton-categoria toggle-submenu">More</button>
+      <button class="boton-categoria toggle-submenu" data-main="more">More</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
@@ -140,6 +140,8 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
       </ul>
     </li>
+
+    <!-- CART + FOOTER -->
     <li class="cart-button-container">
       <button id="ir-carrito" class="carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
       <footer>
@@ -148,12 +150,19 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         Located in Connecticut, USA<br>
         &copy; 2024 LaTRONIC LLC. All rights reserved.
       </footer>
-    </li>  
+    </li>
   </ul>
 </aside>
 
 <main>
   <h1 id="titulo-principal">All Products</h1>
+
+  <!-- SEARCH -->
+  <div class="search-bar" style="margin-top:12px;">
+    <input id="search-input" type="text" placeholder="Buscar productos por título, descripción o categoría..." />
+    <button id="search-btn" title="Buscar">🔎</button>
+  </div>
+
   <div id="contenedor-productos"></div>
   <button id="admin-access" title="Admin Panel">⚙️</button>
 </main>
@@ -163,18 +172,19 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   <div style="background:#2a2a2a;padding:20px;border-radius:10px;display:flex;flex-direction:column;align-items:center;position:relative;">
     <span id="cerrar-negociar" style="position:absolute;top:10px;right:15px;font-size:28px;cursor:pointer;color:#fff;">&times;</span>
     <h2 id="negociar-producto" style="color:#e28f2f;margin-bottom:10px;"></h2>
-    <input type="email" id="negociar-email" placeholder="Your Email" style="margin-bottom:10px;padding:5px;border-radius:5px;border:none;">
-    <input type="number" id="negociar-precio" placeholder="Offer Price" style="margin-bottom:10px;padding:5px;border-radius:5px;border:none;">
-    <button id="enviar-negociacion" style="padding:5px 10px;border:none;border-radius:5px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Send Offer</button>
+    <input type="email" id="negociar-email" placeholder="Your Email" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
+    <input type="number" id="negociar-precio" placeholder="Offer Price" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
+    <button id="enviar-negociacion" style="padding:8px 12px;border:none;border-radius:6px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Send Offer</button>
     <p id="negociar-status" style="color:#fff;margin-top:10px;"></p>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+<!-- Socket.io -->
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
 
 <script>
-emailjs.init("g62s-TyalISrbYkzz");
+const BASE_URL = "http://localhost:3000";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
@@ -182,188 +192,216 @@ document.addEventListener("DOMContentLoaded", async () => {
   const toggleButtons = document.querySelectorAll(".toggle-submenu");
   const hamburger = document.querySelector(".hamburger");
   const aside = document.querySelector("aside");
-  const socket = io(); // Conexión Socket.IO
+  const socket = io(BASE_URL); // <-- Socket.IO agregado
 
   // --- Menú responsive ---
   hamburger.addEventListener("click", () => aside.classList.toggle("active"));
+
+  // --- Toggle submenus ---
   toggleButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const submenu = btn.nextElementSibling;
       const isVisible = submenu.style.display === "block";
+
       document.querySelectorAll(".submenu").forEach(sm => sm.style.display = "none");
       document.querySelectorAll(".toggle-submenu").forEach(b => b.classList.remove("active"));
-      if (!isVisible) { submenu.style.display = "block"; btn.classList.add("active"); }
+
+      if (!isVisible) {
+        submenu.style.display = "block";
+        btn.classList.add("active");
+      }
     });
   });
 
-  // --- Obtener productos desde API ---
+  // --- Delegación botones de subcategoría ---
+  aside.addEventListener("click", e => {
+    const btn = e.target.closest(".submenu .boton-categoria");
+    if (!btn) return;
+
+    const main = (btn.dataset.main || "").toLowerCase();
+    const sub = (btn.dataset.sub || "").toLowerCase();
+
+    const titulo = document.getElementById("titulo-principal");
+    if (titulo) titulo.textContent = `${capitalize(main)} · ${capitalize(sub)}`;
+
+    const filtrados = productos.filter(p => 
+        (p.categoria?.main || "").toLowerCase() === main &&
+        (p.categoria?.sub || "").toLowerCase() === sub
+    );
+
+    renderProductos(filtrados);
+    aside.classList.remove("active");
+  });
+
+  function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
   async function obtenerProductos() {
     try {
-      const res = await fetch("http://localhost:3000/api/productos", { cache: "no-store" });
+      const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
-        return local ? { ...p, stock: local.stock, price: local.price, soldOut: local.soldOut||false, stockOriginal: local.stockOriginal || local.stock } 
-                     : { ...p, stockOriginal: p.stock };
+        return local
+          ? { ...p, stock: local.stock ?? p.stock, price: local.price ?? p.price, soldOut: local.soldOut || false, stockOriginal: local.stockOriginal || local.stock || p.stock }
+          : { ...p, stockOriginal: p.stock, stock: p.stock };
       });
       localStorage.setItem("productos", JSON.stringify(productosFinal));
       return productosFinal;
     } catch (err) {
-      const localData = JSON.parse(localStorage.getItem("productos")) || [];
-      if (localData.length === 0) alert("No se pudo cargar productos y no hay datos guardados.");
-      return localData;
+      console.error(err);
+      return JSON.parse(localStorage.getItem("productos")) || [];
     }
   }
 
   let productos = await obtenerProductos();
 
-  // --- Render productos ---
   function renderProductos(lista, scrollY = null) {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
     contenedor.innerHTML = "";
+    if (!lista.length) { contenedor.innerHTML="<p>No products found.</p>"; return; }
 
     lista.forEach(prod => {
-      const div = document.createElement("div");
-      div.className = "producto";
-
-      // Galería
-      const galeria = document.createElement("div");
-      galeria.className = "galeria";
-
-      const mainImg = document.createElement("img");
-      mainImg.className = "main-img";
-      mainImg.src = prod.imagenes[0];
-      mainImg.dataset.index = 0;
-
-      const prev = document.createElement("button");
-      prev.className = "arrow prev"; prev.innerHTML = "&#9664;";
-      const next = document.createElement("button");
-      next.className = "arrow next"; next.innerHTML = "&#9654;";
-      if (prod.imagenes.length <= 1) { prev.style.display = "none"; next.style.display = "none"; }
-
+      const div = document.createElement("div"); div.className="producto";
+      const galeria = document.createElement("div"); galeria.className="galeria";
+      const mainImg = document.createElement("img"); mainImg.className="main-img";
+      mainImg.src = prod.imagenes?.[0] || "https://via.placeholder.com/150"; mainImg.dataset.index=0;
+      const prev = document.createElement("button"); prev.className="arrow prev"; prev.innerHTML="&#9664;";
+      const next = document.createElement("button"); next.className="arrow next"; next.innerHTML="&#9654;";
+      if (!prod.imagenes?.length || prod.imagenes.length <= 1) prev.style.display = next.style.display = "none";
       prev.addEventListener("click", e => { 
         e.stopPropagation(); 
         let idx = parseInt(mainImg.dataset.index); 
         idx = (idx - 1 + prod.imagenes.length) % prod.imagenes.length; 
-        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx]; 
+        mainImg.dataset.index = idx; 
+        mainImg.src = prod.imagenes[idx]; 
       });
       next.addEventListener("click", e => { 
         e.stopPropagation(); 
         let idx = parseInt(mainImg.dataset.index); 
         idx = (idx + 1) % prod.imagenes.length; 
-        mainImg.dataset.index = idx; mainImg.src = prod.imagenes[idx]; 
+        mainImg.dataset.index = idx; 
+        mainImg.src = prod.imagenes[idx]; 
       });
+      galeria.append(prev, mainImg, next);
 
-      galeria.appendChild(prev); 
-      galeria.appendChild(mainImg); 
-      galeria.appendChild(next);
-
-      // Información
-      const h3 = document.createElement("h3"); 
-      h3.textContent = prod.titulo;
-
-      const carritoItem = carrito.find(c => c.id === prod.id);
-      const cantidadEnCarrito = carritoItem ? carritoItem.quantity : 0;
-      const stockRestante = prod.stock - cantidadEnCarrito;
-
-      const pStock = document.createElement("p"); 
-      pStock.className = "stock"; 
-      pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
+      const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
+      const carritoItem = carrito.find(c => c.id === prod.id); 
+      const cantidadEnCarrito = carritoItem?.quantity || 0;
+      const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
+      const pStock = document.createElement("p"); pStock.className = "stock"; pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock"; 
       pStock.style.color = stockRestante > 0 ? "gray" : "red";
+      const pPrice = document.createElement("p"); pPrice.style.color = "#e28f2f"; pPrice.style.fontWeight = "bold"; pPrice.textContent = "$" + (prod.price ?? "0");
 
-      const pPrice = document.createElement("p"); 
-      pPrice.style.color = "#e28f2f"; 
-      pPrice.style.fontWeight = "bold"; 
-      pPrice.textContent = "$"+prod.price;
-
-      // Botón agregar al carrito
-      const btn = document.createElement("button"); 
-      btn.className = "agregar-carrito"; 
-      btn.dataset.id = prod.id; 
-      btn.disabled = stockRestante <= 0;
+      const btn = document.createElement("button"); btn.className = "agregar-carrito"; btn.dataset.id = prod.id; 
+      btn.disabled = stockRestante <= 0; 
       btn.textContent = stockRestante > 0 ? (carritoItem ? `Add (${carritoItem.quantity})` : "Add") : "Out of stock";
-
       btn.addEventListener("click", () => {
-        let carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-        const index = carrito.findIndex(c => c.id === prod.id);
+        let carritoLocal = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+        const index = carritoLocal.findIndex(c => c.id === prod.id);
         if (cantidadEnCarrito < prod.stock) {
-          if (index !== -1) carrito[index].quantity += 1;
-          else carrito.push({ id: prod.id, titulo: prod.titulo, price: prod.price, quantity: 1 });
-          localStorage.setItem("productos-en-cart", JSON.stringify(carrito));
+          if (index !== -1) carritoLocal[index].quantity += 1;
+          else carritoLocal.push({ id: prod.id, titulo: prod.titulo, price: prod.price, quantity: 1 });
+          localStorage.setItem("productos-en-cart", JSON.stringify(carritoLocal));
         }
-        cartCountEl.textContent = carrito.reduce((acc,i)=>acc+i.quantity,0);
+        cartCountEl.textContent = carritoLocal.reduce((acc, i) => acc + i.quantity, 0);
         renderProductos(lista, window.scrollY);
       });
 
-      // Botón negociar
-      const btnNegociar = document.createElement("button");
-      btnNegociar.className = "negociar"; 
-      btnNegociar.textContent = "Send Offer";
-      btnNegociar.addEventListener("click", () => {
-        document.getElementById("negociar-modal").style.display = "flex";
-        document.getElementById("negociar-producto").textContent = prod.titulo;
+      const btnNegociar = document.createElement("button"); btnNegociar.className = "negociar"; btnNegociar.textContent = "Send Offer";
+      btnNegociar.addEventListener("click", () => { 
+        document.getElementById("negociar-modal").style.display = "flex"; 
+        document.getElementById("negociar-producto").textContent = prod.titulo; 
       });
 
-      div.appendChild(galeria); 
-      div.appendChild(h3); 
-      div.appendChild(pStock); 
-      div.appendChild(pPrice); 
-      div.appendChild(btn); 
-      div.appendChild(btnNegociar);
+      div.append(galeria, h3, pStock, pPrice, btn, btnNegociar);
       contenedor.appendChild(div);
     });
 
-    if(scrollY !== null) window.scrollTo(0, scrollY);
+    if (scrollY !== null) window.scrollTo(0, scrollY);
     const carritoActual = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-    cartCountEl.textContent = carritoActual.reduce((acc,i)=>acc+i.quantity,0);
+    cartCountEl.textContent = carritoActual.reduce((acc, i) => acc + i.quantity, 0);
   }
 
-  // 🔥 --- NUEVO BLOQUE: Mostrar producto filtrado si viene desde index.html ---
   const filtroId = localStorage.getItem("filtro-producto");
+  if (filtroId) { 
+    const productoFiltrado = productos.filter(p => p.id === filtroId); 
+    renderProductos(productoFiltrado); 
+    localStorage.removeItem("filtro-producto"); 
+  } else renderProductos(productos);
 
-  if (filtroId) {
-    const productoFiltrado = productos.filter(p => p.id === filtroId);
-    renderProductos(productoFiltrado);
-    localStorage.removeItem("filtro-producto"); // limpiar para futuras visitas
-  } else {
-    renderProductos(productos);
-  }
-  // 🔥 --- FIN BLOQUE NUEVO ---
+  const searchInput = document.getElementById("search-input"); 
+  const searchBtn = document.getElementById("search-btn");
+  function normalizeText(t) { return (t || "").toString().toLowerCase(); }
+  searchBtn.addEventListener("click", () => {
+    const q = normalizeText(searchInput.value);
+    if (!q) { renderProductos(productos); return; }
+    const filtrados = productos.filter(p => 
+      normalizeText(p.titulo).includes(q) || 
+      normalizeText(p.descripcion).includes(q) || 
+      normalizeText(p.categoria?.main).includes(q) || 
+      normalizeText(p.categoria?.sub).includes(q) || 
+      (p.tags && p.tags.join(" ").toLowerCase().includes(q))
+    );
+    document.getElementById("titulo-principal").textContent = `Search: "${searchInput.value}"`;
+    renderProductos(filtrados);
+  });
+  searchInput.addEventListener("keyup", e => { if(e.key === "Enter") searchBtn.click(); });
 
-  // --- SOCKET.IO: escuchar actualizaciones desde admin ---
-  socket.on("actualizar-productos", async () => {
-    productos = await obtenerProductos();
+  // --- SOCKET.IO: recibir cambios en tiempo real ---
+  socket.on("connect", () => console.log("✅ Socket conectado:", socket.id));
+  socket.on("actualizar-productos", data => {
+    productos = data; // reemplaza los productos con los del admin
     renderProductos(productos, window.scrollY);
   });
 
-  // --- ADMIN ---
   document.getElementById("admin-access").addEventListener("click", () => window.location.href = "/admin.html");
-
-  // --- CARRITO ---
   document.getElementById("ir-carrito").addEventListener("click", () => window.location.href = "/cart.html");
 
-  // --- MODAL NEGOCIAR ---
-  document.getElementById("cerrar-negociar").addEventListener("click", () => { 
+  document.getElementById("cerrar-negociar").addEventListener("click", () => {
     document.getElementById("negociar-modal").style.display = "none"; 
+    document.getElementById("negociar-status").textContent = "";
   });
-  document.getElementById("enviar-negociacion").addEventListener("click", () => {
-    const email = document.getElementById("negociar-email").value;
-    const oferta = document.getElementById("negociar-precio").value;
-    if(!email || !oferta) { alert("Por favor completa todos los campos"); return; }
-    emailjs.send("service_id","template_id",{ 
-      producto: document.getElementById("negociar-producto").textContent, email, oferta 
-    })
-    .then(()=>{
-      document.getElementById("negociar-status").textContent="Offer sent!"; 
-      document.getElementById("negociar-modal").style.display="none"; 
-    })
-    .catch(err=>{
-      document.getElementById("negociar-status").textContent="Error sending offer"; 
-      console.error(err); 
-    });
+
+  document.getElementById("enviar-negociacion").addEventListener("click", async () => {
+    const email = document.getElementById("negociar-email").value.trim();
+    const oferta = document.getElementById("negociar-precio").value.trim();
+    const producto = document.getElementById("negociar-producto").textContent;
+    const statusEl = document.getElementById("negociar-status");
+
+    if (!email || !oferta) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
+
+    try {
+      statusEl.textContent = "Sending offer...";
+      const resp = await fetch(BASE_URL + "/api/send-offer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ producto, email, oferta })
+      });
+
+      const data = await resp.json();
+      if (resp.ok) {
+        statusEl.textContent = "Offer sent!";
+        setTimeout(() => {
+          document.getElementById("negociar-modal").style.display = "none";
+          statusEl.textContent = "";
+          document.getElementById("negociar-email").value = "";
+          document.getElementById("negociar-precio").value = "";
+        }, 900);
+      } else {
+        throw new Error(data.error || "Unknown error");
+      }
+    } catch (err) {
+      console.error("Error sending offer:", err);
+      statusEl.textContent = "Error sending offer";
+      alert("No se pudo enviar la oferta. Revisa la consola del servidor.");
+    }
   });
+
 });
 </script>
 

@@ -8,31 +8,21 @@
   /* --- RESET BÁSICO --- */
   * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
   body { background:#1e1e1e; color:#fff; }
-
   /* --- LOGIN --- */
   #login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:#111; }
   #login-box { background:#2a2a2a; padding:30px; border-radius:10px; text-align:center; width:90%; max-width:350px; }
   #login-box input, #login-box button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; font-size:1rem; }
   #login-box button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-
   /* --- PANEL ADMIN --- */
   #admin-panel { display:none; padding:20px; max-width:1200px; margin:0 auto; }
   #admin-panel h1 { margin-bottom:15px; }
-
   #form-producto input, #form-producto textarea, #form-producto button {
     width:100%; padding:10px; margin-bottom:10px; border:none; border-radius:5px; font-size:1rem;
   }
   #form-producto input, #form-producto textarea { background:#2a2a2a; color:#fff; }
   #form-producto button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-
-  /* --- SEARCH --- */
-  #search-input { 
-    width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; 
-    background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease;
-  }
+  #search-input { width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease; }
   #search-input:focus { box-shadow:0 0 10px #e28f2f; }
-
-  /* --- PRODUCTOS --- */
   .productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
   .producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
   .producto:hover { transform:scale(1.03); }
@@ -42,15 +32,7 @@
   .producto p { font-size:0.9rem; margin-bottom:5px; }
   .producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
   .producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
-
-  /* --- MENSAJE GUARDADO --- */
-  #mensaje-guardado {
-    position:fixed; top:20px; right:20px; background:#28a745; color:#000;
-    padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4);
-    transition: all 0.3s ease;
-  }
-
-  /* --- BOTONES ARRIBA --- */
+  #mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
   .top-buttons { display:flex; gap:10px; margin-bottom:20px; }
   .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
 </style>
@@ -75,11 +57,8 @@
   </div>
 
   <h1>Admin Panel</h1>
-
-  <!-- SEARCH -->
   <input type="text" id="search-input" placeholder="Search products..." />
 
-  <!-- FORM AGREGAR PRODUCTO -->
   <form id="form-producto">
     <input type="text" id="titulo" placeholder="Título del producto" required />
     <textarea id="description" placeholder="Descripción" required></textarea>
@@ -94,14 +73,11 @@
   <div class="productos" id="lista-productos"></div>
 </div>
 
-<!-- MENSAJE GUARDADO -->
 <div id="mensaje-guardado">✅ Cambios guardados correctamente</div>
 
-<script src="/socket.io/socket.io.js"></script>
-
-
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-const ADMIN_PASSWORD = "161824";
+const ADMIN_PASSWORD = "161824"; // contraseña de entrada
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
 const loginBtn = document.getElementById("login-btn");
@@ -114,59 +90,23 @@ const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 
 let productos = [];
+const socket = io();
 
-// --- SOCKET.IO
-const socket = io(); // Conectarse al servidor Socket.IO
-
-// LOGIN
-loginBtn.addEventListener("click", () => {
-  if(passwordInput.value === ADMIN_PASSWORD){
-    loginScreen.style.display = "none";
-    adminPanel.style.display = "block";
-    cargarProductos();
-  } else alert("❌ Contraseña incorrecta");
-});
-
-logoutBtn.addEventListener("click", () => {
-  loginScreen.style.display = "flex";
-  adminPanel.style.display = "none";
-});
-
-goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
-
-// Cargar productos
-async function cargarProductos() {
-  const stored = localStorage.getItem("productos");
-  if (stored) productos = JSON.parse(stored);
-  else {
-    try {
-      const res = await fetch("https://latronic1.onrender.com/api/productos", { cache: "no-store" });
-      productos = await res.json();
-      localStorage.setItem("productos", JSON.stringify(productos));
-    } catch (err) { productos = []; console.error(err); }
-  }
-  renderProductos();
-}
-
-// Guardar cambios y emitir a todos los clientes
-function guardarProductos(){
-  localStorage.setItem("productos", JSON.stringify(productos));
-  
-  // Esto dispara el evento 'storage' para la misma pestaña
-  window.dispatchEvent(new Event("storage"));
-
-  // Emitir a todas las pestañas conectadas (shop.html)
-  socket.emit("productos-actualizados", productos);
-}
-
-// Mostrar mensaje guardado
+// --- FUNCIONES
 function mostrarMensaje() {
   mensajeGuardado.style.display = "block";
   setTimeout(() => mensajeGuardado.style.display = "none", 2000);
 }
 
-// Renderizar productos
-function renderProductos(filter=""){
+async function cargarProductos() {
+  try {
+    const res = await fetch("/api/productos", { cache: "no-store" });
+    productos = await res.json();
+    renderProductos();
+  } catch (err) { console.error("Error cargando productos:", err); }
+}
+
+function renderProductos(filter="") {
   listaProductos.innerHTML = "";
   const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
   filtrados.forEach(p => {
@@ -175,7 +115,7 @@ function renderProductos(filter=""){
 
     const miniImgs = document.createElement("div");
     miniImgs.className = "mini-images";
-    p.imagenes.forEach(url=>{
+    p.imagenes.forEach(url => {
       const img = document.createElement("img");
       img.src = url;
       miniImgs.appendChild(img);
@@ -195,47 +135,90 @@ function renderProductos(filter=""){
   });
 }
 
-// Actualizar producto
-window.actualizarProducto = function(id){
-  const prod = productos.find(p=>p.id===id);
+// --- CRUD API SIN AUTH_TOKEN
+async function actualizarProducto(id){
+  const prod = productos.find(p => p.id === id);
   if(!prod) return;
-  prod.price = Number(document.getElementById(`price-${id}`).value);
-  prod.stock = Number(document.getElementById(`stock-${id}`).value);
-  guardarProductos();
-  mostrarMensaje();
-  renderProductos(searchInput.value);
+  const updated = {
+    price: Number(document.getElementById(`price-${id}`).value),
+    stock: Number(document.getElementById(`stock-${id}`).value)
+  };
+  try {
+    const res = await fetch(`/api/productos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify(updated)
+    });
+    const data = await res.json();
+    productos = productos.map(p => p.id===id ? data : p);
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+  } catch(err){ console.error(err); }
 }
 
-// Eliminar producto
-window.eliminarProducto = function(id){
+async function eliminarProducto(id){
   if(!confirm("¿Seguro que quieres eliminar este producto?")) return;
-  productos = productos.filter(p=>p.id!==id);
-  guardarProductos();
-  renderProductos(searchInput.value);
+  try {
+    await fetch(`/api/productos/${id}`, { method:"DELETE" });
+    productos = productos.filter(p => p.id!==id);
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+  } catch(err){ console.error(err); }
 }
 
-// Agregar producto
-formProducto.addEventListener("submit", e=>{
+formProducto.addEventListener("submit", async e => {
   e.preventDefault();
   const nuevo = {
-    id: "prod-" + Date.now(),
     titulo: document.getElementById("titulo").value,
     description: document.getElementById("description").value,
     imagenes: document.getElementById("imagenes").value.split(",").map(s=>s.trim()),
-    categoria:{ main: document.getElementById("mainCat").value, sub: document.getElementById("subCat").value },
+    categoria: { main: document.getElementById("mainCat").value, sub: document.getElementById("subCat").value },
     price: Number(document.getElementById("price").value),
     stock: Number(document.getElementById("stock").value)
   };
-  productos.push(nuevo);
-  guardarProductos();
-  mostrarMensaje();
-  formProducto.reset();
-  renderProductos(searchInput.value);
+  try {
+    const res = await fetch("/api/productos", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify(nuevo)
+    });
+    const data = await res.json();
+    productos.push(data);
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+    formProducto.reset();
+  } catch(err){ console.error(err); }
 });
 
-// --- SEARCH --- 
+// --- LOGIN SOLO CON CONTRASEÑA
+loginBtn.addEventListener("click", () => {
+  if(passwordInput.value === ADMIN_PASSWORD){
+    loginScreen.style.display = "none";
+    adminPanel.style.display = "block";
+    cargarProductos();
+  } else alert("❌ Contraseña incorrecta");
+});
+
+logoutBtn.addEventListener("click", () => {
+  loginScreen.style.display = "flex";
+  adminPanel.style.display = "none";
+});
+
+goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
+
+// --- SEARCH
 searchInput.addEventListener("input", () => renderProductos(searchInput.value));
 
+// --- SOCKET.IO
+socket.on("actualizar-productos", data => {
+  productos = data;
+  renderProductos(searchInput.value);
+});
 </script>
+
+
 </body>
 </html>
