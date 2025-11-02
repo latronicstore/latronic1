@@ -77,7 +77,9 @@
 
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-const ADMIN_PASSWORD = "161824"; // contraseña de entrada
+const ADMIN_PASSWORD = "161824"; // Solo contraseña
+let AUTH_TOKEN = ""; // Token de autenticación
+
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
 const loginBtn = document.getElementById("login-btn");
@@ -103,12 +105,17 @@ async function cargarProductos() {
     const res = await fetch("/api/productos", { cache: "no-store" });
     productos = await res.json();
     renderProductos();
-  } catch (err) { console.error("Error cargando productos:", err); }
+  } catch (err) {
+    console.error("Error cargando productos:", err);
+  }
 }
 
-function renderProductos(filter="") {
+function renderProductos(filter = "") {
   listaProductos.innerHTML = "";
-  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
+  const filtrados = productos.filter(p =>
+    p.titulo.toLowerCase().includes(filter.toLowerCase())
+  );
+
   filtrados.forEach(p => {
     const div = document.createElement("div");
     div.className = "producto";
@@ -125,7 +132,7 @@ function renderProductos(filter="") {
     div.innerHTML += `
       <h3>${p.titulo}</h3>
       <p>${p.description}</p>
-      <p>Categoria: ${p.categoria.main} / ${p.categoria.sub}</p>
+      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
       <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
       <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
       <button onclick="actualizarProducto('${p.id}')">Guardar</button>
@@ -135,10 +142,10 @@ function renderProductos(filter="") {
   });
 }
 
-// --- CRUD API SIN AUTH_TOKEN
-async function actualizarProducto(id){
+// --- CRUD
+async function actualizarProducto(id) {
   const prod = productos.find(p => p.id === id);
-  if(!prod) return;
+  if (!prod) return;
   const updated = {
     price: Number(document.getElementById(`price-${id}`).value),
     stock: Number(document.getElementById(`stock-${id}`).value)
@@ -146,26 +153,33 @@ async function actualizarProducto(id){
   try {
     const res = await fetch(`/api/productos/${id}`, {
       method: "PUT",
-      headers: { "Content-Type":"application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
       body: JSON.stringify(updated)
     });
     const data = await res.json();
-    productos = productos.map(p => p.id===id ? data : p);
+    productos = productos.map(p => (p.id === id ? data : p));
     socket.emit("productos-actualizados", productos);
     renderProductos(searchInput.value);
     mostrarMensaje();
-  } catch(err){ console.error(err); }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-async function eliminarProducto(id){
-  if(!confirm("¿Seguro que quieres eliminar este producto?")) return;
+async function eliminarProducto(id) {
+  if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
   try {
-    await fetch(`/api/productos/${id}`, { method:"DELETE" });
-    productos = productos.filter(p => p.id!==id);
+    await fetch(`/api/productos/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": AUTH_TOKEN }
+    });
+    productos = productos.filter(p => p.id !== id);
     socket.emit("productos-actualizados", productos);
     renderProductos(searchInput.value);
     mostrarMensaje();
-  } catch(err){ console.error(err); }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 formProducto.addEventListener("submit", async e => {
@@ -173,15 +187,21 @@ formProducto.addEventListener("submit", async e => {
   const nuevo = {
     titulo: document.getElementById("titulo").value,
     description: document.getElementById("description").value,
-    imagenes: document.getElementById("imagenes").value.split(",").map(s=>s.trim()),
-    categoria: { main: document.getElementById("mainCat").value, sub: document.getElementById("subCat").value },
+    imagenes: document.getElementById("imagenes").value.split(",").map(s => s.trim()),
+    categoria: {
+      main: document.getElementById("mainCat").value,
+      sub: document.getElementById("subCat").value
+    },
     price: Number(document.getElementById("price").value),
     stock: Number(document.getElementById("stock").value)
   };
   try {
     const res = await fetch("/api/productos", {
       method: "POST",
-      headers: { "Content-Type":"application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": AUTH_TOKEN
+      },
       body: JSON.stringify(nuevo)
     });
     const data = await res.json();
@@ -190,21 +210,27 @@ formProducto.addEventListener("submit", async e => {
     renderProductos(searchInput.value);
     mostrarMensaje();
     formProducto.reset();
-  } catch(err){ console.error(err); }
+  } catch (err) {
+    console.error(err);
+  }
 });
 
-// --- LOGIN SOLO CON CONTRASEÑA
+// --- LOGIN (solo password)
 loginBtn.addEventListener("click", () => {
-  if(passwordInput.value === ADMIN_PASSWORD){
+  if (passwordInput.value === ADMIN_PASSWORD) {
+    AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
     loginScreen.style.display = "none";
     adminPanel.style.display = "block";
     cargarProductos();
-  } else alert("❌ Contraseña incorrecta");
+  } else {
+    alert("❌ Contraseña incorrecta");
+  }
 });
 
 logoutBtn.addEventListener("click", () => {
   loginScreen.style.display = "flex";
   adminPanel.style.display = "none";
+  AUTH_TOKEN = "";
 });
 
 goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
@@ -218,6 +244,7 @@ socket.on("actualizar-productos", data => {
   renderProductos(searchInput.value);
 });
 </script>
+
 
 
 </body>
