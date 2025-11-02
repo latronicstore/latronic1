@@ -79,6 +79,9 @@
 <script>
 const ADMIN_PASSWORD = "161824"; // Solo contraseña
 
+const BASE_URL = window.location.hostname.includes("onrender.com") 
+                 ? "https://" + window.location.hostname 
+                 : ""; // Local: usa mismo host
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
@@ -92,7 +95,8 @@ const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 
 let productos = [];
-const socket = io();
+const socket = io(BASE_URL); // Conexión correcta según entorno
+let AUTH_TOKEN = "";
 
 // --- FUNCIONES
 function mostrarMensaje() {
@@ -102,7 +106,7 @@ function mostrarMensaje() {
 
 async function cargarProductos() {
   try {
-    const res = await fetch("/api/productos", { cache: "no-store" });
+    const res = await fetch(`${BASE_URL}/api/productos`, { cache: "no-store" });
     productos = await res.json();
     renderProductos();
   } catch (err) {
@@ -151,7 +155,7 @@ async function actualizarProducto(id) {
     stock: Number(document.getElementById(`stock-${id}`).value)
   };
   try {
-    const res = await fetch(`/api/productos/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/productos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
       body: JSON.stringify(updated)
@@ -169,7 +173,7 @@ async function actualizarProducto(id) {
 async function eliminarProducto(id) {
   if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
   try {
-    await fetch(`/api/productos/${id}`, {
+    await fetch(`${BASE_URL}/api/productos/${id}`, {
       method: "DELETE",
       headers: { "Authorization": AUTH_TOKEN }
     });
@@ -196,7 +200,7 @@ formProducto.addEventListener("submit", async e => {
     stock: Number(document.getElementById("stock").value)
   };
   try {
-    const res = await fetch("/api/productos", {
+    const res = await fetch(`${BASE_URL}/api/productos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -215,7 +219,7 @@ formProducto.addEventListener("submit", async e => {
   }
 });
 
-// --- LOGIN (solo password)
+// --- LOGIN
 loginBtn.addEventListener("click", () => {
   if (passwordInput.value === ADMIN_PASSWORD) {
     AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
@@ -244,7 +248,6 @@ socket.on("actualizar-productos", data => {
   renderProductos(searchInput.value);
 });
 </script>
-
 
 
 </body>
