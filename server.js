@@ -189,26 +189,6 @@ async function enviarEmailACliente(datos) {
 }
 
 // --------------------
-// 🛡️ Middleware de autenticación para admin
-// --------------------
-function authAdmin(req, res, next) {
-  const auth = req.headers.authorization;
-  if (!auth) {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
-    return res.status(401).send("Authentication required.");
-  }
-  const b64auth = auth.split(" ")[1];
-  const [user, pass] = Buffer.from(b64auth, "base64").toString().split(":");
-
-  if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASS) {
-    return next();
-  } else {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
-    return res.status(401).send("Authentication failed.");
-  }
-}
-
-// --------------------
 // 🛍️ ENDPOINTS Productos
 // --------------------
 app.get("/api/productos", async (req, res) => {
@@ -224,7 +204,7 @@ app.get("/api/productos/:id", async (req, res) => {
 });
 
 // Protegidos con authAdmin
-app.post("/api/productos", authAdmin, async (req, res) => {
+app.post("/api/productos", async (req, res) => {
   await db.read();
   const nuevo = req.body;
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
@@ -237,7 +217,7 @@ app.post("/api/productos", authAdmin, async (req, res) => {
   res.status(201).json(nuevo);
 });
 
-app.put("/api/productos/:id", authAdmin, async (req, res) => {
+app.put("/api/productos/:id", async (req, res) => {
   await db.read();
   const index = db.data.productos.findIndex(p => p.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
@@ -250,7 +230,7 @@ app.put("/api/productos/:id", authAdmin, async (req, res) => {
   res.json(db.data.productos[index]);
 });
 
-app.delete("/api/productos/:id", authAdmin, async (req, res) => {
+app.delete("/api/productos/:id", async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
   await db.write();
@@ -349,6 +329,46 @@ app.post("/process-payment", async (req, res) => {
 });
 
 // --------------------
+// 📩 ENDPOINT: Send Offer (shop.html)
+// --------------------
+app.post("/api/send-offer", async (req, res) => {
+  try {
+    const { producto, email, oferta } = req.body;
+    console.log("Recibido offer:", { producto, email, oferta });
+
+    if (!producto || !email || !oferta) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios" });
+    }
+
+    const mailOptions = {
+      from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `📩 Oferta recibida para ${producto}`,
+      html: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; color: #333;">
+               <h2>¡Nueva oferta recibida!</h2>
+               <p><strong>Producto:</strong> ${producto}</p>
+               <p><strong>Email del cliente:</strong> ${email}</p>
+               <p><strong>Oferta:</strong> $${oferta}</p>
+             </div>`
+    };
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log("Nodemailer info:", info);
+      res.json({ success: true, message: "Oferta enviada correctamente" });
+    } catch (err) {
+      console.error("Error Nodemailer:", err);
+      res.status(500).json({ error: "Error enviando oferta" });
+    }
+
+  } catch (err) {
+    console.error("Error endpoint send-offer:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
+});
+
+
+// --------------------
 // 🌐 Servir frontend
 // --------------------
 app.get("/", (req, res) => {
@@ -358,9 +378,11 @@ app.get("/", (req, res) => {
 // --------------------
 // Servir admin protegido
 // --------------------
-app.get("/admin.html", authAdmin, (req, res) => {
+app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
+
+
 
 // --------------------
 // 🚀 Iniciar servidor
