@@ -79,9 +79,9 @@
 <script>
 const ADMIN_PASSWORD = "161824"; // Solo contraseña
 
-const BASE_URL = window.location.hostname.includes("onrender.com") 
-                 ? "https://" + window.location.hostname 
-                 : ""; // Local: usa mismo host
+const BASE_URL = window.location.hostname.includes("latronic1.onrender.com") 
+  ? "https://" + window.location.hostname // Render
+  : "http://localhost:3000";              // Local
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
