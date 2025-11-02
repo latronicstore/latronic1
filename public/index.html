@@ -119,17 +119,17 @@ main { flex: 1; padding: 2rem; }
 }
 
 .email-link {
-  color: inherit;       /* Usa el mismo color del texto */
-  text-decoration: none; /* Quita el subrayado */
+  color: inherit;       
+  text-decoration: none; 
   font-weight: bold;
 }
 
 .email-link:hover {
-  text-decoration: underline; /* O puedes quitar esto si no quieres el subrayado al pasar el mouse */
+  text-decoration: underline; 
 }
+
 /* --- Vista móvil simplificada --- */
 @media (max-width: 768px) {
-  /* Oculta todo excepto el logo, botón y footer */
   main, .carrusel, .anuncios-carousel, .seccion-productos, .contenido-extra, .hero, header nav {
     display: none !important;
   }
@@ -170,10 +170,9 @@ main { flex: 1; padding: 2rem; }
 
 }
 
-
 /* === Barra de anuncios estilo bolsa === */
 .ticker-container {
-  display: block; /* visible de inmediato */
+  display: block; /* visible desde el inicio */
   width: 100%;
   overflow: hidden;
   background: #111;
@@ -183,15 +182,15 @@ main { flex: 1; padding: 2rem; }
   padding: 0.5rem 0;
   margin-bottom: 1rem;
   position: relative;
-  opacity: 1; /* sin transiciones lentas */
-  animation: fadeInFast 0.1s ease-out; /* entra rápido */
+  opacity: 1; /* visible inmediatamente */
+  animation: none; /* quitar fade-in lento */
 }
 
 /* Texto del ticker */
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: tickerMove 15s linear infinite; /* rápido en PC */
+  animation: tickerMove 15s linear infinite; 
 }
 
 .ticker-item {
@@ -212,24 +211,16 @@ main { flex: 1; padding: 2rem; }
 
 /* Animación de aparición instantánea */
 @keyframes fadeInFast {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* === Vista móvil === */
 @media (max-width: 768px) {
   .ticker-track {
-    animation-duration: 20s; /* más lento para leer en móvil */
+    animation-duration: 20s; 
   }
 }
-
-
 
 .title-up{
   margin-top:-25rem;
@@ -308,63 +299,76 @@ main { flex: 1; padding: 2rem; }
 </div>
 
 <script>
-// --- Cargar productos desde db.json ---
+// --- Cargar productos desde API o localStorage ---
 async function obtenerProductos() {
   try {
-    const res = await fetch("https://latronic1.onrender.com/api/productos");
+    // Intentar primero desde localStorage
+    let productos = JSON.parse(localStorage.getItem("productos")) || [];
+    if (productos.length > 0) return productos;
 
-    if (!res.ok) throw new Error("No se pudo cargar db.json");
-    return await res.json();
+    // Si no hay, traer desde API
+    const res = await fetch("https://latronic1.onrender.com/api/productos");
+    if (!res.ok) throw new Error("No se pudieron cargar los productos");
+    productos = await res.json();
+
+    // Guardar en localStorage para usar en shop.html
+    localStorage.setItem("productos", JSON.stringify(productos));
+    return productos;
   } catch (err) {
-    console.error(err);
+    console.error("Error al cargar productos:", err);
     return [];
   }
 }
 
-obtenerProductos().then(productos => {
-  if (productos.length === 0) return;
+// --- Renderizar carrusel en index.html ---
+function renderizarCarrusel(productos) {
+  if (!productos || productos.length === 0) return;
 
-  // Ordenar por precio (descendente)
-  const topProducts = [...productos].sort((a, b) => b.price - a.price).slice(0, 5);
+  // Ordenar por precio descendente y tomar top 5
+  const topProducts = [...productos].sort((a,b)=>b.price-a.price).slice(0,5);
 
-  // Carrusel
   const track = document.getElementById("aside-carousel-track");
+  if (!track) return;
+
   topProducts.forEach(p => {
+    const imgSrc = (p.imagenes && p.imagenes.length > 0) ? p.imagenes[0] : "https://via.placeholder.com/150";
+
     const slide = document.createElement("div");
     slide.classList.add("aside-carousel-slide");
     slide.innerHTML = `
-      <img src="${p.imagenes[0]}" alt="${p.titulo}">
-      <div>${p.titulo} - $${p.price}</div>
+      <img src="${imgSrc}" alt="${p.titulo}">
+      <div>${p.titulo} - $${parseFloat(p.price).toFixed(2)}</div>
     `;
+
+    // Al hacer clic, guardar ID y llevar a shop.html
     slide.addEventListener("click", () => {
       localStorage.setItem("filtro-producto", p.id);
       window.location.href = "shop.html";
     });
+
     track.appendChild(slide);
   });
 
-  // Carrusel animación
+  // Animación automática del carrusel
   let index = 0;
   const totalSlides = topProducts.length;
-  function updateCarousel() {
-    track.style.transform = `translateX(-${index * 100}%)`;
-  }
+  const actualizarCarrusel = () => { track.style.transform = `translateX(-${index*100}%)`; };
 
-  document.getElementById("prev").addEventListener("click", () => {
-    index = (index - 1 + totalSlides) % totalSlides;
-    updateCarousel();
-  });
-  document.getElementById("next").addEventListener("click", () => {
-    index = (index + 1) % totalSlides;
-    updateCarousel();
-  });
+  const btnPrev = document.getElementById("prev");
+  const btnNext = document.getElementById("next");
 
-  setInterval(() => {
-    index = (index + 1) % totalSlides;
-    updateCarousel();
-  }, 4000);
+  if(btnPrev) btnPrev.addEventListener("click", ()=>{ index=(index-1+totalSlides)%totalSlides; actualizarCarrusel(); });
+  if(btnNext) btnNext.addEventListener("click", ()=>{ index=(index+1)%totalSlides; actualizarCarrusel(); });
+
+  setInterval(()=>{ index=(index+1)%totalSlides; actualizarCarrusel(); },4000);
+}
+
+// --- Inicializar ---
+obtenerProductos().then(productos => {
+  renderizarCarrusel(productos);
 });
 </script>
+
 
 </body>
 </html>

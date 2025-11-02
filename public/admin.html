@@ -97,6 +97,9 @@
 <!-- MENSAJE GUARDADO -->
 <div id="mensaje-guardado">✅ Cambios guardados correctamente</div>
 
+<script src="/socket.io/socket.io.js"></script>
+
+
 <script>
 const ADMIN_PASSWORD = "161824";
 const loginScreen = document.getElementById("login-screen");
@@ -111,6 +114,9 @@ const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 
 let productos = [];
+
+// --- SOCKET.IO
+const socket = io(); // Conectarse al servidor Socket.IO
 
 // LOGIN
 loginBtn.addEventListener("click", () => {
@@ -142,10 +148,15 @@ async function cargarProductos() {
   renderProductos();
 }
 
-// Guardar cambios y disparar evento storage
+// Guardar cambios y emitir a todos los clientes
 function guardarProductos(){
   localStorage.setItem("productos", JSON.stringify(productos));
+  
+  // Esto dispara el evento 'storage' para la misma pestaña
   window.dispatchEvent(new Event("storage"));
+
+  // Emitir a todas las pestañas conectadas (shop.html)
+  socket.emit("productos-actualizados", productos);
 }
 
 // Mostrar mensaje guardado

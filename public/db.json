@@ -1,11 +1,11 @@
- {
-  "productos":[
+{
+  "productos": [
     {
       "id": "new-p1",
       "titulo": "Lebron James 50k points 2024-25",
       "imagenes": [
-        "https://latronic1.onrender.com/img/new/basketballnew/5kJamesLebron.jpg",
-        "https://latronic1.onrender.com/img/new/basketballnew/50kJamesBack.jpg"
+        "./img/new/basketballnew/50kJamesLebron.jpg",
+        "./img/new/basketballnew/50kJamesBack.jpg"
       ],
       "categoria": {
         "main": "new",
@@ -43,7 +43,7 @@
         "main": "new",
         "sub": "basketball"
       },
-      "stock": 2,
+      "stock": 1,
       "price": 40,
       "description": "Carmelo Anthony, Olympics Games 2016 Rio, year: 2024",
       "year": "2024"
@@ -2983,4 +2983,4 @@
       "year": "1996"
     }
   ]
- }
+}

@@ -100,21 +100,30 @@ const APPLICATION_ID = ENV === "production"
   : "sandbox-sq0idb-nATsaUH8We6yNcrWwVymtQ";
 const LOCATION_ID = ENV === "production"
   ? "LBXYJCC3X1GRS"
-  : "LK3CWP5FQEQXP"; // tu sandbox location
+  : "LK3CWP5FQEQXP";
 
-// --- Cargar carrito ---
+// --- Cargar carrito y mostrar resumen ---
 function cargarCarrito() {
-  const productos = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+  const productosEnCart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+  const productosOriginales = JSON.parse(localStorage.getItem("productos")) || [];
   const cartSummaryEl = document.getElementById("cart-summary");
   if (!cartSummaryEl) return;
 
   cartSummaryEl.innerHTML = "";
   let subtotal = 0;
 
-  if (productos.length === 0) {
+  if (productosEnCart.length === 0) {
     cartSummaryEl.innerHTML = "<p>Your cart is empty 😞</p>";
   } else {
-    productos.forEach(p => {
+    productosEnCart.forEach(p => {
+      // --- Asegurar que tenga imágenes ---
+      if (!p.imagenes || p.imagenes.length === 0) {
+        const prodOriginal = productosOriginales.find(pr => pr.id === p.id);
+        if (prodOriginal && prodOriginal.imagenes) {
+          p.imagenes = prodOriginal.imagenes;
+        }
+      }
+
       const price = parseFloat(p.price) || 0;
       const quantity = parseInt(p.quantity) || 1;
       subtotal += price * quantity;
@@ -122,7 +131,7 @@ function cargarCarrito() {
       const div = document.createElement("div");
       div.classList.add("cart-item");
       div.innerHTML = `
-        <img src="${p.imagenes ? p.imagenes[0] : 'https://via.placeholder.com/50'}" alt="${p.titulo}">
+        <img src="${p.imagenes?.[0] || 'https://via.placeholder.com/50'}" alt="${p.titulo}">
         <div class="cart-item-info">
           <strong>${p.titulo}</strong><br>
           Price: $${price.toFixed(2)} x ${quantity}
@@ -147,7 +156,7 @@ function cargarCarrito() {
 }
 
 cargarCarrito();
-setInterval(cargarCarrito, 2000);
+setInterval(cargarCarrito, 2000); // refrescar cada 2 segundos
 
 // --- Square Payments ---
 async function initSquare() {
@@ -166,6 +175,8 @@ async function initSquare() {
     await card.attach("#card-container");
 
     payButton.addEventListener("click", async () => {
+        alert('By clicking "Pay Now" you accept the store Terms & Conditions and our Privacy Policy, and consent to receive email notifications about your tracking number as soon as it is available from LaTRONIC LLC.');
+
       statusEl.textContent = "";
       payButton.disabled = true;
 
@@ -216,15 +227,15 @@ async function initSquare() {
           statusEl.textContent = "✅ Pago exitoso";
 
           // --- Actualizar stock local ---
-          let productos = JSON.parse(localStorage.getItem("productos")) || [];
+          let productosOriginales = JSON.parse(localStorage.getItem("productos")) || [];
           productosEnCart.forEach(item => {
-            const prod = productos.find(p => p.id === item.id);
+            const prod = productosOriginales.find(p => p.id === item.id);
             if (prod) {
               prod.stock -= item.quantity || 1;
               if (prod.stock <= 0) prod.soldOut = true;
             }
           });
-          localStorage.setItem("productos", JSON.stringify(productos));
+          localStorage.setItem("productos", JSON.stringify(productosOriginales));
 
           // --- Actualizar stock en el servidor ---
           productosEnCart.forEach(async item => {
@@ -262,5 +273,6 @@ async function initSquare() {
 
 initSquare();
 </script>
+
 </body>
 </html>

@@ -183,6 +183,14 @@ function actualizarCarrito() {
   let subtotal = 0;
 
   cart.forEach(p => {
+    // --- Asegurarse de que el producto tenga imágenes ---
+    if (!p.imagenes || p.imagenes.length === 0) {
+      const prodOriginal = productos.find(pr => pr.id === p.id);
+      if (prodOriginal && prodOriginal.imagenes) {
+        p.imagenes = prodOriginal.imagenes;
+      }
+    }
+
     const imagenSrc = p.imagenes?.[0] || "https://via.placeholder.com/80";
     const cantidad = p.quantity || 1;
     subtotal += parseFloat(p.price) * cantidad;
@@ -206,6 +214,7 @@ function actualizarCarrito() {
     cartProductosEl.appendChild(div);
   });
 
+  // --- Eventos para eliminar producto ---
   document.querySelectorAll(".cart-eliminar").forEach(btn => {
     btn.onclick = () => {
       cart = cart.filter(p => p.id !== btn.dataset.id);
@@ -214,6 +223,7 @@ function actualizarCarrito() {
     };
   });
 
+  // --- Eventos para aumentar/disminuir cantidad ---
   document.querySelectorAll(".boton-cantidad").forEach(btn => {
     btn.onclick = () => {
       const id = btn.dataset.id;
@@ -265,17 +275,18 @@ function actualizarTotales(subtotal) {
 const estadoSelect = document.getElementById("estado");
 estadoSelect.addEventListener("change", () => {
   localStorage.setItem("estado-cliente", estadoSelect.value);
-  // recalcula automáticamente los impuestos al cambiar
   const subtotal = cart.reduce((acc, p) => acc + (parseFloat(p.price) * (p.quantity || 1)), 0);
   actualizarTotales(subtotal);
 });
 
+// --- Vaciar carrito ---
 document.getElementById("cart-acciones-vaciar").onclick = () => {
   cart = [];
   guardarCarrito();
   actualizarCarrito();
 };
 
+// --- Comprar ahora ---
 document.getElementById("cart-acciones-buy").onclick = () => {
   if (cart.length === 0) {
     alert("Your cart is empty! ❌");
@@ -291,12 +302,14 @@ document.getElementById("cart-acciones-buy").onclick = () => {
   window.location.href = "card-charge.html";
 };
 
-// --- RESTAURAR ESTADO ---
+// --- Restaurar estado del cliente ---
 const estadoGuardado = localStorage.getItem("estado-cliente");
 if (estadoSelect && estadoGuardado) estadoSelect.value = estadoGuardado;
 
+// --- Inicializar carrito ---
 actualizarCarrito();
 </script>
+
 
 </body>
 </html>
