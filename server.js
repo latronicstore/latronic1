@@ -11,6 +11,8 @@ import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import nodemailer from "nodemailer";
 import fs from "fs";
+import { Server } from "socket.io";
+import http from "http"; // <-- Para Socket.IO
 
 // --------------------
 // ⚙️ Configuración básica
@@ -18,6 +20,26 @@ import fs from "fs";
 dotenv.config();
 const app = express();
 const __dirname = process.cwd();
+// Crear servidor HTTP para Socket.IO
+const server = http.createServer(app);
+
+// Configuración Socket.IO
+const io = new Server(server, {
+  cors: { origin: "*" } // permitir conexiones desde cualquier frontend
+});
+
+io.on("connection", socket => {
+  console.log("Cliente conectado:", socket.id);
+
+  // Escuchar cambios desde admin
+  socket.on("productos-actualizados", data => {
+    socket.broadcast.emit("actualizar-productos", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado:", socket.id);
+  });
+});
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -34,12 +56,10 @@ app.use((req, res, next) => {
 // 🗝️ Base de datos (LowDB)
 // --------------------
 const isRender = process.env.RENDER === "true";
-
 const dbFile = isRender 
   ? "/data/db.json"
-  : path.join(__dirname, "db.json");
+  : path.join(__dirname, "public", "db.json");
 
-// Asegurarse de que la carpeta exista
 if (!isRender) {
   const dir = path.dirname(dbFile);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -210,6 +230,10 @@ app.post("/api/productos", authAdmin, async (req, res) => {
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
   db.data.productos.push(nuevo);
   await db.write();
+
+  // 🔔 Notificar cambios a todos los clientes
+  io.emit("actualizar-productos", db.data.productos);
+
   res.status(201).json(nuevo);
 });
 
@@ -219,6 +243,10 @@ app.put("/api/productos/:id", authAdmin, async (req, res) => {
   if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
   db.data.productos[index] = { ...db.data.productos[index], ...req.body };
   await db.write();
+
+  // 🔔 Notificar cambios a todos los clientes
+  io.emit("actualizar-productos", db.data.productos);
+
   res.json(db.data.productos[index]);
 });
 
@@ -226,6 +254,10 @@ app.delete("/api/productos/:id", authAdmin, async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
   await db.write();
+
+  // 🔔 Notificar cambios a todos los clientes
+  io.emit("actualizar-productos", db.data.productos);
+
   res.json({ success: true });
 });
 
@@ -334,6 +366,6 @@ app.get("/admin.html", authAdmin, (req, res) => {
 // 🚀 Iniciar servidor
 // --------------------
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en puerto ${PORT} - Modo: ${NODE_ENV}`);
 });
