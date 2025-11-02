@@ -159,7 +159,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
   <!-- SEARCH -->
   <div class="search-bar" style="margin-top:12px;">
-    <input id="search-input" type="text" placeholder="Buscar productos por título, descripción o categoría..." />
+    <input id="search-input" type="text" placeholder="Search..." />
     <button id="search-btn" title="Buscar">🔎</button>
   </div>
 
@@ -212,6 +212,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
+
+  // === ZOOM EN IMAGEN ===
+const zoomModal = document.getElementById("zoom-modal");
+const zoomImg = document.getElementById("zoom-img");
+
+contenedor.addEventListener("click", e => {
+  const img = e.target.closest(".main-img");
+  if (!img) return;
+  zoomImg.src = img.src;
+  zoomModal.style.display = "flex";
+});
+
+zoomModal.addEventListener("click", () => zoomModal.style.display = "none");
+
 
   // --- Delegación botones de subcategoría ---
   aside.addEventListener("click", e => {
@@ -405,6 +419,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 </script>
 
+<!-- Modal de zoom -->
+<div id="zoom-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:7000;cursor:zoom-out;">
+  <img id="zoom-img" src="" style="max-width:90%;max-height:90%;border-radius:8px;">
+</div>
 
 </body>
 </html>
