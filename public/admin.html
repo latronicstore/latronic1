@@ -80,9 +80,9 @@
 const ADMIN_PASSWORD = "161824";
 
 // Detecta si estamos en Render o local
-const BASE_URL = window.location.hostname.includes("onrender.com") 
-                 ? "https://latronic1.onrender.com" // REEMPLAZA con la URL real de tu backend en Render
-                 : "http://localhost:3000"; // Local
+const BASE_URL = window.location.hostname.includes("onrender.com")
+  ? "https://latronic1.onrender.com" // Reemplaza con tu URL real en Render
+  : "http://localhost:3000";
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
@@ -99,11 +99,13 @@ let productos = [];
 const socket = io(BASE_URL);
 let AUTH_TOKEN = "";
 
+// Mostrar mensaje temporal
 function mostrarMensaje() {
   mensajeGuardado.style.display = "block";
   setTimeout(() => mensajeGuardado.style.display = "none", 2000);
 }
 
+// Cargar productos desde backend
 async function cargarProductos() {
   try {
     const res = await fetch(`${BASE_URL}/api/productos`, { cache: "no-store" });
@@ -114,6 +116,7 @@ async function cargarProductos() {
   }
 }
 
+// Renderizar productos en la pantalla
 function renderProductos(filter = "") {
   listaProductos.innerHTML = "";
   const filtrados = productos.filter(p =>
@@ -124,9 +127,10 @@ function renderProductos(filter = "") {
     const div = document.createElement("div");
     div.className = "producto";
 
+    // Mini imágenes
     const miniImgs = document.createElement("div");
     miniImgs.className = "mini-images";
-    p.imagenes.forEach(url => {
+    (p.imagenes || []).forEach(url => {
       const img = document.createElement("img");
       img.src = url;
       miniImgs.appendChild(img);
@@ -136,9 +140,9 @@ function renderProductos(filter = "") {
     div.innerHTML += `
       <h3>${p.titulo}</h3>
       <p>${p.description}</p>
-      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
-      <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
-      <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
+      <p>Categoría: ${p.categoria?.main || ""} / ${p.categoria?.sub || ""}</p>
+      <p>Precio: <input type="number" value="${p.price || 0}" id="price-${p.id}" /></p>
+      <p>Stock: <input type="number" value="${p.stock || 0}" id="stock-${p.id}" /></p>
       <button onclick="actualizarProducto('${p.id}')">Guardar</button>
       <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
     `;
@@ -146,7 +150,7 @@ function renderProductos(filter = "") {
   });
 }
 
-// --- CRUD igual que antes ---
+// Actualizar producto
 async function actualizarProducto(id) {
   const prod = productos.find(p => p.id === id);
   if (!prod) return;
@@ -170,6 +174,7 @@ async function actualizarProducto(id) {
   }
 }
 
+// Eliminar producto
 async function eliminarProducto(id) {
   if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
   try {
@@ -186,6 +191,7 @@ async function eliminarProducto(id) {
   }
 }
 
+// Crear nuevo producto
 formProducto.addEventListener("submit", async e => {
   e.preventDefault();
   const nuevo = {
@@ -219,7 +225,7 @@ formProducto.addEventListener("submit", async e => {
   }
 });
 
-// --- LOGIN ---
+// LOGIN
 loginBtn.addEventListener("click", () => {
   if (passwordInput.value === ADMIN_PASSWORD) {
     AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
@@ -231,23 +237,26 @@ loginBtn.addEventListener("click", () => {
   }
 });
 
+// LOGOUT
 logoutBtn.addEventListener("click", () => {
   loginScreen.style.display = "flex";
   adminPanel.style.display = "none";
   AUTH_TOKEN = "";
 });
 
+// Ir a tienda
 goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
 
-// --- SEARCH ---
+// SEARCH
 searchInput.addEventListener("input", () => renderProductos(searchInput.value));
 
-// --- SOCKET.IO ---
+// SOCKET.IO en tiempo real
 socket.on("actualizar-productos", data => {
   productos = data;
   renderProductos(searchInput.value);
 });
 </script>
+x
 
 </body>
 </html>
