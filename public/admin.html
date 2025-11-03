@@ -77,11 +77,12 @@
 
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-const ADMIN_PASSWORD = "161824"; // Solo contraseña
+const ADMIN_PASSWORD = "161824";
 
-const BASE_URL = window.location.hostname.includes("latronic1.onrender.com") 
-  ? "https://" + window.location.hostname // Render
-  : "http://localhost:3000";              // Local
+// Detecta si estamos en Render o local
+const BASE_URL = window.location.hostname.includes("onrender.com") 
+                 ? "https://latronic1.onrender.com" // REEMPLAZA con la URL real de tu backend en Render
+                 : "http://localhost:3000"; // Local
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
@@ -95,10 +96,9 @@ const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 
 let productos = [];
-const socket = io(BASE_URL); // Conexión correcta según entorno
+const socket = io(BASE_URL);
 let AUTH_TOKEN = "";
 
-// --- FUNCIONES
 function mostrarMensaje() {
   mensajeGuardado.style.display = "block";
   setTimeout(() => mensajeGuardado.style.display = "none", 2000);
@@ -146,7 +146,7 @@ function renderProductos(filter = "") {
   });
 }
 
-// --- CRUD
+// --- CRUD igual que antes ---
 async function actualizarProducto(id) {
   const prod = productos.find(p => p.id === id);
   if (!prod) return;
@@ -219,7 +219,7 @@ formProducto.addEventListener("submit", async e => {
   }
 });
 
-// --- LOGIN
+// --- LOGIN ---
 loginBtn.addEventListener("click", () => {
   if (passwordInput.value === ADMIN_PASSWORD) {
     AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
@@ -239,16 +239,15 @@ logoutBtn.addEventListener("click", () => {
 
 goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
 
-// --- SEARCH
+// --- SEARCH ---
 searchInput.addEventListener("input", () => renderProductos(searchInput.value));
 
-// --- SOCKET.IO
+// --- SOCKET.IO ---
 socket.on("actualizar-productos", data => {
   productos = data;
   renderProductos(searchInput.value);
 });
 </script>
-
 
 </body>
 </html>
