@@ -44,17 +44,17 @@ io.on("connection", socket => {
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Permitir CORS
+// Permitir CORS y OPTIONS preflight
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+app.options("*", (req, res) => res.sendStatus(200)); // <-- Manejo explícito de OPTIONS
 
 // --------------------
 // 🗝️ Base de datos (LowDB)
-// --------------------
 const isRender = process.env.RENDER === "true";
 const dbFile = isRender 
   ? "/data/db.json"
@@ -74,7 +74,6 @@ await db.write();
 
 // --------------------
 // 💳 Configuración Square
-// --------------------
 const NODE_ENV = process.env.NODE_ENV || "production";
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
@@ -90,7 +89,6 @@ const SQUARE_API =
 
 // --------------------
 // 📧 Configuración Nodemailer
-// --------------------
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -98,7 +96,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS
   }
 });
-
 // --------------------
 // ✨ Plantillas HTML elegantes
 // --------------------
@@ -367,26 +364,17 @@ app.post("/api/send-offer", async (req, res) => {
   }
 });
 
-
-// --------------------
 // 🌐 Servir frontend
-// --------------------
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// --------------------
-// Servir admin protegido
-// --------------------
 app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
-
-
 // --------------------
 // 🚀 Iniciar servidor
-// --------------------
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en puerto ${PORT} - Modo: ${NODE_ENV}`);
