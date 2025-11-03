@@ -255,16 +255,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
-  // -------------------- NUEVO: CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
+  // -------------------- CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
   let productos = JSON.parse(localStorage.getItem("productos")) || [];
   renderProductos(productos); // render inicial inmediato
 
+  // --- OBTENER PRODUCTOS DESDE EL SERVIDOR / db.json ---
   async function obtenerProductos() {
     try {
       const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
 
+      // Mantener stock local si existe
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
@@ -283,8 +285,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  await obtenerProductos(); // <-- actualización en segundo plano desde API
-  // ------------------------------------------------------------------------------
+  await obtenerProductos(); // actualización en segundo plano desde db.json
 
   // -------------------- RESTO DEL SCRIPT --------------------
   function renderProductos(lista, scrollY = null) {
@@ -434,6 +435,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 </script>
+
 
 
 </body>
