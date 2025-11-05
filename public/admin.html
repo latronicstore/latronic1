@@ -8,40 +8,60 @@
   /* --- RESET BÁSICO --- */
   * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
   body { background:#1e1e1e; color:#fff; }
+
   /* --- LOGIN --- */
   #login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:#111; }
   #login-box { background:#2a2a2a; padding:30px; border-radius:10px; text-align:center; width:90%; max-width:350px; }
   #login-box input, #login-box button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; font-size:1rem; }
   #login-box button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+
   /* --- PANEL ADMIN --- */
   #admin-panel { display:none; padding:20px; max-width:1200px; margin:0 auto; }
   #admin-panel h1 { margin-bottom:15px; }
+
+  #form-producto { display:flex; flex-direction: column; gap:10px; }
   #form-producto input, #form-producto textarea, #form-producto button {
-    width:100%; padding:10px; margin-bottom:10px; border:none; border-radius:5px; font-size:1rem;
+    width:100%; padding:10px; border:none; border-radius:5px; font-size:1rem;
   }
   #form-producto input, #form-producto textarea { background:#2a2a2a; color:#fff; }
   #form-producto button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+
   #search-input { width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease; }
   #search-input:focus { box-shadow:0 0 10px #e28f2f; }
+
   .productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
   .producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
   .producto:hover { transform:scale(1.03); }
   .producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
-  .mini-images { display:flex; margin-bottom:10px; }
-  .producto h3 { font-size:1.1rem; margin-bottom:5px; }
-  .producto p { font-size:0.9rem; margin-bottom:5px; }
-  .producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
-  .producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
-  #mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
-  .top-buttons { display:flex; gap:10px; margin-bottom:20px; }
-  .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+  .mini-images { display:flex; overflow-x: auto; flex-wrap: nowrap; margin-bottom:10px; }
+  .mini-images img { flex: 0 0 auto; margin-right:5px; border-radius:4px; }
 
+  .producto h3 { font-size:1.1rem; margin-bottom:5px; word-break: break-word; }
+  .producto p { font-size:0.9rem; margin-bottom:5px; word-break: break-word; }
+
+  .producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
+  .producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:10px; cursor:pointer; font-weight:bold; min-height:44px; }
+
+  #mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
+
+  .top-buttons { display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap; }
+  .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; min-height:44px; }
+
+  /* --- MEDIA QUERIES --- */
   @media (max-width: 600px) {
-    #form-producto input, #form-producto textarea, #form-producto button { font-size: 0.9rem; }
+    #form-producto input, #form-producto textarea, #form-producto button { font-size: 0.9rem; padding:8px; }
     .producto { padding: 10px; }
-    .producto img { width: 40px; height: 40px; }
+    .producto img { width: 60px; height: 60px; }
+    .producto button { padding:8px; font-size:0.9rem; }
+    .mini-images img { width:50px; height:50px; }
+  }
+
+  @media (max-width: 400px) {
+    .productos { grid-template-columns: 1fr; }
+    .top-buttons { flex-direction: column; }
   }
 </style>
+
 </head>
 <body>
 
