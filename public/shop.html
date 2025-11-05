@@ -267,32 +267,53 @@ document.addEventListener("DOMContentLoaded", async () => {
   let productos = JSON.parse(localStorage.getItem("productos")) || [];
   renderProductos(productos); // render inicial inmediato
 
-  // --- OBTENER PRODUCTOS DESDE EL SERVIDOR / db.json ---
-  async function obtenerProductos() {
-    try {
-      const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
-      if (!res.ok) throw new Error("Error cargando productos");
-      const data = await res.json();
+// --- OBTENER PRODUCTOS DESDE EL SERVIDOR / db.json ---
+async function obtenerProductos() {
+  try {
+    const res = await fetch(BASE_URL + "/api/productos");
+    if (!res.ok) throw new Error("Error cargando productos");
 
-      const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
-      const productosFinal = data.map(p => {
-        const local = productosGuardados.find(lp => lp.id === p.id);
-        return local
-          ? { ...p, stock: local.stock ?? p.stock, price: local.price ?? p.price, soldOut: local.soldOut || false, stockOriginal: local.stockOriginal || local.stock || p.stock }
-          : { ...p, stockOriginal: p.stock, stock: p.stock };
-      });
+    // Solo llamamos a res.json() una vez
+    const data = await res.json();
+    console.log("Productos obtenidos del servidor:", data);
 
-      localStorage.setItem("productos", JSON.stringify(productosFinal));
-      productos = productosFinal;
-      renderProductos(productos, window.scrollY);
-      return productosFinal;
-    } catch (err) {
-      console.error(err);
-      return JSON.parse(localStorage.getItem("productos")) || [];
-    }
+    // Recuperar productos guardados en localStorage
+    const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
+
+    // Combinar datos del servidor con posibles modificaciones locales
+    const productosFinal = data.map(p => {
+      const local = productosGuardados.find(lp => lp.id === p.id);
+      return local
+        ? {
+            ...p,
+            stock: local.stock ?? p.stock,
+            price: local.price ?? p.price,
+            soldOut: local.soldOut || false,
+            stockOriginal: local.stockOriginal || local.stock || p.stock
+          }
+        : { ...p, stockOriginal: p.stock, stock: p.stock };
+    });
+
+    // Guardar productos finales en localStorage
+    localStorage.setItem("productos", JSON.stringify(productosFinal));
+
+    // Actualizar variable global y renderizar
+    productos = productosFinal;
+    renderProductos(productos, window.scrollY);
+
+    return productosFinal;
+
+  } catch (err) {
+    console.error("Error obteniendo productos:", err);
+    // Si falla, usamos lo que hay en localStorage
+    const fallback = JSON.parse(localStorage.getItem("productos")) || [];
+    renderProductos(fallback, window.scrollY);
+    return fallback;
   }
+}
 
-  await obtenerProductos();
+// Ejecutar la carga inicial
+await obtenerProductos();
 
   // -------------------- RENDER PRODUCTOS --------------------
   function renderProductos(lista, scrollY = null) {
