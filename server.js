@@ -293,31 +293,48 @@ app.post("/process-payment", async (req, res) => {
 });
 
 // --------------------
-// Enviar oferta shop.html
+// Enviar oferta shop.html (mejorado con logs y verificación)
 // --------------------
 app.post("/api/send-offer", async (req, res) => {
   try {
     const { producto, email, oferta } = req.body;
-    if (!producto || !email || !oferta)
-      return res.status(400).json({ error: "Todos los campos son obligatorios" });
 
-    await transporter.sendMail({
+    if (!producto || !email || !oferta) {
+      console.warn("❌ Datos incompletos para send-offer:", req.body);
+      return res.status(400).json({ error: "Todos los campos son obligatorios" });
+    }
+
+    // Verificar que el transporter esté listo
+    const verifyResult = await transporter.verify().catch(err => {
+      console.error("❌ SMTP verification failed:", err);
+      return false;
+    });
+    if (!verifyResult) {
+      return res.status(500).json({ error: "Error en configuración de correo (SMTP)" });
+    }
+
+    const mailOptions = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
       subject: `📩 Oferta recibida para ${producto}`,
-      html: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
-               <h2>¡Nueva oferta recibida!</h2>
-               <p><strong>Producto:</strong> ${producto}</p>
-               <p><strong>Email del cliente:</strong> ${email}</p>
-               <p><strong>Oferta:</strong> $${oferta}</p>
-             </div>`
-    });
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
+          <h2>¡Nueva oferta recibida!</h2>
+          <p><strong>Producto:</strong> ${producto}</p>
+          <p><strong>Email del cliente:</strong> ${email}</p>
+          <p><strong>Oferta:</strong> $${oferta}</p>
+        </div>`
+    };
 
-    res.json({ success: true, message: "Oferta enviada correctamente" });
+    // Enviar correo
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email enviado correctamente:", info.messageId);
+
+    res.json({ success: true, message: "Oferta enviada correctamente", messageId: info.messageId });
 
   } catch (err) {
-    console.error("Error endpoint send-offer:", err);
-    res.status(500).json({ error: "Error interno" });
+    console.error("❌ Error en endpoint send-offer:", err);
+    res.status(500).json({ error: "Error interno enviando el correo", details: err.message });
   }
 });
 
