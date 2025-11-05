@@ -28,39 +28,45 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 io.on("connection", socket => {
   console.log("Cliente conectado:", socket.id);
-
   socket.on("productos-actualizados", data => {
     socket.broadcast.emit("actualizar-productos", data);
   });
-
   socket.on("disconnect", () => console.log("Cliente desconectado:", socket.id));
 });
 
 // --------------------
-// Middlewares
+// 🧩 Middlewares
 // --------------------
 app.use(bodyParser.json());
 app.use(express.static("public"));
+
+// Middleware global de CORS + Cache
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Cache-Control", "no-store");
   next();
 });
 app.options("*", (req, res) => res.sendStatus(200));
 
 // --------------------
-// LowDB
+// 💾 LowDB (Base de datos local)
 // --------------------
-const isRender = process.env.RENDER === "true";
-const dbFile = isRender 
-  ? "/data/db.json"
-  : path.join(__dirname, "public", "db.json");
+const dbFile = path.join(__dirname, "data", "db.json");
 
-if (!isRender && !fs.existsSync(path.dirname(dbFile))) {
+// Crear carpeta "data" si no existe
+if (!fs.existsSync(path.dirname(dbFile))) {
   fs.mkdirSync(path.dirname(dbFile), { recursive: true });
 }
 
+// Crear archivo db.json si no existe
+if (!fs.existsSync(dbFile)) {
+  fs.writeFileSync(dbFile, JSON.stringify({ productos: [] }, null, 2));
+}
+
+// Inicializar LowDB
 const adapter = new JSONFile(dbFile);
 const db = new Low(adapter, { productos: [] });
 await db.read();
@@ -68,7 +74,7 @@ db.data ||= { productos: [] };
 await db.write();
 
 // --------------------
-// Square
+// 💳 Square Config
 // --------------------
 const NODE_ENV = process.env.NODE_ENV || "production";
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
@@ -83,7 +89,7 @@ if (!ACCESS_TOKEN || !LOCATION_ID) {
 }
 
 // --------------------
-// Nodemailer (Gmail SSL)
+// 📧 Nodemailer (Gmail SSL)
 // --------------------
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -96,15 +102,19 @@ const transporter = nodemailer.createTransport({
 });
 
 // --------------------
-// Plantillas Email
+// 📩 Plantillas de Email
 // --------------------
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
-  const productosHtml = productos.map(p => `
+  const productosHtml = productos
+    .map(
+      p => `
     <tr>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-    </tr>`).join("");
+    </tr>`
+    )
+    .join("");
 
   return `
     <div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
@@ -123,12 +133,16 @@ function plantillaEmailTienda({ firstName, lastName, email, address, productos, 
 }
 
 function plantillaEmailCliente({ firstName, lastName, productos, total, trackingId }) {
-  const productosHtml = productos.map(p => `
+  const productosHtml = productos
+    .map(
+      p => `
     <tr>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-    </tr>`).join("");
+    </tr>`
+    )
+    .join("");
 
   return `
     <div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
@@ -150,14 +164,14 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
 }
 
 // --------------------
-// Funciones Email
+// ✉️ Funciones Email
 // --------------------
 async function enviarEmailATienda(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `🛒 Nueva venta de ${datos.firstName} ${datos.lastName}`,
-    html: plantillaEmailTienda(datos)
+    html: plantillaEmailTienda(datos),
   });
 }
 
@@ -166,16 +180,22 @@ async function enviarEmailACliente(datos) {
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
     subject: `💳 Confirmación de tu compra - LaTRONIC Store`,
-    html: plantillaEmailCliente(datos)
+    html: plantillaEmailCliente(datos),
   });
 }
 
 // --------------------
-// ENDPOINTS Productos
+// 🛒 API Productos
 // --------------------
-app.get("/api/productos", async (req, res) => {
-  await db.read();
-  res.json(db.data.productos);
+app.get("/api/productos", (req, res) => {
+  try {
+    const data = fs.readFileSync(dbFile, "utf-8");
+    const dbData = JSON.parse(data);
+    res.json(dbData.productos || []);
+  } catch (err) {
+    console.error("❌ Error leyendo db.json:", err);
+    res.status(500).json({ error: "Error leyendo base de datos" });
+  }
 });
 
 app.get("/api/productos/:id", async (req, res) => {
@@ -214,7 +234,7 @@ app.delete("/api/productos/:id", async (req, res) => {
 });
 
 // --------------------
-// Checkout
+// 🧾 Checkout
 // --------------------
 app.post("/api/cart/checkout", async (req, res) => {
   try {
@@ -228,10 +248,12 @@ app.post("/api/cart/checkout", async (req, res) => {
       if (!prod || prod.stock < item.quantity)
         return res.status(400).json({ error: `Stock insuficiente para ${item.id}` });
     }
+
     for (const item of productos) {
       const prod = db.data.productos.find(p => p.id === item.id);
       prod.stock -= item.quantity;
     }
+
     await db.write();
     res.json({ success: true, message: "Stock actualizado correctamente" });
   } catch (err) {
@@ -241,7 +263,7 @@ app.post("/api/cart/checkout", async (req, res) => {
 });
 
 // --------------------
-// Pagos Square + Emails
+// 💰 Procesar Pago + Emails
 // --------------------
 app.post("/process-payment", async (req, res) => {
   try {
@@ -255,15 +277,15 @@ app.post("/process-payment", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${ACCESS_TOKEN}`,
-        "Accept": "application/json",
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Accept: "application/json",
       },
       body: JSON.stringify({
         source_id: sourceId,
         idempotency_key: crypto.randomUUID(),
         amount_money: { amount: amountCents, currency: "USD" },
-        location_id: LOCATION_ID
-      })
+        location_id: LOCATION_ID,
+      }),
     });
 
     const data = await response.json();
@@ -285,7 +307,6 @@ app.post("/process-payment", async (req, res) => {
     } else {
       res.status(500).json({ error: data.errors || "Pago no completado" });
     }
-
   } catch (err) {
     console.error("❌ Error en /process-payment:", err);
     res.status(500).json({ error: err.message });
@@ -293,59 +314,43 @@ app.post("/process-payment", async (req, res) => {
 });
 
 // --------------------
-// Enviar oferta shop.html (mejorado con logs y verificación)
+// ✉️ Enviar oferta
 // --------------------
 app.post("/api/send-offer", async (req, res) => {
   try {
     const { producto, email, oferta } = req.body;
-
-    if (!producto || !email || !oferta) {
-      console.warn("❌ Datos incompletos para send-offer:", req.body);
+    if (!producto || !email || !oferta)
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
-    }
 
-    // Verificar que el transporter esté listo
-    const verifyResult = await transporter.verify().catch(err => {
-      console.error("❌ SMTP verification failed:", err);
-      return false;
-    });
-    if (!verifyResult) {
-      return res.status(500).json({ error: "Error en configuración de correo (SMTP)" });
-    }
-
-    const mailOptions = {
+    await transporter.sendMail({
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
       subject: `📩 Oferta recibida para ${producto}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
-          <h2>¡Nueva oferta recibida!</h2>
-          <p><strong>Producto:</strong> ${producto}</p>
-          <p><strong>Email del cliente:</strong> ${email}</p>
-          <p><strong>Oferta:</strong> $${oferta}</p>
-        </div>`
-    };
+      html: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
+               <h2>¡Nueva oferta recibida!</h2>
+               <p><strong>Producto:</strong> ${producto}</p>
+               <p><strong>Email del cliente:</strong> ${email}</p>
+               <p><strong>Oferta:</strong> $${oferta}</p>
+             </div>`,
+    });
 
-    // Enviar correo
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email enviado correctamente:", info.messageId);
-
-    res.json({ success: true, message: "Oferta enviada correctamente", messageId: info.messageId });
-
+    res.json({ success: true, message: "Oferta enviada correctamente" });
   } catch (err) {
-    console.error("❌ Error en endpoint send-offer:", err);
-    res.status(500).json({ error: "Error interno enviando el correo", details: err.message });
+    console.error("Error endpoint send-offer:", err);
+    res.status(500).json({ error: "Error interno" });
   }
 });
 
 // --------------------
-// Servir frontend
+// 🖥️ Servir frontend
 // --------------------
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
-app.get("/admin.html", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
+app.get("/admin.html", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "admin.html"))
+);
 
 // --------------------
-// Iniciar servidor
+// 🚀 Iniciar servidor
 // --------------------
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
