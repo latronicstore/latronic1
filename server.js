@@ -13,6 +13,7 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import { Server } from "socket.io";
 import http from "http"; // <-- Para Socket.IO
+import cors from "cors";
 
 // --------------------
 // ⚙️ Configuración básica
@@ -20,6 +21,31 @@ import http from "http"; // <-- Para Socket.IO
 dotenv.config();
 const app = express();
 const __dirname = process.cwd();
+
+// --- Configuración CORS segura ---
+const whitelist = [
+  "http://localhost:3000",          // desarrollo local
+  "http://127.0.0.1:3000",          // desarrollo local
+  "https://latronic1.onrender.com", // Render
+  "https://www.latronicstore.com"   // dominio real
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // permite Postman / backend a backend
+
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true); // permitido
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  }
+};
+
+app.use(cors(corsOptions)); // <-- aplica CORS
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "public")));
+
 // Crear servidor HTTP para Socket.IO
 const server = http.createServer(app);
 
@@ -39,17 +65,6 @@ io.on("connection", socket => {
   socket.on("disconnect", () => {
     console.log("Cliente desconectado:", socket.id);
   });
-});
-
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public")));
-
-// Permitir CORS
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
 });
 
 // --------------------
@@ -197,16 +212,18 @@ function authAdmin(req, res, next) {
     res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
     return res.status(401).send("Authentication required.");
   }
+  
   const b64auth = auth.split(" ")[1];
-  const [user, pass] = Buffer.from(b64auth, "base64").toString().split(":");
+  const [, pass] = Buffer.from(b64auth, "base64").toString().split(":");
 
-  if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASS) {
+  if (pass === process.env.ADMIN_PASS) {
     return next();
   } else {
     res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
     return res.status(401).send("Authentication failed.");
   }
 }
+
 
 // --------------------
 // 🛍️ ENDPOINTS Productos
@@ -230,10 +247,7 @@ app.post("/api/productos", authAdmin, async (req, res) => {
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
   db.data.productos.push(nuevo);
   await db.write();
-
-  // 🔔 Notificar cambios a todos los clientes
   io.emit("actualizar-productos", db.data.productos);
-
   res.status(201).json(nuevo);
 });
 
@@ -243,10 +257,7 @@ app.put("/api/productos/:id", authAdmin, async (req, res) => {
   if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
   db.data.productos[index] = { ...db.data.productos[index], ...req.body };
   await db.write();
-
-  // 🔔 Notificar cambios a todos los clientes
   io.emit("actualizar-productos", db.data.productos);
-
   res.json(db.data.productos[index]);
 });
 
@@ -254,10 +265,7 @@ app.delete("/api/productos/:id", authAdmin, async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
   await db.write();
-
-  // 🔔 Notificar cambios a todos los clientes
   io.emit("actualizar-productos", db.data.productos);
-
   res.json({ success: true });
 });
 
@@ -387,7 +395,6 @@ app.post("/api/send-offer", async (req, res) => {
   }
 });
 
-
 // --------------------
 // 🌐 Servir frontend
 // --------------------
@@ -401,8 +408,6 @@ app.get("/", (req, res) => {
 app.get("/admin.html", authAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
-
-
 
 // --------------------
 // 🚀 Iniciar servidor
