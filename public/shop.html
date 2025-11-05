@@ -189,15 +189,17 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
 <script type="module">
-function getBaseUrl() {
+async function getBaseUrl() {
   const hostname = window.location.hostname;
-  if (hostname.includes("onrender.com")) return "https://" + hostname;
-  if (hostname === "localhost") return "http://localhost:3000";
-  // IP local del servidor
-  return "http://192.168.1.5:3000"; 
+
+  // Producción en Render
+  if (hostname.includes("onrender.com")) return "https://latronic1.onrender.com";
+
+  // Localhost o IP de LAN (móvil conectado al mismo WiFi)
+  return `http://${hostname}:3000`;
 }
 
-const BASE_URL = getBaseUrl();
+const BASE_URL = await getBaseUrl();
 
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
@@ -261,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
-  // -------------------- CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
+  // -------------------- CARGA INICIAL DESDE LOCALSTORAGE --------------------
   let productos = JSON.parse(localStorage.getItem("productos")) || [];
   renderProductos(productos); // render inicial inmediato
 
@@ -272,7 +274,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
 
-      // Mantener stock local si existe
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
@@ -291,9 +292,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  await obtenerProductos(); // actualización en segundo plano desde db.json
+  await obtenerProductos();
 
-  // -------------------- RESTO DEL SCRIPT --------------------
+  // -------------------- RENDER PRODUCTOS --------------------
   function renderProductos(lista, scrollY = null) {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
     contenedor.innerHTML = "";
@@ -301,6 +302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     lista.forEach(prod => {
       const div = document.createElement("div"); div.className="producto";
+
       const galeria = document.createElement("div"); galeria.className="galeria";
       const mainImg = document.createElement("img"); mainImg.className="main-img";
       mainImg.src = prod.imagenes?.[0] || "https://via.placeholder.com/150"; mainImg.dataset.index=0;
@@ -361,14 +363,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     cartCountEl.textContent = carritoActual.reduce((acc, i) => acc + i.quantity, 0);
   }
 
-  // -------------------- RESTO DE TU SCRIPT --------------------
-  const filtroId = localStorage.getItem("filtro-producto");
-  if (filtroId) { 
-    const productoFiltrado = productos.filter(p => p.id === filtroId); 
-    renderProductos(productoFiltrado); 
-    localStorage.removeItem("filtro-producto"); 
-  } else renderProductos(productos);
-
+  // -------------------- BUSCADOR --------------------
   const searchInput = document.getElementById("search-input"); 
   const searchBtn = document.getElementById("search-btn");
   function normalizeText(t) { return (t || "").toString().toLowerCase(); }
@@ -387,6 +382,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   searchInput.addEventListener("keyup", e => { if(e.key === "Enter") searchBtn.click(); });
 
+  // -------------------- SOCKET.IO --------------------
   socket.on("connect", () => console.log("✅ Socket conectado:", socket.id));
   socket.on("actualizar-productos", data => {
     productos = data;
@@ -396,16 +392,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("admin-access").addEventListener("click", () => window.location.href = "/admin.html");
   document.getElementById("ir-carrito").addEventListener("click", () => window.location.href = "/cart.html");
 
+  // -------------------- NEGOCIAR / SEND OFFER --------------------
+  const negociarModal = document.getElementById("negociar-modal");
+  const negociarStatus = document.getElementById("negociar-status");
   document.getElementById("cerrar-negociar").addEventListener("click", () => {
-    document.getElementById("negociar-modal").style.display = "none"; 
-    document.getElementById("negociar-status").textContent = "";
+    negociarModal.style.display = "none"; 
+    negociarStatus.textContent = "";
   });
 
   document.getElementById("enviar-negociacion").addEventListener("click", async () => {
     const email = document.getElementById("negociar-email").value.trim();
     const oferta = document.getElementById("negociar-precio").value.trim();
     const producto = document.getElementById("negociar-producto").textContent;
-    const statusEl = document.getElementById("negociar-status");
 
     if (!email || !oferta) {
       alert("Por favor completa todos los campos");
@@ -413,19 +411,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      statusEl.textContent = "Sending offer...";
+      negociarStatus.textContent = "Sending offer...";
       const resp = await fetch(BASE_URL + "/api/send-offer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ producto, email, oferta })
       });
-
       const data = await resp.json();
       if (resp.ok) {
-        statusEl.textContent = "Offer sent!";
+        negociarStatus.textContent = "Offer sent!";
         setTimeout(() => {
-          document.getElementById("negociar-modal").style.display = "none";
-          statusEl.textContent = "";
+          negociarModal.style.display = "none";
+          negociarStatus.textContent = "";
           document.getElementById("negociar-email").value = "";
           document.getElementById("negociar-precio").value = "";
         }, 900);
@@ -434,13 +431,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     } catch (err) {
       console.error("Error sending offer:", err);
-      statusEl.textContent = "Error sending offer";
+      negociarStatus.textContent = "Error sending offer";
       alert("No se pudo enviar la oferta. Revisa la consola del servidor.");
     }
   });
 
 });
 </script>
+
 
 
 

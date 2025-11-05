@@ -88,11 +88,17 @@ const ADMIN_PASSWORD = "161824";
 // --- Determinar BASE_URL (Producción o Local) ---
 async function getBaseUrl() {
   const hostname = window.location.hostname;
-  if (hostname.includes("onrender.com") || hostname !== "localhost") {
-    return "https://latronic1.onrender.com"; // <- URL de tu servidor en Render
-  }
-  return "http://localhost:3000";
+
+  // Producción en Render
+  if (hostname.includes("onrender.com")) return "https://latronic1.onrender.com";
+
+  // Localhost en PC
+  if (hostname === "localhost") return "http://localhost:3000";
+
+  // Red local (IP del PC en la misma WiFi)
+  return `http://${hostname}:3000`; 
 }
+
 
 // --- Función principal admin ---
 async function initAdmin() {
