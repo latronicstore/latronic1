@@ -191,12 +191,10 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 <script type="module">
 function getBaseUrl() {
   const hostname = window.location.hostname;
-
-  // Localhost para pruebas
+  if (hostname.includes("onrender.com")) return "https://" + hostname;
   if (hostname === "localhost") return "http://localhost:3000";
-
-  // Producción: usar mismo origen (HTTPS)
-  return window.location.origin;
+  // IP local del servidor
+  return "http://192.168.1.5:3000"; 
 }
 
 const BASE_URL = getBaseUrl();
@@ -263,17 +261,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
-  // -------------------- CARGA INICIAL DESDE LOCALSTORAGE --------------------
+  // -------------------- CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
   let productos = JSON.parse(localStorage.getItem("productos")) || [];
   renderProductos(productos); // render inicial inmediato
 
-  // --- OBTENER PRODUCTOS DESDE EL SERVIDOR ---
+  // --- OBTENER PRODUCTOS DESDE EL SERVIDOR / db.json ---
   async function obtenerProductos() {
     try {
       const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
 
+      // Mantener stock local si existe
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
@@ -287,14 +286,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       renderProductos(productos, window.scrollY);
       return productosFinal;
     } catch (err) {
-      console.error("Error obteniendo productos:", err);
+      console.error(err);
       return JSON.parse(localStorage.getItem("productos")) || [];
     }
   }
 
-  await obtenerProductos(); // actualización desde servidor
+  await obtenerProductos(); // actualización en segundo plano desde db.json
 
-  // -------------------- RENDER PRODUCTOS --------------------
+  // -------------------- RESTO DEL SCRIPT --------------------
   function renderProductos(lista, scrollY = null) {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
     contenedor.innerHTML = "";
@@ -302,15 +301,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     lista.forEach(prod => {
       const div = document.createElement("div"); div.className="producto";
-
       const galeria = document.createElement("div"); galeria.className="galeria";
       const mainImg = document.createElement("img"); mainImg.className="main-img";
       mainImg.src = prod.imagenes?.[0] || "https://via.placeholder.com/150"; mainImg.dataset.index=0;
-
       const prev = document.createElement("button"); prev.className="arrow prev"; prev.innerHTML="&#9664;";
       const next = document.createElement("button"); next.className="arrow next"; next.innerHTML="&#9654;";
       if (!prod.imagenes?.length || prod.imagenes.length <= 1) prev.style.display = next.style.display = "none";
-
       prev.addEventListener("click", e => { 
         e.stopPropagation(); 
         let idx = parseInt(mainImg.dataset.index); 
@@ -318,7 +314,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         mainImg.dataset.index = idx; 
         mainImg.src = prod.imagenes[idx]; 
       });
-
       next.addEventListener("click", e => { 
         e.stopPropagation(); 
         let idx = parseInt(mainImg.dataset.index); 
@@ -326,7 +321,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         mainImg.dataset.index = idx; 
         mainImg.src = prod.imagenes[idx]; 
       });
-
       galeria.append(prev, mainImg, next);
 
       const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
@@ -367,11 +361,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     cartCountEl.textContent = carritoActual.reduce((acc, i) => acc + i.quantity, 0);
   }
 
-  // -------------------- BÚSQUEDA Y FILTROS --------------------
+  // -------------------- RESTO DE TU SCRIPT --------------------
+  const filtroId = localStorage.getItem("filtro-producto");
+  if (filtroId) { 
+    const productoFiltrado = productos.filter(p => p.id === filtroId); 
+    renderProductos(productoFiltrado); 
+    localStorage.removeItem("filtro-producto"); 
+  } else renderProductos(productos);
+
   const searchInput = document.getElementById("search-input"); 
   const searchBtn = document.getElementById("search-btn");
   function normalizeText(t) { return (t || "").toString().toLowerCase(); }
-
   searchBtn.addEventListener("click", () => {
     const q = normalizeText(searchInput.value);
     if (!q) { renderProductos(productos); return; }
@@ -385,32 +385,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("titulo-principal").textContent = `Search: "${searchInput.value}"`;
     renderProductos(filtrados);
   });
-
   searchInput.addEventListener("keyup", e => { if(e.key === "Enter") searchBtn.click(); });
 
-  // -------------------- SOCKET.IO --------------------
   socket.on("connect", () => console.log("✅ Socket conectado:", socket.id));
   socket.on("actualizar-productos", data => {
     productos = data;
     renderProductos(productos, window.scrollY);
   });
 
-  // -------------------- Navegación admin / carrito --------------------
   document.getElementById("admin-access").addEventListener("click", () => window.location.href = "/admin.html");
   document.getElementById("ir-carrito").addEventListener("click", () => window.location.href = "/cart.html");
 
-  // -------------------- NEGOCIAR / SEND OFFER --------------------
-  const negociarModal = document.getElementById("negociar-modal");
-  const negociarStatus = document.getElementById("negociar-status");
   document.getElementById("cerrar-negociar").addEventListener("click", () => {
-    negociarModal.style.display = "none"; 
-    negociarStatus.textContent = "";
+    document.getElementById("negociar-modal").style.display = "none"; 
+    document.getElementById("negociar-status").textContent = "";
   });
 
   document.getElementById("enviar-negociacion").addEventListener("click", async () => {
     const email = document.getElementById("negociar-email").value.trim();
     const oferta = document.getElementById("negociar-precio").value.trim();
     const producto = document.getElementById("negociar-producto").textContent;
+    const statusEl = document.getElementById("negociar-status");
 
     if (!email || !oferta) {
       alert("Por favor completa todos los campos");
@@ -418,7 +413,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      negociarStatus.textContent = "Sending offer...";
+      statusEl.textContent = "Sending offer...";
       const resp = await fetch(BASE_URL + "/api/send-offer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -427,10 +422,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const data = await resp.json();
       if (resp.ok) {
-        negociarStatus.textContent = "Offer sent!";
+        statusEl.textContent = "Offer sent!";
         setTimeout(() => {
-          negociarModal.style.display = "none";
-          negociarStatus.textContent = "";
+          document.getElementById("negociar-modal").style.display = "none";
+          statusEl.textContent = "";
           document.getElementById("negociar-email").value = "";
           document.getElementById("negociar-precio").value = "";
         }, 900);
@@ -439,14 +434,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     } catch (err) {
       console.error("Error sending offer:", err);
-      negociarStatus.textContent = "Error sending offer";
+      statusEl.textContent = "Error sending offer";
       alert("No se pudo enviar la oferta. Revisa la consola del servidor.");
     }
   });
 
 });
 </script>
-
 
 
 
