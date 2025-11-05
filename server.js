@@ -95,7 +95,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -189,6 +189,26 @@ async function enviarEmailACliente(datos) {
 }
 
 // --------------------
+// 🛡️ Middleware de autenticación para admin
+// --------------------
+function authAdmin(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
+    return res.status(401).send("Authentication required.");
+  }
+  const b64auth = auth.split(" ")[1];
+  const [user, pass] = Buffer.from(b64auth, "base64").toString().split(":");
+
+  if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASS) {
+    return next();
+  } else {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
+    return res.status(401).send("Authentication failed.");
+  }
+}
+
+// --------------------
 // 🛍️ ENDPOINTS Productos
 // --------------------
 app.get("/api/productos", async (req, res) => {
@@ -204,7 +224,7 @@ app.get("/api/productos/:id", async (req, res) => {
 });
 
 // Protegidos con authAdmin
-app.post("/api/productos", async (req, res) => {
+app.post("/api/productos", authAdmin, async (req, res) => {
   await db.read();
   const nuevo = req.body;
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
@@ -217,7 +237,7 @@ app.post("/api/productos", async (req, res) => {
   res.status(201).json(nuevo);
 });
 
-app.put("/api/productos/:id", async (req, res) => {
+app.put("/api/productos/:id", authAdmin, async (req, res) => {
   await db.read();
   const index = db.data.productos.findIndex(p => p.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
@@ -230,7 +250,7 @@ app.put("/api/productos/:id", async (req, res) => {
   res.json(db.data.productos[index]);
 });
 
-app.delete("/api/productos/:id", async (req, res) => {
+app.delete("/api/productos/:id", authAdmin, async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
   await db.write();
@@ -378,7 +398,7 @@ app.get("/", (req, res) => {
 // --------------------
 // Servir admin protegido
 // --------------------
-app.get("/admin.html", (req, res) => {
+app.get("/admin.html", authAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
