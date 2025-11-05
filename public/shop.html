@@ -169,15 +169,22 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
 <!-- MODAL NEGOCIAR -->
 <div id="negociar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:6000;">
-  <div style="background:#2a2a2a;padding:20px;border-radius:10px;display:flex;flex-direction:column;align-items:center;position:relative;">
+  <div style="background:#2a2a2a;padding:20px;border-radius:10px;display:flex;flex-direction:column;align-items:center;position:relative; width:90%; max-width:400px;">
     <span id="cerrar-negociar" style="position:absolute;top:10px;right:15px;font-size:28px;cursor:pointer;color:#fff;">&times;</span>
-    <h2 id="negociar-producto" style="color:#e28f2f;margin-bottom:10px;"></h2>
-    <input type="email" id="negociar-email" placeholder="Your Email" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
-    <input type="number" id="negociar-precio" placeholder="Offer Price" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
-    <button id="enviar-negociacion" style="padding:8px 12px;border:none;border-radius:6px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Send Offer</button>
-    <p id="negociar-status" style="color:#fff;margin-top:10px;"></p>
+    
+    <!-- FORMULARIO -->
+    <form id="negociar-form" style="display:flex;flex-direction:column;width:100%;">
+      <h2 id="negociar-producto" style="color:#e28f2f;margin-bottom:10px;text-align:center;"></h2>
+      <input type="email" id="negociar-email" placeholder="Your Email" required
+             style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
+      <input type="number" id="negociar-precio" placeholder="Offer Price" required
+             style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
+      <button type="submit" style="padding:8px 12px;border:none;border-radius:6px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Send Offer</button>
+      <p id="negociar-status" style="color:#fff;margin-top:10px;text-align:center;"></p>
+    </form>
   </div>
 </div>
+
 
 
 
@@ -189,9 +196,10 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
 <script>
-const BASE_URL = window.location.hostname.includes("onrender.com")
-  ? "https://" + window.location.hostname
-  : "http://localhost:3000";
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : "https://www.latronicstore.com";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const contenedor = document.getElementById("contenedor-productos");
@@ -255,18 +263,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
-  // -------------------- CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
+  // -------------------- NUEVO: CARGA INMEDIATA DESDE LOCALSTORAGE --------------------
   let productos = JSON.parse(localStorage.getItem("productos")) || [];
   renderProductos(productos); // render inicial inmediato
 
-  // --- OBTENER PRODUCTOS DESDE EL SERVIDOR / db.json ---
   async function obtenerProductos() {
     try {
       const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
 
-      // Mantener stock local si existe
       const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
@@ -285,7 +291,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  await obtenerProductos(); // actualización en segundo plano desde db.json
+  await obtenerProductos(); // <-- actualización en segundo plano desde API
+  // ------------------------------------------------------------------------------
 
   // -------------------- RESTO DEL SCRIPT --------------------
   function renderProductos(lista, scrollY = null) {
@@ -395,47 +402,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("negociar-status").textContent = "";
   });
 
-  document.getElementById("enviar-negociacion").addEventListener("click", async () => {
-    const email = document.getElementById("negociar-email").value.trim();
-    const oferta = document.getElementById("negociar-precio").value.trim();
-    const producto = document.getElementById("negociar-producto").textContent;
-    const statusEl = document.getElementById("negociar-status");
+  // Listener mejorado usando "submit" del formulario
+document.getElementById("enviar-negociacion").addEventListener("click", async () => {
+  const email = document.getElementById("negociar-email").value.trim();
+  const oferta = document.getElementById("negociar-precio").value.trim();
+  const producto = document.getElementById("negociar-producto").textContent;
+  const statusEl = document.getElementById("negociar-status");
 
-    if (!email || !oferta) {
-      alert("Por favor completa todos los campos");
-      return;
+  if (!email || !oferta) {
+    alert("Por favor completa todos los campos");
+    return;
+  }
+
+  statusEl.textContent = "Sending offer...";
+
+  try {
+    const resp = await fetch(BASE_URL + "/api/send-offer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ producto, email, oferta })
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.success) {
+      statusEl.textContent = "Offer sent!";
+      setTimeout(() => {
+        document.getElementById("negociar-modal").style.display = "none";
+        statusEl.textContent = "";
+        document.getElementById("negociar-email").value = "";
+        document.getElementById("negociar-precio").value = "";
+      }, 900);
+    } else {
+      throw new Error(data.error || "Error sending offer");
     }
-
-    try {
-      statusEl.textContent = "Sending offer...";
-      const resp = await fetch(BASE_URL + "/api/send-offer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ producto, email, oferta })
-      });
-
-      const data = await resp.json();
-      if (resp.ok) {
-        statusEl.textContent = "Offer sent!";
-        setTimeout(() => {
-          document.getElementById("negociar-modal").style.display = "none";
-          statusEl.textContent = "";
-          document.getElementById("negociar-email").value = "";
-          document.getElementById("negociar-precio").value = "";
-        }, 900);
-      } else {
-        throw new Error(data.error || "Unknown error");
-      }
-    } catch (err) {
-      console.error("Error sending offer:", err);
-      statusEl.textContent = "Error sending offer";
-      alert("No se pudo enviar la oferta. Revisa la consola del servidor.");
-    }
-  });
+  } catch (err) {
+    console.error("Error sending offer:", err);
+    statusEl.textContent = "Error sending offer";
+    alert("No se pudo enviar la oferta. Revisa la consola del servidor.");
+  }
+});
 
 });
 </script>
-
 
 
 </body>
