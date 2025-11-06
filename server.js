@@ -24,44 +24,36 @@ const __dirname = process.cwd();
 
 // --- Configuración CORS segura ---
 const whitelist = [
-  "http://localhost:3000",          // desarrollo local
-  "http://127.0.0.1:3000",          // desarrollo local
-  "https://latronic1.onrender.com", // Render
-  "https://www.latronicstore.com"   // dominio real
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://latronic1.onrender.com",
+  "https://www.latronicstore.com"
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // permite Postman / backend a backend
-
     if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true); // permitido
+      callback(null, true);
     } else {
       callback(new Error("No permitido por CORS"));
     }
   }
 };
 
-app.use(cors(corsOptions)); // <-- aplica CORS
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Crear servidor HTTP para Socket.IO
 const server = http.createServer(app);
-
-// Configuración Socket.IO
-const io = new Server(server, {
-  cors: { origin: "*" } // permitir conexiones desde cualquier frontend
-});
+const io = new Server(server, { cors: { origin: "*" } });
 
 io.on("connection", socket => {
   console.log("Cliente conectado:", socket.id);
-
-  // Escuchar cambios desde admin
   socket.on("productos-actualizados", data => {
     socket.broadcast.emit("actualizar-productos", data);
   });
-
   socket.on("disconnect", () => {
     console.log("Cliente desconectado:", socket.id);
   });
@@ -71,9 +63,7 @@ io.on("connection", socket => {
 // 🗝️ Base de datos (LowDB)
 // --------------------
 const isRender = process.env.RENDER === "true";
-const dbFile = isRender 
-  ? "/data/db.json"
-  : path.join(__dirname, "public", "db.json");
+const dbFile = isRender ? "/data/db.json" : path.join(__dirname, "public", "db.json");
 
 if (!isRender) {
   const dir = path.dirname(dbFile);
@@ -118,16 +108,13 @@ const transporter = nodemailer.createTransport({
 // ✨ Plantillas HTML elegantes
 // --------------------
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
-  const productosHtml = productos
-    .map(
-      p => `
-      <tr>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-      </tr>`
-    )
-    .join("");
+  const productosHtml = productos.map(
+    p => `<tr>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
+    </tr>`
+  ).join("");
 
   return `
   <div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
@@ -147,16 +134,13 @@ function plantillaEmailTienda({ firstName, lastName, email, address, productos, 
 }
 
 function plantillaEmailCliente({ firstName, lastName, productos, total, trackingId }) {
-  const productosHtml = productos
-    .map(
-      p => `
-      <tr>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-      </tr>`
-    )
-    .join("");
+  const productosHtml = productos.map(
+    p => `<tr>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
+    </tr>`
+  ).join("");
 
   return `
   <div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
@@ -204,29 +188,7 @@ async function enviarEmailACliente(datos) {
 }
 
 // --------------------
-// 🛡️ Middleware de autenticación para admin
-// --------------------
-function authAdmin(req, res, next) {
-  const auth = req.headers.authorization;
-  if (!auth) {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
-    return res.status(401).send("Authentication required.");
-  }
-  
-  const b64auth = auth.split(" ")[1];
-  const [, pass] = Buffer.from(b64auth, "base64").toString().split(":");
-
-  if (pass === process.env.ADMIN_PASS) {
-    return next();
-  } else {
-    res.setHeader("WWW-Authenticate", 'Basic realm="Admin Area"');
-    return res.status(401).send("Authentication failed.");
-  }
-}
-
-
-// --------------------
-// 🛍️ ENDPOINTS Productos
+// 🛍️ ENDPOINTS Productos (SIN autenticación)
 // --------------------
 app.get("/api/productos", async (req, res) => {
   await db.read();
@@ -240,18 +202,18 @@ app.get("/api/productos/:id", async (req, res) => {
   res.json(producto);
 });
 
-// Protegidos con authAdmin
-app.post("/api/productos", authAdmin, async (req, res) => {
+app.post("/api/productos", async (req, res) => {
   await db.read();
   const nuevo = req.body;
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
   db.data.productos.push(nuevo);
   await db.write();
+
   io.emit("actualizar-productos", db.data.productos);
   res.status(201).json(nuevo);
 });
 
-app.put("/api/productos/:id", authAdmin, async (req, res) => {
+app.put("/api/productos/:id", async (req, res) => {
   await db.read();
   const index = db.data.productos.findIndex(p => p.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
@@ -261,7 +223,7 @@ app.put("/api/productos/:id", authAdmin, async (req, res) => {
   res.json(db.data.productos[index]);
 });
 
-app.delete("/api/productos/:id", authAdmin, async (req, res) => {
+app.delete("/api/productos/:id", async (req, res) => {
   await db.read();
   db.data.productos = db.data.productos.filter(p => p.id !== req.params.id);
   await db.write();
@@ -270,7 +232,7 @@ app.delete("/api/productos/:id", authAdmin, async (req, res) => {
 });
 
 // --------------------
-// 🛒 ENDPOINT: Checkout
+// 🛒 Checkout
 // --------------------
 app.post("/api/cart/checkout", async (req, res) => {
   try {
@@ -299,7 +261,7 @@ app.post("/api/cart/checkout", async (req, res) => {
 });
 
 // --------------------
-// 💰 ENDPOINT: Pagos Square + Emails
+// 💰 Pagos Square + Emails
 // --------------------
 app.post("/process-payment", async (req, res) => {
   try {
@@ -337,11 +299,9 @@ app.post("/process-payment", async (req, res) => {
       const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
 
       await enviarEmailATienda({ firstName, lastName, email, address, productos, total })
-        .then(() => console.log("✅ Email a tienda enviado"))
         .catch(err => console.error("⚠️ Error enviando email a tienda:", err));
 
       await enviarEmailACliente({ firstName, lastName, email, productos, total, trackingId })
-        .then(() => console.log("✅ Email a cliente enviado"))
         .catch(err => console.error("⚠️ Error enviando email a cliente:", err));
 
       res.json({ success: true, payment: data.payment, trackingId });
@@ -357,16 +317,13 @@ app.post("/process-payment", async (req, res) => {
 });
 
 // --------------------
-// 📩 ENDPOINT: Send Offer (shop.html)
+// 📩 Send Offer
 // --------------------
 app.post("/api/send-offer", async (req, res) => {
   try {
     const { producto, email, oferta } = req.body;
-    console.log("Recibido offer:", { producto, email, oferta });
-
-    if (!producto || !email || !oferta) {
+    if (!producto || !email || !oferta)
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
-    }
 
     const mailOptions = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
@@ -380,15 +337,8 @@ app.post("/api/send-offer", async (req, res) => {
              </div>`
     };
 
-    try {
-      const info = await transporter.sendMail(mailOptions);
-      console.log("Nodemailer info:", info);
-      res.json({ success: true, message: "Oferta enviada correctamente" });
-    } catch (err) {
-      console.error("Error Nodemailer:", err);
-      res.status(500).json({ error: "Error enviando oferta" });
-    }
-
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Oferta enviada correctamente" });
   } catch (err) {
     console.error("Error endpoint send-offer:", err);
     res.status(500).json({ error: "Error interno" });
@@ -402,10 +352,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// --------------------
-// Servir admin protegido
-// --------------------
-app.get("/admin.html", authAdmin, (req, res) => {
+app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
