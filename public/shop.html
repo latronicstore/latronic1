@@ -387,28 +387,26 @@ async function obtenerProductos() {
 socket.on("actualizar-productos", (data) => {
   console.log("🔄 Productos actualizados desde admin:", data);
 
-  // Obtenemos los productos guardados en localStorage
   const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
 
-  // Fusionamos los productos nuevos con los locales, manteniendo precios personalizados
   const productosFinal = data.map(p => {
     const local = productosGuardados.find(lp => lp.id === p.id);
     return local
       ? {
           ...p,
           stock: p.stock,                          // actualizamos stock desde servidor
-          price: local.price ?? p.price,           // mantenemos price local si existe
-          soldOut: p.stock <= 0,                   // recalculamos soldOut
+          price: p.price,                          // ⚡ actualizamos precio desde servidor
+          soldOut: p.stock <= 0,
           stockOriginal: local.stockOriginal || p.stock
         }
       : { ...p, stock: p.stock, stockOriginal: p.stock, soldOut: p.stock <= 0 };
   });
 
-  // Guardamos y renderizamos
   localStorage.setItem("productos", JSON.stringify(productosFinal));
   productos = productosFinal;
   renderProductos(productos, window.scrollY);
 });
+
 
   // --- Botones de navegación
   document.getElementById("admin-access").addEventListener("click", ()=>window.location.href="/admin.html");
