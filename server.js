@@ -75,7 +75,16 @@ const db = new Low(adapter, { productos: [] });
 
 await db.read();
 db.data ||= { productos: [] };
-await db.write();
+if (db.data.productos.length === 0) {
+  // Cargar productos iniciales de public/db.json
+  const initialFile = path.join(__dirname, "public", "db.json");
+  if (fs.existsSync(initialFile)) {
+    const initialData = JSON.parse(fs.readFileSync(initialFile, "utf-8"));
+    db.data.productos = initialData.productos || [];
+    await db.write();
+  }
+}
+
 
 // --------------------
 // 💳 Configuración Square
