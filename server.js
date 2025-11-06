@@ -52,18 +52,15 @@ io.on("connection", socket => {
 // 🗝️ Funciones para manejar DB (JSON directo)
 const dbPath = path.join(__dirname, "public", "db.json");
 
-// Leer productos
 function leerProductos() {
   if (!fs.existsSync(dbPath)) return [];
-  const data = fs.readFileSync(dbPath, "utf-8");
   try {
-    return JSON.parse(data).productos || [];
-  } catch (e) {
+    return JSON.parse(fs.readFileSync(dbPath, "utf-8")).productos || [];
+  } catch {
     return [];
   }
 }
 
-// Guardar productos
 function guardarProductos(productos) {
   fs.writeFileSync(dbPath, JSON.stringify({ productos }, null, 2));
 }
@@ -73,7 +70,6 @@ function guardarProductos(productos) {
 const NODE_ENV = process.env.NODE_ENV || "production";
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
-
 const SQUARE_API =
   NODE_ENV === "production"
     ? "https://connect.squareup.com/v2/payments"
@@ -86,94 +82,121 @@ if (!ACCESS_TOKEN || !LOCATION_ID) {
 // --------------------
 // 📧 Configuración Nodemailer
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
 // --------------------
 // ✨ Plantillas HTML
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
-  const productosHtml = productos.map(p => `<tr>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-  </tr>`).join("");
-
-  return `<div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
-    <div style="background:#222;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
-      <h2>🛍️ Nueva Venta - LaTRONIC Store</h2>
-    </div>
-    <div style="background:#fff;padding:20px;border-radius:0 0 10px 10px;">
-      <p><strong>Cliente:</strong> ${firstName} ${lastName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Dirección:</strong> ${address}</p>
-      <p><strong>Total:</strong> $${total.toFixed(2)}</p>
-      <h4 style="margin-top:20px;">Productos:</h4>
-      <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
-    </div>
+  const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
+  return `<div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;">
+    <h2>🛍️ Nueva Venta - LaTRONIC Store</h2>
+    <p><b>Cliente:</b> ${firstName} ${lastName}</p>
+    <p><b>Email:</b> ${email}</p>
+    <p><b>Dirección:</b> ${address}</p>
+    <p><b>Total:</b> $${total.toFixed(2)}</p>
+    <h4>Productos:</h4>
+    <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
   </div>`;
 }
 
 function plantillaEmailCliente({ firstName, lastName, productos, total, trackingId }) {
-  const productosHtml = productos.map(p => `<tr>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-  </tr>`).join("");
-
-  return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
-    <div style="background:#e64a19;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
-      <h2>Gracias por tu compra 🧡</h2>
-    </div>
-    <div style="background:#fff;padding:25px;border-radius:0 0 10px 10px;">
-      <p>Hola <strong>${firstName} ${lastName}</strong>,</p>
-      <p>Tu pago de <strong>$${total.toFixed(2)}</strong> fue procesado exitosamente.</p>
-      <p>Tu número de seguimiento es: <strong>${trackingId}</strong></p>
-      <h4 style="margin-top:20px;">Productos comprados:</h4>
-      <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
-    </div>
+  const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
+  return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;">
+    <h2>Gracias por tu compra 🧡</h2>
+    <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b> fue procesado exitosamente.</p>
+    <p>Tu número de seguimiento es: <b>${trackingId}</b></p>
+    <h4>Productos comprados:</h4>
+    <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
   </div>`;
 }
 
 // --------------------
-// Funciones de envío
+// ✉️ Funciones de envío de email
 async function enviarEmailATienda(datos) {
-  const mailOptions = {
+  return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `🛒 Nueva venta de ${datos.firstName} ${datos.lastName}`,
     html: plantillaEmailTienda(datos)
-  };
-  return transporter.sendMail(mailOptions);
+  });
 }
 
 async function enviarEmailACliente(datos) {
-  const mailOptions = {
+  return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
     subject: `💳 Confirmación de tu compra - LaTRONIC Store`,
     html: plantillaEmailCliente(datos)
-  };
-  return transporter.sendMail(mailOptions);
+  });
 }
 
 // --------------------
-// 🛍️ ENDPOINTS Productos
-app.get("/api/productos", (req, res) => {
-  const productos = leerProductos();
-  res.json(productos);
+// 📨 Endpoint Contact Us (Nodemailer + EmailJS opcional)
+// --------------------
+// 📩 Enviar ofertas a clientes
+// --------------------
+app.post("/api/send-offer", async (req, res) => {
+  try {
+    const { email, oferta, producto } = req.body; // Recibimos email, oferta y producto
+
+    if (!email || !oferta || !producto) {
+      return res.status(400).json({ success: false, error: "Faltan datos: email, oferta o producto" });
+    }
+
+    // Email para el cliente
+    const mailOptionsCliente = {
+      from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `🎁 Oferta Especial de LaTRONIC`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
+          <h2>Oferta para ti 🧡</h2>
+          <p><b>Producto:</b> ${producto}</p>
+          <p><b>Oferta:</b> ${oferta}</p>
+          <p>¡Gracias por comprar en LaTRONIC Store!</p>
+        </div>
+      `
+    };
+
+    // Opcional: Email para ti (admin) notificando que se envió la oferta
+    const mailOptionsAdmin = {
+      from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `🎁 Oferta enviada a ${email}`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; background: #f9f9f9;">
+          <h2>Oferta enviada</h2>
+          <p><b>Cliente:</b> ${email}</p>
+          <p><b>Producto:</b> ${producto}</p>
+          <p><b>Oferta:</b> ${oferta}</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptionsCliente);
+    await transporter.sendMail(mailOptionsAdmin);
+
+    console.log(`✅ Oferta enviada a ${email} sobre ${producto}`);
+    res.json({ success: true, message: "Oferta enviada correctamente" });
+
+  } catch (err) {
+    console.error("❌ Error enviando oferta:", err);
+    res.status(500).json({ success: false, error: "Error interno del servidor" });
+  }
 });
 
+// --------------------
+// 🛍️ ENDPOINTS Productos
+app.get("/api/productos", (req, res) => res.json(leerProductos()));
 app.get("/api/productos/:id", (req, res) => {
-  const productos = leerProductos();
-  const producto = productos.find(p => p.id === req.params.id);
+  const producto = leerProductos().find(p => p.id === req.params.id);
   if (!producto) return res.status(404).json({ error: "Producto no encontrado" });
   res.json(producto);
 });
-
 app.post("/api/productos", (req, res) => {
   const productos = leerProductos();
   const nuevo = req.body;
@@ -183,7 +206,6 @@ app.post("/api/productos", (req, res) => {
   io.emit("actualizar-productos", productos);
   res.status(201).json(nuevo);
 });
-
 app.put("/api/productos/:id", (req, res) => {
   const productos = leerProductos();
   const index = productos.findIndex(p => p.id === req.params.id);
@@ -193,34 +215,11 @@ app.put("/api/productos/:id", (req, res) => {
   io.emit("actualizar-productos", productos);
   res.json(productos[index]);
 });
-
 app.delete("/api/productos/:id", (req, res) => {
-  let productos = leerProductos();
-  productos = productos.filter(p => p.id !== req.params.id);
+  const productos = leerProductos().filter(p => p.id !== req.params.id);
   guardarProductos(productos);
   io.emit("actualizar-productos", productos);
   res.json({ success: true });
-});
-
-// --------------------
-// 🛒 Checkout (actualizar stock)
-app.post("/api/cart/checkout", (req, res) => {
-  const { productos: carrito } = req.body;
-  if (!carrito || !Array.isArray(carrito)) return res.status(400).json({ error: "Carrito vacío o datos inválidos" });
-
-  const productos = leerProductos();
-  for (const item of carrito) {
-    const prod = productos.find(p => p.id === item.id);
-    if (!prod || prod.stock < item.quantity) return res.status(400).json({ error: `Stock insuficiente para ${item.id}` });
-  }
-
-  for (const item of carrito) {
-    const prod = productos.find(p => p.id === item.id);
-    prod.stock -= item.quantity;
-  }
-
-  guardarProductos(productos);
-  res.json({ success: true, message: "Stock actualizado correctamente" });
 });
 
 // --------------------
@@ -231,14 +230,9 @@ app.post("/process-payment", async (req, res) => {
     if (!sourceId || !total || !email) return res.status(400).json({ error: "Datos de pago incompletos" });
 
     const amountCents = Math.round(Number(total) * 100);
-
     const response = await fetch(SQUARE_API, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${ACCESS_TOKEN}`,
-        "Accept": "application/json",
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${ACCESS_TOKEN}` },
       body: JSON.stringify({
         source_id: sourceId,
         idempotency_key: crypto.randomUUID(),
@@ -246,28 +240,24 @@ app.post("/process-payment", async (req, res) => {
         location_id: LOCATION_ID
       })
     });
-
     const data = await response.json();
 
     if (data?.payment?.status === "COMPLETED") {
       const productosDB = leerProductos();
-      for (const p of carrito || []) {
+      carrito?.forEach(p => {
         const item = productosDB.find(x => x.id === p.id);
         if (item) item.stock = Math.max(0, item.stock - (p.quantity || 1));
-      }
+      });
       guardarProductos(productosDB);
 
       const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
-
-      await enviarEmailATienda({ firstName, lastName, email, address, productos: carrito, total }).catch(console.error);
-      await enviarEmailACliente({ firstName, lastName, email, productos: carrito, total, trackingId }).catch(console.error);
+      await enviarEmailATienda({ firstName, lastName, email, address, productos: carrito, total });
+      await enviarEmailACliente({ firstName, lastName, email, productos: carrito, total, trackingId });
 
       res.json({ success: true, payment: data.payment, trackingId });
     } else {
-      console.error("Error Square:", data);
       res.status(500).json({ error: data.errors || "Pago no completado" });
     }
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
