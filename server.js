@@ -94,7 +94,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // --------------------
-// ✨ Plantillas HTML (idénticas a las tuyas)
+// ✨ Plantillas HTML
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
   const productosHtml = productos.map(p => `<tr>
     <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
