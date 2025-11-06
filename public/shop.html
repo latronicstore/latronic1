@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const adminBtn = document.getElementById("admin-access");
   if(adminBtn){
     adminBtn.addEventListener("click", () => {
-      window.location.href = "admin.html"; // Cambia esto si tu ruta es distinta
+      window.location.href = "admin.html"; 
     });
   }
 
@@ -381,7 +381,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!lista.length) { contenedor.innerHTML="<p>No products found.</p>"; return; }
 
     lista.forEach(prod => {
-      const div = document.createElement("div"); div.className="producto";
+      const div = document.createElement("div"); 
+      div.className="producto";
+      div.dataset.id = prod.id; // <-- importante para actualizaciones en tiempo real
+
       const galeria = document.createElement("div"); galeria.className="galeria";
 
       const mainImg = document.createElement("img"); mainImg.className="main-img";
@@ -404,7 +407,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       pStock.textContent = stockRestante>0?`Stock: ${stockRestante}`:"Out of stock"; 
       pStock.style.color = stockRestante>0?"gray":"red";
 
-      const pPrice = document.createElement("p"); pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; 
+      const pPrice = document.createElement("p"); 
+      pPrice.className = "price"; // <-- importante para actualizar precio en tiempo real
+      pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; 
       pPrice.textContent="$"+(prod.price??"0");
 
       const btn = document.createElement("button"); 
@@ -413,7 +418,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.disabled = stockRestante <= 0; 
       btn.textContent = stockRestante>0?(carritoItem?`Add (${carritoItem.quantity})`:"Add"):"Out of stock";
       btn.addEventListener("click", (e) => {
-        e.stopPropagation(); // evita interferir con otros clicks
+        e.stopPropagation();
         let carritoLocal = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
         const index = carritoLocal.findIndex(c=>c.id===prod.id);
         if(cantidadEnCarrito<prod.stock){
@@ -518,8 +523,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // --- SOCKET.IO: actualizar productos en tiempo real, sin recargar
+  socket.on("actualizar-productos", (updatedProducts) => {
+    const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+
+    updatedProducts.forEach(up => {
+      const idx = productos.findIndex(p => p.id === up.id);
+      const existingDiv = contenedor.querySelector(`.producto[data-id='${up.id}']`);
+
+      if (idx !== -1) {
+        productos[idx] = { ...productos[idx], ...up };
+      } else {
+        productos.push(up);
+      }
+
+      if (existingDiv) {
+        const prod = productos.find(p => p.id === up.id);
+        const carritoItem = carrito.find(c => c.id === prod.id);
+        const cantidadEnCarrito = carritoItem?.quantity || 0;
+        const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
+
+        // actualizar stock
+        const pStock = existingDiv.querySelector(".stock");
+        if (pStock) {
+          pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
+          pStock.style.color = stockRestante > 0 ? "gray" : "red";
+        }
+
+        // actualizar precio
+        const pPrice = existingDiv.querySelector(".price");
+        if (pPrice) pPrice.textContent = "$" + (prod.price ?? 0);
+
+        // actualizar botón de carrito
+        const btn = existingDiv.querySelector(".agregar-carrito");
+        if (btn) {
+          btn.disabled = stockRestante <= 0;
+          btn.textContent = stockRestante > 0 ? (cantidadEnCarrito ? `Add (${cantidadEnCarrito})` : "Add") : "Out of stock";
+        }
+
+        // actualizar imagen si cambió
+        const mainImg = existingDiv.querySelector(".main-img");
+        if (mainImg && prod.imagenes?.length) mainImg.src = prod.imagenes[0];
+
+      } else {
+        // producto nuevo: renderizar solo este
+        renderProductos([up], window.scrollY);
+      }
+    });
+
+    cartCountEl.textContent = carrito.reduce((acc,i) => acc + i.quantity, 0);
+  });
+
 });
 </script>
+
+
 
 
 
