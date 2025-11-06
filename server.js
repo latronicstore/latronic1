@@ -22,7 +22,7 @@ dotenv.config();
 const app = express();
 const __dirname = process.cwd();
 
-// --- Configuración CORS segura ---
+// --- Configuración CORS ---
 const whitelist = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
@@ -31,13 +31,10 @@ const whitelist = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("No permitido por CORS"));
-    }
+    if (whitelist.includes(origin)) return callback(null, true);
+    callback(new Error("No permitido por CORS"));
   }
 };
 
@@ -53,33 +50,23 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 io.on("connection", socket => {
   console.log("Cliente conectado:", socket.id);
-  socket.on("productos-actualizados", data => {
-    socket.broadcast.emit("actualizar-productos", data);
-  });
-  socket.on("disconnect", () => {
-    console.log("Cliente desconectado:", socket.id);
-  });
+  socket.on("productos-actualizados", data => socket.broadcast.emit("actualizar-productos", data));
+  socket.on("disconnect", () => console.log("Cliente desconectado:", socket.id));
 });
 
 // --------------------
-// 🗝️ Base de datos (LowDB)
+// 🗝️ Base de datos (LowDB v5)
 // --------------------
 const isRender = process.env.RENDER === "true";
 const dbFile = isRender ? "/data/db.json" : path.join(__dirname, "public", "db.json");
 
 // Crear carpeta si no existe
-if (!isRender) {
-  const dir = path.dirname(dbFile);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
+if (!fs.existsSync(path.dirname(dbFile))) fs.mkdirSync(path.dirname(dbFile), { recursive: true });
 
 const adapter = new JSONFile(dbFile);
 const db = new Low(adapter);
 
-// Leer la base de datos
 await db.read();
-
-// Inicializar la DB si está vacía
 if (!db.data) db.data = {};
 if (!db.data.productos) db.data.productos = [];
 
@@ -114,10 +101,7 @@ const SQUARE_API =
 // --------------------
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
 // --------------------
@@ -170,30 +154,26 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
 
 // --------------------
 // Funciones de envío
-// --------------------
 async function enviarEmailATienda(datos) {
-  const mailOptions = {
+  return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `🛒 Nueva venta de ${datos.firstName} ${datos.lastName}`,
     html: plantillaEmailTienda(datos)
-  };
-  return transporter.sendMail(mailOptions);
+  });
 }
 
 async function enviarEmailACliente(datos) {
-  const mailOptions = {
+  return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
     subject: `💳 Confirmación de tu compra - LaTRONIC Store`,
     html: plantillaEmailCliente(datos)
-  };
-  return transporter.sendMail(mailOptions);
+  });
 }
 
 // --------------------
 // 🛍️ ENDPOINTS Productos
-// --------------------
 app.get("/api/productos", async (req, res) => {
   await db.read();
   res.json(db.data.productos);
@@ -235,15 +215,59 @@ app.delete("/api/productos/:id", async (req, res) => {
 });
 
 // --------------------
-// 🚀 Servir frontend
+// 🛒 Checkout y Pagos Square
+app.post("/process-payment", async (req, res) => {
+  try {
+    const { sourceId, total, email, address, firstName, lastName, productos } = req.body;
+    if (!sourceId || !total || !email)
+      return res.status(400).json({ error: "Datos de pago incompletos" });
+
+    const amountCents = Math.round(Number(total) * 100);
+    const response = await fetch(SQUARE_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ACCESS_TOKEN}`,
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        source_id: sourceId,
+        idempotency_key: crypto.randomUUID(),
+        amount_money: { amount: amountCents, currency: "USD" },
+        location_id: LOCATION_ID
+      })
+    });
+
+    const data = await response.json();
+
+    if (data?.payment?.status === "COMPLETED") {
+      await db.read();
+      for (const p of productos) {
+        const item = db.data.productos.find(x => x.id === p.id);
+        if (item) item.stock = Math.max(0, item.stock - (p.quantity || 1));
+      }
+      await db.write();
+
+      const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+      await enviarEmailATienda({ firstName, lastName, email, address, productos, total });
+      await enviarEmailACliente({ firstName, lastName, email, productos, total, trackingId });
+
+      res.json({ success: true, payment: data.payment, trackingId });
+    } else {
+      res.status(500).json({ error: data.errors || "Pago no completado" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --------------------
+// 🌐 Servir frontend
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 app.get("/admin.html", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
 
 // --------------------
 // 🚀 Iniciar servidor
-// --------------------
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en puerto ${PORT} - Modo: ${NODE_ENV}`);
-});
+server.listen(PORT, () => console.log(`✅ Servidor corriendo en puerto ${PORT}`));
