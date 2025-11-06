@@ -222,6 +222,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  // --- Botón Admin
+  const adminBtn = document.getElementById("admin-access");
+  if(adminBtn){
+    adminBtn.addEventListener("click", () => {
+      window.location.href = "admin.html"; // Cambia esto si tu ruta es distinta
+    });
+  }
+
   // --- Menú lateral
   hamburger.addEventListener("click", () => aside.classList.toggle("active"));
   toggleButtons.forEach(btn => {
