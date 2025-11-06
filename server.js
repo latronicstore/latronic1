@@ -12,7 +12,7 @@ import { JSONFile } from "lowdb/node";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import { Server } from "socket.io";
-import http from "http"; // <-- Para Socket.IO
+import http from "http";
 import cors from "cors";
 
 // --------------------
@@ -32,7 +32,7 @@ const whitelist = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // permite Postman / backend a backend
+    if (!origin) return callback(null, true);
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -45,7 +45,9 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Crear servidor HTTP para Socket.IO
+// --------------------
+// 🔌 Servidor HTTP + Socket.IO
+// --------------------
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -65,18 +67,24 @@ io.on("connection", socket => {
 const isRender = process.env.RENDER === "true";
 const dbFile = isRender ? "/data/db.json" : path.join(__dirname, "public", "db.json");
 
+// Crear carpeta si no existe
 if (!isRender) {
   const dir = path.dirname(dbFile);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 const adapter = new JSONFile(dbFile);
-const db = new Low(adapter, { productos: [] });
+const db = new Low(adapter);
 
+// Leer la base de datos
 await db.read();
-db.data ||= { productos: [] };
+
+// Inicializar la DB si está vacía
+if (!db.data) db.data = {};
+if (!db.data.productos) db.data.productos = [];
+
+// Cargar productos iniciales si DB vacía
 if (db.data.productos.length === 0) {
-  // Cargar productos iniciales de public/db.json
   const initialFile = path.join(__dirname, "public", "db.json");
   if (fs.existsSync(initialFile)) {
     const initialData = JSON.parse(fs.readFileSync(initialFile, "utf-8"));
@@ -84,7 +92,6 @@ if (db.data.productos.length === 0) {
     await db.write();
   }
 }
-
 
 // --------------------
 // 💳 Configuración Square
@@ -114,7 +121,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // --------------------
-// ✨ Plantillas HTML elegantes
+// ✨ Plantillas HTML
 // --------------------
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
   const productosHtml = productos.map(
@@ -122,11 +129,9 @@ function plantillaEmailTienda({ firstName, lastName, email, address, productos, 
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-    </tr>`
-  ).join("");
+    </tr>`).join("");
 
-  return `
-  <div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
+  return `<div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;color:#333;">
     <div style="background:#222;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
       <h2>🛍️ Nueva Venta - LaTRONIC Store</h2>
     </div>
@@ -137,7 +142,6 @@ function plantillaEmailTienda({ firstName, lastName, email, address, productos, 
       <p><strong>Total:</strong> $${total.toFixed(2)}</p>
       <h4 style="margin-top:20px;">Productos:</h4>
       <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
-      <p style="margin-top:20px;color:#777;">Este mensaje es una notificación automática de venta.</p>
     </div>
   </div>`;
 }
@@ -148,11 +152,9 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.titulo}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">${p.quantity}</td>
       <td style="padding:8px;border-bottom:1px solid #ddd;">$${p.price}</td>
-    </tr>`
-  ).join("");
+    </tr>`).join("");
 
-  return `
-  <div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
+  return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;color:#333;">
     <div style="background:#e64a19;color:#fff;padding:20px;border-radius:10px 10px 0 0;text-align:center;">
       <h2>Gracias por tu compra 🧡</h2>
     </div>
@@ -160,15 +162,8 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
       <p>Hola <strong>${firstName} ${lastName}</strong>,</p>
       <p>Tu pago de <strong>$${total.toFixed(2)}</strong> fue procesado exitosamente.</p>
       <p>Tu número de seguimiento es: <strong>${trackingId}</strong></p>
-
       <h4 style="margin-top:20px;">Productos comprados:</h4>
       <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
-
-      <p style="margin-top:20px;">En breve recibirás un correo cuando tu pedido sea enviado.</p>
-      <div style="text-align:center;margin-top:30px;">
-        <a href="https://latronic1.onrender.com" style="background:#e64a19;color:#fff;padding:10px 20px;text-decoration:none;border-radius:5px;">Visitar Tienda</a>
-      </div>
-      <p style="margin-top:30px;color:#777;">Gracias por confiar en <strong>LaTRONIC Store</strong>.</p>
     </div>
   </div>`;
 }
@@ -197,7 +192,7 @@ async function enviarEmailACliente(datos) {
 }
 
 // --------------------
-// 🛍️ ENDPOINTS Productos (SIN autenticación)
+// 🛍️ ENDPOINTS Productos
 // --------------------
 app.get("/api/productos", async (req, res) => {
   await db.read();
@@ -217,7 +212,6 @@ app.post("/api/productos", async (req, res) => {
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
   db.data.productos.push(nuevo);
   await db.write();
-
   io.emit("actualizar-productos", db.data.productos);
   res.status(201).json(nuevo);
 });
@@ -241,129 +235,10 @@ app.delete("/api/productos/:id", async (req, res) => {
 });
 
 // --------------------
-// 🛒 Checkout
+// 🚀 Servir frontend
 // --------------------
-app.post("/api/cart/checkout", async (req, res) => {
-  try {
-    const { productos } = req.body;
-    if (!productos || !Array.isArray(productos))
-      return res.status(400).json({ error: "Carrito vacío o datos inválidos" });
-
-    await db.read();
-    for (const item of productos) {
-      const prod = db.data.productos.find(p => p.id === item.id);
-      if (!prod || prod.stock < item.quantity)
-        return res.status(400).json({ error: `Stock insuficiente para ${item.id}` });
-    }
-
-    for (const item of productos) {
-      const prod = db.data.productos.find(p => p.id === item.id);
-      prod.stock -= item.quantity;
-    }
-
-    await db.write();
-    res.json({ success: true, message: "Stock actualizado correctamente" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error en checkout" });
-  }
-});
-
-// --------------------
-// 💰 Pagos Square + Emails
-// --------------------
-app.post("/process-payment", async (req, res) => {
-  try {
-    const { sourceId, total, email, address, firstName, lastName, productos } = req.body;
-    if (!sourceId || !total || !email)
-      return res.status(400).json({ error: "Datos de pago incompletos" });
-
-    const amountCents = Math.round(Number(total) * 100);
-
-    const response = await fetch(SQUARE_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${ACCESS_TOKEN}`,
-        "Accept": "application/json",
-      },
-      body: JSON.stringify({
-        source_id: sourceId,
-        idempotency_key: crypto.randomUUID(),
-        amount_money: { amount: amountCents, currency: "USD" },
-        location_id: LOCATION_ID
-      })
-    });
-
-    const data = await response.json();
-
-    if (data?.payment?.status === "COMPLETED") {
-      await db.read();
-      for (const p of productos || []) {
-        const item = db.data.productos.find(x => x.id === p.id);
-        if (item) item.stock = Math.max(0, item.stock - (p.quantity || 1));
-      }
-      await db.write();
-
-      const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
-
-      await enviarEmailATienda({ firstName, lastName, email, address, productos, total })
-        .catch(err => console.error("⚠️ Error enviando email a tienda:", err));
-
-      await enviarEmailACliente({ firstName, lastName, email, productos, total, trackingId })
-        .catch(err => console.error("⚠️ Error enviando email a cliente:", err));
-
-      res.json({ success: true, payment: data.payment, trackingId });
-    } else {
-      console.error("❌ Error en respuesta de Square:", data);
-      res.status(500).json({ error: data.errors || "Pago no completado" });
-    }
-
-  } catch (err) {
-    console.error("❌ Error en /process-payment:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --------------------
-// 📩 Send Offer
-// --------------------
-app.post("/api/send-offer", async (req, res) => {
-  try {
-    const { producto, email, oferta } = req.body;
-    if (!producto || !email || !oferta)
-      return res.status(400).json({ error: "Todos los campos son obligatorios" });
-
-    const mailOptions = {
-      from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL,
-      subject: `📩 Oferta recibida para ${producto}`,
-      html: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; color: #333;">
-               <h2>¡Nueva oferta recibida!</h2>
-               <p><strong>Producto:</strong> ${producto}</p>
-               <p><strong>Email del cliente:</strong> ${email}</p>
-               <p><strong>Oferta:</strong> $${oferta}</p>
-             </div>`
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.json({ success: true, message: "Oferta enviada correctamente" });
-  } catch (err) {
-    console.error("Error endpoint send-offer:", err);
-    res.status(500).json({ error: "Error interno" });
-  }
-});
-
-// --------------------
-// 🌐 Servir frontend
-// --------------------
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/admin.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.get("/admin.html", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
 
 // --------------------
 // 🚀 Iniciar servidor
