@@ -12,6 +12,7 @@ import fs from "fs";
 import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
+import multer from "multer";
 
 // --------------------
 // ⚙️ Configuración básica
@@ -31,6 +32,16 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+// --------------------
+// 🗄️ Configuración de uploads con multer
+// --------------------
+const uploadsDir = path.join(__dirname, "public", "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+const upload = multer({ dest: uploadsDir });
+
+// Servir carpeta uploads de manera pública
+app.use("/uploads", express.static(uploadsDir));
 
 // --------------------
 // 🔌 Servidor HTTP + Socket.IO
@@ -107,7 +118,7 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
   const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
   return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;">
     <h2>Gracias por tu compra 🧡</h2>
-    <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b>"It was processed successfully."</p>
+    <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b> fue procesado correctamente.</p>
     <p>Tu número de seguimiento es: <b>${trackingId}</b></p>
     <h4>Productos comprados:</h4>
     <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
@@ -129,63 +140,65 @@ async function enviarEmailACliente(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
-    subject: `💳"Purchase confirmation" - LaTRONIC Store`,
+    subject: `💳 Confirmación de compra - LaTRONIC Store`,
     html: plantillaEmailCliente(datos)
   });
 }
 
 // --------------------
-// 📨 Endpoint Contact Us (Nodemailer + EmailJS opcional)
-// --------------------
-// 📩 Enviar ofertas a clientes
-// --------------------
+// 📨 Endpoint Contact / Ofertas
 app.post("/api/send-offer", async (req, res) => {
   try {
-    const { email, oferta, producto } = req.body; // Recibimos email, oferta y producto
+    const { email, oferta, producto } = req.body;
+    if (!email || !oferta || !producto) return res.status(400).json({ success: false, error: "Missing data" });
 
-    if (!email || !oferta || !producto) {
-      return res.status(400).json({ success: false, error: "Missing data: email, offer, or product" });
-    }
-
-    // Email para el cliente
     const mailOptionsCliente = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `🎁 LaTRONIC Special Offer`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
-          <h2>Offer for you ✅</h2>
-          <p><b>Product:</b> ${producto}</p>
-          <p><b>Offer: $</b> ${oferta}</p>
-          <p>"¡Thank you for choosing LaTRONIC Store!"</p>
-        </div>
-      `
+      html: `<div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
+        <h2>Offer for you ✅</h2>
+        <p><b>Product:</b> ${producto}</p>
+        <p><b>Offer: $</b> ${oferta}</p>
+        <p>¡Thank you for choosing LaTRONIC Store!</p>
+      </div>`
     };
 
-    // Opcional: Email para ti (admin) notificando que se envió la oferta
     const mailOptionsAdmin = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
       subject: `🎁 Offer sent to ${email}`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; background: #f9f9f9;">
-          <h2>Offer sent</h2>
-          <p><b>Client:</b> ${email}</p>
-          <p><b>Product:</b> ${producto}</p>
-          <p><b>Offer: $</b> ${oferta}</p>
-        </div>
-      `
+      html: `<div style="font-family: sans-serif; padding: 20px; background: #f9f9f9;">
+        <h2>Offer sent</h2>
+        <p><b>Client:</b> ${email}</p>
+        <p><b>Product:</b> ${producto}</p>
+        <p><b>Offer: $</b> ${oferta}</p>
+      </div>`
     };
 
     await transporter.sendMail(mailOptionsCliente);
     await transporter.sendMail(mailOptionsAdmin);
 
     console.log(`✅ Offer sent to ${email} About ${producto}`);
-    res.json({ success: true, message: "Payment not completed" });
-
+    res.json({ success: true, message: "Offer sent" });
   } catch (err) {
     console.error("❌ Error sending offer:", err);
     res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+// --------------------
+// 🖼️ Endpoint subir imágenes
+app.post("/api/subir-imagenes", upload.array("imagenes"), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) return res.status(400).json({ urls: [] });
+
+    const urls = req.files.map(file => `/uploads/${file.filename}`);
+    console.log("✅ Imágenes subidas:", urls);
+    res.json({ urls });
+  } catch (err) {
+    console.error("❌ Error subiendo imágenes:", err);
+    res.status(500).json({ urls: [] });
   }
 });
 
