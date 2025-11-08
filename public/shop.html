@@ -218,8 +218,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // --- Botón carrito
   const cartBtn = document.getElementById("cart-btn");
-  if(cartBtn){
-    cartBtn.addEventListener("click", e=>{
+  if (cartBtn) {
+    cartBtn.addEventListener("click", e => {
       e.preventDefault();
       window.location.href = "cart.html";
     });
@@ -227,14 +227,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // --- Botón Admin
   const adminBtn = document.getElementById("admin-access");
-  if(adminBtn){
+  if (adminBtn) {
     adminBtn.addEventListener("click", () => {
-      window.location.href = "admin.html"; 
+      window.location.href = "admin.html";
     });
   }
 
   // --- Menú lateral
-  hamburger.addEventListener("click", () => aside.classList.toggle("active"));
+  if (hamburger && aside) {
+    hamburger.addEventListener("click", () => aside.classList.toggle("active"));
+  }
   toggleButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const submenu = btn.nextElementSibling;
@@ -248,22 +250,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  aside.addEventListener("click", e => {
-    const btn = e.target.closest(".submenu .boton-categoria");
-    if (!btn) return;
-    const main = (btn.dataset.main || "").toLowerCase();
-    const sub = (btn.dataset.sub || "").toLowerCase();
-    const titulo = document.getElementById("titulo-principal");
-    if (titulo) titulo.textContent = `${capitalize(main)} · ${capitalize(sub)}`;
-    const filtrados = productos.filter(p => 
+  if (aside) {
+    aside.addEventListener("click", e => {
+      const btn = e.target.closest(".submenu .boton-categoria");
+      if (!btn) return;
+      const main = (btn.dataset.main || "").toLowerCase();
+      const sub = (btn.dataset.sub || "").toLowerCase();
+      const titulo = document.getElementById("titulo-principal");
+      if (titulo) titulo.textContent = `${capitalize(main)} · ${capitalize(sub)}`;
+      const filtrados = productosMaster.filter(p =>
         (p.categoria?.main || "").toLowerCase() === main &&
         (p.categoria?.sub || "").toLowerCase() === sub
-    );
-    renderProductos(filtrados);
-    aside.classList.remove("active");
-  });
+      );
+      renderProductos(filtrados);
+      aside.classList.remove("active");
+    });
+  }
 
-  function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+  function capitalize(str) { return (str || "").charAt(0).toUpperCase() + (str || "").slice(1); }
 
   // --- Obtener productos
   async function obtenerProductos() {
@@ -275,15 +279,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const productosFinal = data.map(p => {
         const local = productosGuardados.find(lp => lp.id === p.id);
-        return local
-          ? {
-              ...p,
-              stock: p.stock,
-              price: local.price ?? p.price,
-              soldOut: p.stock <= 0,
-              stockOriginal: local.stockOriginal || p.stock
-            }
-          : { ...p, stock: p.stock, stockOriginal: p.stock, soldOut: p.stock <= 0 };
+        const precio = local?.price ?? p.price ?? 0;
+        const stock = typeof p.stock === "number" ? p.stock : Number(p.stock || 0);
+        return {
+          ...p,
+          stock: stock,
+          stockOriginal: local?.stockOriginal || stock,
+          price: precio,
+          soldOut: stock <= 0,
+          // convertir todas las urls a absolutas aquí
+          imagenes: (p.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean)
+        };
       });
 
       localStorage.setItem("productos", JSON.stringify(productosFinal));
@@ -294,28 +300,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Productos en memoria
   let productos = await obtenerProductos();
+  // productosMaster será la lista maestra (para búsqueda)
+  let productosMaster = Array.isArray(productos) ? productos.slice() : [];
 
   // --- Modal de zoom
   const zoomModal = document.createElement("div");
   zoomModal.id = "zoom-modal";
-  zoomModal.style.cssText = `
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.9); justify-content:center; align-items:center;
-    z-index:7000; cursor:pointer; flex-direction:column;
-  `;
+  zoomModal.style.cssText = `display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:7000; cursor:pointer; flex-direction:column;`;
 
   const zoomImg = document.createElement("img");
   zoomImg.id = "zoom-img";
-  zoomImg.style.cssText = `
-    max-width:80%; max-height:70%; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7);
-  `;
+  zoomImg.style.cssText = `max-width:80%; max-height:70%; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7);`;
 
   const zoomDesc = document.createElement("p");
   zoomDesc.id = "zoom-desc";
-  zoomDesc.style.cssText = `
-    color:white; text-align:center; margin-top:10px; max-width:90%; font-size:1rem;
-  `;
+  zoomDesc.style.cssText = `color:white; text-align:center; margin-top:10px; max-width:90%; font-size:1rem;`;
 
   const zoomControls = document.createElement("div");
   zoomControls.style.cssText = "display:flex; width:100%; justify-content:space-between; position:absolute; top:50%; left:0; padding:0 20px; box-sizing:border-box;";
@@ -345,7 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     zoomDesc.textContent = producto.description || "";
     zoomModal.style.display = "flex";
 
-    if(window.innerWidth <= 600) {
+    if (window.innerWidth <= 600) {
       zoomImg.style.maxWidth = "90%";
       zoomImg.style.maxHeight = "50%";
     } else {
@@ -357,23 +358,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     zoomNext.style.display = currentProductImages.length > 1 ? "block" : "none";
   }
 
-  zoomPrev.addEventListener("click", e => { 
-    e.stopPropagation(); 
-    currentZoomIndex = (currentZoomIndex - 1 + currentProductImages.length) % currentProductImages.length; 
-    zoomImg.src = currentProductImages[currentZoomIndex]; 
+  zoomPrev.addEventListener("click", e => {
+    e.stopPropagation();
+    currentZoomIndex = (currentZoomIndex - 1 + currentProductImages.length) % currentProductImages.length;
+    zoomImg.src = currentProductImages[currentZoomIndex];
     zoomDesc.textContent = currentProducto.description || "";
   });
 
-  zoomNext.addEventListener("click", e => { 
-    e.stopPropagation(); 
-    currentZoomIndex = (currentZoomIndex + 1) % currentProductImages.length; 
-    zoomImg.src = currentProductImages[currentZoomIndex]; 
+  zoomNext.addEventListener("click", e => {
+    e.stopPropagation();
+    currentZoomIndex = (currentZoomIndex + 1) % currentProductImages.length;
+    zoomImg.src = currentProductImages[currentZoomIndex];
     zoomDesc.textContent = currentProducto.description || "";
   });
 
-  zoomModal.addEventListener("click", () => { 
-    zoomModal.style.display = "none"; 
-    zoomImg.src = ""; 
+  zoomModal.addEventListener("click", () => {
+    zoomModal.style.display = "none";
+    zoomImg.src = "";
     zoomDesc.textContent = "";
   });
 
@@ -381,20 +382,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderProductos(lista, scrollY = null) {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
     contenedor.innerHTML = "";
-    if (!lista.length) { contenedor.innerHTML="<p>No products found.</p>"; return; }
+    if (!Array.isArray(lista) || lista.length === 0) { contenedor.innerHTML = "<p>No products found.</p>"; return; }
 
     lista.forEach(prod => {
-      const div = document.createElement("div"); 
-      div.className="producto";
-      div.dataset.id = prod.id; // <-- importante para actualizaciones en tiempo real
+      const div = document.createElement("div");
+      div.className = "producto";
+      div.dataset.id = prod.id;
 
-      const galeria = document.createElement("div"); galeria.className="galeria";
+      const galeria = document.createElement("div"); galeria.className = "galeria";
 
-      const mainImg = document.createElement("img"); mainImg.className="main-img";
+      const mainImg = document.createElement("img"); mainImg.className = "main-img";
       mainImg.src = prod.imagenes?.[0] || "https://via.placeholder.com/150";
-      mainImg.dataset.index = 0; 
-      mainImg.style.cursor = "zoom-in"; 
-      mainImg.style.width = "100%"; 
+      mainImg.dataset.index = 0;
+      mainImg.style.cursor = "zoom-in";
+      mainImg.style.width = "100%";
       mainImg.style.borderRadius = "10px";
 
       mainImg.addEventListener("click", () => openZoomModal(prod, parseInt(mainImg.dataset.index)));
@@ -402,77 +403,77 @@ document.addEventListener("DOMContentLoaded", async () => {
       galeria.append(mainImg);
       const h3 = document.createElement("h3"); h3.textContent = prod.titulo;
 
-      const carritoItem = carrito.find(c => c.id === prod.id); 
+      const carritoItem = carrito.find(c => c.id === prod.id);
       const cantidadEnCarrito = carritoItem?.quantity || 0;
       const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
 
-      const pStock = document.createElement("p"); pStock.className="stock"; 
-      pStock.textContent = stockRestante>0?`Stock: ${stockRestante}`:"Out of stock"; 
-      pStock.style.color = stockRestante>0?"gray":"red";
+      const pStock = document.createElement("p"); pStock.className = "stock";
+      pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
+      pStock.style.color = stockRestante > 0 ? "gray" : "red";
 
-      const pPrice = document.createElement("p"); 
-      pPrice.className = "price"; // <-- importante para actualizar precio en tiempo real
-      pPrice.style.color="#e28f2f"; pPrice.style.fontWeight="bold"; 
-      pPrice.textContent="$"+(prod.price??"0");
+      const pPrice = document.createElement("p");
+      pPrice.className = "price";
+      pPrice.style.color = "#e28f2f"; pPrice.style.fontWeight = "bold";
+      pPrice.textContent = "$" + (prod.price ?? "0");
 
-      const btn = document.createElement("button"); 
-      btn.className="agregar-carrito"; 
-      btn.dataset.id = prod.id; 
-      btn.disabled = stockRestante <= 0; 
-      btn.textContent = stockRestante>0?(carritoItem?`Add (${carritoItem.quantity})`:"Add"):"Out of stock";
+      const btn = document.createElement("button");
+      btn.className = "agregar-carrito";
+      btn.dataset.id = prod.id;
+      btn.disabled = stockRestante <= 0;
+      btn.textContent = stockRestante > 0 ? (carritoItem ? `Add (${carritoItem.quantity})` : "Add") : "Out of stock";
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        let carritoLocal = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
-        const index = carritoLocal.findIndex(c=>c.id===prod.id);
-        if(cantidadEnCarrito<prod.stock){
-          if(index!==-1) carritoLocal[index].quantity+=1;
-          else carritoLocal.push({id:prod.id,titulo:prod.titulo,price:prod.price,quantity:1});
+        let carritoLocal = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+        const index = carritoLocal.findIndex(c => c.id === prod.id);
+        if (cantidadEnCarrito < prod.stock) {
+          if (index !== -1) carritoLocal[index].quantity += 1;
+          else carritoLocal.push({ id: prod.id, titulo: prod.titulo, price: prod.price, quantity: 1 });
           localStorage.setItem("productos-en-cart", JSON.stringify(carritoLocal));
         }
-        cartCountEl.textContent = carritoLocal.reduce((acc,i)=>acc+i.quantity,0);
+        cartCountEl.textContent = carritoLocal.reduce((acc, i) => acc + i.quantity, 0);
         renderProductos(lista, window.scrollY);
       });
 
       // --- Botón Send Offer
-      const btnNegociar = document.createElement("button"); 
-      btnNegociar.className = "negociar"; 
+      const btnNegociar = document.createElement("button");
+      btnNegociar.className = "negociar";
       btnNegociar.textContent = "Send Offer";
       btnNegociar.addEventListener("click", () => {
         document.getElementById("negociar-modal").style.display = "flex";
         document.getElementById("negociar-producto").textContent = prod.titulo;
       });
 
-      div.append(galeria,h3,pStock,pPrice,btn,btnNegociar);
+      div.append(galeria, h3, pStock, pPrice, btn, btnNegociar);
       contenedor.appendChild(div);
     });
 
-    if(scrollY!==null) window.scrollTo(0,scrollY);
-    const carritoActual = JSON.parse(localStorage.getItem("productos-en-cart"))||[];
-    cartCountEl.textContent = carritoActual.reduce((acc,i)=>acc+i.quantity,0);
+    if (scrollY !== null) window.scrollTo(0, scrollY);
+    const carritoActual = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+    if (cartCountEl) cartCountEl.textContent = carritoActual.reduce((acc, i) => acc + i.quantity, 0);
   }
 
-  // --- Inicial
-  renderProductos(productos);
+  // --- Inicial render con la lista maestra
+  renderProductos(productosMaster);
 
   // --- Buscador inteligente
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
 
-  function normalizeText(t){
-    return (t||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  function normalizeText(t) {
+    return (t || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
-  searchBtn.addEventListener("click", () => {
-    const query = normalizeText(searchInput.value).trim();
-    if(!query){ 
-      renderProductos(productos); 
+  function doSearch() {
+    if (!searchInput) return;
+    const query = normalizeText(searchInput.value || "").trim();
+    if (!query) {
       document.getElementById("titulo-principal").textContent = "All Products";
-      return; 
+      renderProductos(productosMaster);
+      return;
     }
+    const terms = query.split(/\s+/).filter(Boolean);
 
-    const terms = query.split(/\s+/);
-
-    const filtrados = productos.filter(p => {
+    const filtrados = productosMaster.filter(p => {
       const fields = [
         normalizeText(p.titulo),
         normalizeText(p.description),
@@ -485,100 +486,118 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("titulo-principal").textContent = `Search: "${searchInput.value}" (${filtrados.length})`;
     renderProductos(filtrados);
-  });
+  }
 
-  searchInput.addEventListener("keyup", e => {
-    if(e.key === "Enter") searchBtn.click();
-  });
+  if (searchBtn) {
+    searchBtn.addEventListener("click", doSearch);
+  } else {
+    console.warn("search-btn not found in DOM. Search button won't work.");
+  }
+
+  if (searchInput) {
+    // Buscar al presionar Enter y tambien en cada input (mejora UX)
+    searchInput.addEventListener("keyup", e => { if (e.key === "Enter") doSearch(); });
+    searchInput.addEventListener("input", () => {
+      // opcional: búsqueda live (quita si no la quieres)
+      // doSearch();
+    });
+  } else {
+    console.warn("search-input not found in DOM. Search input won't work.");
+  }
 
   // --- Modal de negociación
-  document.getElementById("cerrar-negociar").addEventListener("click", ()=>{
-    document.getElementById("negociar-modal").style.display="none"; 
-    document.getElementById("negociar-status").textContent="";
-  });
+  const cerrarNeg = document.getElementById("cerrar-negociar");
+  if (cerrarNeg) {
+    cerrarNeg.addEventListener("click", () => {
+      document.getElementById("negociar-modal").style.display = "none";
+      document.getElementById("negociar-status").textContent = "";
+    });
+  }
 
-  document.getElementById("enviar-negociacion").addEventListener("click", async ()=>{
-    const email = document.getElementById("negociar-email").value.trim();
-    const oferta = document.getElementById("negociar-precio").value.trim();
-    const producto = document.getElementById("negociar-producto").textContent;
-    const statusEl = document.getElementById("negociar-status");
-    if(!email || !oferta){ alert("Por favor completa todos los campos"); return; }
-    try{
-      statusEl.textContent = "Sending offer...";
-      const resp = await fetch(BASE_URL+"/api/send-offer",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({producto,email,oferta})
-      });
-      const data = await resp.json();
-      if(resp.ok){ 
-        statusEl.textContent="Offer sent!"; 
-        setTimeout(()=>{
-          document.getElementById("negociar-modal").style.display="none"; 
-          statusEl.textContent="";
-          document.getElementById("negociar-email").value="";
-          document.getElementById("negociar-precio").value="";
-        },900); 
-      } else throw new Error(data.error||"Unknown error");
-    }catch(err){ 
-      console.error("Error sending offer:",err); 
-      statusEl.textContent="Error sending offer"; 
-    }
-  });
+  const enviarNeg = document.getElementById("enviar-negociacion");
+  if (enviarNeg) {
+    enviarNeg.addEventListener("click", async () => {
+      const email = document.getElementById("negociar-email").value.trim();
+      const oferta = document.getElementById("negociar-precio").value.trim();
+      const producto = document.getElementById("negociar-producto").textContent;
+      const statusEl = document.getElementById("negociar-status");
+      if (!email || !oferta) { alert("Por favor completa todos los campos"); return; }
+      try {
+        statusEl.textContent = "Sending offer...";
+        const resp = await fetch(BASE_URL + "/api/send-offer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ producto, email, oferta })
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          statusEl.textContent = "Offer sent!";
+          setTimeout(() => {
+            document.getElementById("negociar-modal").style.display = "none";
+            statusEl.textContent = "";
+            document.getElementById("negociar-email").value = "";
+            document.getElementById("negociar-precio").value = "";
+          }, 900);
+        } else throw new Error(data.error || "Unknown error");
+      } catch (err) {
+        console.error("Error sending offer:", err);
+        statusEl.textContent = "Error sending offer";
+      }
+    });
+  }
 
-  // --- SOCKET.IO: actualizar productos en tiempo real, sin recargar
+  // --- SOCKET.IO: actualizar productos en tiempo real
   socket.on("actualizar-productos", (updatedProducts) => {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
 
     updatedProducts.forEach(up => {
-      const idx = productos.findIndex(p => p.id === up.id);
-      const existingDiv = contenedor.querySelector(`.producto[data-id='${up.id}']`);
-
+      const idx = productosMaster.findIndex(p => p.id === up.id);
       if (idx !== -1) {
-        productos[idx] = { ...productos[idx], ...up };
+        // mantén imagenes absolutas si vienen relativas
+        up.imagenes = (up.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean);
+        productosMaster[idx] = { ...productosMaster[idx], ...up };
       } else {
-        productos.push(up);
+        up.imagenes = (up.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean);
+        productosMaster.push(up);
       }
 
+      // intenta actualizar DOM si el producto ya está visible
+      const existingDiv = contenedor.querySelector(`.producto[data-id='${up.id}']`);
       if (existingDiv) {
-        const prod = productos.find(p => p.id === up.id);
+        const prod = productosMaster.find(p => p.id === up.id);
         const carritoItem = carrito.find(c => c.id === prod.id);
         const cantidadEnCarrito = carritoItem?.quantity || 0;
         const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
 
-        // actualizar stock
         const pStock = existingDiv.querySelector(".stock");
         if (pStock) {
           pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
           pStock.style.color = stockRestante > 0 ? "gray" : "red";
         }
 
-        // actualizar precio
         const pPrice = existingDiv.querySelector(".price");
         if (pPrice) pPrice.textContent = "$" + (prod.price ?? 0);
 
-        // actualizar botón de carrito
         const btn = existingDiv.querySelector(".agregar-carrito");
         if (btn) {
           btn.disabled = stockRestante <= 0;
           btn.textContent = stockRestante > 0 ? (cantidadEnCarrito ? `Add (${cantidadEnCarrito})` : "Add") : "Out of stock";
         }
 
-        // actualizar imagen si cambió
         const mainImg = existingDiv.querySelector(".main-img");
         if (mainImg && prod.imagenes?.length) mainImg.src = prod.imagenes[0];
-
       } else {
-        // producto nuevo: renderizar solo este
+        // nuevo producto -> render pequeño
         renderProductos([up], window.scrollY);
       }
     });
 
-    cartCountEl.textContent = carrito.reduce((acc,i) => acc + i.quantity, 0);
+    if (cartCountEl) cartCountEl.textContent = carrito.reduce((acc, i) => acc + i.quantity, 0);
   });
 
 });
 </script>
+
 
 
 

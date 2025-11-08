@@ -213,13 +213,11 @@ async function subirImagenes(files) {
     formData.append("imagenes", files[i]);
   }
 
-  // No enviar headers de Content-Type ni Authorization
   const res = await fetch(`${BASE_URL}/api/subir-imagenes`, {
     method: "POST",
     body: formData
   });
 
-  // Validar respuesta
   if (!res.ok) {
     console.error("Error subiendo imágenes:", res.status, res.statusText);
     return [];
@@ -232,6 +230,36 @@ async function subirImagenes(files) {
     console.error("Error parseando JSON:", err);
     return [];
   }
+}
+
+// Al renderizar productos, asegurarse de usar la URL tal cual la devuelve el servidor
+function renderProductos(filter = "") {
+  listaProductos.innerHTML = "";
+  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
+  filtrados.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "producto";
+
+    const miniImgs = document.createElement("div");
+    miniImgs.className = "mini-images";
+    p.imagenes.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url; // ya es relativa
+      miniImgs.appendChild(img);
+    });
+    div.appendChild(miniImgs);
+
+    div.innerHTML += `
+      <h3>${p.titulo}</h3>
+      <p>${p.description}</p>
+      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
+      <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
+      <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
+      <button onclick="actualizarProducto('${p.id}')">Guardar</button>
+      <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
+    `;
+    listaProductos.appendChild(div);
+  });
 }
 
 
