@@ -50,6 +50,21 @@ body { background:#1e1e1e; color:#fff; }
   .producto p { font-size:0.8rem; }
   #login-box { padding:15px; }
 }
+
+#login-btn:hover{ 
+  background-color: rgb(214, 80, 17);
+  color: white;
+}
+
+#back:hover{ 
+  background-color: rgb(214, 80, 17);
+  color: white;
+}
+
+.advice{
+  color: rgba(255, 0, 0, 0.795);
+}
+
 </style>
 </head>
 <body>
@@ -58,9 +73,10 @@ body { background:#1e1e1e; color:#fff; }
 <div id="login-screen">
   <div id="login-box">
     <h1>🔒 Admin Access</h1>
-    <h6>This site is only for the administrator</h6>
+    <h6 class="advice">This site is only for the administrator</h6>
     <input type="password" id="admin-password" placeholder="Enter Password" />
     <button id="login-btn">Enter</button>
+    <button id="back" onclick="window.location.href='shop.html'">Exit</button>
   </div>
 </div>
 
