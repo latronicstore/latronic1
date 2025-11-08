@@ -26,6 +26,7 @@ aside h2 { font-size: 2rem; text-align: center; margin-bottom: 1.5rem; color: #e
 #search-input { padding:10px 14px; width:60%; border-radius:24px; border:1px solid #333; background:#141414; color:#fff; outline:none; font-size:0.95rem; box-shadow:none; transition: box-shadow .15s, border-color .15s; }
 #search-input:focus { border-color: #e28f2f; box-shadow: 0 0 8px rgba(226,143,47,0.15); }
 #search-btn { padding:9px 12px; border-radius:50%; border:none; background:#e28f2f; cursor:pointer; font-weight:bold; }
+#search-btn:hover { background:#f16413b9; color:#fff; }
 
 /* --- CARRITO --- */
 .cart-button-container { position: relative; z-index: 2000; }
@@ -109,10 +110,11 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="new" data-sub="soccer">Soccer</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="olympics">Olympics</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="boxing">Boxing</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="racecar">Racecar</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="wrestling">Wrestling</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="race-car">Racecar</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="pokemon">Pokemon</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="disney">Disney</button></li>
-        <li><button class="boton-categoria" data-main="new" data-sub="avengers">Avenger & Marvel</button></li>
+        <li><button class="boton-categoria" data-main="new" data-sub="avenger&marvel">Avenger & Marvel</button></li>
       </ul>
     </li>
 
@@ -128,10 +130,11 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="used" data-sub="soccer">Soccer</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="olympics">Olympics</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="boxing">Boxing</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="racecar">Racecar</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="wrestling">Wrestling</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="race-car">Racecar</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="pokemon">Pokemon</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
-        <li><button class="boton-categoria" data-main="used" data-sub="avengers">Avenger & Marvel</button></li>
+        <li><button class="boton-categoria" data-main="used" data-sub="avenger&marvel">Avenger & Marvel</button></li>
       </ul>
     </li>
 
@@ -166,7 +169,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
   <!-- SEARCH -->
   <div class="search-bar" style="margin-top:12px;">
-    <input id="search-input" type="text" placeholder="Search..." />
+    <input id="search-input" type="text" placeholder="Search..."
     <button id="search-btn" title="Buscar">🔎</button>
   </div>
 
