@@ -107,7 +107,7 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
   const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
   return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;">
     <h2>Gracias por tu compra 🧡</h2>
-    <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b> fue procesado exitosamente.</p>
+    <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b>"It was processed successfully."</p>
     <p>Tu número de seguimiento es: <b>${trackingId}</b></p>
     <h4>Productos comprados:</h4>
     <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
@@ -129,7 +129,7 @@ async function enviarEmailACliente(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
-    subject: `💳 Confirmación de tu compra - LaTRONIC Store`,
+    subject: `💳"Purchase confirmation" - LaTRONIC Store`,
     html: plantillaEmailCliente(datos)
   });
 }
@@ -144,20 +144,20 @@ app.post("/api/send-offer", async (req, res) => {
     const { email, oferta, producto } = req.body; // Recibimos email, oferta y producto
 
     if (!email || !oferta || !producto) {
-      return res.status(400).json({ success: false, error: "Faltan datos: email, oferta o producto" });
+      return res.status(400).json({ success: false, error: "Missing data: email, offer, or product" });
     }
 
     // Email para el cliente
     const mailOptionsCliente = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: `🎁 Oferta Especial de LaTRONIC`,
+      subject: `🎁 LaTRONIC Special Offer`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
           <h2>Oferta para ti 🧡</h2>
           <p><b>Producto:</b> ${producto}</p>
           <p><b>Oferta:</b> ${oferta}</p>
-          <p>¡Gracias por comprar en LaTRONIC Store!</p>
+          <p>¡"Thank you for shopping at LaTRONIC Store!"</p>
         </div>
       `
     };
@@ -181,11 +181,11 @@ app.post("/api/send-offer", async (req, res) => {
     await transporter.sendMail(mailOptionsAdmin);
 
     console.log(`✅ Oferta enviada a ${email} sobre ${producto}`);
-    res.json({ success: true, message: "Oferta enviada correctamente" });
+    res.json({ success: true, message: "Payment not completed" });
 
   } catch (err) {
     console.error("❌ Error enviando oferta:", err);
-    res.status(500).json({ success: false, error: "Error interno del servidor" });
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
 
@@ -194,7 +194,7 @@ app.post("/api/send-offer", async (req, res) => {
 app.get("/api/productos", (req, res) => res.json(leerProductos()));
 app.get("/api/productos/:id", (req, res) => {
   const producto = leerProductos().find(p => p.id === req.params.id);
-  if (!producto) return res.status(404).json({ error: "Producto no encontrado" });
+  if (!producto) return res.status(404).json({ error: "Product not found" });
   res.json(producto);
 });
 app.post("/api/productos", (req, res) => {
@@ -209,7 +209,7 @@ app.post("/api/productos", (req, res) => {
 app.put("/api/productos/:id", (req, res) => {
   const productos = leerProductos();
   const index = productos.findIndex(p => p.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
+  if (index === -1) return res.status(404).json({ error: "Product not found"});
   productos[index] = { ...productos[index], ...req.body };
   guardarProductos(productos);
   io.emit("actualizar-productos", productos);
@@ -227,7 +227,7 @@ app.delete("/api/productos/:id", (req, res) => {
 app.post("/process-payment", async (req, res) => {
   try {
     const { sourceId, total, email, address, firstName, lastName, productos: carrito } = req.body;
-    if (!sourceId || !total || !email) return res.status(400).json({ error: "Datos de pago incompletos" });
+    if (!sourceId || !total || !email) return res.status(400).json({ error: "Incomplete payment details" });
 
     const amountCents = Math.round(Number(total) * 100);
     const response = await fetch(SQUARE_API, {
@@ -256,7 +256,7 @@ app.post("/process-payment", async (req, res) => {
 
       res.json({ success: true, payment: data.payment, trackingId });
     } else {
-      res.status(500).json({ error: data.errors || "Pago no completado" });
+      res.status(500).json({ error: data.errors || "Payment not completed" });
     }
   } catch (err) {
     console.error(err);
