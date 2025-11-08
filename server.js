@@ -156,8 +156,8 @@ app.post("/api/send-offer", async (req, res) => {
         <div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
           <h2>Offer for you ✅</h2>
           <p><b>Product:</b> ${producto}</p>
-          <p><b>Offer:</b> ${oferta}</p>
-          <p>¡"Thank you for choosing LaTRONIC Store!"</p>
+          <p><b>Offer: $</b> ${oferta}</p>
+          <p>"¡Thank you for choosing LaTRONIC Store!"</p>
         </div>
       `
     };
@@ -172,7 +172,7 @@ app.post("/api/send-offer", async (req, res) => {
           <h2>Offer sent</h2>
           <p><b>Client:</b> ${email}</p>
           <p><b>Product:</b> ${producto}</p>
-          <p><b>Offer:</b> ${oferta}</p>
+          <p><b>Offer: $</b> ${oferta}</p>
         </div>
       `
     };
