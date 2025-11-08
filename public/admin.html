@@ -30,6 +30,8 @@ body { background:#1e1e1e; color:#fff; }
 #mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
 .top-buttons { display:flex; gap:10px; margin-bottom:20px; }
 .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+#login-btn:hover, #back:hover, .top-buttons button:hover, #form-producto button:hover { background-color: rgb(214, 80, 17); color: white; }
+.advice{ color: rgba(255, 0, 0, 0.795); }
 
 @media (max-width: 768px) {
   #admin-panel { padding: 10px; max-width: 100%; }
@@ -50,21 +52,6 @@ body { background:#1e1e1e; color:#fff; }
   .producto p { font-size:0.8rem; }
   #login-box { padding:15px; }
 }
-
-#login-btn:hover{ 
-  background-color: rgb(214, 80, 17);
-  color: white;
-}
-
-#back:hover{ 
-  background-color: rgb(214, 80, 17);
-  color: white;
-}
-
-.advice{
-  color: rgba(255, 0, 0, 0.795);
-}
-
 </style>
 </head>
 <body>
@@ -91,16 +78,15 @@ body { background:#1e1e1e; color:#fff; }
   <input type="text" id="search-input" placeholder="Search products...🔎"/>
 
   <form id="form-producto" novalidate>
-  <input type="text" id="titulo" placeholder="Título del producto" required />
-  <textarea id="description" placeholder="Descripción" required></textarea>
-  <input type="file" id="imagenes-file" multiple accept="image/*" />
-  <input type="text" id="mainCat" placeholder="Categoría principal" required />
-  <input type="text" id="subCat" placeholder="Subcategoría" required />
-  <input type="number" id="price" placeholder="Precio" required />
-  <input type="number" id="stock" placeholder="Stock" required />
-  <button type="button" id="agregar-btn">Agregar producto</button>
-</form>
-
+    <input type="text" id="titulo" placeholder="Título del producto" required />
+    <textarea id="description" placeholder="Descripción" required></textarea>
+    <input type="file" id="imagenes-file" multiple accept="image/*" />
+    <input type="text" id="mainCat" placeholder="Categoría principal" required />
+    <input type="text" id="subCat" placeholder="Subcategoría" required />
+    <input type="number" id="price" placeholder="Precio" required />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <button type="button" id="agregar-btn">Agregar producto</button>
+  </form>
 
   <div class="productos" id="lista-productos"></div>
 </div>
@@ -110,9 +96,7 @@ body { background:#1e1e1e; color:#fff; }
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
 const ADMIN_PASSWORD = "042525"; 
-const BASE_URL = window.location.hostname.includes("onrender.com") 
-                 ? "https://" + window.location.hostname 
-                 : ""; 
+const BASE_URL = window.location.hostname.includes("onrender.com") ? "https://" + window.location.hostname : ""; 
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
@@ -125,7 +109,7 @@ const formProducto = document.getElementById("form-producto");
 const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 const imagenesFileInput = document.getElementById("imagenes-file");
-const agregarBtn = document.getElementById("agregar-btn"); // nuevo botón
+const agregarBtn = document.getElementById("agregar-btn");
 
 let productos = [];
 const socket = io(BASE_URL); 
@@ -228,18 +212,30 @@ async function subirImagenes(files) {
   for (let i = 0; i < files.length; i++) {
     formData.append("imagenes", files[i]);
   }
+
+  // No enviar headers de Content-Type ni Authorization
   const res = await fetch(`${BASE_URL}/api/subir-imagenes`, {
     method: "POST",
-    headers: { "Authorization": AUTH_TOKEN },
     body: formData
   });
-  const data = await res.json(); // { urls: [...] }
-  return data.urls || [];
+
+  // Validar respuesta
+  if (!res.ok) {
+    console.error("Error subiendo imágenes:", res.status, res.statusText);
+    return [];
+  }
+
+  try {
+    const data = await res.json();
+    return data.urls || [];
+  } catch (err) {
+    console.error("Error parseando JSON:", err);
+    return [];
+  }
 }
 
-// NUEVO: botón de agregar producto
+
 agregarBtn.addEventListener("click", async () => {
-  // Validación manual de campos
   if (!document.getElementById("titulo").value ||
       !document.getElementById("description").value ||
       !document.getElementById("mainCat").value ||
@@ -274,10 +270,7 @@ agregarBtn.addEventListener("click", async () => {
       body: JSON.stringify(nuevo)
     });
     const data = await res.json();
-    productos.push({
-      id: data.id || "prod-" + Date.now(),
-      ...nuevo
-    });
+    productos.push({ id: data.id || "prod-" + Date.now(), ...nuevo });
     socket.emit("productos-actualizados", productos);
     renderProductos(searchInput.value);
     mostrarMensaje();
@@ -320,7 +313,5 @@ socket.on("actualizar-productos", data => {
   renderProductos(searchInput.value);
 });
 </script>
-
-
 </body>
 </html>
