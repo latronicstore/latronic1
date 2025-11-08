@@ -90,16 +90,17 @@ body { background:#1e1e1e; color:#fff; }
   <h1>Admin Panel</h1>
   <input type="text" id="search-input" placeholder="Search products...🔎"/>
 
-  <form id="form-producto">
-    <input type="text" id="titulo" placeholder="Título del producto" required />
-    <textarea id="description" placeholder="Descripción" required></textarea>
-    <input type="file" id="imagenes-file" multiple accept="image/*" />
-    <input type="text" id="mainCat" placeholder="Categoría principal" required />
-    <input type="text" id="subCat" placeholder="Subcategoría" required />
-    <input type="number" id="price" placeholder="Precio" required />
-    <input type="number" id="stock" placeholder="Stock" required />
-    <button type="submit">Agregar producto</button>
-  </form>
+  <form id="form-producto" novalidate>
+  <input type="text" id="titulo" placeholder="Título del producto" required />
+  <textarea id="description" placeholder="Descripción" required></textarea>
+  <input type="file" id="imagenes-file" multiple accept="image/*" />
+  <input type="text" id="mainCat" placeholder="Categoría principal" required />
+  <input type="text" id="subCat" placeholder="Subcategoría" required />
+  <input type="number" id="price" placeholder="Precio" required />
+  <input type="number" id="stock" placeholder="Stock" required />
+  <button type="button" id="agregar-btn">Agregar producto</button>
+</form>
+
 
   <div class="productos" id="lista-productos"></div>
 </div>
@@ -108,7 +109,7 @@ body { background:#1e1e1e; color:#fff; }
 
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-const ADMIN_PASSWORD = "161824"; 
+const ADMIN_PASSWORD = "042525"; 
 const BASE_URL = window.location.hostname.includes("onrender.com") 
                  ? "https://" + window.location.hostname 
                  : ""; 
@@ -124,6 +125,7 @@ const formProducto = document.getElementById("form-producto");
 const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
 const imagenesFileInput = document.getElementById("imagenes-file");
+const agregarBtn = document.getElementById("agregar-btn"); // nuevo botón
 
 let productos = [];
 const socket = io(BASE_URL); 
@@ -235,10 +237,20 @@ async function subirImagenes(files) {
   return data.urls || [];
 }
 
-formProducto.addEventListener("submit", async e => {
-  e.preventDefault();
-  let imagenesUrls = [];
+// NUEVO: botón de agregar producto
+agregarBtn.addEventListener("click", async () => {
+  // Validación manual de campos
+  if (!document.getElementById("titulo").value ||
+      !document.getElementById("description").value ||
+      !document.getElementById("mainCat").value ||
+      !document.getElementById("subCat").value ||
+      !document.getElementById("price").value ||
+      !document.getElementById("stock").value) {
+    alert("❌ Por favor completa todos los campos");
+    return;
+  }
 
+  let imagenesUrls = [];
   if (imagenesFileInput.files.length > 0) {
     imagenesUrls = await subirImagenes(imagenesFileInput.files);
   }
@@ -308,6 +320,7 @@ socket.on("actualizar-productos", data => {
   renderProductos(searchInput.value);
 });
 </script>
+
 
 </body>
 </html>
