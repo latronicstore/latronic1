@@ -93,7 +93,7 @@ body { background:#1e1e1e; color:#fff; }
   <form id="form-producto">
     <input type="text" id="titulo" placeholder="Título del producto" required />
     <textarea id="description" placeholder="Descripción" required></textarea>
-    <input type="text" id="imagenes" placeholder="URLs separadas por coma" required />
+    <input type="file" id="imagenes-file" multiple accept="image/*" />
     <input type="text" id="mainCat" placeholder="Categoría principal" required />
     <input type="text" id="subCat" placeholder="Subcategoría" required />
     <input type="number" id="price" placeholder="Precio" required />
@@ -123,6 +123,7 @@ const listaProductos = document.getElementById("lista-productos");
 const formProducto = document.getElementById("form-producto");
 const mensajeGuardado = document.getElementById("mensaje-guardado");
 const searchInput = document.getElementById("search-input");
+const imagenesFileInput = document.getElementById("imagenes-file");
 
 let productos = [];
 const socket = io(BASE_URL); 
@@ -137,7 +138,6 @@ async function cargarProductos() {
   try {
     const res = await fetch(`${BASE_URL}/api/productos`, { cache: "no-store" });
     productos = await res.json();
-    // Asegurar estructura mínima
     productos = productos.map(p => ({
       id: p.id || "prod-" + Date.now(),
       titulo: p.titulo || "Sin título",
@@ -221,12 +221,32 @@ async function eliminarProducto(id) {
   }
 }
 
+async function subirImagenes(files) {
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append("imagenes", files[i]);
+  }
+  const res = await fetch(`${BASE_URL}/api/subir-imagenes`, {
+    method: "POST",
+    headers: { "Authorization": AUTH_TOKEN },
+    body: formData
+  });
+  const data = await res.json(); // { urls: [...] }
+  return data.urls || [];
+}
+
 formProducto.addEventListener("submit", async e => {
   e.preventDefault();
+  let imagenesUrls = [];
+
+  if (imagenesFileInput.files.length > 0) {
+    imagenesUrls = await subirImagenes(imagenesFileInput.files);
+  }
+
   const nuevo = {
     titulo: document.getElementById("titulo").value,
     description: document.getElementById("description").value,
-    imagenes: document.getElementById("imagenes").value.split(",").map(s => s.trim()),
+    imagenes: imagenesUrls,
     categoria: {
       main: document.getElementById("mainCat").value,
       sub: document.getElementById("subCat").value
@@ -234,6 +254,7 @@ formProducto.addEventListener("submit", async e => {
     price: Number(document.getElementById("price").value),
     stock: Number(document.getElementById("stock").value)
   };
+
   try {
     const res = await fetch(`${BASE_URL}/api/productos`, {
       method: "POST",
