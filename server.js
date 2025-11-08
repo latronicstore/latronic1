@@ -154,10 +154,10 @@ app.post("/api/send-offer", async (req, res) => {
       subject: `🎁 LaTRONIC Special Offer`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
-          <h2>Oferta para ti 🧡</h2>
-          <p><b>Producto:</b> ${producto}</p>
-          <p><b>Oferta:</b> ${oferta}</p>
-          <p>¡"Thank you for shopping at LaTRONIC Store!"</p>
+          <h2>Offer for you ✅</h2>
+          <p><b>Product:</b> ${producto}</p>
+          <p><b>Offer:</b> ${oferta}</p>
+          <p>¡"Thank you for choosing LaTRONIC Store!"</p>
         </div>
       `
     };
@@ -166,13 +166,13 @@ app.post("/api/send-offer", async (req, res) => {
     const mailOptionsAdmin = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
-      subject: `🎁 Oferta enviada a ${email}`,
+      subject: `🎁 Offer sent to ${email}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; background: #f9f9f9;">
-          <h2>Oferta enviada</h2>
-          <p><b>Cliente:</b> ${email}</p>
-          <p><b>Producto:</b> ${producto}</p>
-          <p><b>Oferta:</b> ${oferta}</p>
+          <h2>Offer sent</h2>
+          <p><b>Client:</b> ${email}</p>
+          <p><b>Product:</b> ${producto}</p>
+          <p><b>Offer:</b> ${oferta}</p>
         </div>
       `
     };
@@ -180,11 +180,11 @@ app.post("/api/send-offer", async (req, res) => {
     await transporter.sendMail(mailOptionsCliente);
     await transporter.sendMail(mailOptionsAdmin);
 
-    console.log(`✅ Oferta enviada a ${email} sobre ${producto}`);
+    console.log(`✅ Offer sent to ${email} About ${producto}`);
     res.json({ success: true, message: "Payment not completed" });
 
   } catch (err) {
-    console.error("❌ Error enviando oferta:", err);
+    console.error("❌ Error sending offer:", err);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
