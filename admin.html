@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<style>
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+body { background:#1e1e1e; color:#fff; }
+#login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:#111; }
+#login-box { background:#2a2a2a; padding:30px; border-radius:10px; text-align:center; width:90%; max-width:350px; }
+#login-box input, #login-box button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; font-size:1rem; }
+#login-box button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+#admin-panel { display:none; padding:20px; max-width:1200px; margin:0 auto; }
+#admin-panel h1 { margin-bottom:15px; }
+#form-producto input, #form-producto textarea, #form-producto button { width:100%; padding:10px; margin-bottom:10px; border:none; border-radius:5px; font-size:1rem; }
+#form-producto input, #form-producto textarea { background:#2a2a2a; color:#fff; }
+#form-producto button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+#search-input { width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease; }
+#search-input:focus { box-shadow:0 0 10px #e28f2f; }
+.productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+.producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
+.producto:hover { transform:scale(1.03); }
+.producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
+.mini-images { display:flex; margin-bottom:10px; flex-wrap: wrap; gap:5px; }
+.producto h3 { font-size:1.1rem; margin-bottom:5px; }
+.producto p { font-size:0.9rem; margin-bottom:5px; }
+.producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
+.producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
+#mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
+.top-buttons { display:flex; gap:10px; margin-bottom:20px; }
+.top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
+
+@media (max-width: 768px) {
+  #admin-panel { padding: 10px; max-width: 100%; }
+  .productos { grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
+  .producto { padding: 10px; }
+  .producto img { width:100%; height:auto; margin-right:0; margin-bottom:5px; }
+  .producto h3 { font-size:1rem; }
+  .producto p { font-size:0.85rem; }
+  .producto input, .producto button { width:100%; margin-bottom:5px; }
+  .mini-images { flex-direction: column; }
+  .top-buttons { flex-direction: column; }
+  .top-buttons button { width:100%; margin-bottom:5px; }
+  #login-box { width:95%; max-width:300px; padding:20px; }
+}
+@media (max-width: 400px) {
+  .productos { grid-template-columns: 1fr; gap:8px; }
+  .producto h3 { font-size:0.95rem; }
+  .producto p { font-size:0.8rem; }
+  #login-box { padding:15px; }
+}
+
+#login-btn:hover{ 
+  background-color: rgb(214, 80, 17);
+  color: white;
+}
+
+#back:hover{ 
+  background-color: rgb(214, 80, 17);
+  color: white;
+}
+
+.advice{
+  color: rgba(255, 0, 0, 0.795);
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div id="login-box">
+    <h1>🔒 Admin Access</h1>
+    <h6 class="advice">This site is only for the administrator</h6>
+    <input type="password" id="admin-password" placeholder="Enter Password" />
+    <button id="login-btn">Enter</button>
+    <button id="back" onclick="window.location.href='shop.html'">Exit</button>
+  </div>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="admin-panel">
+  <div class="top-buttons">
+    <button id="logout-btn">Logout</button>
+    <button id="go-shop-btn">Go to Shop 🛍️</button>
+  </div>
+
+  <h1>Admin Panel</h1>
+  <input type="text" id="search-input" placeholder="Search products...🔎"/>
+
+  <form id="form-producto" novalidate>
+  <input type="text" id="titulo" placeholder="Título del producto" required />
+  <textarea id="description" placeholder="Descripción" required></textarea>
+  <input type="file" id="imagenes-file" multiple accept="image/*" />
+  <input type="text" id="mainCat" placeholder="Categoría principal" required />
+  <input type="text" id="subCat" placeholder="Subcategoría" required />
+  <input type="number" id="price" placeholder="Precio" required />
+  <input type="number" id="stock" placeholder="Stock" required />
+  <button type="button" id="agregar-btn">Agregar producto</button>
+</form>
+
+
+  <div class="productos" id="lista-productos"></div>
+</div>
+
+<div id="mensaje-guardado">✅ Cambios guardados correctamente</div>
+
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+const ADMIN_PASSWORD = "042525"; 
+const BASE_URL = window.location.hostname.includes("onrender.com") 
+                 ? "https://" + window.location.hostname 
+                 : ""; 
+
+const loginScreen = document.getElementById("login-screen");
+const adminPanel = document.getElementById("admin-panel");
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const goShopBtn = document.getElementById("go-shop-btn");
+const passwordInput = document.getElementById("admin-password");
+const listaProductos = document.getElementById("lista-productos");
+const formProducto = document.getElementById("form-producto");
+const mensajeGuardado = document.getElementById("mensaje-guardado");
+const searchInput = document.getElementById("search-input");
+const imagenesFileInput = document.getElementById("imagenes-file");
+const agregarBtn = document.getElementById("agregar-btn"); // nuevo botón
+
+let productos = [];
+const socket = io(BASE_URL); 
+let AUTH_TOKEN = "";
+
+function mostrarMensaje() {
+  mensajeGuardado.style.display = "block";
+  setTimeout(() => mensajeGuardado.style.display = "none", 2000);
+}
+
+async function cargarProductos() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/productos`, { cache: "no-store" });
+    productos = await res.json();
+    productos = productos.map(p => ({
+      id: p.id || "prod-" + Date.now(),
+      titulo: p.titulo || "Sin título",
+      description: p.description || "",
+      imagenes: Array.isArray(p.imagenes) ? p.imagenes : [],
+      categoria: { main: p.categoria?.main || "Sin categoría", sub: p.categoria?.sub || "" },
+      price: Number(p.price) || 0,
+      stock: Number(p.stock) || 0
+    }));
+    renderProductos();
+  } catch (err) {
+    console.error("Error cargando productos:", err);
+  }
+}
+
+function renderProductos(filter = "") {
+  listaProductos.innerHTML = "";
+  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
+  filtrados.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "producto";
+
+    const miniImgs = document.createElement("div");
+    miniImgs.className = "mini-images";
+    p.imagenes.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      miniImgs.appendChild(img);
+    });
+    div.appendChild(miniImgs);
+
+    div.innerHTML += `
+      <h3>${p.titulo}</h3>
+      <p>${p.description}</p>
+      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
+      <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
+      <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
+      <button onclick="actualizarProducto('${p.id}')">Guardar</button>
+      <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
+    `;
+    listaProductos.appendChild(div);
+  });
+}
+
+async function actualizarProducto(id) {
+  const prod = productos.find(p => p.id === id);
+  if (!prod) return;
+  const updated = {
+    price: Number(document.getElementById(`price-${id}`).value),
+    stock: Number(document.getElementById(`stock-${id}`).value)
+  };
+  try {
+    const res = await fetch(`${BASE_URL}/api/productos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
+      body: JSON.stringify(updated)
+    });
+    const data = await res.json();
+    productos = productos.map(p => (p.id === id ? { ...p, ...data } : p));
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function eliminarProducto(id) {
+  if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
+  try {
+    await fetch(`${BASE_URL}/api/productos/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": AUTH_TOKEN }
+    });
+    productos = productos.filter(p => p.id !== id);
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function subirImagenes(files) {
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append("imagenes", files[i]);
+  }
+  const res = await fetch(`${BASE_URL}/api/subir-imagenes`, {
+    method: "POST",
+    headers: { "Authorization": AUTH_TOKEN },
+    body: formData
+  });
+  const data = await res.json(); // { urls: [...] }
+  return data.urls || [];
+}
+
+// NUEVO: botón de agregar producto
+agregarBtn.addEventListener("click", async () => {
+  // Validación manual de campos
+  if (!document.getElementById("titulo").value ||
+      !document.getElementById("description").value ||
+      !document.getElementById("mainCat").value ||
+      !document.getElementById("subCat").value ||
+      !document.getElementById("price").value ||
+      !document.getElementById("stock").value) {
+    alert("❌ Por favor completa todos los campos");
+    return;
+  }
+
+  let imagenesUrls = [];
+  if (imagenesFileInput.files.length > 0) {
+    imagenesUrls = await subirImagenes(imagenesFileInput.files);
+  }
+
+  const nuevo = {
+    titulo: document.getElementById("titulo").value,
+    description: document.getElementById("description").value,
+    imagenes: imagenesUrls,
+    categoria: {
+      main: document.getElementById("mainCat").value,
+      sub: document.getElementById("subCat").value
+    },
+    price: Number(document.getElementById("price").value),
+    stock: Number(document.getElementById("stock").value)
+  };
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/productos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
+      body: JSON.stringify(nuevo)
+    });
+    const data = await res.json();
+    productos.push({
+      id: data.id || "prod-" + Date.now(),
+      ...nuevo
+    });
+    socket.emit("productos-actualizados", productos);
+    renderProductos(searchInput.value);
+    mostrarMensaje();
+    formProducto.reset();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+loginBtn.addEventListener("click", () => {
+  if (passwordInput.value === ADMIN_PASSWORD) {
+    AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
+    loginScreen.style.display = "none";
+    adminPanel.style.display = "block";
+    cargarProductos();
+  } else {
+    alert("❌ Contraseña incorrecta");
+  }
+});
+
+logoutBtn.addEventListener("click", () => {
+  loginScreen.style.display = "flex";
+  adminPanel.style.display = "none";
+  AUTH_TOKEN = "";
+});
+
+goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
+searchInput.addEventListener("input", () => renderProductos(searchInput.value));
+
+socket.on("actualizar-productos", data => {
+  productos = data.map(p => ({
+    id: p.id || "prod-" + Date.now(),
+    titulo: p.titulo || "Sin título",
+    description: p.description || "",
+    imagenes: Array.isArray(p.imagenes) ? p.imagenes : [],
+    categoria: { main: p.categoria?.main || "Sin categoría", sub: p.categoria?.sub || "" },
+    price: Number(p.price) || 0,
+    stock: Number(p.stock) || 0
+  }));
+  renderProductos(searchInput.value);
+});
+</script>
+
+
+</body>
+</html>
