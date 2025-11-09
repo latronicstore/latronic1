@@ -88,6 +88,99 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
 .link { color: #e28f2f; text-decoration: none; }
 .link:hover { text-decoration: underline; color: red;}
+
+/* --- AGE CHECK MODAL STYLES --- */
+/* --- AGE CHECK MODAL --- */
+.age-check-modal {
+  display: flex; /* Siempre flex para centrar, oculto con opacity */
+  position: fixed;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none; /* Evita interacción cuando invisible */
+  transition: opacity 0.4s ease;
+}
+
+.age-check-modal.show {
+  opacity: 1;
+  pointer-events: auto; /* Permite interacción cuando visible */
+}
+
+/* Animación del cuadro */
+.age-check-box {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px 40px;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0,0,0,0.7);
+  transform: translateY(-200px);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+
+/* Cuando se muestra */
+.age-check-modal.show .age-check-box {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Cuando se cierra */
+.age-check-modal.hide .age-check-box {
+  transform: translateY(-200px);
+  opacity: 0;
+}
+
+/* Títulos y texto */
+.age-check-box h2 {
+  color: #e28f2f;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.age-check-box p {
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: 25px;
+}
+
+/* Botones */
+.age-check-buttons button {
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 5px;
+  transition: all 0.2s;
+}
+
+#ageYes {
+  background: #e28f2f;
+  color: #1a1a1a;
+}
+
+#ageYes:hover {
+  background: #21e607;
+}
+
+#ageNo {
+  background: #333;
+  color: #fff;
+}
+
+#ageNo:hover {
+  background: #e20c0c;
+}
+
+
 </style>
 </head>
 <body>
@@ -146,6 +239,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="more" data-sub="history">History</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="magazines">Magazines</button></li>
+         <li><button class="boton-categoria" data-main="more" data-sub="adultmagazines">Adult-Magazines</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="comics">Comics</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="figures">Figures</button></li>
         <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
@@ -202,6 +296,21 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   </div>
 </div>
 
+<!-- MODAL VERIFICACIÓN ADULTO -->
+<!-- AGE CHECK MODAL -->
+<div id="ageCheckModal" class="age-check-modal">
+  <div class="age-check-box">
+    <h2>Adult Content Warning</h2>
+    <p>This section contains adult material that may not be suitable for minors. By clicking “Yes, I am 18+”, you confirm that you are at least 18 years old (or the legal age in your jurisdiction) and agree to view this content. If you are under 18, or do not wish to view adult content, please click “No, exit” and leave this section immediately.</p>
+    <div class="age-check-buttons">
+      <button id="ageYes">Yes, I am 18+</button>
+      <button id="ageNo">No, exit</button>
+    </div>
+  </div>
+</div>
+
+
+
 
 
 <!-- Socket.io -->
@@ -251,6 +360,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
+
+// --- AGE CHECK MODAL
+const adultButton = document.querySelector('button[data-sub="adultmagazines"]');
+const ageModal = document.getElementById("ageCheckModal");
+const ageYes = document.getElementById("ageYes");
+const ageNo = document.getElementById("ageNo");
+
+if (adultButton && ageModal && ageYes && ageNo) {
+  adultButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    ageModal.classList.add("show");
+  });
+
+  ageYes.addEventListener("click", () => {
+    ageModal.classList.remove("show");
+    console.log("Access granted to Adult-Magazines");
+    // loadCategory("more","adultmagazines"); // Descomenta si tienes función para cargar
+  });
+
+  ageNo.addEventListener("click", () => {
+    ageModal.classList.remove("show");
+    alert("Sorry, you must be 18 years or older to access this section.");
+  });
+}
+
+
 
   if (aside) {
     aside.addEventListener("click", e => {
