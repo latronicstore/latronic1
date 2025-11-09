@@ -180,7 +180,7 @@ app.post("/api/send-offer", async (req, res) => {
     await transporter.sendMail(mailOptionsAdmin);
 
     console.log(`✅ Offer sent to ${email} About ${producto}`);
-    res.json({ success: true, message: "Offer sent" });
+    res.json({ success: true, message: "Offer sent ✅" });
   } catch (err) {
     console.error("❌ Error sending offer:", err);
     res.status(500).json({ success: false, error: "Internal server error" });
