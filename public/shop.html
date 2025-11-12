@@ -380,9 +380,11 @@ if (adultButton && ageModal && ageYes && ageNo) {
   });
 
   ageNo.addEventListener("click", () => {
-    ageModal.classList.remove("show");
-    alert("Sorry, you must be 18 years or older to access this section.");
-  });
+  ageModal.classList.remove("show");
+  alert("Sorry, you must be 18 years or older to access this section.");
+  window.location.href = "index.html"; // Redirige a la página principal
+});
+
 }
 
 
@@ -739,13 +741,6 @@ renderProductos(productosMaster.filter(p => (p.categoria?.sub || "").toLowerCase
 
 });
 </script>
-
-
-
-
-
-
-
 
 
 </body>
