@@ -380,9 +380,13 @@ if (adultButton && ageModal && ageYes && ageNo) {
   });
 
   ageNo.addEventListener("click", () => {
-    ageModal.classList.remove("show");
-    alert("Sorry, you must be 18 years or older to access this section.");
-  });
+  ageModal.classList.add("hide");
+  setTimeout(() => {
+    ageModal.classList.remove("show", "hide");
+    window.location.href = "index.html"; // 🔥 Redirige al All Products
+  }, 400); // Espera a que termine la animación
+});
+
 }
 
 
@@ -590,7 +594,74 @@ if (adultButton && ageModal && ageYes && ageNo) {
   }
 
   // --- Inicial render con la lista maestra
-  renderProductos(productosMaster);
+  // --- FUNCIÓN DE ALERTA DE EDAD ---
+function verificarEdad(callbackYes, callbackNo) {
+  const ageModal = document.getElementById("ageCheckModal");
+  const ageYes = document.getElementById("ageYes");
+  const ageNo = document.getElementById("ageNo");
+
+  if (!ageModal || !ageYes || !ageNo) return;
+
+  setTimeout(() => {
+    ageModal.classList.add("show");
+  }, 200);
+
+  ageYes.onclick = null;
+  ageNo.onclick = null;
+
+  ageYes.onclick = () => {
+    ageModal.classList.add("hide");
+    setTimeout(() => {
+      ageModal.classList.remove("show", "hide");
+      if (typeof callbackYes === "function") callbackYes();
+    }, 400);
+  };
+
+  ageNo.onclick = () => {
+    ageModal.classList.add("hide");
+    setTimeout(() => {
+      ageModal.classList.remove("show", "hide");
+      if (typeof callbackNo === "function") callbackNo();
+    }, 400);
+  };
+}
+
+// --- RENDER INICIAL (ALL PRODUCTS) ---
+// 🔹 Filtramos los productos adultos fuera del listado general
+const productosSinAdultos = productosMaster.filter(p => 
+  !(p.categoria?.main?.toLowerCase() === "more" && 
+    p.categoria?.sub?.toLowerCase() === "adultmagazines")
+);
+
+// Renderizamos solo los productos NO adultos
+renderProductos(productosSinAdultos);
+
+
+// --- EVENTO DEL BOTÓN "ADULT MAGAZINES" ---
+const btnAdult = document.querySelector('[data-category="adultmagazines"]');
+if (btnAdult) {
+  btnAdult.addEventListener("click", () => {
+    verificarEdad(
+      () => {
+        const adultos = productosMaster.filter(p => 
+          p.categoria?.main?.toLowerCase() === "more" &&
+          p.categoria?.sub?.toLowerCase() === "adultmagazines"
+        );
+        renderProductos(adultos);
+        document.getElementById("titulo-principal").textContent = "Adult Magazines";
+      },
+      () => {
+        const contenedor = document.getElementById("contenedor-productos");
+        const titulo = document.getElementById("titulo-principal");
+        contenedor.innerHTML = "<p>Access denied to adult content.</p>";
+        titulo.textContent = "Restricted Content";
+      }
+    );
+  });
+}
+
+
+  
 
   // --- Buscador inteligente
   const searchInput = document.getElementById("search-input");
@@ -603,14 +674,24 @@ if (adultButton && ageModal && ageYes && ageNo) {
   function doSearch() {
     if (!searchInput) return;
     const query = normalizeText(searchInput.value || "").trim();
+    
+    // Si no hay búsqueda, mostramos todos los productos sin adultos
     if (!query) {
       document.getElementById("titulo-principal").textContent = "All Products";
-      renderProductos(productosMaster);
+      renderProductos(productosMaster.filter(p => 
+        !(p.categoria?.main?.toLowerCase() === "more" && 
+          p.categoria?.sub?.toLowerCase() === "adultmagazines")
+      ));
       return;
     }
+
     const terms = query.split(/\s+/).filter(Boolean);
 
+    // Filtramos y excluimos Adult Magazines
     const filtrados = productosMaster.filter(p => {
+      if (p.categoria?.main?.toLowerCase() === "more" &&
+          p.categoria?.sub?.toLowerCase() === "adultmagazines") return false;
+
       const fields = [
         normalizeText(p.titulo),
         normalizeText(p.description),
@@ -624,6 +705,7 @@ if (adultButton && ageModal && ageYes && ageNo) {
     document.getElementById("titulo-principal").textContent = `Search: "${searchInput.value}" (${filtrados.length})`;
     renderProductos(filtrados);
   }
+
 
   if (searchBtn) {
     searchBtn.addEventListener("click", doSearch);
@@ -734,14 +816,6 @@ if (adultButton && ageModal && ageYes && ageNo) {
 
 });
 </script>
-
-
-
-
-
-
-
-
 
 </body>
 </html>

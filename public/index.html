@@ -81,52 +81,37 @@ main { flex: 1; padding: 2rem; }
 
 .anuncios-track {
   display: flex;
-  animation: scrollAnuncios 8s linear infinite;
+  flex-wrap: nowrap;
+  animation: scrollAnuncios 10s linear infinite;
 }
 
 .anuncio {
-  flex: 0 0 100%;
-  text-align: center;
-  padding: 0.8rem;
+  flex: 0 0 auto;
+  padding: 0.8rem 3rem; /* más espacio entre anuncios */
+  white-space: nowrap;
   font-family: "Oswald", sans-serif;
   font-size: 1.1rem;
   font-weight: bold;
   color: #e28f2f;
-  white-space: nowrap;
-}
-
-@keyframes scrollAnuncios {
-  0% { transform: translateX(0); }
-  45% { transform: translateX(0); }
-  50% { transform: translateX(-100%); }
-  95% { transform: translateX(-100%); }
-  100% { transform: translateX(0); }
-}
-
-.anuncio1 {
-  flex: 0 0 100%;
-  text-align: center;
-  padding: 0.8rem;
-  font-family: "Oswald", sans-serif;
-  font-size: .9rem;
-  font-weight: bold;
-  color: #e23b2f;
-  white-space: nowrap;
-}
-
-.featured-product{
-  color: rgba(250, 149, 33, 0.918)
 }
 
 .email-link {
-  color: inherit;       
-  text-decoration: none; 
-  font-weight: bold;
+  color: #ffcc00;
+  text-decoration: underline;
 }
 
 .email-link:hover {
-  text-decoration: underline; 
+  color: #ff0000;
+  text-decoration: underline;
 }
+
+/* Scroll infinito */
+@keyframes scrollAnuncios {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-450%); } /* -50% porque duplicamos el contenido */
+}
+
+
 
 /* --- Vista móvil simplificada --- */
 @media (max-width: 768px) {
@@ -190,7 +175,7 @@ main { flex: 1; padding: 2rem; }
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: tickerMove 15s linear infinite; 
+  animation: tickerMove 20s linear infinite; 
 }
 
 .ticker-item {
@@ -205,7 +190,7 @@ main { flex: 1; padding: 2rem; }
 
 /* Movimiento de derecha a izquierda */
 @keyframes tickerMove {
-  0% { transform: translateX(100%); }
+  0% { transform: translateX(15%); }
   100% { transform: translateX(-100%); }
 }
 
@@ -240,12 +225,13 @@ main { flex: 1; padding: 2rem; }
     <div class="ticker-item">💳 Payment Debit or Credit card</div>
     <div class="ticker-item">🚚📦 Free shipping on all orders</div>
     <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
-    <div class="ticker-item">🤝 We’re open to negotiate anytine</div>
+    <div class="ticker-item">🤝 We’re open to negotiate anytime — ✉️ <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a></div>
+
   </div>
 </div>
 
 <!-- Producto destacado -->
-        <div id="featured-product" class="featured-product">Top items</div>
+        <div id="featured-product" class="featured-product">Top items 🔥</div>
 
         <!-- Carrusel con los otros top -->
         <div class="aside-carousel">
@@ -262,22 +248,18 @@ main { flex: 1; padding: 2rem; }
 
         
 
-        <!-- Carrusel de Anuncios -->
+<!-- Carrusel de anuncios principal -->
 <div class="anuncios-carousel">
-  <div class="anuncios-track" id="anuncios-track">
+  <div class="anuncios-track">
     <div class="anuncio">🚚 Free Shipping</div>
     <div class="anuncio">Contact us</div>
-   
-  </div>
-</div>
-<div class="anuncios-carousel">
-  <div class="anuncios-track" id="anuncios-track">
-    <div class="anuncio">🤝 We’re open to negotiate anytine</div>
-    <div class="anuncio1">
-      ✉️ <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a>
+    <div class="anuncio">🤝 We’re open to negotiate anytime — ✉️ 
+      <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a>
     </div>
   </div>
 </div>
+
+
      
 
 
