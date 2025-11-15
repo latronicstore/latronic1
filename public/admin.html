@@ -183,7 +183,7 @@ async function actualizarProducto(id) {
     });
     const data = await res.json();
     productos = productos.map(p => (p.id === id ? { ...p, ...data } : p));
-    socket.emit("productos-actualizados", productos);
+    socket.emit("actualizar-productos", productos);
     renderProductos(searchInput.value);
     mostrarMensaje();
   } catch (err) {
