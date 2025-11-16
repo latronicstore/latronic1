@@ -267,20 +267,23 @@ app.post("/api/productos", async (req, res) => {
   const nuevo = req.body;
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
   const producto = await guardarProducto(nuevo);
-  io.emit("actualizar-productos", await leerProductos());
-  res.status(201).json(producto);
+io.emit("actualizar-productos", producto);
+res.status(201).json(producto);
+
 });
 
 app.put("/api/productos/:id", async (req, res) => {
   const actualizado = await actualizarProducto(req.params.id, req.body);
-  io.emit("actualizar-productos", await leerProductos());
-  res.json(actualizado);
+io.emit("actualizar-productos", actualizado);
+res.json(actualizado);
+
 });
 
 app.delete("/api/productos/:id", async (req, res) => {
   await eliminarProducto(req.params.id);
-  io.emit("actualizar-productos", await leerProductos());
-  res.json({ success: true });
+io.emit("eliminar-producto", req.params.id);
+res.json({ success: true });
+
 });
 
 // --------------------
