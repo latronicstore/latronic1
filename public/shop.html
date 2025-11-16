@@ -686,54 +686,74 @@ renderProductos(productosMaster.filter(p => (p.categoria?.sub || "").toLowerCase
     });
   }
 
-  // --- SOCKET.IO: actualizar productos en tiempo real
-  socket.on("actualizar-productos", (updatedProducts) => {
-    const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+ // --- SOCKET.IO: actualizar productos en tiempo real (SIN DESCUENTO)
+socket.on("actualizar-productos", (updatedProducts) => {
 
-    updatedProducts.forEach(up => {
-      const idx = productosMaster.findIndex(p => p.id === up.id);
-      if (idx !== -1) {
-        // mantén imagenes absolutas si vienen relativas
-        up.imagenes = (up.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean);
-        productosMaster[idx] = { ...productosMaster[idx], ...up };
-      } else {
-        up.imagenes = (up.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean);
-        productosMaster.push(up);
+  const updates = Array.isArray(updatedProducts)
+    ? updatedProducts
+    : [updatedProducts];
+
+  const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
+
+  updates.forEach(up => {
+    const idx = productosMaster.findIndex(p => p.id === up.id);
+
+    if (idx !== -1) {
+      // actualizar existente
+      up.imagenes = (up.imagenes || []).map(url =>
+        url ? (url.startsWith("/") ? BASE_URL + url : url) : ""
+      ).filter(Boolean);
+
+      productosMaster[idx] = { ...productosMaster[idx], ...up };
+    } else {
+      // nuevo producto
+      up.imagenes = (up.imagenes || []).map(url =>
+        url ? (url.startsWith("/") ? BASE_URL + url : url) : ""
+      ).filter(Boolean);
+
+      productosMaster.push(up);
+    }
+
+    // actualizar DOM
+    const existingDiv = contenedor.querySelector(`.producto[data-id='${up.id}']`);
+    if (existingDiv) {
+      const prod = productosMaster.find(p => p.id === up.id);
+      const carritoItem = carrito.find(c => c.id === prod.id);
+      const cantidadEnCarrito = carritoItem?.quantity || 0;
+      const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
+
+      const pStock = existingDiv.querySelector(".stock");
+      if (pStock) {
+        pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
+        pStock.style.color = stockRestante > 0 ? "gray" : "red";
       }
 
-      // intenta actualizar DOM si el producto ya está visible
-      const existingDiv = contenedor.querySelector(`.producto[data-id='${up.id}']`);
-      if (existingDiv) {
-        const prod = productosMaster.find(p => p.id === up.id);
-        const carritoItem = carrito.find(c => c.id === prod.id);
-        const cantidadEnCarrito = carritoItem?.quantity || 0;
-        const stockRestante = (typeof prod.stock === "number" ? prod.stock : 0) - cantidadEnCarrito;
+      const pPrice = existingDiv.querySelector(".price");
+      if (pPrice) pPrice.textContent = "$" + (prod.price ?? 0);
 
-        const pStock = existingDiv.querySelector(".stock");
-        if (pStock) {
-          pStock.textContent = stockRestante > 0 ? `Stock: ${stockRestante}` : "Out of stock";
-          pStock.style.color = stockRestante > 0 ? "gray" : "red";
-        }
-
-        const pPrice = existingDiv.querySelector(".price");
-        if (pPrice) pPrice.textContent = "$" + (prod.price ?? 0);
-
-        const btn = existingDiv.querySelector(".agregar-carrito");
-        if (btn) {
-          btn.disabled = stockRestante <= 0;
-          btn.textContent = stockRestante > 0 ? (cantidadEnCarrito ? `Add (${cantidadEnCarrito})` : "Add") : "Out of stock";
-        }
-
-        const mainImg = existingDiv.querySelector(".main-img");
-        if (mainImg && prod.imagenes?.length) mainImg.src = prod.imagenes[0];
-      } else {
-        // nuevo producto -> render pequeño
-        renderProductos([up], window.scrollY);
+      const btn = existingDiv.querySelector(".agregar-carrito");
+      if (btn) {
+        btn.disabled = stockRestante <= 0;
+        btn.textContent = stockRestante > 0
+          ? (cantidadEnCarrito ? `Add (${cantidadEnCarrito})` : "Add")
+          : "Out of stock";
       }
-    });
 
-    if (cartCountEl) cartCountEl.textContent = carrito.reduce((acc, i) => acc + i.quantity, 0);
+      const mainImg = existingDiv.querySelector(".main-img");
+      if (mainImg && prod.imagenes?.length) mainImg.src = prod.imagenes[0];
+
+    } else {
+      // nuevo producto → render
+      renderProductos([up], window.scrollY);
+    }
   });
+
+  if (cartCountEl) {
+    cartCountEl.textContent = carrito.reduce((acc, i) => acc + i.quantity, 0);
+  }
+});
+
+
 
 });
 </script>
