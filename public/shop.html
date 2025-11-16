@@ -414,22 +414,18 @@ if (adultButton && ageModal && ageYes && ageNo) {
       const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
-      const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
-
       const productosFinal = data.map(p => {
-        const local = productosGuardados.find(lp => lp.id === p.id);
-        const precio = local?.price ?? p.price ?? 0;
-        const stock = typeof p.stock === "number" ? p.stock : Number(p.stock || 0);
-        return {
-          ...p,
-          stock: stock,
-          stockOriginal: local?.stockOriginal || stock,
-          price: precio,
-          soldOut: stock <= 0,
-          // convertir todas las urls a absolutas aquí
-          imagenes: (p.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean)
-        };
-      });
+    const stock = typeof p.stock === "number" ? p.stock : Number(p.stock || 0);
+    return {
+      ...p,
+      stock,
+      stockOriginal: stock,
+      price: p.price ?? 0,   // <-- usar siempre el backend
+      soldOut: stock <= 0,
+      imagenes: (p.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean)
+    };
+});
+
 
       localStorage.setItem("productos", JSON.stringify(productosFinal));
       return productosFinal;

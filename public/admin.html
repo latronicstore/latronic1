@@ -21,16 +21,14 @@ body { background:#1e1e1e; color:#fff; }
 .productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
 .producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
 .producto:hover { transform:scale(1.03); }
-.producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
 .mini-images { display:flex; margin-bottom:10px; flex-wrap: wrap; gap:5px; }
-.producto h3 { font-size:1.1rem; margin-bottom:5px; }
-.producto p { font-size:0.9rem; margin-bottom:5px; }
-.producto input { width:80px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
+.producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
+.producto input, .producto textarea { width:100%; margin-bottom:5px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
 .producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
 #mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
 .top-buttons { display:flex; gap:10px; margin-bottom:20px; }
 .top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-#login-btn:hover, #back:hover, .top-buttons button:hover, #form-producto button:hover { background-color: rgb(214, 80, 17); color: white; }
+#login-btn:hover, #back:hover, .top-buttons button:hover, #form-producto button:hover, .producto button:hover { background-color: rgb(214, 80, 17); color: white; }
 .advice{ color: rgba(255, 0, 0, 0.795); }
 
 @media (max-width: 768px) {
@@ -38,9 +36,7 @@ body { background:#1e1e1e; color:#fff; }
   .productos { grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
   .producto { padding: 10px; }
   .producto img { width:100%; height:auto; margin-right:0; margin-bottom:5px; }
-  .producto h3 { font-size:1rem; }
-  .producto p { font-size:0.85rem; }
-  .producto input, .producto button { width:100%; margin-bottom:5px; }
+  .producto input, .producto textarea, .producto button { width:100%; margin-bottom:5px; }
   .mini-images { flex-direction: column; }
   .top-buttons { flex-direction: column; }
   .top-buttons button { width:100%; margin-bottom:5px; }
@@ -48,8 +44,6 @@ body { background:#1e1e1e; color:#fff; }
 }
 @media (max-width: 400px) {
   .productos { grid-template-columns: 1fr; gap:8px; }
-  .producto h3 { font-size:0.95rem; }
-  .producto p { font-size:0.8rem; }
   #login-box { padding:15px; }
 }
 </style>
@@ -96,7 +90,7 @@ body { background:#1e1e1e; color:#fff; }
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
 const ADMIN_PASSWORD = "042525"; 
-const BASE_URL = window.location.hostname.includes("onrender.com") ? "https://" + window.location.hostname : ""; 
+const BASE_URL = "";  
 
 const loginScreen = document.getElementById("login-screen");
 const adminPanel = document.getElementById("admin-panel");
@@ -112,7 +106,7 @@ const imagenesFileInput = document.getElementById("imagenes-file");
 const agregarBtn = document.getElementById("agregar-btn");
 
 let productos = [];
-const socket = io(BASE_URL); 
+const socket = io(); 
 let AUTH_TOKEN = "";
 
 function mostrarMensaje() {
@@ -142,10 +136,12 @@ async function cargarProductos() {
 function renderProductos(filter = "") {
   listaProductos.innerHTML = "";
   const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
+
   filtrados.forEach(p => {
     const div = document.createElement("div");
     div.className = "producto";
 
+    // Mini imágenes
     const miniImgs = document.createElement("div");
     miniImgs.className = "mini-images";
     p.imagenes.forEach(url => {
@@ -155,26 +151,87 @@ function renderProductos(filter = "") {
     });
     div.appendChild(miniImgs);
 
-    div.innerHTML += `
-      <h3>${p.titulo}</h3>
-      <p>${p.description}</p>
-      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
-      <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
-      <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
-      <button onclick="actualizarProducto('${p.id}')">Guardar</button>
-      <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
-    `;
-    listaProductos.appendChild(div);
+    // Título
+    const tituloInput = document.createElement("input");
+    tituloInput.type = "text";
+    tituloInput.id = `titulo-${p.id}`;
+    tituloInput.value = p.titulo;
+    div.appendChild(tituloInput);
+
+    // Descripción
+    const descTextarea = document.createElement("textarea");
+    descTextarea.id = `desc-${p.id}`;
+    descTextarea.value = p.description;
+    div.appendChild(descTextarea);
+
+    // Categoría
+    const catP = document.createElement("p");
+    catP.textContent = `Categoría: ${p.categoria.main} / ${p.categoria.sub}`;
+    div.appendChild(catP);
+
+    // Precio y stock
+    const priceInput = document.createElement("input");
+    priceInput.type = "number";
+    priceInput.id = `price-${p.id}`;
+    priceInput.value = p.price;
+    div.appendChild(priceInput);
+
+    const stockInput = document.createElement("input");
+    stockInput.type = "number";
+    stockInput.id = `stock-${p.id}`;
+    stockInput.value = p.stock;
+    div.appendChild(stockInput);
+
+    // Subir nuevas imágenes
+    const imgInput = document.createElement("input");
+    imgInput.type = "file";
+    imgInput.id = `img-${p.id}`;
+    imgInput.multiple = true;
+    imgInput.accept = "image/*";
+    div.appendChild(imgInput);
+
+// Botones
+const guardarBtn = document.createElement("button");
+guardarBtn.type = "button"; // evita que actúe como submit
+guardarBtn.textContent = "Guardar";
+guardarBtn.addEventListener("click", (e) => {
+  e.preventDefault(); // previene cualquier comportamiento por defecto
+  actualizarProducto(p.id);
+});
+div.appendChild(guardarBtn);
+
+const eliminarBtn = document.createElement("button");
+eliminarBtn.type = "button";
+eliminarBtn.textContent = "Eliminar";
+eliminarBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  eliminarProducto(p.id);
+});
+div.appendChild(eliminarBtn);
+
+listaProductos.appendChild(div);
   });
 }
 
 async function actualizarProducto(id) {
   const prod = productos.find(p => p.id === id);
   if (!prod) return;
+
+  // Subir nuevas imágenes
+  let nuevasImagenes = [];
+  const fileInput = document.getElementById(`img-${id}`);
+  if (fileInput && fileInput.files.length > 0) {
+    nuevasImagenes = await subirImagenes(fileInput.files);
+  }
+
   const updated = {
+    titulo: document.getElementById(`titulo-${id}`).value,
+    description: document.getElementById(`desc-${id}`).value,
     price: Number(document.getElementById(`price-${id}`).value),
-    stock: Number(document.getElementById(`stock-${id}`).value)
+    stock: Number(document.getElementById(`stock-${id}`).value),
+    imagenes: [...prod.imagenes, ...nuevasImagenes]
   };
+
   try {
     const res = await fetch(`${BASE_URL}/api/productos/${id}`, {
       method: "PUT",
@@ -213,11 +270,7 @@ async function subirImagenes(files) {
     formData.append("imagenes", files[i]);
   }
 
-  const res = await fetch(`${BASE_URL}/api/subir-imagenes`, {
-    method: "POST",
-    body: formData
-  });
-
+  const res = await fetch(`${BASE_URL}/api/subir-imagenes`, { method: "POST", body: formData });
   if (!res.ok) {
     console.error("Error subiendo imágenes:", res.status, res.statusText);
     return [];
@@ -232,37 +285,7 @@ async function subirImagenes(files) {
   }
 }
 
-// Al renderizar productos, asegurarse de usar la URL tal cual la devuelve el servidor
-function renderProductos(filter = "") {
-  listaProductos.innerHTML = "";
-  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
-  filtrados.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "producto";
-
-    const miniImgs = document.createElement("div");
-    miniImgs.className = "mini-images";
-    p.imagenes.forEach(url => {
-      const img = document.createElement("img");
-      img.src = url; // ya es relativa
-      miniImgs.appendChild(img);
-    });
-    div.appendChild(miniImgs);
-
-    div.innerHTML += `
-      <h3>${p.titulo}</h3>
-      <p>${p.description}</p>
-      <p>Categoría: ${p.categoria.main} / ${p.categoria.sub}</p>
-      <p>Precio: <input type="number" value="${p.price}" id="price-${p.id}" /></p>
-      <p>Stock: <input type="number" value="${p.stock}" id="stock-${p.id}" /></p>
-      <button onclick="actualizarProducto('${p.id}')">Guardar</button>
-      <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
-    `;
-    listaProductos.appendChild(div);
-  });
-}
-
-
+// Agregar nuevo producto
 agregarBtn.addEventListener("click", async () => {
   if (!document.getElementById("titulo").value ||
       !document.getElementById("description").value ||
@@ -308,6 +331,7 @@ agregarBtn.addEventListener("click", async () => {
   }
 });
 
+// Login / Logout
 loginBtn.addEventListener("click", () => {
   if (passwordInput.value === ADMIN_PASSWORD) {
     AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
@@ -328,6 +352,7 @@ logoutBtn.addEventListener("click", () => {
 goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
 searchInput.addEventListener("input", () => renderProductos(searchInput.value));
 
+// Socket.IO
 socket.on("actualizar-productos", data => {
   productos = data.map(p => ({
     id: p.id || "prod-" + Date.now(),
