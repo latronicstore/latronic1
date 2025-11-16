@@ -13,6 +13,7 @@ import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
 import multer from "multer";
+import pkg from "pg";
 
 // --------------------
 // ⚙️ Configuración básica
@@ -39,45 +40,86 @@ app.use(express.static(path.join(__dirname, "public")));
 const uploadsDir = path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });
-
-// Servir carpeta uploads de manera pública
 app.use("/uploads", express.static(uploadsDir));
 
 // --------------------
 // 🔌 Servidor HTTP + Socket.IO
-// --------------------
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://latronic1.onrender.com",
+      "https://www.latronicstore.com"
+    ]
+  }
+});
 
-io.on("connection", socket => {
-  console.log("Cliente conectado:", socket.id);
-  socket.on("productos-actualizados", data => {
-    socket.broadcast.emit("actualizar-productos", data);
-  });
+io.on("connection", (socket) => {
+  console.log("✅ Cliente conectado:", socket.id);
+
   socket.on("disconnect", () => {
-    console.log("Cliente desconectado:", socket.id);
+    console.log("❌ Cliente desconectado:", socket.id);
   });
 });
 
-// --------------------
-// 🗝️ Funciones para manejar DB (JSON directo)
-const dbPath = path.join(__dirname, "public", "db.json");
-
-function leerProductos() {
-  if (!fs.existsSync(dbPath)) return [];
-  try {
-    return JSON.parse(fs.readFileSync(dbPath, "utf-8")).productos || [];
-  } catch {
-    return [];
-  }
-}
-
-function guardarProductos(productos) {
-  fs.writeFileSync(dbPath, JSON.stringify({ productos }, null, 2));
-}
 
 // --------------------
-// 💳 Configuración Square
+// 🗝️ Conexión a PostgreSQL
+const { Pool } = pkg;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // obligatorio en Render
+});
+
+// --------------------
+// 🗝️ Funciones para manejar DB en PostgreSQL
+async function leerProductos() {
+  const res = await pool.query("SELECT * FROM productos ORDER BY id ASC");
+  return res.rows;
+}
+
+async function guardarProducto(nuevo) {
+  const { id, titulo, description, price, stock, categoria, imagenes } = nuevo;
+  const query = `
+    INSERT INTO productos (id, titulo, description, price, stock, categoria, imagenes)
+    VALUES ($1,$2,$3,$4,$5,$6,$7)
+    RETURNING *`;
+  const values = [
+    id,
+    titulo,
+    description,
+    price,
+    stock,
+    JSON.stringify(categoria),
+    JSON.stringify(imagenes || [])  
+  ];
+  const res = await pool.query(query, values);
+  return res.rows[0];
+}
+
+
+async function actualizarProducto(id, datos) {
+  const keys = Object.keys(datos);
+  const values = Object.values(datos).map(v => {
+    // si es array u objeto, convertir a JSON válido
+    if (Array.isArray(v) || typeof v === "object") return JSON.stringify(v);
+    return v;
+  });
+  const setString = keys.map((k,i) => `${k}=$${i+1}`).join(", ");
+  const query = `UPDATE productos SET ${setString} WHERE id=$${keys.length+1} RETURNING *`;
+  const res = await pool.query(query, [...values, id]);
+  return res.rows[0];
+}
+
+
+async function eliminarProducto(id) {
+  await pool.query("DELETE FROM productos WHERE id=$1", [id]);
+}
+
+// --------------------
+// 💳 Configuración Square (sin cambios)
 const NODE_ENV = process.env.NODE_ENV || "production";
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
@@ -91,7 +133,7 @@ if (!ACCESS_TOKEN || !LOCATION_ID) {
 }
 
 // --------------------
-// 📧 Configuración Nodemailer
+// 📧 Configuración Nodemailer (sin cambios)
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
@@ -100,7 +142,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // --------------------
-// ✨ Plantillas HTML
+// ✨ Plantillas HTML y funciones de email (sin cambios)
 function plantillaEmailTienda({ firstName, lastName, email, address, productos, total }) {
   const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
   return `<div style="font-family:'Segoe UI',sans-serif;background:#fafafa;padding:20px;">
@@ -125,8 +167,6 @@ function plantillaEmailCliente({ firstName, lastName, productos, total, tracking
   </div>`;
 }
 
-// --------------------
-// ✉️ Funciones de envío de email
 async function enviarEmailATienda(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
@@ -146,7 +186,7 @@ async function enviarEmailACliente(datos) {
 }
 
 // --------------------
-// 📨 Endpoint Contact / Ofertas
+// 📨 Endpoint Contact / Ofertas (sin cambios)
 app.post("/api/send-offer", async (req, res) => {
   try {
     const { email, oferta, producto } = req.body;
@@ -188,11 +228,10 @@ app.post("/api/send-offer", async (req, res) => {
 });
 
 // --------------------
-// 🖼️ Endpoint subir imágenes
+// 🖼️ Endpoint subir imágenes (sin cambios)
 app.post("/api/subir-imagenes", upload.array("imagenes"), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) return res.status(400).json({ urls: [] });
-
     const urls = req.files.map(file => `/uploads/${file.filename}`);
     console.log("✅ Imágenes subidas:", urls);
     res.json({ urls });
@@ -203,40 +242,41 @@ app.post("/api/subir-imagenes", upload.array("imagenes"), (req, res) => {
 });
 
 // --------------------
-// 🛍️ ENDPOINTS Productos
-app.get("/api/productos", (req, res) => res.json(leerProductos()));
-app.get("/api/productos/:id", (req, res) => {
-  const producto = leerProductos().find(p => p.id === req.params.id);
+// 🛍️ ENDPOINTS Productos usando PostgreSQL
+app.get("/api/productos", async (req, res) => {
+  const productos = await leerProductos();
+  res.json(productos);
+});
+
+app.get("/api/productos/:id", async (req, res) => {
+  const productos = await leerProductos();
+  const producto = productos.find(p => p.id === req.params.id);
   if (!producto) return res.status(404).json({ error: "Product not found" });
   res.json(producto);
 });
-app.post("/api/productos", (req, res) => {
-  const productos = leerProductos();
+
+app.post("/api/productos", async (req, res) => {
   const nuevo = req.body;
   if (!nuevo.id) nuevo.id = "prod-" + Date.now();
-  productos.push(nuevo);
-  guardarProductos(productos);
-  io.emit("actualizar-productos", productos);
-  res.status(201).json(nuevo);
+  const producto = await guardarProducto(nuevo);
+  io.emit("actualizar-productos", await leerProductos());
+  res.status(201).json(producto);
 });
-app.put("/api/productos/:id", (req, res) => {
-  const productos = leerProductos();
-  const index = productos.findIndex(p => p.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: "Product not found"});
-  productos[index] = { ...productos[index], ...req.body };
-  guardarProductos(productos);
-  io.emit("actualizar-productos", productos);
-  res.json(productos[index]);
+
+app.put("/api/productos/:id", async (req, res) => {
+  const actualizado = await actualizarProducto(req.params.id, req.body);
+  io.emit("actualizar-productos", await leerProductos());
+  res.json(actualizado);
 });
-app.delete("/api/productos/:id", (req, res) => {
-  const productos = leerProductos().filter(p => p.id !== req.params.id);
-  guardarProductos(productos);
-  io.emit("actualizar-productos", productos);
+
+app.delete("/api/productos/:id", async (req, res) => {
+  await eliminarProducto(req.params.id);
+  io.emit("actualizar-productos", await leerProductos());
   res.json({ success: true });
 });
 
 // --------------------
-// 💰 Pagos Square
+// 💰 Pagos Square (sin cambios)
 app.post("/process-payment", async (req, res) => {
   try {
     const { sourceId, total, email, address, firstName, lastName, productos: carrito } = req.body;
@@ -256,12 +296,17 @@ app.post("/process-payment", async (req, res) => {
     const data = await response.json();
 
     if (data?.payment?.status === "COMPLETED") {
-      const productosDB = leerProductos();
+      const productosDB = await leerProductos();
       carrito?.forEach(p => {
         const item = productosDB.find(x => x.id === p.id);
         if (item) item.stock = Math.max(0, item.stock - (p.quantity || 1));
       });
-      guardarProductos(productosDB);
+
+      // Actualizar stock en DB
+      for (const p of carrito) {
+        const item = productosDB.find(x => x.id === p.id);
+        if (item) await actualizarProducto(item.id, { stock: item.stock });
+      }
 
       const trackingId = "LT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
       await enviarEmailATienda({ firstName, lastName, email, address, productos: carrito, total });
