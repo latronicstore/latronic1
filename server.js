@@ -35,12 +35,20 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // --------------------
-// 🗄️ Configuración de uploads con multer
+// 🗄️ Configuración de Persistent Disk en Render
 // --------------------
-const uploadsDir = path.join(__dirname, "public", "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-const upload = multer({ dest: uploadsDir });
-app.use("/uploads", express.static(uploadsDir));
+const UPLOAD_DIR = "/data"; // mount path del disco persistente en Render
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+// Servir imágenes estáticas desde el Persistent Disk
+app.use("/uploads", express.static(UPLOAD_DIR));
+
+// Configurar multer para guardar en Persistent Disk
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage });
 
 // --------------------
 // 🔌 Servidor HTTP + Socket.IO
