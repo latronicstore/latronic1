@@ -15,7 +15,7 @@ aside h2 { font-size: 2rem; text-align: center; margin-bottom: 1.5rem; color: #e
 .menu { list-style: none; padding: 0; margin: 0; background: #1a1a1a; }
 .menu>li { margin-bottom: 2rem; margin-left: 1.2rem; position: relative; }
 .boton-categoria { display: block; width: 100%; background: transparent; color: #e28f2f; border: none; text-align: left; font-size: 1.1rem; padding: 0.5rem 0.7rem; border-radius: 8px; cursor: pointer; transition: background 0.2s ease, transform 0.1s ease; }
-.boton-categoria:hover { background: rgba(226, 143, 47, 0.25); transform: translateX(4px); color: #f0f0f0; }
+.boton-categoria:hover { background: rgba(226, 143, 47, 0.25); mtransform: translateX(4px); color: #f0f0f0; }
 .submenu { display: none; list-style: none; margin: 0; padding-left: 1rem; border-left: 2px solid rgba(226, 143, 47, 0.3); }
 .submenu li { list-style: none; }
 .submenu .boton-categoria { font-size: 1rem; padding: 0.4rem 0.7rem; }
@@ -193,7 +193,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
     <!-- NEW -->
     <li>
-      <button class="boton-categoria toggle-submenu" data-main="new">New</button>
+      <button class="boton-categoria toggle-submenu" data-main="new">New Card</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="new" data-sub="basketball">Basketball</button></li>
         <li><button class="boton-categoria" data-main="new" data-sub="baseball">Baseball</button></li>
@@ -214,7 +214,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 
     <!-- USED -->
     <li>
-      <button class="boton-categoria toggle-submenu" data-main="used">Used</button>
+      <button class="boton-categoria toggle-submenu" data-main="used">Used Card</button>
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="used" data-sub="basketball">Basketball</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="baseball">Baseball</button></li>
@@ -230,6 +230,18 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
         <li><button class="boton-categoria" data-main="used" data-sub="disney">Disney</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="avenger&marvel">Avenger & Marvel</button></li>
         <li><button class="boton-categoria" data-main="used" data-sub="animes">Animes</button></li>
+      </ul>
+    </li>
+
+    <!--Clothes-->
+    <li>
+      <button class="boton-categoria toggle-submenu" data-main="used">Clothes</button>
+      <ul class="submenu">
+        <li><button class="boton-categoria" data-main="clothes" data-sub="man">Men</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="women">Women</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="teenager">Teenager</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="baby">Baby&Toddler</button></li>
+        
       </ul>
     </li>
 
