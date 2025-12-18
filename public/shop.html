@@ -180,6 +180,13 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   background: #e20c0c;
 }
 
+#vinylEmail:hover{
+  background: red;
+}
+
+#vinylOk:hover{
+  background: red;
+}
 
 </style>
 </head>
@@ -237,13 +244,23 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
     <li>
       <button class="boton-categoria toggle-submenu" data-main="used">Clothes</button>
       <ul class="submenu">
-        <li><button class="boton-categoria" data-main="clothes" data-sub="man">Men</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="men">Men</button></li>
         <li><button class="boton-categoria" data-main="clothes" data-sub="women">Women</button></li>
         <li><button class="boton-categoria" data-main="clothes" data-sub="teenager">Teenager</button></li>
         <li><button class="boton-categoria" data-main="clothes" data-sub="baby">Baby&Toddler</button></li>
         
       </ul>
     </li>
+
+    <li>
+      <button class="boton-categoria toggle-submenu" data-main="used">Vinyl Decals</button>
+      <ul class="submenu">
+        <li><button class="boton-categoria" data-main="Vinyl Decals" data-sub="car">Cars & SUV</button></li>
+        <li><button class="boton-categoria" data-main="Vinyl Decals" data-sub="motorcycle">Motorcycle & Bike</button></li>
+      </ul>
+    </li>
+
+
 
     <!-- MORE -->
     <li>
@@ -321,6 +338,29 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
   </div>
 </div>
 
+<!-- VINYL DECALS CUSTOM DESIGN MODAL -->
+<div id="vinylModal" class="age-check-modal">
+  <div class="age-check-box">
+    <h2>Custom Vinyl Design</h2>
+    <p>
+      Have your own custom design?<br><br>
+      You may email it to us and we will review it to provide a price estimate
+      or confirm whether we can produce the design.
+    </p>
+
+    <p style="margin-top:10px;font-weight:bold;">
+      📧 latronicstore@gmail.com
+    </p>
+
+    <div class="age-check-buttons">
+  <button id="vinylEmail">Email Us</button>
+  <button id="vinylOk">Got it</button>
+</div>
+
+  </div>
+</div>
+
+
 
 
 
@@ -373,6 +413,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+
+
+
 // --- AGE CHECK MODAL
 const adultButton = document.querySelector('button[data-sub="adultmagazines"]');
 const ageModal = document.getElementById("ageCheckModal");
@@ -398,6 +441,8 @@ if (adultButton && ageModal && ageYes && ageNo) {
 });
 
 }
+
+
 
 
 
@@ -436,7 +481,49 @@ if (adultButton && ageModal && ageYes && ageNo) {
       soldOut: stock <= 0,
       imagenes: (p.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean)
     };
+
+   
+
 });
+
+// --- VINYL DECALS MODAL (MISMO ESTILO QUE ADULT)
+const vinylModal = document.getElementById("vinylModal");
+const vinylOk = document.getElementById("vinylOk");
+const vinylClose = document.getElementById("vinylClose");
+
+// detectar SOLO el botón "Vinyl Decals"
+const vinylBtn = [...document.querySelectorAll(".toggle-submenu")]
+  .find(btn => btn.textContent.trim() === "Vinyl Decals");
+
+if (vinylBtn && vinylModal) {
+  vinylBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    vinylModal.classList.add("show");
+  });
+}
+
+if (vinylOk) {
+  vinylOk.addEventListener("click", () => {
+    vinylModal.classList.remove("show");
+  });
+}
+
+const vinylEmail = document.getElementById("vinylEmail");
+
+if (vinylEmail) {
+  vinylEmail.addEventListener("click", () => {
+    window.location.href =
+      "mailto:latronicstore@gmail.com?subject=Custom Vinyl Design Request";
+  });
+}
+
+
+if (vinylClose) {
+  vinylClose.addEventListener("click", () => {
+    vinylModal.classList.remove("show");
+  });
+}
+
 
 
       localStorage.setItem("productos", JSON.stringify(productosFinal));
