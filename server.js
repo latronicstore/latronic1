@@ -200,22 +200,26 @@ app.post("/api/send-offer", async (req, res) => {
     const { email, oferta, producto } = req.body;
     if (!email || !oferta || !producto) return res.status(400).json({ success: false, error: "Missing data" });
 
+    //oferta recibida a la tienda
+
     const mailOptionsCliente = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `🎁 LaTRONIC Special Offer`,
       html: `<div style="font-family: sans-serif; padding: 20px; background: #fafafa;">
-        <h2>Offer for you ✅</h2>
+        <h2>Offer sent ✅</h2>
         <p><b>Product:</b> ${producto}</p>
         <p><b>Offer: $</b> ${oferta}</p>
         <p>¡Thank you for choosing LaTRONIC Store!</p>
       </div>`
     };
 
+    //Oferta del cliente a la tienda
+    
     const mailOptionsAdmin = {
       from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
-      subject: `🎁 Offer sent to ${email}`,
+      subject: `🎁 Offer sent from ${email}`,
       html: `<div style="font-family: sans-serif; padding: 20px; background: #f9f9f9;">
         <h2>Offer sent</h2>
         <p><b>Client:</b> ${email}</p>
@@ -227,7 +231,7 @@ app.post("/api/send-offer", async (req, res) => {
     await transporter.sendMail(mailOptionsCliente);
     await transporter.sendMail(mailOptionsAdmin);
 
-    console.log(`✅ Offer sent to ${email} About ${producto}`);
+    console.log(`✅ Offer sent from ${email} About ${producto}`);
     res.json({ success: true, message: "Offer sent ✅" });
   } catch (err) {
     console.error("❌ Error sending offer:", err);
@@ -260,7 +264,7 @@ app.get("/api/productos/:id", async (req, res) => {
   const productos = await leerProductos();
   const producto = productos.find(p => p.id === req.params.id);
   if (!producto) return res.status(404).json({ error: "Product not found" });
-  res.json(producto);
+  res.json(producto);``
 });
 
 app.post("/api/productos", async (req, res) => {
