@@ -232,7 +232,7 @@ async function initSquare() {
         const data = await res.json();
 
         if (data.success) {
-          statusEl.textContent = "✅ Pago exitoso";
+          statusEl.textContent = "✅ Successful payment";
 
           // --- Actualizar stock local ---
           let productosOriginales = JSON.parse(localStorage.getItem("productos")) || [];
@@ -263,19 +263,19 @@ async function initSquare() {
 
           setTimeout(() => { window.location.href = "index.html"; }, 2000);
         } else {
-          statusEl.textContent = "❌ Error: " + (data.error || "Intenta de nuevo");
+          statusEl.textContent = "❌ Error: " + (data.error || "Try again");
         }
 
       } catch (err) {
         console.error("Payment error:", err);
-        statusEl.textContent = "❌ Error en el proceso de pago. Intenta de nuevo";
+        statusEl.textContent = "❌ Error in the payment process. Try again";
       } finally {
         payButton.disabled = false;
       }
     });
   } catch (err) {
-    console.error("Error al inicializar Square:", err);
-    if (statusEl) statusEl.textContent = "❌ Error al inicializar Square. Revisa la consola.";
+    console.error("Error initializing Square:", err);
+    if (statusEl) statusEl.textContent = "❌ Error initializing Square. Check the console.";
   }
 }
 
