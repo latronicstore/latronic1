@@ -617,7 +617,7 @@ if (vinylClose) {
   function renderProductos(lista, scrollY = null) {
     const carrito = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
     contenedor.innerHTML = "";
-    if (!Array.isArray(lista) || lista.length === 0) { contenedor.innerHTML = "<p>No products found.</p>"; return; }
+    if (!Array.isArray(lista) || lista.length === 0) { contenedor.innerHTML = "<p>Coming soon...</p>"; return; }
 
     lista.forEach(prod => {
       const div = document.createElement("div");
