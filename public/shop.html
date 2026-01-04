@@ -191,6 +191,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
 </style>
 </head>
 <body>
+  
 <div class="hamburger">&#9776;</div>
 
 <aside>
@@ -246,13 +247,18 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
       <ul class="submenu">
         <li><button class="boton-categoria" data-main="clothes" data-sub="men">Men</button></li>
         <li><button class="boton-categoria" data-main="clothes" data-sub="women">Women</button></li>
-        <li><button class="boton-categoria" data-main="clothes" data-sub="teenager">Teenager</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="teenager">Boys</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="teenager">Girls</button></li>
         <li><button class="boton-categoria" data-main="clothes" data-sub="baby">Baby&Toddler</button></li>
-        <li><button class="boton-categoria" data-main="clothes" data-sub="unisex">Unisex</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="unisex">Adult Unisex</button></li>
+        <li><button class="boton-categoria" data-main="clothes" data-sub="unisex">Teenager Unisex</button></li>
+        
         
       </ul>
     </li>
 
+
+    <!--Vinyl Decals--> 
     <li>
       <button class="boton-categoria toggle-submenu" data-main="used">Vinyl Decals</button>
       <ul class="submenu">
@@ -310,7 +316,7 @@ aside.active ~ main #titulo-principal { text-align: center; margin-top: 50px; }
     <h2 id="negociar-producto" style="color:#e28f2f;margin-bottom:10px;"></h2>
     <input type="email" id="negociar-email" placeholder="Your Email" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
     <input type="number" id="negociar-precio" placeholder="Offer Price" style="margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #333;background:#141414;color:#fff;">
-    <button id="enviar-negociacion" style="padding:8px 12px;border:none;border-radius:6px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Send Offer</button>
+    <button id="enviar-negociacion" style="padding:8px 12px;border:none;border-radius:6px;background:#e28f2f;color:black;font-weight:bold;cursor:pointer;">Make an Offer</button>
     <p id="negociar-status" style="color:#fff;margin-top:10px;"></p>
   </div>
 </div>
@@ -672,7 +678,7 @@ if (vinylClose) {
       // --- Botón Send Offer
       const btnNegociar = document.createElement("button");
       btnNegociar.className = "negociar";
-      btnNegociar.textContent = "Send Offer";
+      btnNegociar.textContent = "Make Offer";
       btnNegociar.addEventListener("click", () => {
         document.getElementById("negociar-modal").style.display = "flex";
         document.getElementById("negociar-producto").textContent = prod.titulo;

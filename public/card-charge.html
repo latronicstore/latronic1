@@ -271,7 +271,7 @@ async function initSquare() {
         statusEl.textContent = "❌ Error in the payment process. Try again";
       } finally {
         payButton.disabled = false;
-      }
+      } 
     });
   } catch (err) {
     console.error("Error initializing Square:", err);
