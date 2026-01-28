@@ -354,6 +354,116 @@ obtenerProductos().then(productos => {
 });
 </script>
 
+<!-- Modal de términos con animación moderna -->
+<div id="terms-modal" style="
+    display:none; 
+    position:fixed; 
+    top:0; 
+    left:0; 
+    width:100%; 
+    height:100%; 
+    background-color:rgba(0,0,0,0.6); 
+    justify-content:center; 
+    align-items:center; 
+    z-index:10000;
+    overflow:auto;
+">
+  <div id="modal-content" style="
+      background:white; 
+      padding:30px 25px; 
+      max-width:600px; 
+      width:90%; 
+      border-radius:15px; 
+      box-shadow:0 10px 30px rgba(0,0,0,0.3); 
+      text-align:left; 
+      position:relative; 
+      font-family:Arial, sans-serif;
+      transform: scale(0.7);
+      opacity: 0;
+      transition: all 0.3s ease-out;
+  ">
+    <h2 style="margin-top:0; color:#1a1a1a; font-size:24px;">Important Notice</h2>
+    <p style="color:#333; line-height:1.6; font-size:16px;">
+      LaTRONIC LLC is not the manufacturer of the new or used items sold on our website. Our platform only handles reselling items for a final sale. All customers are subject to our online store policy, where we offer free shipping only within the United States and its territories. Cancellations are accepted only within 24 hours of purchase. Returns are accepted within 30 days only for electronics or decals, but the customer must cover shipping costs and LaTRONIC will refund the payment to the original account or issue store credit.
+    </p>
+    <label style="display:flex; align-items:center; margin-top:20px; cursor:pointer; font-size:15px; color:#333;">
+      <input type="checkbox" id="accept-terms" style="margin-right:10px; width:18px; height:18px;"> I accept the terms and conditions of LaTRONIC LLC
+    </label>
+    <div style="text-align:right; margin-top:25px;">
+      <button id="continue-shop" style="
+        padding:10px 25px; 
+        background-color:#ff6600; 
+        border:none; 
+        color:white; 
+        font-size:16px; 
+        border-radius:8px; 
+        cursor:pointer;
+        transition: background 0.2s;
+      " disabled>Continue to Shop</button>
+    </div>
+    <span id="close-modal" style="
+      position:absolute; 
+      top:12px; 
+      right:18px; 
+      cursor:pointer; 
+      font-size:24px; 
+      font-weight:bold; 
+      color:#999;
+      transition: color 0.2s;
+    ">&times;</span>
+  </div>
+</div>
+
+<script>
+  const shopButtons = document.querySelectorAll('.shop-btn, .cta-button');
+  const modal = document.getElementById('terms-modal');
+  const modalContent = document.getElementById('modal-content');
+  const acceptCheckbox = document.getElementById('accept-terms');
+  const continueButton = document.getElementById('continue-shop');
+  const closeModal = document.getElementById('close-modal');
+
+  // Abrir modal con animación
+  shopButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      modal.style.display = 'flex';
+      acceptCheckbox.checked = false;
+      continueButton.disabled = true;
+      setTimeout(() => {
+        modalContent.style.transform = 'scale(1)';
+        modalContent.style.opacity = '1';
+      }, 10); // pequeño delay para animación
+    });
+  });
+
+  // Activar botón solo si acepta términos
+  acceptCheckbox.addEventListener('change', () => {
+    continueButton.disabled = !acceptCheckbox.checked;
+  });
+
+  // Continuar a shop.html
+  continueButton.addEventListener('click', () => {
+    window.location.href = 'shop.html';
+  });
+
+  // Cerrar modal con animación
+  const cerrarModal = () => {
+    modalContent.style.transform = 'scale(0.7)';
+    modalContent.style.opacity = '0';
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+  }
+
+  closeModal.addEventListener('click', cerrarModal);
+  window.addEventListener('click', (e) => {
+    if(e.target === modal) cerrarModal();
+  });
+
+  // Hover efectos
+  closeModal.addEventListener('mouseenter', ()=>closeModal.style.color='#ff6600');
+  closeModal.addEventListener('mouseleave', ()=>closeModal.style.color='#999');
+  continueButton.addEventListener('mouseenter', ()=>continueButton.style.backgroundColor='#e65c00');
+  continueButton.addEventListener('mouseleave', ()=>continueButton.style.backgroundColor='#ff6600');
+</script>
 
 </body>
 </html>
