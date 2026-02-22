@@ -167,10 +167,10 @@ function plantillaEmailTienda({ firstName, lastName, email, address, productos, 
 function plantillaEmailCliente({ firstName, lastName, productos, total, trackingId }) {
   const productosHtml = productos.map(p => `<tr><td>${p.titulo}</td><td>${p.quantity}</td><td>$${p.price}</td></tr>`).join("");
   return `<div style="font-family:'Segoe UI',sans-serif;background:#f6f6f6;padding:20px;">
-    <h2>Gracias por tu compra 🧡</h2>
+    <h2>Thank you for your purchase in LaTRONIC Store 🧡</h2>
     <p>Hola <b>${firstName} ${lastName}</b>, tu pago de <b>$${total.toFixed(2)}</b> fue procesado correctamente.</p>
-    <p>Tu número de seguimiento es: <b>${trackingId}</b></p>
-    <h4>Productos comprados:</h4>
+    <p>Your tracking number is: <b>${trackingId}</b></p>
+    <h4>Purchased products:</h4>
     <table style="width:100%;border-collapse:collapse;">${productosHtml}</table>
   </div>`;
 }
@@ -179,7 +179,7 @@ async function enviarEmailATienda(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
-    subject: `🛒 Nueva venta de ${datos.firstName} ${datos.lastName}`,
+    subject: `🛒 New sale of ${datos.firstName} ${datos.lastName}`,
     html: plantillaEmailTienda(datos)
   });
 }
@@ -188,7 +188,7 @@ async function enviarEmailACliente(datos) {
   return transporter.sendMail({
     from: `"LaTRONIC Store" <${process.env.EMAIL_USER}>`,
     to: datos.email,
-    subject: `💳 Confirmación de compra - LaTRONIC Store`,
+    subject: `💳 Purchase confirmation - LaTRONIC Store`,
     html: plantillaEmailCliente(datos)
   });
 }
