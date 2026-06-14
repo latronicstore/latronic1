@@ -1,469 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <title>LaTRONIC Store</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Libertinus+Keyboard&family=Oswald:wght@200..700&family=Story+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 <style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: 'Rubik', sans-serif; background: #121212; color: #fff; display: flex; min-height: 100vh; }
-.wrapper { display: flex; flex: 1; width: 100%; }
-aside {
-    width: 250px; background: #1e1e1e; display: flex; flex-direction: column; padding: 1rem; gap: 1rem;
-}
-.logo { font-family:"Bebas Neue",sans-serif; font-size:3rem; letter-spacing:2px; text-align:center; text-transform:uppercase; display:inline-block; position:relative; color:#f16413b9; padding:1rem 2rem; border-radius:12px; }
-
-/* --- Producto destacado --- */
-.featured-product {
-  background: #1b1b1b;
-  padding: 0.8rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-}
-.featured-product img {
-  width: 100%;
-  height: 180px;
-  object-fit: contain;
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-}
-.featured-product h3 {
-  font-family: "Oswald", sans-serif;
-  font-size: 1.1rem;
-  color: #ffcc00;
-}
-.featured-product p {
-  color: #e28f2f;
-  font-size: 1rem;
-  margin: 0.2rem 0 0;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-/* --- Carrusel --- */
-.aside-carousel { width: 100%; overflow: hidden; border-radius: 12px; position: relative; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.6); background: #1e1e1e; }
-.aside-carousel-track { display: flex; transition: transform 0.6s ease-in-out; }
-.aside-carousel-slide { min-width: 100%; text-align: center; font-weight: bold; font-family: "Oswald", sans-serif; color: #e28f2f; padding: 0.5rem; cursor:pointer; }
-.aside-carousel-slide img { width: 95%; height: 150px; object-fit: contain; border-radius: 8px; margin-bottom: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-.aside-carousel-slide div { font-size: 0.9rem; }
-.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 50%; z-index: 10; transition: background 0.3s; }
-.carousel-btn:hover { background: rgba(226,143,47,0.8); }
-.carousel-btn-left { left: 5px; }
-.carousel-btn-right { right: 5px; }
+body{
+  font-family: 'Oswald', sans-serif;
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a 60%, #000);
+  color:white;
 
-footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.9rem; margin-top: auto; }
-main { flex: 1; padding: 2rem; }
-.titulo-principal { font-family: "Bebas Neue", sans-serif; background: linear-gradient(yellow, red); -webkit-background-clip: text; color: transparent; font-size: clamp(24px, 10vw, 96px); text-align: center; margin-top: 2rem; }
-.small-paragraph { font-family: "Story Script", sans-serif; color: #bbb; font-size: 20px; text-align: center; margin-bottom: 2rem; }
-.cta-container { text-align: center; margin: 2rem 0; }
-.cta-button { display: inline-block; padding: 1rem 2.5rem; font-size: 1.5rem; font-family: "Bebas Neue", sans-serif; text-transform: uppercase; background: linear-gradient(135deg, #ffcc00, #ff3300); color: #121212; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
-.cta-button:hover { background: linear-gradient(135deg, #ff9900, #cc0000); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); }
-
-@media(max-width:768px){ 
-  .wrapper { flex-direction: column; } 
-  aside { width: 100%; flex-direction: column; align-items: center; } 
-  .aside-carousel { width: 90%; } 
-  .featured-product img { height: 160px; }
+  /* FULL SCREEN */
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
-/* --- CARRUSEL DE ANUNCIOS --- */
-.anuncios-carousel {
-  width: 100%;
-  overflow: hidden;
-  background: #1e1e1e;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+/* ===== HEADER ===== */
+header{
+  padding:10px 20px;
+  text-align:center;
+  font-size:14px;
+  color:#ff8c00;
+  border-bottom:1px solid rgba(255,140,0,0.2);
+  position:relative;
+  z-index:5;
 }
 
-.anuncios-track {
-  display: flex;
-  flex-wrap: nowrap;
-  animation: scrollAnuncios 10s linear infinite;
+/* ===== HERO ===== */
+.hero{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
 }
 
-.anuncio {
-  flex: 0 0 auto;
-  padding: 0.8rem 3rem; /* más espacio entre anuncios */
-  white-space: nowrap;
-  font-family: "Oswald", sans-serif;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #e28f2f;
+/* 🔥 GLOW BACKGROUND (NO BLOCK CLICK) */
+.hero::before,
+.hero::after{
+  content:"";
+  position:absolute;
+  width:500px;
+  height:500px;
+  filter: blur(40px);
+  opacity:0.6;
+  pointer-events:none; /* 🔥 FIX CLICK ISSUE */
+  z-index:0;
 }
 
-.email-link {
-  color: #ffcc00;
-  text-decoration: underline;
+.hero::before{
+  background: radial-gradient(circle, rgba(255,140,0,0.25), transparent 60%);
+  top:-120px;
+  left:-120px;
 }
 
-.email-link:hover {
-  color: #ff0000;
-  text-decoration: underline;
+.hero::after{
+  background: radial-gradient(circle, rgba(0,140,255,0.2), transparent 60%);
+  bottom:-120px;
+  right:-120px;
 }
 
-/* Scroll infinito */
-@keyframes scrollAnuncios {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-450%); } /* -50% porque duplicamos el contenido */
+/* ===== FLOATING CARDS BACKGROUND ===== */
+.card-bg{
+  position:absolute;
+  inset:0;
+  opacity:0.25;
+  z-index:0;
+  pointer-events:none; /* 🔥 FIX CLICK ISSUE */
 }
 
-
-
-/* --- Vista móvil simplificada --- */
-@media (max-width: 768px) {
-  main, .carrusel, .anuncios-carousel, .seccion-productos, .contenido-extra, .hero, header nav {
-    display: none !important;
-  }
-
-  .mobile-home {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 80vh;
-    padding: 20px;
-  }
-
-  .mobile-home h1 {
-    font-size: 1.8rem;
-    background: linear-gradient(yellow, red); -webkit-background-clip: text; color: transparent;
-    margin-bottom: 20px;
-  }
-
-  .mobile-home .shop-btn {
-    background: #ffcc00;
-    color: #111;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .mobile-home .shop-btn:hover {
-    background: #ff9900;
-  }
-
-  .shop-btn { display: inline-block; padding: 1rem 2.5rem; font-size: 1.5rem; font-family: "Bebas Neue", sans-serif; text-transform: uppercase; background: linear-gradient(135deg, #ffcc00, #ff3300); color: #121212; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
-  .shop-btn:hover { background: linear-gradient(135deg, #ff9900, #cc0000); color: #ffffff; transition: 0.2s; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); }
-
+/* cards */
+.card{
+  position:absolute;
+  width:100px;
+  height:140px;
+  border-radius:10px;
+  background-size:cover;
+  background-position:center;
+  animation: float 12s infinite ease-in-out;
 }
 
-/* === Barra de anuncios estilo bolsa === */
-.ticker-container {
-  display: block; /* visible desde el inicio */
-  width: 100%;
-  overflow: hidden;
-  background: #111;
-  border-top: 2px solid #e28f2f;
-  border-bottom: 2px solid #e28f2f;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-  padding: 0.5rem 0;
-  margin-bottom: 1rem;
-  position: relative;
-  opacity: 1; /* visible inmediatamente */
-  animation: none; /* quitar fade-in lento */
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-30px)}
+  100%{transform:translateY(0)}
 }
 
-/* Texto del ticker */
-.ticker-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: tickerMove 20s linear infinite; 
+/* ===== TITLE ===== */
+.hero h1{
+  font-family:"Bebas Neue", sans-serif;
+  font-size: clamp(40px, 7vw, 90px);
+  letter-spacing:2px;
+  background: linear-gradient(90deg, #ffcc00, #ff3300, #00ccff);
+  -webkit-background-clip:text;
+  color:transparent;
+  position:relative;
+  z-index:2;
 }
 
-.ticker-item {
-  display: inline-block;
-  margin-right: 3rem;
-  font-family: "Oswald", sans-serif;
-  color: #ffcc00;
-  font-weight: bold;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
+.hero p{
+  margin-top:10px;
+  color:#bbb;
+  max-width:600px;
+  font-size:16px;
+  position:relative;
+  z-index:2;
 }
 
-/* Movimiento de derecha a izquierda */
-@keyframes tickerMove {
-  0% { transform: translateX(15%); }
-  100% { transform: translateX(-100%); }
+/* ===== BUTTON (SHOP NOW FIXED) ===== */
+.btn{
+  margin-top:20px;
+  padding:14px 34px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ffcc00,#ff3300);
+  color:black;
+  font-weight:700;
+  text-decoration:none;
+  position:relative;
+  z-index:5; /* 🔥 IMPORTANT: CLICK ALWAYS WORKS */
+  box-shadow: 0 10px 30px rgba(255,100,0,0.25);
+  transition: all 0.25s ease;
+  display:inline-block;
 }
 
-/* Animación de aparición instantánea */
-@keyframes fadeInFast {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 1; transform: translateY(0); }
+.btn:hover{
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(255,100,0,0.35);
 }
 
-/* === Vista móvil === */
-@media (max-width: 768px) {
-  .ticker-track {
-    animation-duration: 10s; 
+/* ===== FOOTER ===== */
+footer{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:10px 15px;
+  border-top:1px solid rgba(255,140,0,0.2);
+  background:#0b0b0b;
+  color:#ff8c00;
+  font-size:12px;
+  position:relative;
+  z-index:5;
+}
+
+footer a{
+  color:#ff8c00;
+  text-decoration:none;
+  margin:0 5px;
+}
+
+footer a:hover{
+  color:#ff4d00;
+}
+
+.icon{
+  margin-right:5px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  footer{
+    flex-direction:column;
+    gap:5px;
+    text-align:center;
   }
 }
-
-.title-up{
-  margin-top:-25rem;
-}
-
-
 </style>
 </head>
 
 <body>
-<div class="wrapper">
-    <aside>
-      <!-- Ticker de anuncios -->
-<div class="ticker-container">
-  <div class="ticker-track">
-    <div class="ticker-item">🚀 New arrivals every week!</div>
-    <div class="ticker-item">💳 Payment Debit or Credit card</div>
-    <div class="ticker-item">🚚📦 Free shipping on all orders inside the US</div>
-    <div class="ticker-item">🔥 Exclusive collectibles in stock now</div>
-    <div class="ticker-item">🤝 We’re open to negotiate anytime — ✉️ <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a></div>
+
+<!-- HEADER -->
+<header>
+  🚀 Free Shipping USA • 📦 Collectibles • 🔥 LaTRONIC Store
+</header>
+
+<!-- HERO -->
+<div class="hero">
+
+  <div class="card-bg">
+
+    <div class="card" style="top:10%; left:10%; background-image:url('https://images.pokemontcg.io/base1/4.png');"></div>
+    <div class="card" style="top:30%; left:50%; background-image:url('https://images.pokemontcg.io/base1/2.png');"></div>
+     <div class="card" style="bottom:15%; left:70%; background-image:url('https://images.pokemontcg.io/base1/1.png'); animation-delay:2s;"></div>
 
   </div>
+
+  <h1>LaTRONIC STORE</h1>
+  <p>Pokémon • Panini Sports Cards • Topps • Disney Collectibles</p>
+  <a href="shop.html" class="btn">SHOP NOW</a>
 </div>
 
-<!-- Producto destacado -->
-        <div id="featured-product" class="featured-product">Top items 🔥</div>
+<!-- FOOTER -->
+<footer>
 
-        <!-- Carrusel con los otros top -->
-        <div class="aside-carousel">
-            <div class="aside-carousel-track" id="aside-carousel-track"></div>
-            <button class="carousel-btn carousel-btn-left" id="prev">&#8249;</button>
-            <button class="carousel-btn carousel-btn-right" id="next">&#8250;</button>
-        </div>
-
-         <div class="mobile-home" style="display: none;">
-  <h1 class="title-up">Welcome to LaTRONIC store</h1>
-  <a href="shop.html"><button class="shop-btn">Shop Now</button></a>
-  
-</div>
-
-        
-
-<!-- Carrusel de anuncios principal -->
-<div class="anuncios-carousel">
-  <div class="anuncios-track">
-    <div class="anuncio">🚚 Free Shipping</div>
-    <div class="anuncio">Contact us</div>
-    <div class="anuncio">🤝 We’re open to negotiate anytime — ✉️ 
-      <a href="mailto:latronicstore@gmail.com" class="email-link">latronicstore@gmail.com</a>
-    </div>
+  <div>
+    <i class="bi bi-envelope icon"></i>
+    <a href="mailto:latronicstore@gmail.com">latronicstore@gmail.com</a>
   </div>
-</div>
 
-
-     
-
-
-        <footer>
-            <div>✉️ latronicstore@gmail.com</div>
-            <div>Located in Meriden, Connecticut</div>
-            <div>ⓒ 2025 LaTRONIC LLC</div>
-        </footer>
-    </aside>
-
-
-    <main>
-        <h2 class="titulo-principal">Welcome to LaTRONIC store</h2>
-        <h6 class="small-paragraph">Your one-stop shop for trading cards, collectibles, historical items, apparel for men, women, and kids, toys, figures, comics, magazines, and more.</h6>
-
-        <div class="cta-container">
-            <a href="shop.html" class="cta-button">Shop now</a>
-        </div>
-        <div id="contenedor-productos" class="contenedor-productos"></div>
-    </main>
-</div>
-
-<script>
-// --- Cargar productos desde API o localStorage ---
-async function obtenerProductos() {
-  try {
-    // Intentar primero desde localStorage
-    let productos = JSON.parse(localStorage.getItem("productos")) || [];
-    if (productos.length > 0) return productos;
-
-    // Si no hay, traer desde API
-    const res = await fetch("https://latronic1.onrender.com/api/productos");
-    if (!res.ok) throw new Error("No se pudieron cargar los productos");
-    productos = await res.json();
-
-    // Guardar en localStorage para usar en shop.html
-    localStorage.setItem("productos", JSON.stringify(productos));
-    return productos;
-  } catch (err) {
-    console.error("Error al cargar productos:", err);
-    return [];
-  }
-}
-
-// --- Renderizar carrusel en index.html ---
-function renderizarCarrusel(productos) {
-  if (!productos || productos.length === 0) return;
-
-  // Ordenar por precio descendente y tomar top 5
-  const topProducts = [...productos].sort((a,b)=>b.price-a.price).slice(0,5);
-
-  const track = document.getElementById("aside-carousel-track");
-  if (!track) return;
-
-  topProducts.forEach(p => {
-    const imgSrc = (p.imagenes && p.imagenes.length > 0) ? p.imagenes[0] : "https://via.placeholder.com/150";
-
-    const slide = document.createElement("div");
-    slide.classList.add("aside-carousel-slide");
-    slide.innerHTML = `
-      <img src="${imgSrc}" alt="${p.titulo}">
-      <div>${p.titulo} - $${parseFloat(p.price).toFixed(2)}</div>
-    `;
-
-    // Al hacer clic, guardar ID y llevar a shop.html
-    slide.addEventListener("click", () => {
-      localStorage.setItem("filtro-producto", p.id);
-      window.location.href = "shop.html";
-    });
-
-    track.appendChild(slide);
-  });
-
-  // Animación automática del carrusel
-  let index = 0;
-  const totalSlides = topProducts.length;
-  const actualizarCarrusel = () => { track.style.transform = `translateX(-${index*100}%)`; };
-
-  const btnPrev = document.getElementById("prev");
-  const btnNext = document.getElementById("next");
-
-  if(btnPrev) btnPrev.addEventListener("click", ()=>{ index=(index-1+totalSlides)%totalSlides; actualizarCarrusel(); });
-  if(btnNext) btnNext.addEventListener("click", ()=>{ index=(index+1)%totalSlides; actualizarCarrusel(); });
-
-  setInterval(()=>{ index=(index+1)%totalSlides; actualizarCarrusel(); },4000);
-}
-
-// --- Inicializar ---
-obtenerProductos().then(productos => {
-  renderizarCarrusel(productos);
-});
-</script>
-
-<!-- Modal de términos con animación moderna -->
-<div id="terms-modal" style="
-    display:none; 
-    position:fixed; 
-    top:0; 
-    left:0; 
-    width:100%; 
-    height:100%; 
-    background-color:rgba(0,0,0,0.6); 
-    justify-content:center; 
-    align-items:center; 
-    z-index:10000;
-    overflow:auto;
-">
-  <div id="modal-content" style="
-      background:white; 
-      padding:30px 25px; 
-      max-width:600px; 
-      width:90%; 
-      border-radius:15px; 
-      box-shadow:0 10px 30px rgba(0,0,0,0.3); 
-      text-align:left; 
-      position:relative; 
-      font-family:Arial, sans-serif;
-      transform: scale(0.7);
-      opacity: 0;
-      transition: all 0.3s ease-out;
-  ">
-    <h2 style="margin-top:0; color:#1a1a1a; font-size:24px;">Important Notice</h2>
-    <p style="color:#333; line-height:1.6; font-size:16px;">
-      LaTRONIC LLC is not the manufacturer of the new or used items sold on our website. Our platform only handles reselling items for a final sale. All customers are subject to our online store policy, where we offer free shipping only within the United States and its territories. Cancellations are accepted only within 24 hours of purchase. Returns are accepted within 30 days only for electronics or decals, but the customer must cover shipping costs and LaTRONIC will refund the payment to the original account or issue store credit.
-    </p>
-    <label style="display:flex; align-items:center; margin-top:20px; cursor:pointer; font-size:15px; color:#333;">
-      <input type="checkbox" id="accept-terms" style="margin-right:10px; width:18px; height:18px;"> I accept the terms and conditions of LaTRONIC LLC
-    </label>
-    <div style="text-align:right; margin-top:25px;">
-      <button id="continue-shop" style="
-        padding:10px 25px; 
-        background-color:#ff6600; 
-        border:none; 
-        color:white; 
-        font-size:16px; 
-        border-radius:8px; 
-        cursor:pointer;
-        transition: background 0.2s;
-      " disabled>Continue to Shop</button>
-    </div>
-    <span id="close-modal" style="
-      position:absolute; 
-      top:12px; 
-      right:18px; 
-      cursor:pointer; 
-      font-size:24px; 
-      font-weight:bold; 
-      color:#999;
-      transition: color 0.2s;
-    ">&times;</span>
+  <div>
+    <i class="bi bi-instagram icon"></i>
+    <a href="https://instagram.com/latronicstore" target="_blank" rel="noopener">@latronicstore</a>
   </div>
-</div>
 
-<script>
-  const shopButtons = document.querySelectorAll('.shop-btn, .cta-button');
-  const modal = document.getElementById('terms-modal');
-  const modalContent = document.getElementById('modal-content');
-  const acceptCheckbox = document.getElementById('accept-terms');
-  const continueButton = document.getElementById('continue-shop');
-  const closeModal = document.getElementById('close-modal');
+  <div>
+    📍 Connecticut, United States
+  </div>
 
-  // Abrir modal con animación
-  shopButtons.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      modal.style.display = 'flex';
-      acceptCheckbox.checked = false;
-      continueButton.disabled = true;
-      setTimeout(() => {
-        modalContent.style.transform = 'scale(1)';
-        modalContent.style.opacity = '1';
-      }, 10); // pequeño delay para animación
-    });
-  });
+  <div>
+    © 2026 LaTRONIC LLC
+  </div>
 
-  // Activar botón solo si acepta términos
-  acceptCheckbox.addEventListener('change', () => {
-    continueButton.disabled = !acceptCheckbox.checked;
-  });
-
-  // Continuar a shop.html
-  continueButton.addEventListener('click', () => {
-    window.location.href = 'shop.html';
-  });
-
-  // Cerrar modal con animación
-  const cerrarModal = () => {
-    modalContent.style.transform = 'scale(0.7)';
-    modalContent.style.opacity = '0';
-    setTimeout(() => { modal.style.display = 'none'; }, 300);
-  }
-
-  closeModal.addEventListener('click', cerrarModal);
-  window.addEventListener('click', (e) => {
-    if(e.target === modal) cerrarModal();
-  });
-
-  // Hover efectos
-  closeModal.addEventListener('mouseenter', ()=>closeModal.style.color='#ff6600');
-  closeModal.addEventListener('mouseleave', ()=>closeModal.style.color='#999');
-  continueButton.addEventListener('mouseenter', ()=>continueButton.style.backgroundColor='#e65c00');
-  continueButton.addEventListener('mouseleave', ()=>continueButton.style.backgroundColor='#ff6600');
-</script>
+</footer>
 
 </body>
 </html>
