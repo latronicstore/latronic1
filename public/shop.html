@@ -665,7 +665,8 @@ if (adultButton && ageModal && ageYes && ageNo) {
   // --- Obtener productos
   async function obtenerProductos() {
     try {
-      const res = await fetch(BASE_URL + "/api/productos", { cache: "no-store" });
+      const res = await fetch(BASE_URL + "/api/productos", {
+    cache: "force-cache"});
       if (!res.ok) throw new Error("Error cargando productos");
       const data = await res.json();
       const productosFinal = data.map(p => {
@@ -678,9 +679,14 @@ if (adultButton && ageModal && ageYes && ageNo) {
       soldOut: stock <= 0,
       imagenes: (p.imagenes || []).map(url => url ? (url.startsWith("/") ? BASE_URL + url : url) : "").filter(Boolean)
     };
+});
 
-   
-
+// --- Precargar imágenes para carga más rápida
+productosFinal.forEach(producto => {
+    producto.imagenes.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
 });
 
 // --- VINYL DECALS MODAL (MISMO ESTILO QUE ADULT)
