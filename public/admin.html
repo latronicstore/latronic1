@@ -165,9 +165,21 @@ function renderProductos(filter = "") {
     div.appendChild(descTextarea);
 
     // Categoría
-    const catP = document.createElement("p");
-    catP.textContent = `Categoría: ${p.categoria.main} / ${p.categoria.sub}`;
-    div.appendChild(catP);
+   // Categoría principal editable
+const mainCatInput = document.createElement("input");
+mainCatInput.type = "text";
+mainCatInput.id = `mainCat-${p.id}`;
+mainCatInput.value = p.categoria.main;
+mainCatInput.placeholder = "Categoría principal";
+div.appendChild(mainCatInput);
+
+// Subcategoría editable
+const subCatInput = document.createElement("input");
+subCatInput.type = "text";
+subCatInput.id = `subCat-${p.id}`;
+subCatInput.value = p.categoria.sub;
+subCatInput.placeholder = "Subcategoría";
+div.appendChild(subCatInput);
 
     // Precio y stock
     const priceInput = document.createElement("input");
@@ -227,11 +239,17 @@ async function actualizarProducto(id) {
   const updated = {
     titulo: document.getElementById(`titulo-${id}`).value,
     description: document.getElementById(`desc-${id}`).value,
+
+    categoria: {
+        main: document.getElementById(`mainCat-${id}`).value,
+        sub: document.getElementById(`subCat-${id}`).value
+    },
+
     price: Number(document.getElementById(`price-${id}`).value),
     stock: Number(document.getElementById(`stock-${id}`).value),
-    imagenes: [...prod.imagenes, ...nuevasImagenes]
-  };
 
+    imagenes: [...prod.imagenes, ...nuevasImagenes]
+};
   try {
     const res = await fetch(`${BASE_URL}/api/productos/${id}`, {
       method: "PUT",
