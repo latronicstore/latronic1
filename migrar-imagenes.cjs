@@ -13,7 +13,11 @@ const { Pool } = require("pg");
 const IMAGE_SERVER = "http://localhost:3001";
 
 const PROJECT_ROOT = __dirname;
-const PUBLIC_ROOT = path.join(PROJECT_ROOT, "public");
+
+const PUBLIC_ROOT = path.join(
+    PROJECT_ROOT,
+    "public"
+);
 
 // false = MIGRAR TODO
 // true  = solamente probar algunos productos
@@ -25,16 +29,19 @@ const TEST_LIMIT = 1;
 // Tiempo entre imágenes
 const DELAY_MS = 250;
 
+
 // =========================================================
 // POSTGRESQL
 // =========================================================
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
+
     ssl: {
         rejectUnauthorized: false
     }
 });
+
 
 // =========================================================
 // ESTADÍSTICAS
@@ -45,28 +52,14 @@ const stats = {
     productosProcesados: 0,
     productosActualizados: 0,
 
-    imagenesTotales: 0,
     imagenesEncontradas: 0,
     imagenesSubidas: 0,
-    imagenesYaCloudinary: 0,
     imagenesFaltantes: 0,
     imagenesConError: 0,
 
     errores: 0
 };
 
-// =========================================================
-// REPORTES
-// =========================================================
-
-const missingReport = [];
-const errorReport = [];
-
-// =========================================================
-// CACHE DE ARCHIVOS
-// =========================================================
-
-let indiceArchivos = new Map();
 
 // =========================================================
 // ESPERA
@@ -78,11 +71,13 @@ function esperar(ms) {
     });
 }
 
+
 // =========================================================
 // MIME TYPE
 // =========================================================
 
 function getMimeType(filePath) {
+
     const extension =
         path.extname(filePath).toLowerCase();
 
@@ -102,128 +97,6 @@ function getMimeType(filePath) {
     );
 }
 
-// =========================================================
-// NORMALIZAR NOMBRE
-// =========================================================
-
-function normalizarNombre(nombre) {
-    return String(nombre)
-        .trim()
-        .replace(/^["']|["']$/g, "")
-        .replace(/\\/g, "/")
-        .split("/")
-        .pop()
-        .toLowerCase();
-}
-
-// =========================================================
-// CREAR ÍNDICE DE TODAS LAS IMÁGENES
-// =========================================================
-
-function construirIndiceDirectorio(directorio) {
-
-    console.log("");
-    console.log("Construyendo índice de imágenes...");
-    console.log("Directorio:", directorio);
-    console.log("");
-
-    let cantidad = 0;
-
-    function recorrer(carpeta) {
-
-        let elementos;
-
-        try {
-            elementos = fs.readdirSync(carpeta, {
-                withFileTypes: true
-            });
-        } catch (error) {
-            console.log(
-                "⚠️ No se pudo leer:",
-                carpeta
-            );
-            return;
-        }
-
-        for (const elemento of elementos) {
-
-            const rutaCompleta =
-                path.join(
-                    carpeta,
-                    elemento.name
-                );
-
-            if (elemento.isDirectory()) {
-
-                recorrer(rutaCompleta);
-
-                continue;
-            }
-
-            if (!elemento.isFile()) {
-                continue;
-            }
-
-            const extension =
-                path.extname(
-                    elemento.name
-                ).toLowerCase();
-
-            const extensionesPermitidas = [
-                ".jpg",
-                ".jpeg",
-                ".png",
-                ".webp",
-                ".gif",
-                ".avif",
-                ".svg"
-            ];
-
-            if (
-                !extensionesPermitidas.includes(
-                    extension
-                )
-            ) {
-                continue;
-            }
-
-            const nombre =
-                elemento.name.toLowerCase();
-
-            if (!indiceArchivos.has(nombre)) {
-
-                indiceArchivos.set(
-                    nombre,
-                    []
-                );
-            }
-
-            indiceArchivos
-                .get(nombre)
-                .push(
-                    path.resolve(
-                        rutaCompleta
-                    )
-                );
-
-            cantidad++;
-        }
-    }
-
-    recorrer(directorio);
-
-    console.log(
-        "✅ Imágenes indexadas:",
-        cantidad
-    );
-
-    console.log(
-        "Nombres únicos:",
-        indiceArchivos.size
-    );
-
-    console.log("");
-}
 
 // =========================================================
 // BUSCAR IMAGEN LOCAL
@@ -235,97 +108,55 @@ function encontrarImagen(imagenPath) {
         return null;
     }
 
-    let limpio =
-        String(imagenPath)
-            .trim();
+    let limpio = String(imagenPath).trim();
 
     // Quitar comillas
-    limpio =
-        limpio.replace(
-            /^["']|["']$/g,
-            ""
-        );
+    limpio = limpio.replace(
+        /^["']|["']$/g,
+        ""
+    );
 
     // Convertir slash
-    limpio =
-        limpio.replace(
-            /\\/g,
-            path.sep
-        );
+    limpio = limpio.replace(
+        /\//g,
+        path.sep
+    );
+
+    // Quitar ./ inicial
+    limpio = limpio.replace(
+        /^\.[\\\/]/,
+        ""
+    );
+
+    // Quitar slash inicial
+    limpio = limpio.replace(
+        /^[\\\/]+/,
+        ""
+    );
 
     // =====================================================
-    // SI ES URL
+    // RUTAS POSIBLES
     // =====================================================
 
-    if (
-        /^https?:\/\//i.test(limpio)
-    ) {
-        return null;
-    }
+    const posiblesRutas = [];
 
-    // =====================================================
-    // SI ES RUTA ABSOLUTA WINDOWS
-    // =====================================================
-
-    if (
-        path.isAbsolute(limpio)
-    ) {
-
-        try {
-
-            if (
-                fs.existsSync(limpio) &&
-                fs.statSync(limpio).isFile()
-            ) {
-
-                return path.resolve(
-                    limpio
-                );
-            }
-
-        } catch {
-            // continuar
-        }
-    }
-
-    // =====================================================
-    // LIMPIAR ./ Y /
-    // =====================================================
-
-    limpio =
-        limpio.replace(
-            /^\.[\\\/]/,
-            ""
-        );
-
-    limpio =
-        limpio.replace(
-            /^[\\\/]+/,
-            ""
-        );
-
-    // =====================================================
-    // PRIMER INTENTO:
-    // RUTA EXACTA
-    // =====================================================
-
-    const posiblesRutas = [
-
+    // 1
+    posiblesRutas.push(
         path.join(
             PUBLIC_ROOT,
             limpio
-        ),
+        )
+    );
 
+    // 2
+    posiblesRutas.push(
         path.join(
             PROJECT_ROOT,
             limpio
         )
-    ];
+    );
 
-    // =====================================================
-    // SI COMIENZA CON img/
-    // =====================================================
-
+    // 3
     if (
         /^img[\\\/]/i.test(limpio)
     ) {
@@ -343,33 +174,11 @@ function encontrarImagen(imagenPath) {
                 sinImg
             )
         );
+
     }
 
     // =====================================================
-    // SI COMIENZA CON uploads/
-    // =====================================================
-
-    if (
-        /^uploads[\\\/]/i.test(limpio)
-    ) {
-
-        const sinUploads =
-            limpio.replace(
-                /^uploads[\\\/]/i,
-                ""
-            );
-
-        posiblesRutas.push(
-            path.join(
-                PUBLIC_ROOT,
-                "uploads",
-                sinUploads
-            )
-        );
-    }
-
-    // =====================================================
-    // PROBAR RUTAS EXACTAS
+    // BUSCAR
     // =====================================================
 
     for (
@@ -383,9 +192,7 @@ function encontrarImagen(imagenPath) {
             ) {
 
                 const stat =
-                    fs.statSync(
-                        posible
-                    );
+                    fs.statSync(posible);
 
                 if (
                     stat.isFile()
@@ -394,84 +201,38 @@ function encontrarImagen(imagenPath) {
                     return path.resolve(
                         posible
                     );
+
                 }
+
             }
 
         } catch {
             // continuar
         }
+
     }
-
-    // =====================================================
-    // SEGUNDO INTENTO:
-    // BUSCAR POR NOMBRE EN TODO PUBLIC
-    // =====================================================
-
-    const nombre =
-        normalizarNombre(
-            limpio
-        );
-
-    const coincidencias =
-        indiceArchivos.get(
-            nombre
-        );
-
-    if (
-        !coincidencias ||
-        coincidencias.length === 0
-    ) {
-        return null;
-    }
-
-    // =====================================================
-    // UNA SOLA COINCIDENCIA
-    // =====================================================
-
-    if (
-        coincidencias.length === 1
-    ) {
-
-        return coincidencias[0];
-    }
-
-    // =====================================================
-    // VARIAS COINCIDENCIAS
-    // =====================================================
-
-    console.log("");
-    console.log(
-        "⚠️ Múltiples archivos encontrados para:",
-        limpio
-    );
-
-    for (
-        const coincidencia
-        of coincidencias
-    ) {
-
-        console.log(
-            "   -",
-            coincidencia
-        );
-    }
-
-    // Para evitar elegir una imagen equivocada,
-    // no seleccionamos ninguna automáticamente.
 
     return null;
 }
 
+
 // =========================================================
 // SUBIR IMAGEN
+// =========================================================
+//
+// IMPORTANTE:
+//
+// NO usamos node-fetch.
+// NO usamos form-data.
+//
+// Node 18 tiene fetch y FormData nativos.
+//
 // =========================================================
 
 async function subirImagen(filePath) {
 
     const mimeType =
-        getMimeType(
-            filePath
-        );
+        getMimeType(filePath);
 
     const fileBuffer =
         await fs.promises.readFile(
@@ -494,9 +255,7 @@ async function subirImagen(filePath) {
     form.append(
         "image",
         blob,
-        path.basename(
-            filePath
-        )
+        path.basename(filePath)
     );
 
     console.log(
@@ -519,12 +278,23 @@ async function subirImagen(filePath) {
         mimeType
     );
 
+    // =====================================================
+    // FETCH
+    // =====================================================
+
     const response =
         await fetch(
             `${IMAGE_SERVER}/api/images/upload`,
             {
                 method: "POST",
-                body: form
+
+                body: form,
+
+                // MUY IMPORTANTE:
+                // NO establecer Content-Type manualmente.
+                //
+                // Node necesita agregar automáticamente:
+                // multipart/form-data; boundary=...
             }
         );
 
@@ -536,15 +306,14 @@ async function subirImagen(filePath) {
     try {
 
         data =
-            JSON.parse(
-                texto
-            );
+            JSON.parse(texto);
 
     } catch {
 
         throw new Error(
             `Respuesta inválida del servidor: ${texto}`
         );
+
     }
 
     if (
@@ -555,6 +324,7 @@ async function subirImagen(filePath) {
             data.message ||
             `HTTP ${response.status}`
         );
+
     }
 
     if (
@@ -564,10 +334,12 @@ async function subirImagen(filePath) {
         throw new Error(
             "El servidor no devolvió data.image."
         );
+
     }
 
     return data.image;
 }
+
 
 // =========================================================
 // ACTUALIZAR PRODUCTO
@@ -598,16 +370,14 @@ async function actualizarProducto(
     );
 }
 
+
 // =========================================================
 // PROCESAR PRODUCTO
 // =========================================================
 
-async function procesarProducto(
-    producto
-) {
+async function procesarProducto(producto) {
 
     console.log("");
-
     console.log(
         "======================================"
     );
@@ -625,6 +395,7 @@ async function procesarProducto(
     console.log(
         "======================================"
     );
+
 
     // =====================================================
     // LEER IMÁGENES
@@ -650,6 +421,7 @@ async function procesarProducto(
                     producto.imagenes ||
                     "[]"
                 );
+
         }
 
     } catch {
@@ -660,16 +432,9 @@ async function procesarProducto(
 
         stats.errores++;
 
-        stats.productosProcesados++;
-
-        errorReport.push(
-            `Producto: ${producto.id}
-Título: ${producto.titulo}
-Error: No se pudo leer el campo imagenes`
-        );
-
         return;
     }
+
 
     if (
         !Array.isArray(imagenes)
@@ -679,13 +444,12 @@ Error: No se pudo leer el campo imagenes`
             "⚠️ imagenes no es un array."
         );
 
-        stats.productosProcesados++;
-
         return;
     }
 
+
     // =====================================================
-    // PRODUCTO SIN IMÁGENES
+    // SI NO TIENE IMÁGENES
     // =====================================================
 
     if (
@@ -701,32 +465,29 @@ Error: No se pudo leer el campo imagenes`
         return;
     }
 
-    stats.imagenesTotales +=
-        imagenes.length;
 
     const nuevasImagenes = [];
 
-    let productoNecesitaActualizacion =
-        false;
+    let productoTuvoError = false;
+
 
     // =====================================================
     // PROCESAR CADA IMAGEN
     // =====================================================
 
     for (
-        const imagen
-        of imagenes
+        const imagen of imagenes
     ) {
 
         console.log("");
-
         console.log(
             "Imagen:",
             imagen
         );
 
+
         // =================================================
-        // YA ES CLOUDINARY
+        // SI YA ES CLOUDINARY
         // =================================================
 
         if (
@@ -744,10 +505,9 @@ Error: No se pudo leer el campo imagenes`
                 imagen
             );
 
-            stats.imagenesYaCloudinary++;
-
             continue;
         }
+
 
         // =================================================
         // BUSCAR ARCHIVO
@@ -757,6 +517,7 @@ Error: No se pudo leer el campo imagenes`
             encontrarImagen(
                 imagen
             );
+
 
         if (
             !rutaLocal
@@ -773,20 +534,12 @@ Error: No se pudo leer el campo imagenes`
 
             stats.imagenesFaltantes++;
 
-            // IMPORTANTE:
-            // conservar la referencia original
-            nuevasImagenes.push(
-                imagen
-            );
-
-            missingReport.push(
-                `Producto: ${producto.id}
-Título: ${producto.titulo}
-Referencia: ${imagen}`
-            );
+            productoTuvoError =
+                true;
 
             continue;
         }
+
 
         console.log(
             "Ruta local:",
@@ -798,6 +551,7 @@ Referencia: ${imagen}`
         );
 
         stats.imagenesEncontradas++;
+
 
         // =================================================
         // SUBIR
@@ -814,19 +568,23 @@ Referencia: ${imagen}`
                     rutaLocal
                 );
 
+
             console.log(
                 "✅ IMAGEN SUBIDA"
             );
+
 
             console.log(
                 "Filename:",
                 resultado.filename
             );
 
+
             console.log(
                 "Local URL:",
                 resultado.localUrl
             );
+
 
             if (
                 resultado.cloudinary
@@ -836,13 +594,16 @@ Referencia: ${imagen}`
                     "Cloudinary:",
                     resultado.cloudinary.secureUrl
                 );
+
             }
+
 
             // =================================================
             // ELEGIR URL
             // =================================================
 
             let nuevaURL;
+
 
             if (
                 resultado.cloudinary &&
@@ -857,12 +618,15 @@ Referencia: ${imagen}`
 
                 nuevaURL =
                     `${IMAGE_SERVER}${resultado.localUrl}`;
+
             }
+
 
             console.log(
                 "URL guardada:",
                 nuevaURL
             );
+
 
             nuevasImagenes.push(
                 nuevaURL
@@ -870,12 +634,15 @@ Referencia: ${imagen}`
 
             stats.imagenesSubidas++;
 
-            productoNecesitaActualizacion =
-                true;
+
+            // =================================================
+            // ESPERA
+            // =================================================
 
             await esperar(
                 DELAY_MS
             );
+
 
         } catch (error) {
 
@@ -888,84 +655,103 @@ Referencia: ${imagen}`
             );
 
             stats.imagenesConError++;
+
             stats.errores++;
 
-            // IMPORTANTE:
-            // conservar referencia original
-            nuevasImagenes.push(
-                imagen
-            );
+            productoTuvoError =
+                true;
 
-            errorReport.push(
-                `Producto: ${producto.id}
-Título: ${producto.titulo}
-Imagen: ${imagen}
-Ruta local: ${rutaLocal}
-Error: ${error.message}`
-            );
         }
+
     }
 
+
     // =====================================================
-    // ACTUALIZAR PRODUCTO
+    // NO ACTUALIZAR SI HUBO ERRORES
+    // =====================================================
+
+    if (
+        nuevasImagenes.length === 0
+    ) {
+
+        console.log("");
+
+        console.log(
+            "⚠️ Producto NO modificado."
+        );
+
+        console.log(
+            "No se pudo subir ninguna imagen."
+        );
+
+        return;
+    }
+
+
+    if (
+        productoTuvoError
+    ) {
+
+        console.log("");
+
+        console.log(
+            "⚠️ Producto contiene errores."
+        );
+
+        console.log(
+            "⚠️ NO se modifica PostgreSQL."
+        );
+
+        console.log(
+            "Esto protege las referencias originales."
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // ACTUALIZAR DATABASE
     // =====================================================
 
     try {
 
-        // Actualizamos si:
-        // 1. Se migró alguna imagen
-        // 2. O queremos conservar las referencias actuales
-        //
-        // Las imágenes que no pudieron migrarse permanecen
-        // con su referencia original.
+        const actualizado =
+            await actualizarProducto(
+                producto.id,
+                nuevasImagenes
+            );
+
 
         if (
-            productoNecesitaActualizacion
+            actualizado
         ) {
 
-            const actualizado =
-                await actualizarProducto(
-                    producto.id,
-                    nuevasImagenes
-                );
-
-            if (
-                actualizado
-            ) {
-
-                stats.productosActualizados++;
-
-                console.log("");
-
-                console.log(
-                    "✅ PRODUCTO ACTUALIZADO"
-                );
-
-                console.log(
-                    "PostgreSQL:"
-                );
-
-                console.dir(
-                    nuevasImagenes,
-                    {
-                        depth: null
-                    }
-                );
-
-            } else {
-
-                console.log(
-                    "⚠️ No se encontró el producto para actualizar."
-                );
-            }
-
-        } else {
+            stats.productosActualizados++;
 
             console.log("");
 
             console.log(
-                "☑️ No hubo cambios en PostgreSQL."
+                "✅ PRODUCTO ACTUALIZADO"
             );
+
+            console.log(
+                "PostgreSQL:"
+            );
+
+            console.dir(
+                nuevasImagenes,
+                {
+                    depth: null
+                }
+            );
+
+        } else {
+
+            console.log(
+                "⚠️ No se encontró el producto para actualizar."
+            );
+
         }
 
     } catch (error) {
@@ -980,82 +766,13 @@ Error: ${error.message}`
 
         stats.errores++;
 
-        errorReport.push(
-            `Producto: ${producto.id}
-Título: ${producto.titulo}
-Error PostgreSQL: ${error.message}`
-        );
+        return;
     }
 
-    // MUY IMPORTANTE:
-    // Siempre contar el producto como procesado.
+
     stats.productosProcesados++;
 }
 
-// =========================================================
-// GUARDAR REPORTES
-// =========================================================
-
-function guardarReportes() {
-
-    const missingPath =
-        path.join(
-            PROJECT_ROOT,
-            "migration-missing-images.txt"
-        );
-
-    const errorPath =
-        path.join(
-            PROJECT_ROOT,
-            "migration-errors.txt"
-        );
-
-    const missingContent =
-        missingReport.length > 0
-            ? missingReport.join(
-                "\n\n----------------------------------------\n\n"
-            )
-            : "No hay imágenes faltantes.";
-
-    const errorContent =
-        errorReport.length > 0
-            ? errorReport.join(
-                "\n\n----------------------------------------\n\n"
-            )
-            : "No hay errores.";
-
-    fs.writeFileSync(
-        missingPath,
-        missingContent,
-        "utf8"
-    );
-
-    fs.writeFileSync(
-        errorPath,
-        errorContent,
-        "utf8"
-    );
-
-    console.log("");
-
-    console.log(
-        "Reporte de imágenes faltantes:"
-    );
-
-    console.log(
-        missingPath
-    );
-
-    console.log("");
-
-    console.log(
-        "Reporte de errores:"
-    );
-
-    console.log(
-        errorPath
-    );
-}
 
 // =========================================================
 // MAIN
@@ -1064,7 +781,6 @@ function guardarReportes() {
 async function main() {
 
     console.log("");
-
     console.log(
         "======================================"
     );
@@ -1103,6 +819,7 @@ async function main() {
 
     console.log("");
 
+
     // =====================================================
     // COMPROBAR FETCH
     // =====================================================
@@ -1123,6 +840,7 @@ async function main() {
         process.exit(1);
     }
 
+
     // =====================================================
     // IMAGE SERVER
     // =====================================================
@@ -1138,6 +856,7 @@ async function main() {
                 `${IMAGE_SERVER}/api/ping`
             );
 
+
         if (
             !ping.ok
         ) {
@@ -1147,8 +866,10 @@ async function main() {
             );
         }
 
+
         const pingText =
             await ping.text();
+
 
         let pingData;
 
@@ -1164,9 +885,11 @@ async function main() {
             pingData = {};
         }
 
+
         console.log(
             "✅ Image Server ONLINE"
         );
+
 
         if (
             pingData.server
@@ -1176,6 +899,7 @@ async function main() {
                 "Servidor:",
                 pingData.server
             );
+
         }
 
     } catch (error) {
@@ -1209,13 +933,6 @@ async function main() {
         process.exit(1);
     }
 
-    // =====================================================
-    // CONSTRUIR ÍNDICE
-    // =====================================================
-
-    construirIndiceDirectorio(
-        PUBLIC_ROOT
-    );
 
     // =====================================================
     // OBTENER PRODUCTOS
@@ -1233,21 +950,26 @@ async function main() {
             ORDER BY id ASC
         `;
 
+
         if (
             TEST_MODE
         ) {
 
             query +=
                 ` LIMIT ${TEST_LIMIT}`;
+
         }
+
 
         const result =
             await pool.query(
                 query
             );
 
+
         stats.productosEncontrados =
             result.rows.length;
+
 
         console.log("");
 
@@ -1255,6 +977,7 @@ async function main() {
             "Productos encontrados:",
             result.rows.length
         );
+
 
         if (
             result.rows.length === 0
@@ -1266,6 +989,7 @@ async function main() {
 
             return;
         }
+
 
         // =================================================
         // PROCESAR PRODUCTOS
@@ -1279,6 +1003,7 @@ async function main() {
             await procesarProducto(
                 producto
             );
+
         }
 
     } catch (error) {
@@ -1293,18 +1018,11 @@ async function main() {
             error
         );
 
-        stats.errores++;
-
     } finally {
 
         await pool.end();
     }
 
-    // =====================================================
-    // GUARDAR REPORTES
-    // =====================================================
-
-    guardarReportes();
 
     // =====================================================
     // RESUMEN
@@ -1344,11 +1062,6 @@ async function main() {
     console.log("");
 
     console.log(
-        "Imágenes totales:",
-        stats.imagenesTotales
-    );
-
-    console.log(
         "Imágenes encontradas:",
         stats.imagenesEncontradas
     );
@@ -1356,11 +1069,6 @@ async function main() {
     console.log(
         "Imágenes subidas:",
         stats.imagenesSubidas
-    );
-
-    console.log(
-        "Imágenes ya en Cloudinary:",
-        stats.imagenesYaCloudinary
     );
 
     console.log(
@@ -1385,21 +1093,8 @@ async function main() {
     );
 
     console.log("");
-
-    console.log(
-        "Reportes creados:"
-    );
-
-    console.log(
-        "migration-missing-images.txt"
-    );
-
-    console.log(
-        "migration-errors.txt"
-    );
-
-    console.log("");
 }
+
 
 // =========================================================
 // EJECUTAR

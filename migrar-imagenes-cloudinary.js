@@ -15,14 +15,9 @@ const IMAGE_SERVER = "http://localhost:3001";
 const PROJECT_ROOT = __dirname;
 const PUBLIC_ROOT = path.join(PROJECT_ROOT, "public");
 
-// false = MIGRAR TODO
-// true  = solamente probar algunos productos
 const TEST_MODE = false;
-
-// Si TEST_MODE = true
 const TEST_LIMIT = 1;
 
-// Tiempo entre imágenes
 const DELAY_MS = 250;
 
 // =========================================================
@@ -63,10 +58,10 @@ const missingReport = [];
 const errorReport = [];
 
 // =========================================================
-// CACHE DE ARCHIVOS
+// ÍNDICE DE ARCHIVOS
 // =========================================================
 
-let indiceArchivos = new Map();
+const indiceArchivos = new Map();
 
 // =========================================================
 // ESPERA
@@ -83,6 +78,7 @@ function esperar(ms) {
 // =========================================================
 
 function getMimeType(filePath) {
+
     const extension =
         path.extname(filePath).toLowerCase();
 
@@ -107,6 +103,7 @@ function getMimeType(filePath) {
 // =========================================================
 
 function normalizarNombre(nombre) {
+
     return String(nombre)
         .trim()
         .replace(/^["']|["']$/g, "")
@@ -117,50 +114,66 @@ function normalizarNombre(nombre) {
 }
 
 // =========================================================
-// CREAR ÍNDICE DE TODAS LAS IMÁGENES
+// CONSTRUIR ÍNDICE
 // =========================================================
 
-function construirIndiceDirectorio(directorio) {
+function construirIndice() {
 
     console.log("");
-    console.log("Construyendo índice de imágenes...");
-    console.log("Directorio:", directorio);
+    console.log("======================================");
+    console.log("BUSCANDO TODAS LAS IMÁGENES LOCALES");
+    console.log("======================================");
     console.log("");
 
-    let cantidad = 0;
+    let total = 0;
 
     function recorrer(carpeta) {
 
         let elementos;
 
         try {
-            elementos = fs.readdirSync(carpeta, {
-                withFileTypes: true
-            });
+
+            elementos =
+                fs.readdirSync(
+                    carpeta,
+                    {
+                        withFileTypes: true
+                    }
+                );
+
         } catch (error) {
+
             console.log(
                 "⚠️ No se pudo leer:",
                 carpeta
             );
+
             return;
         }
 
-        for (const elemento of elementos) {
+        for (
+            const elemento
+            of elementos
+        ) {
 
-            const rutaCompleta =
+            const ruta =
                 path.join(
                     carpeta,
                     elemento.name
                 );
 
-            if (elemento.isDirectory()) {
+            if (
+                elemento.isDirectory()
+            ) {
 
-                recorrer(rutaCompleta);
+                recorrer(ruta);
 
                 continue;
             }
 
-            if (!elemento.isFile()) {
+            if (
+                !elemento.isFile()
+            ) {
                 continue;
             }
 
@@ -169,7 +182,7 @@ function construirIndiceDirectorio(directorio) {
                     elemento.name
                 ).toLowerCase();
 
-            const extensionesPermitidas = [
+            const permitidas = [
                 ".jpg",
                 ".jpeg",
                 ".png",
@@ -180,7 +193,7 @@ function construirIndiceDirectorio(directorio) {
             ];
 
             if (
-                !extensionesPermitidas.includes(
+                !permitidas.includes(
                     extension
                 )
             ) {
@@ -190,7 +203,9 @@ function construirIndiceDirectorio(directorio) {
             const nombre =
                 elemento.name.toLowerCase();
 
-            if (!indiceArchivos.has(nombre)) {
+            if (
+                !indiceArchivos.has(nombre)
+            ) {
 
                 indiceArchivos.set(
                     nombre,
@@ -201,20 +216,20 @@ function construirIndiceDirectorio(directorio) {
             indiceArchivos
                 .get(nombre)
                 .push(
-                    path.resolve(
-                        rutaCompleta
-                    )
+                    path.resolve(ruta)
                 );
 
-            cantidad++;
+            total++;
         }
     }
 
-    recorrer(directorio);
+    recorrer(
+        PUBLIC_ROOT
+    );
 
     console.log(
-        "✅ Imágenes indexadas:",
-        cantidad
+        "✅ Imágenes locales encontradas:",
+        total
     );
 
     console.log(
@@ -226,7 +241,7 @@ function construirIndiceDirectorio(directorio) {
 }
 
 // =========================================================
-// BUSCAR IMAGEN LOCAL
+// BUSCAR IMAGEN
 // =========================================================
 
 function encontrarImagen(imagenPath) {
@@ -239,14 +254,12 @@ function encontrarImagen(imagenPath) {
         String(imagenPath)
             .trim();
 
-    // Quitar comillas
     limpio =
         limpio.replace(
             /^["']|["']$/g,
             ""
         );
 
-    // Convertir slash
     limpio =
         limpio.replace(
             /\\/g,
@@ -254,17 +267,33 @@ function encontrarImagen(imagenPath) {
         );
 
     // =====================================================
-    // SI ES URL
+    // CLOUDINARY
+    // =====================================================
+
+    if (
+        limpio.includes(
+            "cloudinary.com"
+        )
+    ) {
+
+        return {
+            cloudinary: true
+        };
+    }
+
+    // =====================================================
+    // URL HTTP
     // =====================================================
 
     if (
         /^https?:\/\//i.test(limpio)
     ) {
+
         return null;
     }
 
     // =====================================================
-    // SI ES RUTA ABSOLUTA WINDOWS
+    // RUTA ABSOLUTA
     // =====================================================
 
     if (
@@ -283,13 +312,11 @@ function encontrarImagen(imagenPath) {
                 );
             }
 
-        } catch {
-            // continuar
-        }
+        } catch {}
     }
 
     // =====================================================
-    // LIMPIAR ./ Y /
+    // LIMPIAR RUTA
     // =====================================================
 
     limpio =
@@ -305,11 +332,10 @@ function encontrarImagen(imagenPath) {
         );
 
     // =====================================================
-    // PRIMER INTENTO:
-    // RUTA EXACTA
+    // RUTAS EXACTAS
     // =====================================================
 
-    const posiblesRutas = [
+    const posibles = [
 
         path.join(
             PUBLIC_ROOT,
@@ -323,7 +349,7 @@ function encontrarImagen(imagenPath) {
     ];
 
     // =====================================================
-    // SI COMIENZA CON img/
+    // IMG/
     // =====================================================
 
     if (
@@ -336,7 +362,7 @@ function encontrarImagen(imagenPath) {
                 ""
             );
 
-        posiblesRutas.push(
+        posibles.push(
             path.join(
                 PUBLIC_ROOT,
                 "img",
@@ -346,7 +372,7 @@ function encontrarImagen(imagenPath) {
     }
 
     // =====================================================
-    // SI COMIENZA CON uploads/
+    // UPLOADS/
     // =====================================================
 
     if (
@@ -359,7 +385,7 @@ function encontrarImagen(imagenPath) {
                 ""
             );
 
-        posiblesRutas.push(
+        posibles.push(
             path.join(
                 PUBLIC_ROOT,
                 "uploads",
@@ -369,42 +395,31 @@ function encontrarImagen(imagenPath) {
     }
 
     // =====================================================
-    // PROBAR RUTAS EXACTAS
+    // BUSCAR RUTA EXACTA
     // =====================================================
 
     for (
-        const posible of posiblesRutas
+        const ruta
+        of posibles
     ) {
 
         try {
 
             if (
-                fs.existsSync(posible)
+                fs.existsSync(ruta) &&
+                fs.statSync(ruta).isFile()
             ) {
 
-                const stat =
-                    fs.statSync(
-                        posible
-                    );
-
-                if (
-                    stat.isFile()
-                ) {
-
-                    return path.resolve(
-                        posible
-                    );
-                }
+                return path.resolve(
+                    ruta
+                );
             }
 
-        } catch {
-            // continuar
-        }
+        } catch {}
     }
 
     // =====================================================
-    // SEGUNDO INTENTO:
-    // BUSCAR POR NOMBRE EN TODO PUBLIC
+    // BUSCAR POR NOMBRE
     // =====================================================
 
     const nombre =
@@ -421,11 +436,12 @@ function encontrarImagen(imagenPath) {
         !coincidencias ||
         coincidencias.length === 0
     ) {
+
         return null;
     }
 
     // =====================================================
-    // UNA SOLA COINCIDENCIA
+    // UNA COINCIDENCIA
     // =====================================================
 
     if (
@@ -436,28 +452,29 @@ function encontrarImagen(imagenPath) {
     }
 
     // =====================================================
-    // VARIAS COINCIDENCIAS
+    // MÚLTIPLES COINCIDENCIAS
     // =====================================================
 
     console.log("");
     console.log(
-        "⚠️ Múltiples archivos encontrados para:",
+        "⚠️ Múltiples archivos encontrados:"
+    );
+
+    console.log(
+        "Referencia:",
         limpio
     );
 
     for (
-        const coincidencia
+        const archivo
         of coincidencias
     ) {
 
         console.log(
-            "   -",
-            coincidencia
+            "   ",
+            archivo
         );
     }
-
-    // Para evitar elegir una imagen equivocada,
-    // no seleccionamos ninguna automáticamente.
 
     return null;
 }
@@ -466,14 +483,16 @@ function encontrarImagen(imagenPath) {
 // SUBIR IMAGEN
 // =========================================================
 
-async function subirImagen(filePath) {
+async function subirImagen(
+    filePath
+) {
 
     const mimeType =
         getMimeType(
             filePath
         );
 
-    const fileBuffer =
+    const buffer =
         await fs.promises.readFile(
             filePath
         );
@@ -481,7 +500,7 @@ async function subirImagen(filePath) {
     const blob =
         new Blob(
             [
-                fileBuffer
+                buffer
             ],
             {
                 type: mimeType
@@ -507,7 +526,7 @@ async function subirImagen(filePath) {
     console.log(
         "Tamaño:",
         (
-            fileBuffer.length /
+            buffer.length /
             1024 /
             1024
         ).toFixed(2),
@@ -575,7 +594,7 @@ async function subirImagen(filePath) {
 
 async function actualizarProducto(
     id,
-    nuevasImagenes
+    imagenes
 ) {
 
     const result =
@@ -587,15 +606,13 @@ async function actualizarProducto(
             `,
             [
                 JSON.stringify(
-                    nuevasImagenes
+                    imagenes
                 ),
                 id
             ]
         );
 
-    return (
-        result.rowCount > 0
-    );
+    return result.rowCount > 0;
 }
 
 // =========================================================
@@ -607,7 +624,6 @@ async function procesarProducto(
 ) {
 
     console.log("");
-
     console.log(
         "======================================"
     );
@@ -625,10 +641,6 @@ async function procesarProducto(
     console.log(
         "======================================"
     );
-
-    // =====================================================
-    // LEER IMÁGENES
-    // =====================================================
 
     let imagenes;
 
@@ -652,7 +664,7 @@ async function procesarProducto(
                 );
         }
 
-    } catch {
+    } catch (error) {
 
         console.error(
             "❌ No se pudo leer imagenes."
@@ -660,13 +672,13 @@ async function procesarProducto(
 
         stats.errores++;
 
-        stats.productosProcesados++;
-
         errorReport.push(
             `Producto: ${producto.id}
 Título: ${producto.titulo}
-Error: No se pudo leer el campo imagenes`
+Error: ${error.message}`
         );
+
+        stats.productosProcesados++;
 
         return;
     }
@@ -683,10 +695,6 @@ Error: No se pudo leer el campo imagenes`
 
         return;
     }
-
-    // =====================================================
-    // PRODUCTO SIN IMÁGENES
-    // =====================================================
 
     if (
         imagenes.length === 0
@@ -706,11 +714,10 @@ Error: No se pudo leer el campo imagenes`
 
     const nuevasImagenes = [];
 
-    let productoNecesitaActualizacion =
-        false;
+    let huboCambio = false;
 
     // =====================================================
-    // PROCESAR CADA IMAGEN
+    // CADA IMAGEN
     // =====================================================
 
     for (
@@ -719,14 +726,13 @@ Error: No se pudo leer el campo imagenes`
     ) {
 
         console.log("");
-
         console.log(
             "Imagen:",
             imagen
         );
 
         // =================================================
-        // YA ES CLOUDINARY
+        // YA CLOUDINARY
         // =================================================
 
         if (
@@ -750,20 +756,20 @@ Error: No se pudo leer el campo imagenes`
         }
 
         // =================================================
-        // BUSCAR ARCHIVO
+        // BUSCAR
         // =================================================
 
-        const rutaLocal =
+        const resultadoBusqueda =
             encontrarImagen(
                 imagen
             );
 
         if (
-            !rutaLocal
+            !resultadoBusqueda
         ) {
 
             console.log(
-                "❌ Imagen NO encontrada:"
+                "❌ Imagen NO encontrada."
             );
 
             console.log(
@@ -773,8 +779,6 @@ Error: No se pudo leer el campo imagenes`
 
             stats.imagenesFaltantes++;
 
-            // IMPORTANTE:
-            // conservar la referencia original
             nuevasImagenes.push(
                 imagen
             );
@@ -782,11 +786,27 @@ Error: No se pudo leer el campo imagenes`
             missingReport.push(
                 `Producto: ${producto.id}
 Título: ${producto.titulo}
-Referencia: ${imagen}`
+Imagen: ${imagen}`
             );
 
             continue;
         }
+
+        if (
+            resultadoBusqueda.cloudinary
+        ) {
+
+            nuevasImagenes.push(
+                imagen
+            );
+
+            stats.imagenesYaCloudinary++;
+
+            continue;
+        }
+
+        const rutaLocal =
+            resultadoBusqueda;
 
         console.log(
             "Ruta local:",
@@ -818,30 +838,6 @@ Referencia: ${imagen}`
                 "✅ IMAGEN SUBIDA"
             );
 
-            console.log(
-                "Filename:",
-                resultado.filename
-            );
-
-            console.log(
-                "Local URL:",
-                resultado.localUrl
-            );
-
-            if (
-                resultado.cloudinary
-            ) {
-
-                console.log(
-                    "Cloudinary:",
-                    resultado.cloudinary.secureUrl
-                );
-            }
-
-            // =================================================
-            // ELEGIR URL
-            // =================================================
-
             let nuevaURL;
 
             if (
@@ -870,8 +866,7 @@ Referencia: ${imagen}`
 
             stats.imagenesSubidas++;
 
-            productoNecesitaActualizacion =
-                true;
+            huboCambio = true;
 
             await esperar(
                 DELAY_MS
@@ -880,18 +875,13 @@ Referencia: ${imagen}`
         } catch (error) {
 
             console.error(
-                "❌ ERROR SUBIENDO IMAGEN:"
-            );
-
-            console.error(
+                "❌ ERROR:",
                 error.message
             );
 
             stats.imagenesConError++;
             stats.errores++;
 
-            // IMPORTANTE:
-            // conservar referencia original
             nuevasImagenes.push(
                 imagen
             );
@@ -900,28 +890,20 @@ Referencia: ${imagen}`
                 `Producto: ${producto.id}
 Título: ${producto.titulo}
 Imagen: ${imagen}
-Ruta local: ${rutaLocal}
 Error: ${error.message}`
             );
         }
     }
 
     // =====================================================
-    // ACTUALIZAR PRODUCTO
+    // ACTUALIZAR POSTGRESQL
     // =====================================================
 
-    try {
+    if (
+        huboCambio
+    ) {
 
-        // Actualizamos si:
-        // 1. Se migró alguna imagen
-        // 2. O queremos conservar las referencias actuales
-        //
-        // Las imágenes que no pudieron migrarse permanecen
-        // con su referencia original.
-
-        if (
-            productoNecesitaActualizacion
-        ) {
+        try {
 
             const actualizado =
                 await actualizarProducto(
@@ -936,7 +918,6 @@ Error: ${error.message}`
                 stats.productosActualizados++;
 
                 console.log("");
-
                 console.log(
                     "✅ PRODUCTO ACTUALIZADO"
                 );
@@ -951,44 +932,24 @@ Error: ${error.message}`
                         depth: null
                     }
                 );
-
-            } else {
-
-                console.log(
-                    "⚠️ No se encontró el producto para actualizar."
-                );
             }
 
-        } else {
+        } catch (error) {
 
-            console.log("");
+            console.error(
+                "❌ ERROR PostgreSQL:",
+                error.message
+            );
 
-            console.log(
-                "☑️ No hubo cambios en PostgreSQL."
+            stats.errores++;
+
+            errorReport.push(
+                `Producto: ${producto.id}
+Error PostgreSQL: ${error.message}`
             );
         }
-
-    } catch (error) {
-
-        console.error(
-            "❌ ERROR PostgreSQL:"
-        );
-
-        console.error(
-            error.message
-        );
-
-        stats.errores++;
-
-        errorReport.push(
-            `Producto: ${producto.id}
-Título: ${producto.titulo}
-Error PostgreSQL: ${error.message}`
-        );
     }
 
-    // MUY IMPORTANTE:
-    // Siempre contar el producto como procesado.
     stats.productosProcesados++;
 }
 
@@ -1004,56 +965,41 @@ function guardarReportes() {
             "migration-missing-images.txt"
         );
 
-    const errorPath =
+    const errorsPath =
         path.join(
             PROJECT_ROOT,
             "migration-errors.txt"
         );
 
-    const missingContent =
-        missingReport.length > 0
+    fs.writeFileSync(
+        missingPath,
+        missingReport.length
             ? missingReport.join(
                 "\n\n----------------------------------------\n\n"
             )
-            : "No hay imágenes faltantes.";
+            : "NO HAY IMÁGENES FALTANTES.",
+        "utf8"
+    );
 
-    const errorContent =
-        errorReport.length > 0
+    fs.writeFileSync(
+        errorsPath,
+        errorReport.length
             ? errorReport.join(
                 "\n\n----------------------------------------\n\n"
             )
-            : "No hay errores.";
-
-    fs.writeFileSync(
-        missingPath,
-        missingContent,
-        "utf8"
-    );
-
-    fs.writeFileSync(
-        errorPath,
-        errorContent,
+            : "NO HAY ERRORES.",
         "utf8"
     );
 
     console.log("");
-
     console.log(
-        "Reporte de imágenes faltantes:"
-    );
-
-    console.log(
+        "📄 Reporte faltantes:",
         missingPath
     );
 
-    console.log("");
-
     console.log(
-        "Reporte de errores:"
-    );
-
-    console.log(
-        errorPath
+        "📄 Reporte errores:",
+        errorsPath
     );
 }
 
@@ -1064,13 +1010,12 @@ function guardarReportes() {
 async function main() {
 
     console.log("");
-
     console.log(
         "======================================"
     );
 
     console.log(
-        "     MIGRADOR DE IMÁGENES LaTRONIC"
+        " MIGRADOR CLOUDINARY LaTRONIC"
     );
 
     console.log(
@@ -1094,37 +1039,10 @@ async function main() {
         PUBLIC_ROOT
     );
 
-    console.log(
-        "Modo:",
-        TEST_MODE
-            ? `PRUEBA - ${TEST_LIMIT} PRODUCTO`
-            : "MIGRAR TODO"
-    );
-
     console.log("");
 
     // =====================================================
-    // COMPROBAR FETCH
-    // =====================================================
-
-    if (
-        typeof fetch !== "function"
-    ) {
-
-        console.error(
-            "❌ Este Node.js no tiene fetch nativo."
-        );
-
-        console.error(
-            "Versión:",
-            process.version
-        );
-
-        process.exit(1);
-    }
-
-    // =====================================================
-    // IMAGE SERVER
+    // COMPROBAR IMAGE SERVER
     // =====================================================
 
     try {
@@ -1133,73 +1051,39 @@ async function main() {
             "Comprobando Image Server..."
         );
 
-        const ping =
+        const response =
             await fetch(
                 `${IMAGE_SERVER}/api/ping`
             );
 
         if (
-            !ping.ok
+            !response.ok
         ) {
 
             throw new Error(
-                `HTTP ${ping.status}`
+                `HTTP ${response.status}`
             );
-        }
-
-        const pingText =
-            await ping.text();
-
-        let pingData;
-
-        try {
-
-            pingData =
-                JSON.parse(
-                    pingText
-                );
-
-        } catch {
-
-            pingData = {};
         }
 
         console.log(
             "✅ Image Server ONLINE"
         );
 
-        if (
-            pingData.server
-        ) {
-
-            console.log(
-                "Servidor:",
-                pingData.server
-            );
-        }
-
     } catch (error) {
 
         console.error("");
-
         console.error(
-            "❌ NO SE PUEDE CONECTAR AL IMAGE SERVER"
+            "❌ Image Server NO está disponible."
         );
 
         console.error(
-            "URL:",
-            IMAGE_SERVER
-        );
-
-        console.error(
-            "Error:",
             error.message
         );
 
         console.error("");
 
         console.error(
-            "Abre el servidor con:"
+            "Ejecuta en otra terminal:"
         );
 
         console.error(
@@ -1210,12 +1094,10 @@ async function main() {
     }
 
     // =====================================================
-    // CONSTRUIR ÍNDICE
+    // INDEXAR
     // =====================================================
 
-    construirIndiceDirectorio(
-        PUBLIC_ROOT
-    );
+    construirIndice();
 
     // =====================================================
     // OBTENER PRODUCTOS
@@ -1250,25 +1132,13 @@ async function main() {
             result.rows.length;
 
         console.log("");
-
         console.log(
             "Productos encontrados:",
             result.rows.length
         );
 
-        if (
-            result.rows.length === 0
-        ) {
-
-            console.log(
-                "⚠️ No hay productos."
-            );
-
-            return;
-        }
-
         // =================================================
-        // PROCESAR PRODUCTOS
+        // PROCESAR
         // =================================================
 
         for (
@@ -1284,7 +1154,6 @@ async function main() {
     } catch (error) {
 
         console.error("");
-
         console.error(
             "❌ ERROR GENERAL:"
         );
@@ -1301,7 +1170,7 @@ async function main() {
     }
 
     // =====================================================
-    // GUARDAR REPORTES
+    // REPORTES
     // =====================================================
 
     guardarReportes();
@@ -1311,13 +1180,12 @@ async function main() {
     // =====================================================
 
     console.log("");
-
     console.log(
         "======================================"
     );
 
     console.log(
-        "           MIGRACIÓN TERMINADA"
+        "      MIGRACIÓN TERMINADA"
     );
 
     console.log(
@@ -1387,18 +1255,8 @@ async function main() {
     console.log("");
 
     console.log(
-        "Reportes creados:"
+        "🎉 Proceso terminado."
     );
-
-    console.log(
-        "migration-missing-images.txt"
-    );
-
-    console.log(
-        "migration-errors.txt"
-    );
-
-    console.log("");
 }
 
 // =========================================================
