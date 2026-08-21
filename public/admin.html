@@ -1,388 +1,1958 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
+
 <style>
-* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
-body { background:#1e1e1e; color:#fff; }
-#login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:#111; }
-#login-box { background:#2a2a2a; padding:30px; border-radius:10px; text-align:center; width:90%; max-width:350px; }
-#login-box input, #login-box button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; font-size:1rem; }
-#login-box button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-#admin-panel { display:none; padding:20px; max-width:1200px; margin:0 auto; }
-#admin-panel h1 { margin-bottom:15px; }
-#form-producto input, #form-producto textarea, #form-producto button { width:100%; padding:10px; margin-bottom:10px; border:none; border-radius:5px; font-size:1rem; }
-#form-producto input, #form-producto textarea { background:#2a2a2a; color:#fff; }
-#form-producto button { background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-#search-input { width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:none; font-size:1rem; background:#2a2a2a; color:#fff; outline:none; transition: all 0.3s ease; }
-#search-input:focus { box-shadow:0 0 10px #e28f2f; }
-.productos { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
-.producto { background:#2a2a2a; padding:15px; border-radius:10px; transition: transform 0.2s ease; position:relative; }
-.producto:hover { transform:scale(1.03); }
-.mini-images { display:flex; margin-bottom:10px; flex-wrap: wrap; gap:5px; }
-.producto img { width:50px; height:50px; object-fit:cover; margin-right:5px; border-radius:4px; }
-.producto input, .producto textarea { width:100%; margin-bottom:5px; background:#1e1e1e; color:#fff; border-radius:4px; padding:5px; }
-.producto button { margin-right:5px; margin-top:5px; background:#e28f2f; color:#000; border:none; border-radius:5px; padding:6px 10px; cursor:pointer; font-weight:bold; }
-#mensaje-guardado { position:fixed; top:20px; right:20px; background:#28a745; color:#000; padding:10px 15px; border-radius:6px; display:none; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.4); transition: all 0.3s ease; }
-.top-buttons { display:flex; gap:10px; margin-bottom:20px; }
-.top-buttons button { padding:10px 15px; border:none; border-radius:5px; background:#e28f2f; color:#000; font-weight:bold; cursor:pointer; }
-#login-btn:hover, #back:hover, .top-buttons button:hover, #form-producto button:hover, .producto button:hover { background-color: rgb(214, 80, 17); color: white; }
-.advice{ color: rgba(255, 0, 0, 0.795); }
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+#login-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #111;
+}
+
+#login-box {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 90%;
+    max-width: 350px;
+}
+
+#login-box input,
+#login-box button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#login-box button {
+    background: #e28f2f;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+#admin-panel {
+    display: none;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#admin-panel h1 {
+    margin-bottom: 15px;
+}
+
+/* =========================
+   FORM
+========================= */
+
+#form-producto input,
+#form-producto textarea,
+#form-producto button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#form-producto input,
+#form-producto textarea {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+#form-producto button {
+    background: #e28f2f;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+#search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    background: #2a2a2a;
+    color: #fff;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#search-input:focus {
+    box-shadow: 0 0 10px #e28f2f;
+}
+
+/* =========================
+   PRODUCTS
+========================= */
+
+.productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.producto {
+    background: #2a2a2a;
+    padding: 15px;
+    border-radius: 10px;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.producto:hover {
+    transform: scale(1.03);
+}
+
+.mini-images {
+    display: flex;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.producto img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+
+.producto input,
+.producto textarea {
+    width: 100%;
+    margin-bottom: 5px;
+    background: #1e1e1e;
+    color: #fff;
+    border-radius: 4px;
+    padding: 5px;
+    border: none;
+}
+
+.producto textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.producto button {
+    margin-right: 5px;
+    margin-top: 5px;
+    background: #e28f2f;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.producto button:hover {
+    background-color: rgb(214, 80, 17);
+    color: white;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#mensaje-guardado {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #28a745;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: none;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* =========================
+   TOP BUTTONS
+========================= */
+
+.top-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.top-buttons button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #e28f2f;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.top-buttons button:hover,
+#login-btn:hover,
+#back:hover,
+#form-producto button:hover {
+    background-color: rgb(214, 80, 17);
+    color: white;
+}
+
+.advice {
+    color: rgba(255, 0, 0, 0.795);
+}
+
+/* =========================
+   STATUS
+========================= */
+
+#server-status {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #2a2a2a;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.status-ok {
+    color: #28a745;
+}
+
+.status-error {
+    color: #ff4444;
+}
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 768px) {
-  #admin-panel { padding: 10px; max-width: 100%; }
-  .productos { grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
-  .producto { padding: 10px; }
-  .producto img { width:100%; height:auto; margin-right:0; margin-bottom:5px; }
-  .producto input, .producto textarea, .producto button { width:100%; margin-bottom:5px; }
-  .mini-images { flex-direction: column; }
-  .top-buttons { flex-direction: column; }
-  .top-buttons button { width:100%; margin-bottom:5px; }
-  #login-box { width:95%; max-width:300px; padding:20px; }
+
+    #admin-panel {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .productos {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .producto {
+        padding: 10px;
+    }
+
+    .producto img {
+        width: 100%;
+        height: auto;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .producto input,
+    .producto textarea,
+    .producto button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .mini-images {
+        flex-direction: column;
+    }
+
+    .top-buttons {
+        flex-direction: column;
+    }
+
+    .top-buttons button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    #login-box {
+        width: 95%;
+        max-width: 300px;
+        padding: 20px;
+    }
 }
+
 @media (max-width: 400px) {
-  .productos { grid-template-columns: 1fr; gap:8px; }
-  #login-box { padding:15px; }
+
+    .productos {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    #login-box {
+        padding: 15px;
+    }
 }
+
 </style>
 </head>
+
 <body>
 
-<!-- LOGIN -->
+<!-- =========================
+     LOGIN
+========================= -->
+
 <div id="login-screen">
-  <div id="login-box">
-    <h1>🔒 Admin Access</h1>
-    <h6 class="advice">This site is only for the administrator</h6>
-    <input type="password" id="admin-password" placeholder="Enter Password" />
-    <button id="login-btn">Enter</button>
-    <button id="back" onclick="window.location.href='shop.html'">Exit</button>
-  </div>
+
+    <div id="login-box">
+
+        <h1>🔒 Admin Access</h1>
+
+        <h6 class="advice">
+            This site is only for the administrator
+        </h6>
+
+        <input
+            type="password"
+            id="admin-password"
+            placeholder="Enter Password"
+        />
+
+        <button id="login-btn">
+            Enter
+        </button>
+
+        <button
+            id="back"
+            onclick="window.location.href='shop.html'"
+        >
+            Exit
+        </button>
+
+    </div>
+
 </div>
 
-<!-- PANEL ADMIN -->
+
+<!-- =========================
+     ADMIN PANEL
+========================= -->
+
 <div id="admin-panel">
-  <div class="top-buttons">
-    <button id="logout-btn">Logout</button>
-    <button id="go-shop-btn">Go to Shop 🛍️</button>
-  </div>
 
-  <h1>Admin Panel</h1>
-  <input type="text" id="search-input" placeholder="Search products...🔎"/>
+    <div class="top-buttons">
 
-  <form id="form-producto" novalidate>
-    <input type="text" id="titulo" placeholder="Título del producto" required />
-    <textarea id="description" placeholder="Descripción" required></textarea>
-    <input type="file" id="imagenes-file" multiple accept="image/*" />
-    <input type="text" id="mainCat" placeholder="Categoría principal" required />
-    <input type="text" id="subCat" placeholder="Subcategoría" required />
-    <input type="number" id="price" placeholder="Precio" required />
-    <input type="number" id="stock" placeholder="Stock" required />
-    <button type="button" id="agregar-btn">Agregar producto</button>
-  </form>
+        <button id="logout-btn">
+            Logout
+        </button>
 
-  <div class="productos" id="lista-productos"></div>
+        <button id="go-shop-btn">
+            Go to Shop 🛍️
+        </button>
+
+    </div>
+
+    <h1>
+        Admin Panel
+    </h1>
+
+    <div id="server-status">
+
+        Server status:
+
+        <span id="status-text">
+            Checking...
+        </span>
+
+    </div>
+
+    <input
+        type="text"
+        id="search-input"
+        placeholder="Search products... 🔎"
+    />
+
+
+    <!-- =========================
+         ADD PRODUCT
+    ========================= -->
+
+    <form
+        id="form-producto"
+        novalidate
+    >
+
+        <input
+            type="text"
+            id="titulo"
+            placeholder="Título del producto"
+            required
+        />
+
+        <textarea
+            id="description"
+            placeholder="Descripción"
+            required
+        ></textarea>
+
+        <input
+            type="file"
+            id="imagenes-file"
+            multiple
+            accept="image/*"
+        />
+
+        <input
+            type="text"
+            id="mainCat"
+            placeholder="Categoría principal"
+            required
+        />
+
+        <input
+            type="text"
+            id="subCat"
+            placeholder="Subcategoría"
+            required
+        />
+
+        <input
+            type="number"
+            id="price"
+            placeholder="Precio"
+            required
+        />
+
+        <input
+            type="number"
+            id="stock"
+            placeholder="Stock"
+            required
+        />
+
+        <button
+            type="button"
+            id="agregar-btn"
+        >
+            Agregar producto
+        </button>
+
+    </form>
+
+
+    <!-- =========================
+         PRODUCTS
+    ========================= -->
+
+    <div
+        class="productos"
+        id="lista-productos"
+    ></div>
+
 </div>
 
-<div id="mensaje-guardado">✅ Cambios guardados correctamente</div>
+
+<div id="mensaje-guardado">
+    ✅ Cambios guardados correctamente
+</div>
+
+
+<!-- =========================
+     SOCKET.IO
+========================= -->
 
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-<script>
-const ADMIN_PASSWORD = "042525"; 
-const BASE_URL = "";  
 
-const loginScreen = document.getElementById("login-screen");
-const adminPanel = document.getElementById("admin-panel");
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const goShopBtn = document.getElementById("go-shop-btn");
-const passwordInput = document.getElementById("admin-password");
-const listaProductos = document.getElementById("lista-productos");
-const formProducto = document.getElementById("form-producto");
-const mensajeGuardado = document.getElementById("mensaje-guardado");
-const searchInput = document.getElementById("search-input");
-const imagenesFileInput = document.getElementById("imagenes-file");
-const agregarBtn = document.getElementById("agregar-btn");
+
+<script>
+
+/* =========================================================
+   CONFIGURACIÓN
+========================================================= */
+
+const ADMIN_PASSWORD = "042525";
+
+/*
+    IMPORTANTE:
+
+    Si admin.html y la API están en el mismo servidor:
+
+    BASE_URL = ""
+
+    Si tu servidor está en otro lugar:
+
+    BASE_URL = "http://localhost:3000"
+*/
+
+const BASE_URL = "";
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const loginScreen =
+    document.getElementById("login-screen");
+
+const adminPanel =
+    document.getElementById("admin-panel");
+
+const loginBtn =
+    document.getElementById("login-btn");
+
+const logoutBtn =
+    document.getElementById("logout-btn");
+
+const goShopBtn =
+    document.getElementById("go-shop-btn");
+
+const passwordInput =
+    document.getElementById("admin-password");
+
+const listaProductos =
+    document.getElementById("lista-productos");
+
+const formProducto =
+    document.getElementById("form-producto");
+
+const mensajeGuardado =
+    document.getElementById("mensaje-guardado");
+
+const searchInput =
+    document.getElementById("search-input");
+
+const imagenesFileInput =
+    document.getElementById("imagenes-file");
+
+const agregarBtn =
+    document.getElementById("agregar-btn");
+
+const statusText =
+    document.getElementById("status-text");
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 let productos = [];
-const socket = io(); 
 let AUTH_TOKEN = "";
 
+
+/* =========================================================
+   SOCKET.IO
+========================================================= */
+
+const socket = io(BASE_URL || undefined);
+
+
+/* =========================================================
+   MENSAJE
+========================================================= */
+
 function mostrarMensaje() {
-  mensajeGuardado.style.display = "block";
-  setTimeout(() => mensajeGuardado.style.display = "none", 2000);
+
+    mensajeGuardado.style.display = "block";
+
+    setTimeout(() => {
+
+        mensajeGuardado.style.display = "none";
+
+    }, 2000);
+
 }
+
+
+/* =========================================================
+   ESTADO DEL SERVIDOR
+========================================================= */
+
+function actualizarEstadoServidor(ok, texto) {
+
+    statusText.textContent = texto;
+
+    statusText.className =
+        ok ? "status-ok" : "status-error";
+
+}
+
+
+/* =========================================================
+   CARGAR PRODUCTOS
+========================================================= */
 
 async function cargarProductos() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/productos`, { cache: "no-store" });
-    productos = await res.json();
-    productos = productos.map(p => ({
-      id: p.id || "prod-" + Date.now(),
-      titulo: p.titulo || "Sin título",
-      description: p.description || "",
-      imagenes: Array.isArray(p.imagenes) ? p.imagenes : [],
-      categoria: { main: p.categoria?.main || "Sin categoría", sub: p.categoria?.sub || "" },
-      price: Number(p.price) || 0,
-      stock: Number(p.stock) || 0
-    }));
-    renderProductos();
-  } catch (err) {
-    console.error("Error cargando productos:", err);
-  }
+
+    console.log("=================================");
+    console.log("CARGANDO PRODUCTOS");
+    console.log("=================================");
+
+    try {
+
+        const res = await fetch(
+            `${BASE_URL}/api/productos`,
+            {
+                cache: "no-store",
+                headers: {
+                    "Authorization": AUTH_TOKEN
+                }
+            }
+        );
+
+
+        console.log(
+            "Respuesta API:",
+            res.status,
+            res.statusText
+        );
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                `HTTP ${res.status} - ${res.statusText}`
+            );
+
+        }
+
+
+        const data = await res.json();
+
+
+        console.log(
+            "Productos recibidos:",
+            data
+        );
+
+
+        console.log(
+            "Cantidad de productos:",
+            Array.isArray(data)
+                ? data.length
+                : "NO ES ARRAY"
+        );
+
+
+        if (!Array.isArray(data)) {
+
+            throw new Error(
+                "La API no devolvió un array de productos"
+            );
+
+        }
+
+
+        productos = data.map(p => ({
+
+            id:
+                p.id ||
+                "prod-" + Date.now(),
+
+            titulo:
+                p.titulo ||
+                "Sin título",
+
+            description:
+                p.description ||
+                "",
+
+            imagenes:
+                Array.isArray(p.imagenes)
+                    ? p.imagenes
+                    : [],
+
+            categoria: {
+
+                main:
+                    p.categoria?.main ||
+                    "Sin categoría",
+
+                sub:
+                    p.categoria?.sub ||
+                    ""
+
+            },
+
+            price:
+                Number(p.price) || 0,
+
+            stock:
+                Number(p.stock) || 0
+
+        }));
+
+
+        actualizarEstadoServidor(
+            true,
+            `Connected — ${productos.length} products`
+        );
+
+
+        renderProductos();
+
+    }
+
+    catch (err) {
+
+        console.error(
+            "ERROR CARGANDO PRODUCTOS:",
+            err
+        );
+
+
+        actualizarEstadoServidor(
+            false,
+            "Error connecting to server"
+        );
+
+
+        listaProductos.innerHTML = `
+
+            <div style="
+                background:#3a1e1e;
+                padding:20px;
+                border-radius:10px;
+                color:#ff5555;
+                grid-column:1/-1;
+            ">
+
+                <h3>
+                    ❌ No se pudieron cargar los productos
+                </h3>
+
+                <br>
+
+                <p>
+                    ${err.message}
+                </p>
+
+                <br>
+
+                <p>
+                    Abre F12 → Console para ver más información.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
 }
+
+
+/* =========================================================
+   RENDER PRODUCTOS
+========================================================= */
 
 function renderProductos(filter = "") {
-  listaProductos.innerHTML = "";
-  const filtrados = productos.filter(p => p.titulo.toLowerCase().includes(filter.toLowerCase()));
 
-  filtrados.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "producto";
+    console.log(
+        "Renderizando productos:",
+        productos.length
+    );
 
-    // Mini imágenes
-    const miniImgs = document.createElement("div");
-    miniImgs.className = "mini-images";
-    p.imagenes.forEach(url => {
-      const img = document.createElement("img");
-      img.src = url;
-      miniImgs.appendChild(img);
+
+    listaProductos.innerHTML = "";
+
+
+    const textoBusqueda =
+        String(filter)
+            .toLowerCase()
+            .trim();
+
+
+    const filtrados =
+        productos.filter(p =>
+
+            String(p.titulo || "")
+                .toLowerCase()
+                .includes(textoBusqueda)
+
+        );
+
+
+    console.log(
+        "Productos filtrados:",
+        filtrados.length
+    );
+
+
+    if (filtrados.length === 0) {
+
+        listaProductos.innerHTML = `
+
+            <div style="
+                padding:20px;
+                background:#2a2a2a;
+                border-radius:10px;
+                grid-column:1/-1;
+            ">
+
+                No products found.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    filtrados.forEach(p => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "producto";
+
+
+        /* =========================
+           IMÁGENES
+        ========================= */
+
+        const miniImgs =
+            document.createElement("div");
+
+        miniImgs.className =
+            "mini-images";
+
+
+        if (
+            Array.isArray(p.imagenes) &&
+            p.imagenes.length > 0
+        ) {
+
+            p.imagenes.forEach(url => {
+
+                const img =
+                    document.createElement("img");
+
+
+                img.src = url;
+
+                img.alt = p.titulo;
+
+
+                img.onerror = () => {
+
+                    console.warn(
+                        "Imagen no encontrada:",
+                        url
+                    );
+
+                    img.style.display = "none";
+
+                };
+
+
+                miniImgs.appendChild(img);
+
+            });
+
+        }
+
+        else {
+
+            miniImgs.innerHTML = `
+
+                <div style="
+                    color:#888;
+                    padding:10px;
+                ">
+
+                    No images
+
+                </div>
+
+            `;
+
+        }
+
+
+        div.appendChild(miniImgs);
+
+
+        /* =========================
+           TÍTULO
+        ========================= */
+
+        const tituloInput =
+            document.createElement("input");
+
+        tituloInput.type = "text";
+
+        tituloInput.id =
+            `titulo-${p.id}`;
+
+        tituloInput.value =
+            p.titulo;
+
+        div.appendChild(tituloInput);
+
+
+        /* =========================
+           DESCRIPCIÓN
+        ========================= */
+
+        const descTextarea =
+            document.createElement("textarea");
+
+        descTextarea.id =
+            `desc-${p.id}`;
+
+        descTextarea.value =
+            p.description;
+
+        div.appendChild(descTextarea);
+
+
+        /* =========================
+           CATEGORÍA PRINCIPAL
+        ========================= */
+
+        const mainCatInput =
+            document.createElement("input");
+
+        mainCatInput.type = "text";
+
+        mainCatInput.id =
+            `mainCat-${p.id}`;
+
+        mainCatInput.value =
+            p.categoria?.main || "";
+
+        mainCatInput.placeholder =
+            "Categoría principal";
+
+        div.appendChild(mainCatInput);
+
+
+        /* =========================
+           SUBCATEGORÍA
+        ========================= */
+
+        const subCatInput =
+            document.createElement("input");
+
+        subCatInput.type = "text";
+
+        subCatInput.id =
+            `subCat-${p.id}`;
+
+        subCatInput.value =
+            p.categoria?.sub || "";
+
+        subCatInput.placeholder =
+            "Subcategoría";
+
+        div.appendChild(subCatInput);
+
+
+        /* =========================
+           PRECIO
+        ========================= */
+
+        const priceInput =
+            document.createElement("input");
+
+        priceInput.type = "number";
+
+        priceInput.step = "0.01";
+
+        priceInput.id =
+            `price-${p.id}`;
+
+        priceInput.value =
+            p.price;
+
+        div.appendChild(priceInput);
+
+
+        /* =========================
+           STOCK
+        ========================= */
+
+        const stockInput =
+            document.createElement("input");
+
+        stockInput.type = "number";
+
+        stockInput.id =
+            `stock-${p.id}`;
+
+        stockInput.value =
+            p.stock;
+
+        div.appendChild(stockInput);
+
+
+        /* =========================
+           NUEVAS IMÁGENES
+        ========================= */
+
+        const imgInput =
+            document.createElement("input");
+
+        imgInput.type = "file";
+
+        imgInput.id =
+            `img-${p.id}`;
+
+        imgInput.multiple = true;
+
+        imgInput.accept =
+            "image/*";
+
+        div.appendChild(imgInput);
+
+
+        /* =========================
+           GUARDAR
+        ========================= */
+
+        const guardarBtn =
+            document.createElement("button");
+
+        guardarBtn.type = "button";
+
+        guardarBtn.textContent =
+            "Guardar";
+
+
+        guardarBtn.addEventListener(
+            "click",
+            async () => {
+
+                await actualizarProducto(
+                    p.id
+                );
+
+            }
+        );
+
+
+        div.appendChild(
+            guardarBtn
+        );
+
+
+        /* =========================
+           ELIMINAR
+        ========================= */
+
+        const eliminarBtn =
+            document.createElement("button");
+
+        eliminarBtn.type = "button";
+
+        eliminarBtn.textContent =
+            "Eliminar";
+
+
+        eliminarBtn.addEventListener(
+            "click",
+            async () => {
+
+                await eliminarProducto(
+                    p.id
+                );
+
+            }
+        );
+
+
+        div.appendChild(
+            eliminarBtn
+        );
+
+
+        listaProductos.appendChild(
+            div
+        );
+
     });
-    div.appendChild(miniImgs);
 
-    // Título
-    const tituloInput = document.createElement("input");
-    tituloInput.type = "text";
-    tituloInput.id = `titulo-${p.id}`;
-    tituloInput.value = p.titulo;
-    div.appendChild(tituloInput);
-
-    // Descripción
-    const descTextarea = document.createElement("textarea");
-    descTextarea.id = `desc-${p.id}`;
-    descTextarea.value = p.description;
-    div.appendChild(descTextarea);
-
-    // Categoría
-   // Categoría principal editable
-const mainCatInput = document.createElement("input");
-mainCatInput.type = "text";
-mainCatInput.id = `mainCat-${p.id}`;
-mainCatInput.value = p.categoria.main;
-mainCatInput.placeholder = "Categoría principal";
-div.appendChild(mainCatInput);
-
-// Subcategoría editable
-const subCatInput = document.createElement("input");
-subCatInput.type = "text";
-subCatInput.id = `subCat-${p.id}`;
-subCatInput.value = p.categoria.sub;
-subCatInput.placeholder = "Subcategoría";
-div.appendChild(subCatInput);
-
-    // Precio y stock
-    const priceInput = document.createElement("input");
-    priceInput.type = "number";
-    priceInput.id = `price-${p.id}`;
-    priceInput.value = p.price;
-    div.appendChild(priceInput);
-
-    const stockInput = document.createElement("input");
-    stockInput.type = "number";
-    stockInput.id = `stock-${p.id}`;
-    stockInput.value = p.stock;
-    div.appendChild(stockInput);
-
-    // Subir nuevas imágenes
-    const imgInput = document.createElement("input");
-    imgInput.type = "file";
-    imgInput.id = `img-${p.id}`;
-    imgInput.multiple = true;
-    imgInput.accept = "image/*";
-    div.appendChild(imgInput);
-
-// Botones
-const guardarBtn = document.createElement("button");
-guardarBtn.type = "button"; // evita que actúe como submit
-guardarBtn.textContent = "Guardar";
-guardarBtn.addEventListener("click", (e) => {
-  e.preventDefault(); // previene cualquier comportamiento por defecto
-  actualizarProducto(p.id);
-});
-div.appendChild(guardarBtn);ipconfig /flushdn
-
-const eliminarBtn = document.createElement("button");
-eliminarBtn.type = "button";
-eliminarBtn.textContent = "Eliminar";
-eliminarBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  eliminarProducto(p.id);
-});
-div.appendChild(eliminarBtn);
-
-listaProductos.appendChild(div);
-  });
 }
+
+
+/* =========================================================
+   ACTUALIZAR PRODUCTO
+========================================================= */
 
 async function actualizarProducto(id) {
-  const prod = productos.find(p => p.id === id);
-  if (!prod) return;
 
-  // Subir nuevas imágenes
-  let nuevasImagenes = [];
-  const fileInput = document.getElementById(`img-${id}`);
-  if (fileInput && fileInput.files.length > 0) {
-    nuevasImagenes = await subirImagenes(fileInput.files);
-  }
+    const prod =
+        productos.find(
+            p => p.id === id
+        );
 
-  const updated = {
-    titulo: document.getElementById(`titulo-${id}`).value,
-    description: document.getElementById(`desc-${id}`).value,
 
-    categoria: {
-        main: document.getElementById(`mainCat-${id}`).value,
-        sub: document.getElementById(`subCat-${id}`).value
-    },
+    if (!prod) {
 
-    price: Number(document.getElementById(`price-${id}`).value),
-    stock: Number(document.getElementById(`stock-${id}`).value),
+        console.error(
+            "Producto no encontrado:",
+            id
+        );
 
-    imagenes: [...prod.imagenes, ...nuevasImagenes]
-};
-  try {
-    const res = await fetch(`${BASE_URL}/api/productos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
-      body: JSON.stringify(updated)
-    });
-    const data = await res.json();
-    productos = productos.map(p => (p.id === id ? { ...p, ...data } : p));
-    socket.emit("actualizar-productos", productos);
-    renderProductos(searchInput.value);
-    mostrarMensaje();
-  } catch (err) {
-    console.error(err);
-  }
+        return;
+
+    }
+
+
+    /* =========================
+       SUBIR NUEVAS IMÁGENES
+    ========================= */
+
+    let nuevasImagenes = [];
+
+
+    const fileInput =
+        document.getElementById(
+            `img-${id}`
+        );
+
+
+    if (
+        fileInput &&
+        fileInput.files.length > 0
+    ) {
+
+        nuevasImagenes =
+            await subirImagenes(
+                fileInput.files
+            );
+
+    }
+
+
+    /* =========================
+       DATOS ACTUALIZADOS
+    ========================= */
+
+    const updated = {
+
+        titulo:
+            document.getElementById(
+                `titulo-${id}`
+            ).value,
+
+        description:
+            document.getElementById(
+                `desc-${id}`
+            ).value,
+
+        categoria: {
+
+            main:
+                document.getElementById(
+                    `mainCat-${id}`
+                ).value,
+
+            sub:
+                document.getElementById(
+                    `subCat-${id}`
+                ).value
+
+        },
+
+        price:
+            Number(
+                document.getElementById(
+                    `price-${id}`
+                ).value
+            ),
+
+        stock:
+            Number(
+                document.getElementById(
+                    `stock-${id}`
+                ).value
+            ),
+
+        imagenes: [
+
+            ...prod.imagenes,
+
+            ...nuevasImagenes
+
+        ]
+
+    };
+
+
+    try {
+
+        const res =
+            await fetch(
+                `${BASE_URL}/api/productos/${id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            AUTH_TOKEN
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            updated
+                        )
+
+                }
+            );
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                `HTTP ${res.status}`
+            );
+
+        }
+
+
+        const data =
+            await res.json();
+
+
+        productos =
+            productos.map(p =>
+
+                p.id === id
+
+                    ? {
+                        ...p,
+                        ...data
+                    }
+
+                    : p
+
+            );
+
+
+        socket.emit(
+            "productos-actualizados",
+            productos
+        );
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+
+        mostrarMensaje();
+
+    }
+
+    catch (err) {
+
+        console.error(
+            "Error actualizando producto:",
+            err
+        );
+
+
+        alert(
+            "❌ Error actualizando producto"
+        );
+
+    }
+
 }
+
+
+/* =========================================================
+   ELIMINAR PRODUCTO
+========================================================= */
 
 async function eliminarProducto(id) {
-  if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
-  try {
-    await fetch(`${BASE_URL}/api/productos/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": AUTH_TOKEN }
-    });
-    productos = productos.filter(p => p.id !== id);
-    socket.emit("productos-actualizados", productos);
-    renderProductos(searchInput.value);
-    mostrarMensaje();
-  } catch (err) {
-    console.error(err);
-  }
+
+    if (
+        !confirm(
+            "¿Seguro que quieres eliminar este producto?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const res =
+            await fetch(
+                `${BASE_URL}/api/productos/${id}`,
+                {
+
+                    method: "DELETE",
+
+                    headers: {
+
+                        "Authorization":
+                            AUTH_TOKEN
+
+                    }
+
+                }
+            );
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                `HTTP ${res.status}`
+            );
+
+        }
+
+
+        productos =
+            productos.filter(
+                p => p.id !== id
+            );
+
+
+        socket.emit(
+            "productos-actualizados",
+            productos
+        );
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+
+        mostrarMensaje();
+
+    }
+
+    catch (err) {
+
+        console.error(
+            "Error eliminando producto:",
+            err
+        );
+
+
+        alert(
+            "❌ Error eliminando producto"
+        );
+
+    }
+
 }
+
+
+/* =========================================================
+   SUBIR IMÁGENES
+========================================================= */
 
 async function subirImagenes(files) {
-  const formData = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    formData.append("imagenes", files[i]);
-  }
 
-  const res = await fetch(`${BASE_URL}/api/subir-imagenes`, { method: "POST", body: formData });
-  if (!res.ok) {
-    console.error("Error subiendo imágenes:", res.status, res.statusText);
-    return [];
-  }
+    const formData =
+        new FormData();
 
-  try {
-    const data = await res.json();
-    return data.urls || [];
-  } catch (err) {
-    console.error("Error parseando JSON:", err);
-    return [];
-  }
+
+    for (
+        let i = 0;
+        i < files.length;
+        i++
+    ) {
+
+        formData.append(
+            "imagenes",
+            files[i]
+        );
+
+    }
+
+
+    try {
+
+        const res =
+            await fetch(
+                `${BASE_URL}/api/subir-imagenes`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Authorization":
+                            AUTH_TOKEN
+
+                    },
+
+                    body:
+                        formData
+
+                }
+            );
+
+
+        if (!res.ok) {
+
+            console.error(
+                "Error subiendo imágenes:",
+                res.status,
+                res.statusText
+            );
+
+            return [];
+
+        }
+
+
+        const data =
+            await res.json();
+
+
+        return Array.isArray(data.urls)
+
+            ? data.urls
+
+            : [];
+
+    }
+
+    catch (err) {
+
+        console.error(
+            "Error subiendo imágenes:",
+            err
+        );
+
+        return [];
+
+    }
+
 }
 
-// Agregar nuevo producto
-agregarBtn.addEventListener("click", async () => {
-  if (!document.getElementById("titulo").value ||
-      !document.getElementById("description").value ||
-      !document.getElementById("mainCat").value ||
-      !document.getElementById("subCat").value ||
-      !document.getElementById("price").value ||
-      !document.getElementById("stock").value) {
-    alert("❌ Por favor completa todos los campos");
-    return;
-  }
 
-  let imagenesUrls = [];
-  if (imagenesFileInput.files.length > 0) {
-    imagenesUrls = await subirImagenes(imagenesFileInput.files);
-  }
+/* =========================================================
+   AGREGAR PRODUCTO
+========================================================= */
 
-  const nuevo = {
-    titulo: document.getElementById("titulo").value,
-    description: document.getElementById("description").value,
-    imagenes: imagenesUrls,
-    categoria: {
-      main: document.getElementById("mainCat").value,
-      sub: document.getElementById("subCat").value
-    },
-    price: Number(document.getElementById("price").value),
-    stock: Number(document.getElementById("stock").value)
-  };
+agregarBtn.addEventListener(
+    "click",
+    async () => {
 
-  try {
-    const res = await fetch(`${BASE_URL}/api/productos`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": AUTH_TOKEN },
-      body: JSON.stringify(nuevo)
-    });
-    const data = await res.json();
-    productos.push({ id: data.id || "prod-" + Date.now(), ...nuevo });
-    socket.emit("productos-actualizados", productos);
-    renderProductos(searchInput.value);
-    mostrarMensaje();
-    formProducto.reset();
-  } catch (err) {
-    console.error(err);
-  }
-});
+        const titulo =
+            document.getElementById(
+                "titulo"
+            ).value.trim();
 
-// Login / Logout
-loginBtn.addEventListener("click", () => {
-  if (passwordInput.value === ADMIN_PASSWORD) {
-    AUTH_TOKEN = "Basic " + btoa(`admin:${passwordInput.value}`);
-    loginScreen.style.display = "none";
-    adminPanel.style.display = "block";
-    cargarProductos();
-  } else {
-    alert("❌ Contraseña incorrecta");
-  }
-});
 
-logoutBtn.addEventListener("click", () => {
-  loginScreen.style.display = "flex";
-  adminPanel.style.display = "none";
-  AUTH_TOKEN = "";
-});
+        const description =
+            document.getElementById(
+                "description"
+            ).value.trim();
 
-goShopBtn.addEventListener("click", () => window.location.href = "shop.html");
-searchInput.addEventListener("input", () => renderProductos(searchInput.value));
 
-// Socket.IO
-socket.on("actualizar-productos", data => {
-  productos = data.map(p => ({
-    id: p.id || "prod-" + Date.now(),
-    titulo: p.titulo || "Sin título",
-    description: p.description || "",
-    imagenes: Array.isArray(p.imagenes) ? p.imagenes : [],
-    categoria: { main: p.categoria?.main || "Sin categoría", sub: p.categoria?.sub || "" },
-    price: Number(p.price) || 0,
-    stock: Number(p.stock) || 0
-  }));
-  renderProductos(searchInput.value);
-});
+        const mainCat =
+            document.getElementById(
+                "mainCat"
+            ).value.trim();
+
+
+        const subCat =
+            document.getElementById(
+                "subCat"
+            ).value.trim();
+
+
+        const price =
+            document.getElementById(
+                "price"
+            ).value;
+
+
+        const stock =
+            document.getElementById(
+                "stock"
+            ).value;
+
+
+        if (
+            !titulo ||
+            !description ||
+            !mainCat ||
+            !subCat ||
+            price === "" ||
+            stock === ""
+        ) {
+
+            alert(
+                "❌ Por favor completa todos los campos"
+            );
+
+            return;
+
+        }
+
+
+        /* =========================
+           IMÁGENES
+        ========================= */
+
+        let imagenesUrls = [];
+
+
+        if (
+            imagenesFileInput.files.length > 0
+        ) {
+
+            imagenesUrls =
+                await subirImagenes(
+                    imagenesFileInput.files
+                );
+
+        }
+
+
+        /* =========================
+           NUEVO PRODUCTO
+        ========================= */
+
+        const nuevo = {
+
+            titulo,
+
+            description,
+
+            imagenes:
+                imagenesUrls,
+
+            categoria: {
+
+                main: mainCat,
+
+                sub: subCat
+
+            },
+
+            price:
+                Number(price),
+
+            stock:
+                Number(stock)
+
+        };
+
+
+        try {
+
+            const res =
+                await fetch(
+                    `${BASE_URL}/api/productos`,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                AUTH_TOKEN
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                nuevo
+                            )
+
+                    }
+                );
+
+
+            if (!res.ok) {
+
+                throw new Error(
+                    `HTTP ${res.status}`
+                );
+
+            }
+
+
+            const data =
+                await res.json();
+
+
+            const productoCreado = {
+
+                id:
+                    data.id ||
+                    "prod-" + Date.now(),
+
+                ...nuevo
+
+            };
+
+
+            productos.push(
+                productoCreado
+            );
+
+
+            socket.emit(
+                "productos-actualizados",
+                productos
+            );
+
+
+            renderProductos(
+                searchInput.value
+            );
+
+
+            mostrarMensaje();
+
+
+            formProducto.reset();
+
+        }
+
+        catch (err) {
+
+            console.error(
+                "Error agregando producto:",
+                err
+            );
+
+
+            alert(
+                "❌ Error agregando producto"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+loginBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (
+            passwordInput.value ===
+            ADMIN_PASSWORD
+        ) {
+
+            AUTH_TOKEN =
+                "Basic " +
+                btoa(
+                    `admin:${passwordInput.value}`
+                );
+
+
+            loginScreen.style.display =
+                "none";
+
+
+            adminPanel.style.display =
+                "block";
+
+
+            await cargarProductos();
+
+        }
+
+        else {
+
+            alert(
+                "❌ Contraseña incorrecta"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ENTER PARA LOGIN
+========================================================= */
+
+passwordInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            loginBtn.click();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+logoutBtn.addEventListener(
+    "click",
+    () => {
+
+        loginScreen.style.display =
+            "flex";
+
+        adminPanel.style.display =
+            "none";
+
+        AUTH_TOKEN = "";
+
+        passwordInput.value = "";
+
+    }
+);
+
+
+/* =========================================================
+   GO TO SHOP
+========================================================= */
+
+goShopBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "shop.html";
+
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+        renderProductos(
+            searchInput.value
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SOCKET.IO CONNECT
+========================================================= */
+
+socket.on(
+    "connect",
+    () => {
+
+        console.log(
+            "Socket.IO conectado:",
+            socket.id
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SOCKET.IO DISCONNECT
+========================================================= */
+
+socket.on(
+    "disconnect",
+    () => {
+
+        console.log(
+            "Socket.IO desconectado"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   PRODUCTOS ACTUALIZADOS
+========================================================= */
+
+socket.on(
+    "productos-actualizados",
+    data => {
+
+        console.log(
+            "Productos actualizados por Socket.IO:",
+            data
+        );
+
+
+        if (!Array.isArray(data)) {
+
+            return;
+
+        }
+
+
+        productos =
+            data.map(p => ({
+
+                id:
+                    p.id ||
+                    "prod-" + Date.now(),
+
+                titulo:
+                    p.titulo ||
+                    "Sin título",
+
+                description:
+                    p.description ||
+                    "",
+
+                imagenes:
+                    Array.isArray(p.imagenes)
+                        ? p.imagenes
+                        : [],
+
+                categoria: {
+
+                    main:
+                        p.categoria?.main ||
+                        "Sin categoría",
+
+                    sub:
+                        p.categoria?.sub ||
+                        ""
+
+                },
+
+                price:
+                    Number(p.price) || 0,
+
+                stock:
+                    Number(p.stock) || 0
+
+            }));
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ERROR GLOBAL
+========================================================= */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "JavaScript error:",
+            event.error ||
+            event.message
+        );
+
+    }
+);
+
+
+/* =========================================================
+   PROMISE ERRORS
+========================================================= */
+
+window.addEventListener(
+    "unhandledrejection",
+    event => {
+
+        console.error(
+            "Unhandled Promise rejection:",
+            event.reason
+        );
+
+    }
+);
+
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+console.log(
+    "================================="
+);
+
+console.log(
+    "LaTRONIC Admin Panel cargado correctamente."
+);
+
+console.log(
+    "BASE_URL:",
+    BASE_URL
+);
+
+console.log(
+    "================================="
+);
+
 </script>
+
 </body>
 </html>
