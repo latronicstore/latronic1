@@ -1,501 +1,578 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+    <title>LaTRONIC Admin Panel</title>
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    <!-- HEIF / HEIC decoder -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
-body {
-    background: #1e1e1e;
-    color: #fff;
-}
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 
-/* =========================
-   LOGIN
-========================= */
+    <style>
 
-#login-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #111;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-#login-box {
-    background: #2a2a2a;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: 90%;
-    max-width: 350px;
-}
+        body {
+            background: #1e1e1e;
+            color: #fff;
+        }
 
-#login-box input,
-#login-box button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-}
+        /* =====================================================
+           LOGIN
+        ===================================================== */
 
-#login-box button {
-    background: #e28f2f;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-}
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #111;
+        }
 
-/* =========================
-   ADMIN PANEL
-========================= */
+        #login-box {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+        }
 
-#admin-panel {
-    display: none;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+        #login-box input,
+        #login-box button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
 
-#admin-panel h1 {
-    margin-bottom: 15px;
-}
+        #login-box button {
+            background: #e28f2f;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-/* =========================
-   FORM
-========================= */
+        /* =====================================================
+           ADMIN PANEL
+        ===================================================== */
 
-#form-producto input,
-#form-producto textarea,
-#form-producto button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-}
+        #admin-panel {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-#form-producto input,
-#form-producto textarea {
-    background: #2a2a2a;
-    color: #fff;
-}
+        #admin-panel h1 {
+            margin-bottom: 15px;
+        }
 
-#form-producto button {
-    background: #e28f2f;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-}
+        /* =====================================================
+           FORM
+        ===================================================== */
 
-/* =========================
-   SEARCH
-========================= */
+        #form-producto input,
+        #form-producto textarea,
+        #form-producto button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
 
-#search-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: none;
-    font-size: 1rem;
-    background: #2a2a2a;
-    color: #fff;
-    outline: none;
-    transition: all 0.3s ease;
-}
+        #form-producto input,
+        #form-producto textarea {
+            background: #2a2a2a;
+            color: #fff;
+        }
 
-#search-input:focus {
-    box-shadow: 0 0 10px #e28f2f;
-}
+        #form-producto button {
+            background: #e28f2f;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-/* =========================
-   PRODUCTS
-========================= */
+        /* =====================================================
+           SEARCH
+        ===================================================== */
 
-.productos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
-}
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+            background: #2a2a2a;
+            color: #fff;
+            outline: none;
+        }
 
-.producto {
-    background: #2a2a2a;
-    padding: 15px;
-    border-radius: 10px;
-    transition: transform 0.2s ease;
-    position: relative;
-}
+        #search-input:focus {
+            box-shadow: 0 0 10px #e28f2f;
+        }
 
-.producto:hover {
-    transform: scale(1.03);
-}
+        /* =====================================================
+           PRODUCTS
+        ===================================================== */
 
-.mini-images {
-    display: flex;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 5px;
-}
+        .productos {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(220px, 1fr)
+            );
+            gap: 15px;
+        }
 
-.producto img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    margin-right: 5px;
-    border-radius: 4px;
-}
+        .producto {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+            position: relative;
+        }
 
-.producto input,
-.producto textarea {
-    width: 100%;
-    margin-bottom: 5px;
-    background: #1e1e1e;
-    color: #fff;
-    border-radius: 4px;
-    padding: 5px;
-    border: none;
-}
+        .producto:hover {
+            transform: scale(1.02);
+        }
 
-.producto textarea {
-    min-height: 80px;
-    resize: vertical;
-}
+        /* =====================================================
+           IMAGE AREA
+        ===================================================== */
 
-.producto button {
-    margin-right: 5px;
-    margin-top: 5px;
-    background: #e28f2f;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    padding: 6px 10px;
-    cursor: pointer;
-    font-weight: bold;
-}
+        .mini-images {
+            display: flex;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 70px;
+        }
 
-.producto button:hover {
-    background-color: rgb(214, 80, 17);
-    color: white;
-}
+        .image-wrapper {
+            width: 65px;
+            height: 65px;
+            position: relative;
+            background: #111;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
 
-/* =========================
-   MESSAGE
-========================= */
+        .producto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
-#mensaje-guardado {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #28a745;
-    color: #000;
-    padding: 10px 15px;
-    border-radius: 6px;
-    display: none;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
+        .image-error {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5px;
+            font-size: 10px;
+            color: #ff5555;
+            background: #241515;
+        }
 
-/* =========================
-   TOP BUTTONS
-========================= */
+        .image-number {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
 
-.top-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
+        /* =====================================================
+           PRODUCT INPUTS
+        ===================================================== */
 
-.top-buttons button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background: #e28f2f;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .producto input,
+        .producto textarea {
+            width: 100%;
+            margin-bottom: 5px;
+            background: #1e1e1e;
+            color: #fff;
+            border-radius: 4px;
+            padding: 7px;
+            border: none;
+        }
 
-.top-buttons button:hover,
-#login-btn:hover,
-#back:hover,
-#form-producto button:hover {
-    background-color: rgb(214, 80, 17);
-    color: white;
-}
+        .producto textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
 
-.advice {
-    color: rgba(255, 0, 0, 0.795);
-}
+        .producto button {
+            margin-right: 5px;
+            margin-top: 5px;
+            background: #e28f2f;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 7px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-/* =========================
-   STATUS
-========================= */
+        .producto button:hover {
+            background-color: rgb(214, 80, 17);
+            color: white;
+        }
 
-#server-status {
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #2a2a2a;
-    border-radius: 5px;
-    font-size: 14px;
-}
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
 
-.status-ok {
-    color: #28a745;
-}
+        #mensaje-guardado {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: #000;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            z-index: 9999;
+        }
 
-.status-error {
-    color: #ff4444;
-}
+        /* =====================================================
+           TOP BUTTONS
+        ===================================================== */
 
-/* =========================
-   MOBILE
-========================= */
+        .top-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-@media (max-width: 768px) {
+        .top-buttons button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #e28f2f;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    #admin-panel {
-        padding: 10px;
-        max-width: 100%;
-    }
+        .top-buttons button:hover,
+        #login-btn:hover,
+        #back:hover,
+        #form-producto button:hover {
+            background-color: rgb(214, 80, 17);
+            color: white;
+        }
 
-    .productos {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
-    }
+        .advice {
+            color: rgba(255, 0, 0, 0.795);
+            margin-top: 5px;
+        }
 
-    .producto {
-        padding: 10px;
-    }
+        /* =====================================================
+           STATUS
+        ===================================================== */
 
-    .producto img {
-        width: 100%;
-        height: auto;
-        margin-right: 0;
-        margin-bottom: 5px;
-    }
+        #server-status {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            font-size: 14px;
+        }
 
-    .producto input,
-    .producto textarea,
-    .producto button {
-        width: 100%;
-        margin-bottom: 5px;
-    }
+        .status-ok {
+            color: #28a745;
+        }
 
-    .mini-images {
-        flex-direction: column;
-    }
+        .status-error {
+            color: #ff4444;
+        }
 
-    .top-buttons {
-        flex-direction: column;
-    }
+        /* =====================================================
+           IMAGE DEBUG
+        ===================================================== */
 
-    .top-buttons button {
-        width: 100%;
-        margin-bottom: 5px;
-    }
+        .image-debug {
+            margin-top: 8px;
+            padding: 6px;
+            background: #111;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #999;
+            word-break: break-all;
+        }
 
-    #login-box {
-        width: 95%;
-        max-width: 300px;
-        padding: 20px;
-    }
-}
+        .image-debug-ok {
+            color: #55dd77;
+        }
 
-@media (max-width: 400px) {
+        .image-debug-error {
+            color: #ff5555;
+        }
 
-    .productos {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
+        /* =====================================================
+           MOBILE
+        ===================================================== */
 
-    #login-box {
-        padding: 15px;
-    }
-}
+        @media (max-width: 768px) {
 
-</style>
+            #admin-panel {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            .productos {
+                grid-template-columns:
+                    repeat(
+                        auto-fill,
+                        minmax(150px, 1fr)
+                    );
+                gap: 10px;
+            }
+
+            .producto {
+                padding: 10px;
+            }
+
+            .producto img {
+                width: 100%;
+                height: 100%;
+            }
+
+            .producto input,
+            .producto textarea,
+            .producto button {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .mini-images {
+                flex-direction: row;
+            }
+
+            .top-buttons {
+                flex-direction: column;
+            }
+
+            .top-buttons button {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            #login-box {
+                width: 95%;
+                max-width: 300px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 400px) {
+
+            .productos {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            #login-box {
+                padding: 15px;
+            }
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<!-- =========================
-     LOGIN
-========================= -->
+    <!-- =====================================================
+         LOGIN
+    ===================================================== -->
 
-<div id="login-screen">
+    <div id="login-screen">
 
-    <div id="login-box">
+        <div id="login-box">
 
-        <h1>🔒 Admin Access</h1>
+            <h1>🔒 Admin Access</h1>
 
-        <h6 class="advice">
-            This site is only for the administrator
-        </h6>
+            <h6 class="advice">
+                This site is only for the administrator
+            </h6>
+
+            <input
+                type="password"
+                id="admin-password"
+                placeholder="Enter Password"
+            >
+
+            <button id="login-btn">
+                Enter
+            </button>
+
+            <button
+                id="back"
+                type="button"
+                onclick="window.location.href='shop.html'"
+            >
+                Exit
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ADMIN PANEL
+    ===================================================== -->
+
+    <div id="admin-panel">
+
+        <div class="top-buttons">
+
+            <button id="logout-btn">
+                Logout
+            </button>
+
+            <button id="go-shop-btn">
+                Go to Shop 🛍️
+            </button>
+
+        </div>
+
+        <h1>
+            Admin Panel
+        </h1>
+
+        <div id="server-status">
+
+            Server status:
+
+            <span id="status-text">
+                Checking...
+            </span>
+
+        </div>
+
+
+        <!-- SEARCH -->
 
         <input
-            type="password"
-            id="admin-password"
-            placeholder="Enter Password"
-        />
-
-        <button id="login-btn">
-            Enter
-        </button>
-
-        <button
-            id="back"
-            onclick="window.location.href='shop.html'"
+            type="text"
+            id="search-input"
+            placeholder="Search products... 🔎"
         >
-            Exit
-        </button>
-
-    </div>
-
-</div>
 
 
-<!-- =========================
-     ADMIN PANEL
-========================= -->
+        <!-- =================================================
+             ADD PRODUCT
+        ================================================= -->
 
-<div id="admin-panel">
-
-    <div class="top-buttons">
-
-        <button id="logout-btn">
-            Logout
-        </button>
-
-        <button id="go-shop-btn">
-            Go to Shop 🛍️
-        </button>
-
-    </div>
-
-    <h1>
-        Admin Panel
-    </h1>
-
-    <div id="server-status">
-
-        Server status:
-
-        <span id="status-text">
-            Checking...
-        </span>
-
-    </div>
-
-    <input
-        type="text"
-        id="search-input"
-        placeholder="Search products... 🔎"
-    />
-
-
-    <!-- =========================
-         ADD PRODUCT
-    ========================= -->
-
-    <form
-        id="form-producto"
-        novalidate
-    >
-
-        <input
-            type="text"
-            id="titulo"
-            placeholder="Título del producto"
-            required
-        />
-
-        <textarea
-            id="description"
-            placeholder="Descripción"
-            required
-        ></textarea>
-
-        <input
-            type="file"
-            id="imagenes-file"
-            multiple
-            accept="image/*"
-        />
-
-        <input
-            type="text"
-            id="mainCat"
-            placeholder="Categoría principal"
-            required
-        />
-
-        <input
-            type="text"
-            id="subCat"
-            placeholder="Subcategoría"
-            required
-        />
-
-        <input
-            type="number"
-            id="price"
-            placeholder="Precio"
-            required
-        />
-
-        <input
-            type="number"
-            id="stock"
-            placeholder="Stock"
-            required
-        />
-
-        <button
-            type="button"
-            id="agregar-btn"
+        <form
+            id="form-producto"
+            novalidate
         >
-            Agregar producto
-        </button>
 
-    </form>
+            <input
+                type="text"
+                id="titulo"
+                placeholder="Título del producto"
+                required
+            >
+
+            <textarea
+                id="description"
+                placeholder="Descripción"
+                required
+            ></textarea>
+
+            <input
+                type="file"
+                id="imagenes-file"
+                multiple
+                accept="image/*,.webp,.heif,.heic"
+            >
+
+            <input
+                type="text"
+                id="mainCat"
+                placeholder="Categoría principal"
+                required
+            >
+
+            <input
+                type="text"
+                id="subCat"
+                placeholder="Subcategoría"
+                required
+            >
+
+            <input
+                type="number"
+                id="price"
+                placeholder="Precio"
+                step="0.01"
+                required
+            >
+
+            <input
+                type="number"
+                id="stock"
+                placeholder="Stock"
+                required
+            >
+
+            <button
+                type="button"
+                id="agregar-btn"
+            >
+                Agregar producto
+            </button>
+
+        </form>
 
 
-    <!-- =========================
-         PRODUCTS
-    ========================= -->
+        <!-- =================================================
+             PRODUCTS
+        ================================================= -->
 
-    <div
-        class="productos"
-        id="lista-productos"
-    ></div>
+        <div
+            class="productos"
+            id="lista-productos"
+        ></div>
 
-</div>
-
-
-<div id="mensaje-guardado">
-    ✅ Cambios guardados correctamente
-</div>
+    </div>
 
 
-<!-- =========================
-     SOCKET.IO
-========================= -->
-
-<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <div id="mensaje-guardado">
+        ✅ Cambios guardados correctamente
+    </div>
 
 
 <script>
@@ -507,18 +584,33 @@ body {
 const ADMIN_PASSWORD = "042525";
 
 /*
-    IMPORTANTE:
+   Si admin.html está servido por Node:
 
-    Si admin.html y la API están en el mismo servidor:
+       BASE_URL = ""
 
-    BASE_URL = ""
+   Si está en otro servidor:
 
-    Si tu servidor está en otro lugar:
-
-    BASE_URL = "http://localhost:3000"
+       BASE_URL = "http://localhost:3000"
 */
 
 const BASE_URL = "";
+
+/*
+   MUY IMPORTANTE:
+
+   NO ponemos IMAGE_SERVER_URL en localhost automáticamente.
+
+   El navegador utilizará el mismo servidor que sirve
+   admin.html.
+
+   Si tu API está en otro servidor, cambia esto:
+
+       const IMAGE_SERVER_URL =
+           "http://localhost:3000";
+
+*/
+
+const IMAGE_SERVER_URL = "";
 
 
 /* =========================================================
@@ -570,6 +662,7 @@ const statusText =
 ========================================================= */
 
 let productos = [];
+
 let AUTH_TOKEN = "";
 
 
@@ -577,14 +670,19 @@ let AUTH_TOKEN = "";
    SOCKET.IO
 ========================================================= */
 
-const socket = io(BASE_URL || undefined);
+const socket =
+    io(BASE_URL || undefined);
 
 
 /* =========================================================
    MENSAJE
 ========================================================= */
 
-function mostrarMensaje() {
+function mostrarMensaje(
+    texto = "✅ Cambios guardados correctamente"
+) {
+
+    mensajeGuardado.textContent = texto;
 
     mensajeGuardado.style.display = "block";
 
@@ -592,13 +690,12 @@ function mostrarMensaje() {
 
         mensajeGuardado.style.display = "none";
 
-    }, 2000);
-
+    }, 2500);
 }
 
 
 /* =========================================================
-   ESTADO DEL SERVIDOR
+   ESTADO SERVIDOR
 ========================================================= */
 
 function actualizarEstadoServidor(ok, texto) {
@@ -606,8 +703,893 @@ function actualizarEstadoServidor(ok, texto) {
     statusText.textContent = texto;
 
     statusText.className =
-        ok ? "status-ok" : "status-error";
+        ok
+            ? "status-ok"
+            : "status-error";
+}
 
+
+/* =========================================================
+   DETECTAR CLOUDINARY
+========================================================= */
+
+function esCloudinary(url) {
+
+    return /cloudinary\.com/i.test(
+        String(url || "")
+    );
+}
+
+
+/* =========================================================
+   CONVERTIR CLOUDINARY A FORMATO AUTOMÁTICO
+========================================================= */
+
+function prepararCloudinary(url) {
+
+    if (!esCloudinary(url)) {
+        return url;
+    }
+
+    /*
+       Si ya contiene f_auto no lo duplicamos.
+    */
+
+    if (/\/f_auto[,/]/i.test(url)) {
+        return url;
+    }
+
+    /*
+       Cloudinary:
+
+       /image/upload/
+
+       se convierte en:
+
+       /image/upload/f_auto,q_auto/
+    */
+
+    if (url.includes("/image/upload/")) {
+
+        return url.replace(
+            "/image/upload/",
+            "/image/upload/f_auto,q_auto/"
+        );
+    }
+
+    return url;
+}
+
+
+/* =========================================================
+   NORMALIZAR URL
+========================================================= */
+
+function normalizarImagenUrl(url) {
+
+    if (!url) {
+        return "";
+    }
+
+    let original =
+        String(url).trim();
+
+    if (!original) {
+        return "";
+    }
+
+
+    /*
+       CLOUDINARY
+    */
+
+    if (esCloudinary(original)) {
+
+        return prepararCloudinary(
+            original
+        );
+    }
+
+
+    /*
+       DATA
+    */
+
+    if (
+        /^data:/i.test(original) ||
+        /^blob:/i.test(original)
+    ) {
+
+        return original;
+    }
+
+
+    /*
+       Convertir backslash Windows
+    */
+
+    let limpio =
+        original.replace(
+            /\\/g,
+            "/"
+        );
+
+
+    /*
+       localhost URL
+    */
+
+    try {
+
+        const parsed =
+            new URL(limpio);
+
+        if (
+            parsed.hostname === "localhost" ||
+            parsed.hostname === "127.0.0.1"
+        ) {
+
+            limpio =
+                parsed.pathname +
+                parsed.search;
+
+        }
+
+    }
+    catch (e) {
+        /* ruta relativa */
+    }
+
+
+    /*
+       Quitar ./ 
+    */
+
+    limpio =
+        limpio.replace(
+            /^\.\//,
+            ""
+        );
+
+
+    /*
+       IMAGE_SERVER_URL
+    */
+
+    if (
+        limpio.startsWith("/")
+    ) {
+
+        if (IMAGE_SERVER_URL) {
+
+            return (
+                IMAGE_SERVER_URL.replace(
+                    /\/+$/,
+                    ""
+                ) +
+                limpio
+            );
+        }
+
+        return limpio;
+    }
+
+
+    /*
+       Ruta relativa
+    */
+
+    if (IMAGE_SERVER_URL) {
+
+        return (
+            IMAGE_SERVER_URL.replace(
+                /\/+$/,
+                ""
+            ) +
+            "/" +
+            limpio.replace(
+                /^\/+/,
+                ""
+            )
+        );
+    }
+
+
+    return "/" +
+        limpio.replace(
+            /^\/+/,
+            ""
+        );
+}
+
+
+/* =========================================================
+   OBTENER NOMBRE Y EXTENSIÓN
+========================================================= */
+
+function separarImagen(url) {
+
+    let limpio =
+        String(url || "")
+            .split("?")[0]
+            .split("#")[0];
+
+    const match =
+        limpio.match(
+            /^(.*?)(?:\.([a-zA-Z0-9]+))?$/
+        );
+
+    if (!match) {
+
+        return {
+            base: limpio,
+            extension: ""
+        };
+    }
+
+    return {
+
+        base:
+            match[1] || limpio,
+
+        extension:
+            (
+                match[2] || ""
+            ).toLowerCase()
+
+    };
+}
+
+
+/* =========================================================
+   GENERAR VARIANTES DE IMAGEN
+========================================================= */
+
+function obtenerVariantesImagen(url) {
+
+    const original =
+        String(url || "").trim();
+
+    if (!original) {
+        return [];
+    }
+
+    const variantes = [];
+
+
+    function agregar(valor) {
+
+        if (
+            valor &&
+            !variantes.includes(valor)
+        ) {
+
+            variantes.push(valor);
+        }
+    }
+
+
+    /*
+       =====================================================
+       CLOUDINARY
+       =====================================================
+    */
+
+    if (esCloudinary(original)) {
+
+        /*
+           Original
+        */
+
+        agregar(original);
+
+        /*
+           f_auto + q_auto
+        */
+
+        agregar(
+            prepararCloudinary(original)
+        );
+
+        return variantes;
+    }
+
+
+    /*
+       =====================================================
+       URL NORMALIZADA
+       =====================================================
+    */
+
+    const normalizada =
+        normalizarImagenUrl(original);
+
+    agregar(normalizada);
+
+
+    /*
+       =====================================================
+       OBTENER RUTA
+       =====================================================
+    */
+
+    let ruta =
+        normalizada;
+
+    try {
+
+        const parsed =
+            new URL(normalizada);
+
+        ruta =
+            parsed.pathname;
+
+    }
+    catch (e) {
+
+        ruta =
+            normalizada
+                .split("?")[0]
+                .split("#")[0];
+    }
+
+
+    ruta =
+        ruta.replace(
+            /\\/g,
+            "/"
+        );
+
+
+    /*
+       =====================================================
+       BASE + EXTENSIÓN
+       =====================================================
+    */
+
+    const partes =
+        separarImagen(ruta);
+
+    const base =
+        partes.base;
+
+    const extension =
+        partes.extension;
+
+
+    /*
+       =====================================================
+       PRIMERO:
+       archivo original
+       =====================================================
+
+       EJEMPLO:
+
+       /uploads/1763307089071.jpeg
+
+       SE PRUEBA PRIMERO.
+    */
+
+
+    if (extension) {
+
+        agregar(
+            base +
+            "." +
+            extension
+        );
+    }
+
+
+    /*
+       =====================================================
+       WEBP
+       =====================================================
+    */
+
+    agregar(
+        base + ".webp"
+    );
+
+
+    /*
+       =====================================================
+       JPEG
+       =====================================================
+    */
+
+    agregar(
+        base + ".jpeg"
+    );
+
+
+    /*
+       =====================================================
+       JPG
+       =====================================================
+    */
+
+    agregar(
+        base + ".jpg"
+    );
+
+
+    /*
+       =====================================================
+       PNG
+       =====================================================
+    */
+
+    agregar(
+        base + ".png"
+    );
+
+
+    /*
+       =====================================================
+       HEIF
+       =====================================================
+    */
+
+    agregar(
+        base + ".heif"
+    );
+
+
+    /*
+       =====================================================
+       HEIC
+       =====================================================
+    */
+
+    agregar(
+        base + ".heic"
+    );
+
+
+    /*
+       =====================================================
+       SI SOLO VIENE EL NOMBRE
+       =====================================================
+    */
+
+    if (
+        !ruta.includes("/")
+    ) {
+
+        const nombre =
+            ruta;
+
+        const baseServidor =
+            IMAGE_SERVER_URL
+                ? IMAGE_SERVER_URL.replace(
+                    /\/+$/,
+                    ""
+                )
+                : "";
+
+
+        const carpetas = [
+            "/images/",
+            "/uploads/"
+        ];
+
+
+        const extensiones = [
+            "",
+            ".webp",
+            ".jpeg",
+            ".jpg",
+            ".png",
+            ".heif",
+            ".heic"
+        ];
+
+
+        carpetas.forEach(
+            carpeta => {
+
+                extensiones.forEach(
+                    ext => {
+
+                        agregar(
+                            baseServidor +
+                            carpeta +
+                            nombre +
+                            ext
+                        );
+
+                    }
+                );
+
+            }
+        );
+    }
+
+
+    return variantes;
+}
+
+
+/* =========================================================
+   DETECTAR HEIF / HEIC
+========================================================= */
+
+function esHEIF(url) {
+
+    return /\.(heif|heic)(\?|#|$)/i.test(
+        String(url || "")
+    );
+}
+
+
+/* =========================================================
+   CONVERTIR HEIF / HEIC
+========================================================= */
+
+async function convertirHEIF(url) {
+
+    console.log(
+        "🟡 HEIF/HEIC detectado:",
+        url
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache: "no-store"
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        if (
+            typeof heic2any !==
+            "function"
+        ) {
+
+            throw new Error(
+                "heic2any no está disponible"
+            );
+        }
+
+
+        const convertido =
+            await heic2any({
+
+                blob: blob,
+
+                toType:
+                    "image/jpeg",
+
+                quality:
+                    0.90
+
+            });
+
+
+        const resultado =
+            Array.isArray(convertido)
+                ? convertido[0]
+                : convertido;
+
+
+        const objectUrl =
+            URL.createObjectURL(
+                resultado
+            );
+
+
+        console.log(
+            "✅ HEIF/HEIC convertido:",
+            objectUrl
+        );
+
+
+        return objectUrl;
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ Error convirtiendo HEIF/HEIC:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================================
+   CREAR IMAGEN
+========================================================= */
+
+function crearImagenProducto(
+    url,
+    titulo,
+    index
+) {
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.className =
+        "image-wrapper";
+
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+    img.alt =
+        titulo || "Producto";
+
+    img.loading =
+        "lazy";
+
+    img.decoding =
+        "async";
+
+
+    const debug =
+        document.createElement(
+            "div"
+        );
+
+    debug.className =
+        "image-debug";
+
+
+    const variantes =
+        obtenerVariantesImagen(
+            url
+        );
+
+
+    let posicion = 0;
+
+    let convertidoHEIF = false;
+
+
+    async function intentarSiguiente() {
+
+        /*
+           No quedan variantes.
+        */
+
+        if (
+            posicion >=
+            variantes.length
+        ) {
+
+            console.error(
+                "❌ No se pudo cargar la imagen:",
+                url,
+                variantes
+            );
+
+
+            wrapper.innerHTML = `
+                <div class="image-error">
+                    ❌ Imagen<br>
+                    no encontrada
+                </div>
+            `;
+
+
+            return;
+        }
+
+
+        const siguiente =
+            variantes[posicion];
+
+        posicion++;
+
+
+        console.log(
+            `🖼️ Imagen ${index + 1}:`,
+            siguiente
+        );
+
+
+        debug.textContent =
+            siguiente;
+
+
+        /*
+           =================================================
+           HEIF / HEIC
+           =================================================
+        */
+
+        if (
+            esHEIF(siguiente) &&
+            !convertidoHEIF
+        ) {
+
+            convertidoHEIF = true;
+
+
+            const resultado =
+                await convertirHEIF(
+                    siguiente
+                );
+
+
+            if (resultado) {
+
+                img.src =
+                    resultado;
+
+                return;
+            }
+        }
+
+
+        /*
+           Imagen normal
+        */
+
+        img.src =
+            siguiente;
+    }
+
+
+    img.onload = () => {
+
+        console.log(
+            "✅ Imagen cargada:",
+            img.src
+        );
+
+
+        debug.textContent =
+            "✅ " + img.src;
+
+        debug.className =
+            "image-debug image-debug-ok";
+    };
+
+
+    img.onerror = async () => {
+
+        console.warn(
+            "⚠️ Falló imagen:",
+            img.src
+        );
+
+
+        /*
+           Intentar siguiente variante
+        */
+
+        await intentarSiguiente();
+    };
+
+
+    wrapper.appendChild(
+        img
+    );
+
+
+    const numero =
+        document.createElement(
+            "span"
+        );
+
+    numero.className =
+        "image-number";
+
+    numero.textContent =
+        index + 1;
+
+
+    wrapper.appendChild(
+        numero
+    );
+
+
+    wrapper.appendChild(
+        debug
+    );
+
+
+    wrapper.title =
+        String(url);
+
+
+    intentarSiguiente();
+
+
+    return wrapper;
+}
+
+
+/* =========================================================
+   NORMALIZAR PRODUCTO
+========================================================= */
+
+function normalizarProducto(
+    p,
+    index
+) {
+
+    return {
+
+        id:
+            p.id ||
+            `prod-${Date.now()}-${index}`,
+
+        titulo:
+            p.titulo ||
+            p.title ||
+            "Sin título",
+
+        description:
+            p.description ||
+            p.descripcion ||
+            "",
+
+        imagenes:
+            Array.isArray(
+                p.imagenes
+            )
+                ? [
+                    ...new Set(
+                        p.imagenes
+                            .filter(Boolean)
+                            .map(
+                                x =>
+                                    String(x).trim()
+                            )
+                    )
+                ]
+                : [],
+
+        categoria: {
+
+            main:
+                p.categoria?.main ||
+                p.mainCat ||
+                "Sin categoría",
+
+            sub:
+                p.categoria?.sub ||
+                p.subCat ||
+                ""
+
+        },
+
+        price:
+            Number(
+                p.price
+            ) || 0,
+
+        stock:
+            Number(
+                p.stock
+            ) || 0
+
+    };
 }
 
 
@@ -617,21 +1599,47 @@ function actualizarEstadoServidor(ok, texto) {
 
 async function cargarProductos() {
 
-    console.log("=================================");
-    console.log("CARGANDO PRODUCTOS");
-    console.log("=================================");
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "CARGANDO PRODUCTOS"
+    );
+
+    console.log(
+        "================================="
+    );
+
 
     try {
 
-        const res = await fetch(
-            `${BASE_URL}/api/productos`,
-            {
-                cache: "no-store",
-                headers: {
-                    "Authorization": AUTH_TOKEN
-                }
-            }
+        const endpoint =
+            BASE_URL +
+            "/api/productos";
+
+
+        console.log(
+            "API:",
+            endpoint
         );
+
+
+        const res =
+            await fetch(
+                endpoint,
+                {
+                    cache:
+                        "no-store",
+
+                    headers: {
+
+                        "Authorization":
+                            AUTH_TOKEN
+
+                    }
+                }
+            );
 
 
         console.log(
@@ -646,11 +1654,11 @@ async function cargarProductos() {
             throw new Error(
                 `HTTP ${res.status} - ${res.statusText}`
             );
-
         }
 
 
-        const data = await res.json();
+        const data =
+            await res.json();
 
 
         console.log(
@@ -659,61 +1667,72 @@ async function cargarProductos() {
         );
 
 
-        console.log(
-            "Cantidad de productos:",
-            Array.isArray(data)
-                ? data.length
-                : "NO ES ARRAY"
-        );
-
-
-        if (!Array.isArray(data)) {
+        if (
+            !Array.isArray(data)
+        ) {
 
             throw new Error(
                 "La API no devolvió un array de productos"
             );
-
         }
 
 
-        productos = data.map(p => ({
+        productos =
+            data.map(
+                normalizarProducto
+            );
 
-            id:
-                p.id ||
-                "prod-" + Date.now(),
 
-            titulo:
-                p.titulo ||
-                "Sin título",
+        console.log(
+            "================================="
+        );
 
-            description:
-                p.description ||
-                "",
+        console.log(
+            "PRODUCTOS PREPARADOS:"
+        );
 
-            imagenes:
-                Array.isArray(p.imagenes)
-                    ? p.imagenes
-                    : [],
+        console.log(
+            productos
+        );
 
-            categoria: {
+        console.log(
+            "================================="
+        );
 
-                main:
-                    p.categoria?.main ||
-                    "Sin categoría",
 
-                sub:
-                    p.categoria?.sub ||
-                    ""
+        /*
+           Mostrar todas las imágenes en consola
+        */
 
-            },
+        productos.forEach(
+            (producto, productoIndex) => {
 
-            price:
-                Number(p.price) || 0,
+                console.log(
+                    `📦 PRODUCTO ${productoIndex + 1}:`,
+                    producto.titulo
+                );
 
-            stock:
-                Number(p.stock) || 0
 
-        }));
+                producto.imagenes.forEach(
+                    (imagen, imagenIndex) => {
+
+                        console.log(
+                            `   🖼️ ${imagenIndex + 1}:`,
+                            imagen
+                        );
+
+                        console.log(
+                            "   Variantes:",
+                            obtenerVariantesImagen(
+                                imagen
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
 
 
         actualizarEstadoServidor(
@@ -725,7 +1744,6 @@ async function cargarProductos() {
         renderProductos();
 
     }
-
     catch (err) {
 
         console.error(
@@ -769,9 +1787,7 @@ async function cargarProductos() {
             </div>
 
         `;
-
     }
-
 }
 
 
@@ -779,7 +1795,9 @@ async function cargarProductos() {
    RENDER PRODUCTOS
 ========================================================= */
 
-function renderProductos(filter = "") {
+function renderProductos(
+    filter = ""
+) {
 
     console.log(
         "Renderizando productos:",
@@ -787,7 +1805,8 @@ function renderProductos(filter = "") {
     );
 
 
-    listaProductos.innerHTML = "";
+    listaProductos.innerHTML =
+        "";
 
 
     const textoBusqueda =
@@ -797,22 +1816,36 @@ function renderProductos(filter = "") {
 
 
     const filtrados =
-        productos.filter(p =>
+        productos.filter(
+            p => {
 
-            String(p.titulo || "")
-                .toLowerCase()
-                .includes(textoBusqueda)
+                const titulo =
+                    String(
+                        p.titulo || ""
+                    )
+                    .toLowerCase();
 
+                const descripcion =
+                    String(
+                        p.description || ""
+                    )
+                    .toLowerCase();
+
+                return (
+                    titulo.includes(
+                        textoBusqueda
+                    ) ||
+                    descripcion.includes(
+                        textoBusqueda
+                    )
+                );
+            }
         );
 
 
-    console.log(
-        "Productos filtrados:",
-        filtrados.length
-    );
-
-
-    if (filtrados.length === 0) {
+    if (
+        filtrados.length === 0
+    ) {
 
         listaProductos.innerHTML = `
 
@@ -830,284 +1863,368 @@ function renderProductos(filter = "") {
         `;
 
         return;
-
     }
 
 
-    filtrados.forEach(p => {
+    filtrados.forEach(
+        p => {
 
-        const div =
-            document.createElement("div");
+            const div =
+                document.createElement(
+                    "div"
+                );
 
-        div.className = "producto";
-
-
-        /* =========================
-           IMÁGENES
-        ========================= */
-
-        const miniImgs =
-            document.createElement("div");
-
-        miniImgs.className =
-            "mini-images";
+            div.className =
+                "producto";
 
 
-        if (
-            Array.isArray(p.imagenes) &&
-            p.imagenes.length > 0
-        ) {
+            /* =================================================
+               IMÁGENES
+            ================================================= */
 
-            p.imagenes.forEach(url => {
+            const miniImgs =
+                document.createElement(
+                    "div"
+                );
 
-                const img =
-                    document.createElement("img");
-
-
-                img.src = url;
-
-                img.alt = p.titulo;
+            miniImgs.className =
+                "mini-images";
 
 
-                img.onerror = () => {
+            if (
+                Array.isArray(
+                    p.imagenes
+                ) &&
+                p.imagenes.length > 0
+            ) {
 
-                    console.warn(
-                        "Imagen no encontrada:",
-                        url
+                /*
+                   ELIMINAR DUPLICADOS
+                */
+
+                const imagenesUnicas =
+                    [
+                        ...new Set(
+                            p.imagenes
+                                .filter(Boolean)
+                        )
+                    ];
+
+
+                imagenesUnicas.forEach(
+                    (
+                        url,
+                        index
+                    ) => {
+
+                        const image =
+                            crearImagenProducto(
+                                url,
+                                p.titulo,
+                                index
+                            );
+
+
+                        miniImgs.appendChild(
+                            image
+                        );
+
+                    }
+                );
+
+            }
+            else {
+
+                miniImgs.innerHTML = `
+
+                    <div style="
+                        color:#888;
+                        padding:10px;
+                    ">
+
+                        No images
+
+                    </div>
+
+                `;
+            }
+
+
+            div.appendChild(
+                miniImgs
+            );
+
+
+            /* =================================================
+               DEBUG
+            ================================================= */
+
+            if (
+                p.imagenes.length > 0
+            ) {
+
+                const debug =
+                    document.createElement(
+                        "div"
                     );
 
-                    img.style.display = "none";
+                debug.className =
+                    "image-debug";
 
-                };
+                debug.textContent =
+                    `${p.imagenes.length} image(s)`;
 
+                div.appendChild(
+                    debug
+                );
+            }
 
-                miniImgs.appendChild(img);
 
-            });
+            /* =================================================
+               TÍTULO
+            ================================================= */
 
-        }
-
-        else {
-
-            miniImgs.innerHTML = `
-
-                <div style="
-                    color:#888;
-                    padding:10px;
-                ">
-
-                    No images
-
-                </div>
-
-            `;
-
-        }
-
-
-        div.appendChild(miniImgs);
-
-
-        /* =========================
-           TÍTULO
-        ========================= */
-
-        const tituloInput =
-            document.createElement("input");
-
-        tituloInput.type = "text";
-
-        tituloInput.id =
-            `titulo-${p.id}`;
-
-        tituloInput.value =
-            p.titulo;
-
-        div.appendChild(tituloInput);
-
-
-        /* =========================
-           DESCRIPCIÓN
-        ========================= */
-
-        const descTextarea =
-            document.createElement("textarea");
-
-        descTextarea.id =
-            `desc-${p.id}`;
-
-        descTextarea.value =
-            p.description;
-
-        div.appendChild(descTextarea);
-
-
-        /* =========================
-           CATEGORÍA PRINCIPAL
-        ========================= */
-
-        const mainCatInput =
-            document.createElement("input");
-
-        mainCatInput.type = "text";
-
-        mainCatInput.id =
-            `mainCat-${p.id}`;
-
-        mainCatInput.value =
-            p.categoria?.main || "";
-
-        mainCatInput.placeholder =
-            "Categoría principal";
-
-        div.appendChild(mainCatInput);
-
-
-        /* =========================
-           SUBCATEGORÍA
-        ========================= */
-
-        const subCatInput =
-            document.createElement("input");
-
-        subCatInput.type = "text";
-
-        subCatInput.id =
-            `subCat-${p.id}`;
-
-        subCatInput.value =
-            p.categoria?.sub || "";
-
-        subCatInput.placeholder =
-            "Subcategoría";
-
-        div.appendChild(subCatInput);
-
-
-        /* =========================
-           PRECIO
-        ========================= */
-
-        const priceInput =
-            document.createElement("input");
-
-        priceInput.type = "number";
-
-        priceInput.step = "0.01";
-
-        priceInput.id =
-            `price-${p.id}`;
-
-        priceInput.value =
-            p.price;
-
-        div.appendChild(priceInput);
-
-
-        /* =========================
-           STOCK
-        ========================= */
-
-        const stockInput =
-            document.createElement("input");
-
-        stockInput.type = "number";
-
-        stockInput.id =
-            `stock-${p.id}`;
-
-        stockInput.value =
-            p.stock;
-
-        div.appendChild(stockInput);
-
-
-        /* =========================
-           NUEVAS IMÁGENES
-        ========================= */
-
-        const imgInput =
-            document.createElement("input");
-
-        imgInput.type = "file";
-
-        imgInput.id =
-            `img-${p.id}`;
-
-        imgInput.multiple = true;
-
-        imgInput.accept =
-            "image/*";
-
-        div.appendChild(imgInput);
-
-
-        /* =========================
-           GUARDAR
-        ========================= */
-
-        const guardarBtn =
-            document.createElement("button");
-
-        guardarBtn.type = "button";
-
-        guardarBtn.textContent =
-            "Guardar";
-
-
-        guardarBtn.addEventListener(
-            "click",
-            async () => {
-
-                await actualizarProducto(
-                    p.id
+            const tituloInput =
+                document.createElement(
+                    "input"
                 );
 
-            }
-        );
+            tituloInput.type =
+                "text";
+
+            tituloInput.id =
+                `titulo-${p.id}`;
+
+            tituloInput.value =
+                p.titulo;
 
 
-        div.appendChild(
-            guardarBtn
-        );
+            div.appendChild(
+                tituloInput
+            );
 
 
-        /* =========================
-           ELIMINAR
-        ========================= */
+            /* =================================================
+               DESCRIPCIÓN
+            ================================================= */
 
-        const eliminarBtn =
-            document.createElement("button");
-
-        eliminarBtn.type = "button";
-
-        eliminarBtn.textContent =
-            "Eliminar";
-
-
-        eliminarBtn.addEventListener(
-            "click",
-            async () => {
-
-                await eliminarProducto(
-                    p.id
+            const descTextarea =
+                document.createElement(
+                    "textarea"
                 );
 
-            }
-        );
+            descTextarea.id =
+                `desc-${p.id}`;
+
+            descTextarea.value =
+                p.description;
 
 
-        div.appendChild(
-            eliminarBtn
-        );
+            div.appendChild(
+                descTextarea
+            );
 
 
-        listaProductos.appendChild(
-            div
-        );
+            /* =================================================
+               CATEGORÍA
+            ================================================= */
 
-    });
+            const mainCatInput =
+                document.createElement(
+                    "input"
+                );
 
+            mainCatInput.type =
+                "text";
+
+            mainCatInput.id =
+                `mainCat-${p.id}`;
+
+            mainCatInput.value =
+                p.categoria?.main || "";
+
+            mainCatInput.placeholder =
+                "Categoría principal";
+
+
+            div.appendChild(
+                mainCatInput
+            );
+
+
+            const subCatInput =
+                document.createElement(
+                    "input"
+                );
+
+            subCatInput.type =
+                "text";
+
+            subCatInput.id =
+                `subCat-${p.id}`;
+
+            subCatInput.value =
+                p.categoria?.sub || "";
+
+            subCatInput.placeholder =
+                "Subcategoría";
+
+
+            div.appendChild(
+                subCatInput
+            );
+
+
+            /* =================================================
+               PRECIO
+            ================================================= */
+
+            const priceInput =
+                document.createElement(
+                    "input"
+                );
+
+            priceInput.type =
+                "number";
+
+            priceInput.step =
+                "0.01";
+
+            priceInput.id =
+                `price-${p.id}`;
+
+            priceInput.value =
+                p.price;
+
+
+            div.appendChild(
+                priceInput
+            );
+
+
+            /* =================================================
+               STOCK
+            ================================================= */
+
+            const stockInput =
+                document.createElement(
+                    "input"
+                );
+
+            stockInput.type =
+                "number";
+
+            stockInput.id =
+                `stock-${p.id}`;
+
+            stockInput.value =
+                p.stock;
+
+
+            div.appendChild(
+                stockInput
+            );
+
+
+            /* =================================================
+               NUEVAS IMÁGENES
+            ================================================= */
+
+            const imgInput =
+                document.createElement(
+                    "input"
+                );
+
+            imgInput.type =
+                "file";
+
+            imgInput.id =
+                `img-${p.id}`;
+
+            imgInput.multiple =
+                true;
+
+            imgInput.accept =
+                "image/*,.webp,.heif,.heic";
+
+
+            div.appendChild(
+                imgInput
+            );
+
+
+            /* =================================================
+               GUARDAR
+            ================================================= */
+
+            const guardarBtn =
+                document.createElement(
+                    "button"
+                );
+
+            guardarBtn.type =
+                "button";
+
+            guardarBtn.textContent =
+                "Guardar";
+
+
+            guardarBtn.addEventListener(
+                "click",
+                async () => {
+
+                    await actualizarProducto(
+                        p.id
+                    );
+
+                }
+            );
+
+
+            div.appendChild(
+                guardarBtn
+            );
+
+
+            /* =================================================
+               ELIMINAR
+            ================================================= */
+
+            const eliminarBtn =
+                document.createElement(
+                    "button"
+                );
+
+            eliminarBtn.type =
+                "button";
+
+            eliminarBtn.textContent =
+                "Eliminar";
+
+
+            eliminarBtn.addEventListener(
+                "click",
+                async () => {
+
+                    await eliminarProducto(
+                        p.id
+                    );
+
+                }
+            );
+
+
+            div.appendChild(
+                eliminarBtn
+            );
+
+
+            listaProductos.appendChild(
+                div
+            );
+
+        }
+    );
 }
 
 
@@ -1115,7 +2232,9 @@ function renderProductos(filter = "") {
    ACTUALIZAR PRODUCTO
 ========================================================= */
 
-async function actualizarProducto(id) {
+async function actualizarProducto(
+    id
+) {
 
     const prod =
         productos.find(
@@ -1131,13 +2250,12 @@ async function actualizarProducto(id) {
         );
 
         return;
-
     }
 
 
-    /* =========================
-       SUBIR NUEVAS IMÁGENES
-    ========================= */
+    /* =====================================================
+       NUEVAS IMÁGENES
+    ===================================================== */
 
     let nuevasImagenes = [];
 
@@ -1157,13 +2275,12 @@ async function actualizarProducto(id) {
             await subirImagenes(
                 fileInput.files
             );
-
     }
 
 
-    /* =========================
-       DATOS ACTUALIZADOS
-    ========================= */
+    /* =====================================================
+       DATOS
+    ===================================================== */
 
     const updated = {
 
@@ -1205,13 +2322,20 @@ async function actualizarProducto(id) {
                 ).value
             ),
 
-        imagenes: [
+        /*
+           Mantener imágenes existentes
+           y agregar nuevas sin duplicarlas.
+        */
 
-            ...prod.imagenes,
-
-            ...nuevasImagenes
-
-        ]
+        imagenes:
+            [
+                ...new Set(
+                    [
+                        ...prod.imagenes,
+                        ...nuevasImagenes
+                    ]
+                )
+            ]
 
     };
 
@@ -1223,7 +2347,8 @@ async function actualizarProducto(id) {
                 `${BASE_URL}/api/productos/${id}`,
                 {
 
-                    method: "PUT",
+                    method:
+                        "PUT",
 
                     headers: {
 
@@ -1249,7 +2374,6 @@ async function actualizarProducto(id) {
             throw new Error(
                 `HTTP ${res.status}`
             );
-
         }
 
 
@@ -1258,17 +2382,20 @@ async function actualizarProducto(id) {
 
 
         productos =
-            productos.map(p =>
-
-                p.id === id
-
-                    ? {
-                        ...p,
-                        ...data
-                    }
-
-                    : p
-
+            productos.map(
+                p =>
+                    p.id === id
+                        ? normalizarProducto(
+                            {
+                                ...p,
+                                ...data,
+                                imagenes:
+                                    data.imagenes ||
+                                    updated.imagenes
+                            },
+                            0
+                        )
+                        : p
             );
 
 
@@ -1285,8 +2412,8 @@ async function actualizarProducto(id) {
 
         mostrarMensaje();
 
-    }
 
+    }
     catch (err) {
 
         console.error(
@@ -1298,9 +2425,7 @@ async function actualizarProducto(id) {
         alert(
             "❌ Error actualizando producto"
         );
-
     }
-
 }
 
 
@@ -1308,7 +2433,9 @@ async function actualizarProducto(id) {
    ELIMINAR PRODUCTO
 ========================================================= */
 
-async function eliminarProducto(id) {
+async function eliminarProducto(
+    id
+) {
 
     if (
         !confirm(
@@ -1317,7 +2444,6 @@ async function eliminarProducto(id) {
     ) {
 
         return;
-
     }
 
 
@@ -1328,7 +2454,8 @@ async function eliminarProducto(id) {
                 `${BASE_URL}/api/productos/${id}`,
                 {
 
-                    method: "DELETE",
+                    method:
+                        "DELETE",
 
                     headers: {
 
@@ -1346,13 +2473,13 @@ async function eliminarProducto(id) {
             throw new Error(
                 `HTTP ${res.status}`
             );
-
         }
 
 
         productos =
             productos.filter(
-                p => p.id !== id
+                p =>
+                    p.id !== id
             );
 
 
@@ -1369,8 +2496,8 @@ async function eliminarProducto(id) {
 
         mostrarMensaje();
 
-    }
 
+    }
     catch (err) {
 
         console.error(
@@ -1382,9 +2509,7 @@ async function eliminarProducto(id) {
         alert(
             "❌ Error eliminando producto"
         );
-
     }
-
 }
 
 
@@ -1392,7 +2517,9 @@ async function eliminarProducto(id) {
    SUBIR IMÁGENES
 ========================================================= */
 
-async function subirImagenes(files) {
+async function subirImagenes(
+    files
+) {
 
     const formData =
         new FormData();
@@ -1408,7 +2535,6 @@ async function subirImagenes(files) {
             "imagenes",
             files[i]
         );
-
     }
 
 
@@ -1419,7 +2545,8 @@ async function subirImagenes(files) {
                 `${BASE_URL}/api/subir-imagenes`,
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -1444,7 +2571,6 @@ async function subirImagenes(files) {
             );
 
             return [];
-
         }
 
 
@@ -1452,14 +2578,25 @@ async function subirImagenes(files) {
             await res.json();
 
 
-        return Array.isArray(data.urls)
+        console.log(
+            "Respuesta subida:",
+            data
+        );
 
-            ? data.urls
+
+        return Array.isArray(
+            data.urls
+        )
+
+            ? [
+                ...new Set(
+                    data.urls
+                )
+            ]
 
             : [];
 
     }
-
     catch (err) {
 
         console.error(
@@ -1468,9 +2605,7 @@ async function subirImagenes(files) {
         );
 
         return [];
-
     }
-
 }
 
 
@@ -1532,13 +2667,12 @@ agregarBtn.addEventListener(
             );
 
             return;
-
         }
 
 
-        /* =========================
+        /* =================================================
            IMÁGENES
-        ========================= */
+        ================================================= */
 
         let imagenesUrls = [];
 
@@ -1551,13 +2685,12 @@ agregarBtn.addEventListener(
                 await subirImagenes(
                     imagenesFileInput.files
                 );
-
         }
 
 
-        /* =========================
+        /* =================================================
            NUEVO PRODUCTO
-        ========================= */
+        ================================================= */
 
         const nuevo = {
 
@@ -1566,13 +2699,19 @@ agregarBtn.addEventListener(
             description,
 
             imagenes:
-                imagenesUrls,
+                [
+                    ...new Set(
+                        imagenesUrls
+                    )
+                ],
 
             categoria: {
 
-                main: mainCat,
+                main:
+                    mainCat,
 
-                sub: subCat
+                sub:
+                    subCat
 
             },
 
@@ -1592,7 +2731,8 @@ agregarBtn.addEventListener(
                     `${BASE_URL}/api/productos`,
                     {
 
-                        method: "POST",
+                        method:
+                            "POST",
 
                         headers: {
 
@@ -1618,7 +2758,6 @@ agregarBtn.addEventListener(
                 throw new Error(
                     `HTTP ${res.status}`
                 );
-
             }
 
 
@@ -1626,15 +2765,14 @@ agregarBtn.addEventListener(
                 await res.json();
 
 
-            const productoCreado = {
-
-                id:
-                    data.id ||
-                    "prod-" + Date.now(),
-
-                ...nuevo
-
-            };
+            const productoCreado =
+                normalizarProducto(
+                    {
+                        ...nuevo,
+                        ...data
+                    },
+                    productos.length
+                );
 
 
             productos.push(
@@ -1653,13 +2791,15 @@ agregarBtn.addEventListener(
             );
 
 
-            mostrarMensaje();
+            mostrarMensaje(
+                "✅ Producto agregado correctamente"
+            );
 
 
             formProducto.reset();
 
-        }
 
+        }
         catch (err) {
 
             console.error(
@@ -1671,9 +2811,7 @@ agregarBtn.addEventListener(
             alert(
                 "❌ Error agregando producto"
             );
-
         }
-
     }
 );
 
@@ -1709,31 +2847,30 @@ loginBtn.addEventListener(
             await cargarProductos();
 
         }
-
         else {
 
             alert(
                 "❌ Contraseña incorrecta"
             );
-
         }
-
     }
 );
 
 
 /* =========================================================
-   ENTER PARA LOGIN
+   ENTER LOGIN
 ========================================================= */
 
 passwordInput.addEventListener(
     "keydown",
     event => {
 
-        if (event.key === "Enter") {
+        if (
+            event.key ===
+            "Enter"
+        ) {
 
             loginBtn.click();
-
         }
 
     }
@@ -1754,16 +2891,21 @@ logoutBtn.addEventListener(
         adminPanel.style.display =
             "none";
 
-        AUTH_TOKEN = "";
+        AUTH_TOKEN =
+            "";
 
-        passwordInput.value = "";
+        passwordInput.value =
+            "";
+
+        listaProductos.innerHTML =
+            "";
 
     }
 );
 
 
 /* =========================================================
-   GO TO SHOP
+   GO SHOP
 ========================================================= */
 
 goShopBtn.addEventListener(
@@ -1794,7 +2936,7 @@ searchInput.addEventListener(
 
 
 /* =========================================================
-   SOCKET.IO CONNECT
+   SOCKET CONNECT
 ========================================================= */
 
 socket.on(
@@ -1802,7 +2944,7 @@ socket.on(
     () => {
 
         console.log(
-            "Socket.IO conectado:",
+            "🟢 Socket.IO conectado:",
             socket.id
         );
 
@@ -1811,7 +2953,7 @@ socket.on(
 
 
 /* =========================================================
-   SOCKET.IO DISCONNECT
+   SOCKET DISCONNECT
 ========================================================= */
 
 socket.on(
@@ -1819,7 +2961,7 @@ socket.on(
     () => {
 
         console.log(
-            "Socket.IO desconectado"
+            "🔴 Socket.IO desconectado"
         );
 
     }
@@ -1840,52 +2982,18 @@ socket.on(
         );
 
 
-        if (!Array.isArray(data)) {
+        if (
+            !Array.isArray(data)
+        ) {
 
             return;
-
         }
 
 
         productos =
-            data.map(p => ({
-
-                id:
-                    p.id ||
-                    "prod-" + Date.now(),
-
-                titulo:
-                    p.titulo ||
-                    "Sin título",
-
-                description:
-                    p.description ||
-                    "",
-
-                imagenes:
-                    Array.isArray(p.imagenes)
-                        ? p.imagenes
-                        : [],
-
-                categoria: {
-
-                    main:
-                        p.categoria?.main ||
-                        "Sin categoría",
-
-                    sub:
-                        p.categoria?.sub ||
-                        ""
-
-                },
-
-                price:
-                    Number(p.price) || 0,
-
-                stock:
-                    Number(p.stock) || 0
-
-            }));
+            data.map(
+                normalizarProducto
+            );
 
 
         renderProductos(
@@ -1946,6 +3054,16 @@ console.log(
 console.log(
     "BASE_URL:",
     BASE_URL
+);
+
+console.log(
+    "IMAGE_SERVER_URL:",
+    IMAGE_SERVER_URL
+);
+
+console.log(
+    "HEIF/HEIC decoder:",
+    typeof heic2any
 );
 
 console.log(
