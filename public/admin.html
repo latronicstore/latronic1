@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +13,6 @@
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,8 +33,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: #111;
+            padding: 20px;
         }
 
         #login-box {
@@ -47,16 +45,31 @@
             text-align: center;
             width: 90%;
             max-width: 350px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        #login-box h1 {
+            margin-bottom: 10px;
         }
 
         #login-box input,
         #login-box button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 8px 0;
             border: none;
             border-radius: 5px;
             font-size: 1rem;
+        }
+
+        #login-box input {
+            background: #1e1e1e;
+            color: #fff;
+            outline: none;
+        }
+
+        #login-box input:focus {
+            box-shadow: 0 0 8px #e28f2f;
         }
 
         #login-box button {
@@ -64,6 +77,11 @@
             color: #000;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        #login-box button:hover {
+            background: rgb(214, 80, 17);
+            color: white;
         }
 
         /* =====================================================
@@ -73,7 +91,7 @@
         #admin-panel {
             display: none;
             padding: 20px;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -82,31 +100,56 @@
         }
 
         /* =====================================================
-           FORM
+           TOP BUTTONS
         ===================================================== */
 
-        #form-producto input,
-        #form-producto textarea,
-        #form-producto button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+        .top-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .top-buttons button {
+            padding: 10px 15px;
             border: none;
             border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        #form-producto input,
-        #form-producto textarea {
-            background: #2a2a2a;
-            color: #fff;
-        }
-
-        #form-producto button {
             background: #e28f2f;
             color: #000;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .top-buttons button:hover {
+            background: rgb(214, 80, 17);
+            color: white;
+        }
+
+        /* =====================================================
+           SERVER STATUS
+        ===================================================== */
+
+        #server-status {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .status-ok {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-error {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .status-loading {
+            color: #e28f2f;
+            font-weight: bold;
         }
 
         /* =====================================================
@@ -115,7 +158,7 @@
 
         #search-input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             border-radius: 5px;
             border: none;
@@ -130,14 +173,86 @@
         }
 
         /* =====================================================
-           PRODUCTS
+           ADD PRODUCT FORM
+        ===================================================== */
+
+        #form-producto {
+            background: #252525;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        #form-producto h2 {
+            margin-bottom: 15px;
+        }
+
+        #form-producto input,
+        #form-producto textarea,
+        #form-producto button {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        #form-producto input,
+        #form-producto textarea {
+            background: #2a2a2a;
+            color: #fff;
+            outline: none;
+        }
+
+        #form-producto textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        #form-producto input:focus,
+        #form-producto textarea:focus {
+            box-shadow: 0 0 8px #e28f2f;
+        }
+
+        #form-producto button {
+            background: #e28f2f;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        #form-producto button:hover {
+            background: rgb(214, 80, 17);
+            color: white;
+        }
+
+        #agregar-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .upload-info {
+            background: #181818;
+            border-left: 3px solid #e28f2f;
+            padding: 10px;
+            margin-bottom: 12px;
+            color: #bbb;
+            font-size: 13px;
+            line-height: 1.5;
+            border-radius: 4px;
+        }
+
+        /* =====================================================
+           PRODUCTS GRID
         ===================================================== */
 
         .productos {
             display: grid;
             grid-template-columns: repeat(
                 auto-fill,
-                minmax(220px, 1fr)
+                minmax(240px, 1fr)
             );
             gap: 15px;
         }
@@ -146,29 +261,29 @@
             background: #2a2a2a;
             padding: 15px;
             border-radius: 10px;
-            transition: transform 0.2s ease;
             position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
         }
 
         .producto:hover {
-            transform: scale(1.02);
+            border-color: #555;
         }
 
         /* =====================================================
-           IMAGE AREA
+           PRODUCT IMAGES
         ===================================================== */
 
         .mini-images {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
             gap: 8px;
-            min-height: 70px;
         }
 
         .image-wrapper {
-            width: 65px;
-            height: 65px;
+            width: 72px;
+            height: 72px;
             position: relative;
             background: #111;
             border-radius: 6px;
@@ -176,7 +291,7 @@
             border: 1px solid #444;
         }
 
-        .producto img {
+        .image-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -200,7 +315,7 @@
             position: absolute;
             bottom: 2px;
             right: 2px;
-            background: rgba(0,0,0,0.75);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
             font-size: 9px;
             padding: 2px 4px;
@@ -214,16 +329,22 @@
         .producto input,
         .producto textarea {
             width: 100%;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
             background: #1e1e1e;
             color: #fff;
             border-radius: 4px;
-            padding: 7px;
-            border: none;
+            padding: 9px;
+            border: 1px solid #333;
+            outline: none;
+        }
+
+        .producto input:focus,
+        .producto textarea:focus {
+            border-color: #e28f2f;
         }
 
         .producto textarea {
-            min-height: 80px;
+            min-height: 90px;
             resize: vertical;
         }
 
@@ -234,85 +355,19 @@
             color: #000;
             border: none;
             border-radius: 5px;
-            padding: 7px 10px;
+            padding: 8px 12px;
             cursor: pointer;
             font-weight: bold;
         }
 
         .producto button:hover {
-            background-color: rgb(214, 80, 17);
+            background: rgb(214, 80, 17);
             color: white;
         }
 
-        /* =====================================================
-           MESSAGE
-        ===================================================== */
-
-        #mensaje-guardado {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: #000;
-            padding: 10px 15px;
-            border-radius: 6px;
-            display: none;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-            z-index: 9999;
-        }
-
-        /* =====================================================
-           TOP BUTTONS
-        ===================================================== */
-
-        .top-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .top-buttons button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background: #e28f2f;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .top-buttons button:hover,
-        #login-btn:hover,
-        #back:hover,
-        #form-producto button:hover {
-            background-color: rgb(214, 80, 17);
-            color: white;
-        }
-
-        .advice {
-            color: rgba(255, 0, 0, 0.795);
-            margin-top: 5px;
-        }
-
-        /* =====================================================
-           STATUS
-        ===================================================== */
-
-        #server-status {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #2a2a2a;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .status-ok {
-            color: #28a745;
-        }
-
-        .status-error {
-            color: #ff4444;
+        .producto button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* =====================================================
@@ -320,8 +375,8 @@
         ===================================================== */
 
         .image-debug {
-            margin-top: 8px;
-            padding: 6px;
+            margin-top: 6px;
+            padding: 5px;
             background: #111;
             border-radius: 4px;
             font-size: 10px;
@@ -338,21 +393,51 @@
         }
 
         /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        #mensaje-guardado {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: #000;
+            padding: 12px 16px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            max-width: 90%;
+        }
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading-box {
+            grid-column: 1 / -1;
+            padding: 30px;
+            text-align: center;
+            background: #2a2a2a;
+            border-radius: 10px;
+            color: #e28f2f;
+        }
+
+        /* =====================================================
            MOBILE
         ===================================================== */
 
         @media (max-width: 768px) {
-
             #admin-panel {
                 padding: 10px;
-                max-width: 100%;
             }
 
             .productos {
                 grid-template-columns:
                     repeat(
                         auto-fill,
-                        minmax(150px, 1fr)
+                        minmax(160px, 1fr)
                     );
                 gap: 10px;
             }
@@ -361,218 +446,220 @@
                 padding: 10px;
             }
 
-            .producto img {
-                width: 100%;
-                height: 100%;
-            }
-
-            .producto input,
-            .producto textarea,
-            .producto button {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-
-            .mini-images {
-                flex-direction: row;
-            }
-
             .top-buttons {
                 flex-direction: column;
             }
 
             .top-buttons button {
                 width: 100%;
-                margin-bottom: 5px;
-            }
-
-            #login-box {
-                width: 95%;
-                max-width: 300px;
-                padding: 20px;
             }
         }
 
         @media (max-width: 400px) {
-
             .productos {
                 grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            #login-box {
-                padding: 15px;
             }
         }
-
     </style>
-
 </head>
 
 <body>
 
-    <!-- =====================================================
-         LOGIN
-    ===================================================== -->
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
-    <div id="login-screen">
+<div id="login-screen">
 
-        <div id="login-box">
+    <div id="login-box">
 
-            <h1>🔒 Admin Access</h1>
+        <h1>🔒 Admin Access</h1>
 
-            <h6 class="advice">
-                This site is only for the administrator
-            </h6>
+        <h6
+            style="
+                color:#ff3333;
+                margin-top:5px;
+                margin-bottom:15px;
+            "
+        >
+            This site is only for the administrator
+        </h6>
 
-            <input
-                type="password"
-                id="admin-password"
-                placeholder="Enter Password"
-            >
+        <input
+            type="password"
+            id="admin-password"
+            placeholder="Enter Password"
+            autocomplete="current-password"
+        >
 
-            <button id="login-btn">
-                Enter
-            </button>
+        <button id="login-btn">
+            Enter
+        </button>
 
-            <button
-                id="back"
-                type="button"
-                onclick="window.location.href='shop.html'"
-            >
-                Exit
-            </button>
+        <button
+            id="back"
+            type="button"
+            onclick="window.location.href='shop.html'"
+        >
+            Exit
+        </button>
 
-        </div>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ADMIN PANEL
+========================================================= -->
+
+<div id="admin-panel">
+
+    <div class="top-buttons">
+
+        <button id="logout-btn">
+            Logout
+        </button>
+
+        <button id="go-shop-btn">
+            Go to Shop 🛍️
+        </button>
 
     </div>
 
 
+    <h1>
+        LaTRONIC Admin Panel
+    </h1>
+
+
+    <!-- SERVER STATUS -->
+
+    <div id="server-status">
+
+        Server status:
+
+        <span
+            id="status-text"
+            class="status-loading"
+        >
+            Checking...
+        </span>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <input
+        type="text"
+        id="search-input"
+        placeholder="Search products... 🔎"
+    >
+
+
     <!-- =====================================================
-         ADMIN PANEL
+         ADD PRODUCT
     ===================================================== -->
 
-    <div id="admin-panel">
+    <form
+        id="form-producto"
+        novalidate
+    >
 
-        <div class="top-buttons">
+        <h2>
+            ➕ Add New Product
+        </h2>
 
-            <button id="logout-btn">
-                Logout
-            </button>
-
-            <button id="go-shop-btn">
-                Go to Shop 🛍️
-            </button>
-
+        <div class="upload-info">
+            📸 Las imágenes seleccionadas se envían al servidor.
+            El servidor debe convertirlas/optimizarlas y subirlas
+            automáticamente a Cloudinary.
+            <br>
+            No necesitas hacer una migración manual después.
         </div>
-
-        <h1>
-            Admin Panel
-        </h1>
-
-        <div id="server-status">
-
-            Server status:
-
-            <span id="status-text">
-                Checking...
-            </span>
-
-        </div>
-
-
-        <!-- SEARCH -->
 
         <input
             type="text"
-            id="search-input"
-            placeholder="Search products... 🔎"
+            id="titulo"
+            placeholder="Título del producto"
+            required
         >
 
+        <textarea
+            id="description"
+            placeholder="Descripción"
+            required
+        ></textarea>
 
-        <!-- =================================================
-             ADD PRODUCT
-        ================================================= -->
-
-        <form
-            id="form-producto"
-            novalidate
+        <input
+            type="file"
+            id="imagenes-file"
+            multiple
+            accept="image/*,.webp,.heif,.heic"
         >
 
-            <input
-                type="text"
-                id="titulo"
-                placeholder="Título del producto"
-                required
-            >
+        <input
+            type="text"
+            id="mainCat"
+            placeholder="Categoría principal"
+            required
+        >
 
-            <textarea
-                id="description"
-                placeholder="Descripción"
-                required
-            ></textarea>
+        <input
+            type="text"
+            id="subCat"
+            placeholder="Subcategoría"
+            required
+        >
 
-            <input
-                type="file"
-                id="imagenes-file"
-                multiple
-                accept="image/*,.webp,.heif,.heic"
-            >
+        <input
+            type="number"
+            id="price"
+            placeholder="Precio"
+            step="0.01"
+            min="0"
+            required
+        >
 
-            <input
-                type="text"
-                id="mainCat"
-                placeholder="Categoría principal"
-                required
-            >
+        <input
+            type="number"
+            id="stock"
+            placeholder="Stock"
+            min="0"
+            step="1"
+            required
+        >
 
-            <input
-                type="text"
-                id="subCat"
-                placeholder="Subcategoría"
-                required
-            >
+        <button
+            type="button"
+            id="agregar-btn"
+        >
+            ➕ Agregar producto
+        </button>
 
-            <input
-                type="number"
-                id="price"
-                placeholder="Precio"
-                step="0.01"
-                required
-            >
-
-            <input
-                type="number"
-                id="stock"
-                placeholder="Stock"
-                required
-            >
-
-            <button
-                type="button"
-                id="agregar-btn"
-            >
-                Agregar producto
-            </button>
-
-        </form>
+    </form>
 
 
-        <!-- =================================================
-             PRODUCTS
-        ================================================= -->
+    <!-- =====================================================
+         PRODUCTS
+    ===================================================== -->
 
-        <div
-            class="productos"
-            id="lista-productos"
-        ></div>
+    <div
+        class="productos"
+        id="lista-productos"
+    ></div>
 
-    </div>
+</div>
 
 
-    <div id="mensaje-guardado">
-        ✅ Cambios guardados correctamente
-    </div>
+<!-- =========================================================
+     MESSAGE
+========================================================= -->
+
+<div id="mensaje-guardado">
+    ✅ Cambios guardados correctamente
+</div>
 
 
 <script>
@@ -581,36 +668,49 @@
    CONFIGURACIÓN
 ========================================================= */
 
-const ADMIN_PASSWORD = "042525";
-
 /*
-   Si admin.html está servido por Node:
+    IMPORTANTE:
 
-       BASE_URL = ""
+    Dejamos BASE_URL vacío.
 
-   Si está en otro servidor:
+    Eso significa que admin.html utilizará
+    exactamente el mismo dominio que lo sirve.
 
-       BASE_URL = "http://localhost:3000"
+    Ejemplo:
+
+    https://latronicstore.com/admin.html
+
+    llamadas:
+
+    https://latronicstore.com/api/productos
+    https://latronicstore.com/api/subir-imagenes
 */
 
 const BASE_URL = "";
 
+
 /*
-   MUY IMPORTANTE:
+    NO poner aquí el IMAGE_SERVER_URL de localhost.
 
-   NO ponemos IMAGE_SERVER_URL en localhost automáticamente.
+    Las imágenes nuevas deben ser procesadas por el backend
+    y devolverse como URLs de Cloudinary.
 
-   El navegador utilizará el mismo servidor que sirve
-   admin.html.
-
-   Si tu API está en otro servidor, cambia esto:
-
-       const IMAGE_SERVER_URL =
-           "http://localhost:3000";
-
+    Para mostrar imágenes antiguas, aceptamos:
+      - Cloudinary
+      - /uploads/...
+      - /images/...
+      - /image/...
+      - URLs absolutas
 */
 
 const IMAGE_SERVER_URL = "";
+
+
+/*
+    CONTRASEÑA EXISTENTE
+*/
+
+const ADMIN_PASSWORD = "042525";
 
 
 /* =========================================================
@@ -665,18 +765,21 @@ let productos = [];
 
 let AUTH_TOKEN = "";
 
-
-/* =========================================================
-   SOCKET.IO
-========================================================= */
-
-const socket =
-    io(BASE_URL || undefined);
+let socket = null;
 
 
 /* =========================================================
-   MENSAJE
+   UTILIDADES
 ========================================================= */
+
+function apiUrl(path) {
+
+    return (
+        BASE_URL.replace(/\/+$/, "") +
+        path
+    );
+}
+
 
 function mostrarMensaje(
     texto = "✅ Cambios guardados correctamente"
@@ -686,19 +789,24 @@ function mostrarMensaje(
 
     mensajeGuardado.style.display = "block";
 
-    setTimeout(() => {
+    clearTimeout(
+        mostrarMensaje.timer
+    );
 
-        mensajeGuardado.style.display = "none";
+    mostrarMensaje.timer =
+        setTimeout(() => {
 
-    }, 2500);
+            mensajeGuardado.style.display =
+                "none";
+
+        }, 3000);
 }
 
 
-/* =========================================================
-   ESTADO SERVIDOR
-========================================================= */
-
-function actualizarEstadoServidor(ok, texto) {
+function actualizarEstadoServidor(
+    ok,
+    texto
+) {
 
     statusText.textContent = texto;
 
@@ -709,60 +817,82 @@ function actualizarEstadoServidor(ok, texto) {
 }
 
 
+function escaparHtml(valor) {
+
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
 /* =========================================================
-   DETECTAR CLOUDINARY
+   CLOUDINARY
 ========================================================= */
 
 function esCloudinary(url) {
 
-    return /cloudinary\.com/i.test(
+    return /res\.cloudinary\.com|cloudinary\.com/i.test(
         String(url || "")
     );
 }
 
 
-/* =========================================================
-   CONVERTIR CLOUDINARY A FORMATO AUTOMÁTICO
-========================================================= */
-
 function prepararCloudinary(url) {
 
-    if (!esCloudinary(url)) {
-        return url;
+    if (!url) {
+        return "";
+    }
+
+    const original =
+        String(url).trim();
+
+    if (!esCloudinary(original)) {
+        return original;
     }
 
     /*
-       Si ya contiene f_auto no lo duplicamos.
+        Si ya tiene transformaciones,
+        no las duplicamos.
     */
 
-    if (/\/f_auto[,/]/i.test(url)) {
-        return url;
+    if (
+        /\/image\/upload\/[^/]+\/.+/i.test(
+            original
+        )
+    ) {
+
+        return original;
     }
 
+
     /*
-       Cloudinary:
+        Agregar:
 
-       /image/upload/
-
-       se convierte en:
-
-       /image/upload/f_auto,q_auto/
+        f_auto
+        q_auto
     */
 
-    if (url.includes("/image/upload/")) {
+    if (
+        original.includes(
+            "/image/upload/"
+        )
+    ) {
 
-        return url.replace(
+        return original.replace(
             "/image/upload/",
             "/image/upload/f_auto,q_auto/"
         );
     }
 
-    return url;
+    return original;
 }
 
 
 /* =========================================================
-   NORMALIZAR URL
+   NORMALIZAR URL DE IMAGEN
 ========================================================= */
 
 function normalizarImagenUrl(url) {
@@ -780,7 +910,7 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       CLOUDINARY
+        CLOUDINARY
     */
 
     if (esCloudinary(original)) {
@@ -792,7 +922,7 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       DATA
+        DATA / BLOB
     */
 
     if (
@@ -805,7 +935,7 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       Convertir backslash Windows
+        Backslash Windows
     */
 
     let limpio =
@@ -816,7 +946,10 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       localhost URL
+        Si es localhost,
+        no queremos que el navegador
+        intente conectarse a localhost
+        desde Internet.
     */
 
     try {
@@ -832,18 +965,12 @@ function normalizarImagenUrl(url) {
             limpio =
                 parsed.pathname +
                 parsed.search;
-
         }
 
-    }
-    catch (e) {
-        /* ruta relativa */
+    } catch (e) {
+        // Ruta relativa
     }
 
-
-    /*
-       Quitar ./ 
-    */
 
     limpio =
         limpio.replace(
@@ -853,7 +980,19 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       IMAGE_SERVER_URL
+        URL absoluta externa
+    */
+
+    if (
+        /^https?:\/\//i.test(limpio)
+    ) {
+
+        return limpio;
+    }
+
+
+    /*
+        Ruta absoluta
     */
 
     if (
@@ -876,7 +1015,7 @@ function normalizarImagenUrl(url) {
 
 
     /*
-       Ruta relativa
+        Ruta relativa
     */
 
     if (IMAGE_SERVER_URL) {
@@ -895,428 +1034,262 @@ function normalizarImagenUrl(url) {
     }
 
 
-    return "/" +
+    return (
+        "/" +
         limpio.replace(
             /^\/+/,
             ""
-        );
+        )
+    );
 }
 
 
 /* =========================================================
-   OBTENER NOMBRE Y EXTENSIÓN
+   OBTENER IMAGEN REAL
 ========================================================= */
 
-function separarImagen(url) {
+function obtenerImagenPrincipal(url) {
 
-    let limpio =
-        String(url || "")
-            .split("?")[0]
-            .split("#")[0];
-
-    const match =
-        limpio.match(
-            /^(.*?)(?:\.([a-zA-Z0-9]+))?$/
-        );
-
-    if (!match) {
-
-        return {
-            base: limpio,
-            extension: ""
-        };
+    if (!url) {
+        return "";
     }
+
+    const normalizada =
+        normalizarImagenUrl(url);
+
+    /*
+        Cloudinary es prioridad absoluta.
+    */
+
+    if (
+        esCloudinary(normalizada)
+    ) {
+
+        return prepararCloudinary(
+            normalizada
+        );
+    }
+
+    return normalizada;
+}
+
+
+/* =========================================================
+   NORMALIZAR LISTA DE IMÁGENES
+========================================================= */
+
+function normalizarListaImagenes(imagenes) {
+
+    if (!Array.isArray(imagenes)) {
+        return [];
+    }
+
+    const resultado = [];
+
+    const vistos = new Set();
+
+
+    for (const item of imagenes) {
+
+        if (!item) {
+            continue;
+        }
+
+        let url = "";
+
+        /*
+            Soporta:
+
+            "url"
+
+            {
+                url: "..."
+            }
+
+            {
+                secure_url: "..."
+            }
+
+            {
+                src: "..."
+            }
+        */
+
+        if (
+            typeof item === "string"
+        ) {
+
+            url = item;
+
+        } else if (
+            typeof item === "object"
+        ) {
+
+            url =
+                item.secure_url ||
+                item.url ||
+                item.src ||
+                item.path ||
+                item.location ||
+                "";
+        }
+
+
+        url =
+            String(url || "").trim();
+
+
+        if (!url) {
+            continue;
+        }
+
+
+        /*
+            Cloudinary:
+
+            usamos secure_url si existe
+        */
+
+        if (
+            esCloudinary(url)
+        ) {
+
+            url =
+                prepararCloudinary(
+                    url
+                );
+        }
+
+
+        /*
+            Evitar duplicados.
+        */
+
+        const clave =
+            url
+                .split("?")[0]
+                .split("#")[0]
+                .toLowerCase();
+
+
+        if (
+            vistos.has(clave)
+        ) {
+
+            continue;
+        }
+
+
+        vistos.add(clave);
+
+        resultado.push(url);
+    }
+
+
+    return resultado;
+}
+
+
+/* =========================================================
+   NORMALIZAR PRODUCTO
+========================================================= */
+
+function normalizarProducto(
+    p,
+    index = 0
+) {
+
+    if (!p || typeof p !== "object") {
+
+        p = {};
+    }
+
+
+    let categoria =
+        p.categoria;
+
+
+    if (
+        typeof categoria !== "object" ||
+        categoria === null
+    ) {
+
+        categoria = {};
+    }
+
+
+    /*
+        Soportar varios nombres
+        usados por versiones anteriores.
+    */
+
+    const imagenesFuente =
+        Array.isArray(p.imagenes)
+            ? p.imagenes
+            : Array.isArray(p.images)
+                ? p.images
+                : Array.isArray(p.imageUrls)
+                    ? p.imageUrls
+                    : [];
+
 
     return {
 
-        base:
-            match[1] || limpio,
+        id:
+            p.id ??
+            p.productId ??
+            `prod-${Date.now()}-${index}`,
 
-        extension:
-            (
-                match[2] || ""
-            ).toLowerCase()
+        titulo:
+            p.titulo ??
+            p.title ??
+            p.nombre ??
+            "Sin título",
 
+        description:
+            p.description ??
+            p.descripcion ??
+            "",
+
+        imagenes:
+            normalizarListaImagenes(
+                imagenesFuente
+            ),
+
+        categoria: {
+
+            main:
+                categoria.main ??
+                p.mainCat ??
+                p.categoriaPrincipal ??
+                "Sin categoría",
+
+            sub:
+                categoria.sub ??
+                p.subCat ??
+                p.subcategoria ??
+                ""
+        },
+
+        price:
+            Number(
+                p.price ??
+                p.precio ??
+                0
+            ) || 0,
+
+        stock:
+            Number(
+                p.stock ??
+                p.inventario ??
+                0
+            ) || 0
     };
 }
 
 
 /* =========================================================
-   GENERAR VARIANTES DE IMAGEN
-========================================================= */
-
-function obtenerVariantesImagen(url) {
-
-    const original =
-        String(url || "").trim();
-
-    if (!original) {
-        return [];
-    }
-
-    const variantes = [];
-
-
-    function agregar(valor) {
-
-        if (
-            valor &&
-            !variantes.includes(valor)
-        ) {
-
-            variantes.push(valor);
-        }
-    }
-
-
-    /*
-       =====================================================
-       CLOUDINARY
-       =====================================================
-    */
-
-    if (esCloudinary(original)) {
-
-        /*
-           Original
-        */
-
-        agregar(original);
-
-        /*
-           f_auto + q_auto
-        */
-
-        agregar(
-            prepararCloudinary(original)
-        );
-
-        return variantes;
-    }
-
-
-    /*
-       =====================================================
-       URL NORMALIZADA
-       =====================================================
-    */
-
-    const normalizada =
-        normalizarImagenUrl(original);
-
-    agregar(normalizada);
-
-
-    /*
-       =====================================================
-       OBTENER RUTA
-       =====================================================
-    */
-
-    let ruta =
-        normalizada;
-
-    try {
-
-        const parsed =
-            new URL(normalizada);
-
-        ruta =
-            parsed.pathname;
-
-    }
-    catch (e) {
-
-        ruta =
-            normalizada
-                .split("?")[0]
-                .split("#")[0];
-    }
-
-
-    ruta =
-        ruta.replace(
-            /\\/g,
-            "/"
-        );
-
-
-    /*
-       =====================================================
-       BASE + EXTENSIÓN
-       =====================================================
-    */
-
-    const partes =
-        separarImagen(ruta);
-
-    const base =
-        partes.base;
-
-    const extension =
-        partes.extension;
-
-
-    /*
-       =====================================================
-       PRIMERO:
-       archivo original
-       =====================================================
-
-       EJEMPLO:
-
-       /uploads/1763307089071.jpeg
-
-       SE PRUEBA PRIMERO.
-    */
-
-
-    if (extension) {
-
-        agregar(
-            base +
-            "." +
-            extension
-        );
-    }
-
-
-    /*
-       =====================================================
-       WEBP
-       =====================================================
-    */
-
-    agregar(
-        base + ".webp"
-    );
-
-
-    /*
-       =====================================================
-       JPEG
-       =====================================================
-    */
-
-    agregar(
-        base + ".jpeg"
-    );
-
-
-    /*
-       =====================================================
-       JPG
-       =====================================================
-    */
-
-    agregar(
-        base + ".jpg"
-    );
-
-
-    /*
-       =====================================================
-       PNG
-       =====================================================
-    */
-
-    agregar(
-        base + ".png"
-    );
-
-
-    /*
-       =====================================================
-       HEIF
-       =====================================================
-    */
-
-    agregar(
-        base + ".heif"
-    );
-
-
-    /*
-       =====================================================
-       HEIC
-       =====================================================
-    */
-
-    agregar(
-        base + ".heic"
-    );
-
-
-    /*
-       =====================================================
-       SI SOLO VIENE EL NOMBRE
-       =====================================================
-    */
-
-    if (
-        !ruta.includes("/")
-    ) {
-
-        const nombre =
-            ruta;
-
-        const baseServidor =
-            IMAGE_SERVER_URL
-                ? IMAGE_SERVER_URL.replace(
-                    /\/+$/,
-                    ""
-                )
-                : "";
-
-
-        const carpetas = [
-            "/images/",
-            "/uploads/"
-        ];
-
-
-        const extensiones = [
-            "",
-            ".webp",
-            ".jpeg",
-            ".jpg",
-            ".png",
-            ".heif",
-            ".heic"
-        ];
-
-
-        carpetas.forEach(
-            carpeta => {
-
-                extensiones.forEach(
-                    ext => {
-
-                        agregar(
-                            baseServidor +
-                            carpeta +
-                            nombre +
-                            ext
-                        );
-
-                    }
-                );
-
-            }
-        );
-    }
-
-
-    return variantes;
-}
-
-
-/* =========================================================
-   DETECTAR HEIF / HEIC
-========================================================= */
-
-function esHEIF(url) {
-
-    return /\.(heif|heic)(\?|#|$)/i.test(
-        String(url || "")
-    );
-}
-
-
-/* =========================================================
-   CONVERTIR HEIF / HEIC
-========================================================= */
-
-async function convertirHEIF(url) {
-
-    console.log(
-        "🟡 HEIF/HEIC detectado:",
-        url
-    );
-
-    try {
-
-        const response =
-            await fetch(
-                url,
-                {
-                    cache: "no-store"
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP " +
-                response.status
-            );
-        }
-
-
-        const blob =
-            await response.blob();
-
-
-        if (
-            typeof heic2any !==
-            "function"
-        ) {
-
-            throw new Error(
-                "heic2any no está disponible"
-            );
-        }
-
-
-        const convertido =
-            await heic2any({
-
-                blob: blob,
-
-                toType:
-                    "image/jpeg",
-
-                quality:
-                    0.90
-
-            });
-
-
-        const resultado =
-            Array.isArray(convertido)
-                ? convertido[0]
-                : convertido;
-
-
-        const objectUrl =
-            URL.createObjectURL(
-                resultado
-            );
-
-
-        console.log(
-            "✅ HEIF/HEIC convertido:",
-            objectUrl
-        );
-
-
-        return objectUrl;
-
-    }
-    catch (error) {
-
-        console.error(
-            "❌ Error convirtiendo HEIF/HEIC:",
-            error
-        );
-
-        return null;
-    }
-}
-
-
-/* =========================================================
-   CREAR IMAGEN
+   CREAR ELEMENTO DE IMAGEN
 ========================================================= */
 
 function crearImagenProducto(
@@ -1326,18 +1299,14 @@ function crearImagenProducto(
 ) {
 
     const wrapper =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     wrapper.className =
         "image-wrapper";
 
 
     const img =
-        document.createElement(
-            "img"
-        );
+        document.createElement("img");
 
     img.alt =
         titulo || "Producto";
@@ -1348,153 +1317,12 @@ function crearImagenProducto(
     img.decoding =
         "async";
 
-
-    const debug =
-        document.createElement(
-            "div"
-        );
-
-    debug.className =
-        "image-debug";
-
-
-    const variantes =
-        obtenerVariantesImagen(
-            url
-        );
-
-
-    let posicion = 0;
-
-    let convertidoHEIF = false;
-
-
-    async function intentarSiguiente() {
-
-        /*
-           No quedan variantes.
-        */
-
-        if (
-            posicion >=
-            variantes.length
-        ) {
-
-            console.error(
-                "❌ No se pudo cargar la imagen:",
-                url,
-                variantes
-            );
-
-
-            wrapper.innerHTML = `
-                <div class="image-error">
-                    ❌ Imagen<br>
-                    no encontrada
-                </div>
-            `;
-
-
-            return;
-        }
-
-
-        const siguiente =
-            variantes[posicion];
-
-        posicion++;
-
-
-        console.log(
-            `🖼️ Imagen ${index + 1}:`,
-            siguiente
-        );
-
-
-        debug.textContent =
-            siguiente;
-
-
-        /*
-           =================================================
-           HEIF / HEIC
-           =================================================
-        */
-
-        if (
-            esHEIF(siguiente) &&
-            !convertidoHEIF
-        ) {
-
-            convertidoHEIF = true;
-
-
-            const resultado =
-                await convertirHEIF(
-                    siguiente
-                );
-
-
-            if (resultado) {
-
-                img.src =
-                    resultado;
-
-                return;
-            }
-        }
-
-
-        /*
-           Imagen normal
-        */
-
-        img.src =
-            siguiente;
-    }
-
-
-    img.onload = () => {
-
-        console.log(
-            "✅ Imagen cargada:",
-            img.src
-        );
-
-
-        debug.textContent =
-            "✅ " + img.src;
-
-        debug.className =
-            "image-debug image-debug-ok";
-    };
-
-
-    img.onerror = async () => {
-
-        console.warn(
-            "⚠️ Falló imagen:",
-            img.src
-        );
-
-
-        /*
-           Intentar siguiente variante
-        */
-
-        await intentarSiguiente();
-    };
-
-
-    wrapper.appendChild(
-        img
-    );
+    img.referrerPolicy =
+        "no-referrer";
 
 
     const numero =
-        document.createElement(
-            "span"
-        );
+        document.createElement("span");
 
     numero.className =
         "image-number";
@@ -1503,93 +1331,111 @@ function crearImagenProducto(
         index + 1;
 
 
-    wrapper.appendChild(
-        numero
-    );
+    const debug =
+        document.createElement("div");
+
+    debug.className =
+        "image-debug";
 
 
-    wrapper.appendChild(
-        debug
-    );
+    const imagenFinal =
+        obtenerImagenPrincipal(url);
 
+
+    if (!imagenFinal) {
+
+        wrapper.innerHTML =
+            `
+            <div class="image-error">
+                ❌ Imagen
+                <br>
+                inválida
+            </div>
+            `;
+
+        return wrapper;
+    }
+
+
+    debug.textContent =
+        imagenFinal;
+
+
+    img.onload = () => {
+
+        debug.textContent =
+            "✅ " + imagenFinal;
+
+        debug.className =
+            "image-debug image-debug-ok";
+    };
+
+
+    img.onerror = () => {
+
+        console.error(
+            "❌ No se pudo cargar imagen:",
+            imagenFinal
+        );
+
+        debug.textContent =
+            "❌ Error: " +
+            imagenFinal;
+
+        debug.className =
+            "image-debug image-debug-error";
+
+        /*
+            No hacemos una cadena de 7-8
+            intentos que genera tráfico
+            innecesario.
+
+            La imagen debe llegar correctamente
+            desde Cloudinary/backend.
+        */
+
+        if (
+            !wrapper.querySelector(
+                ".image-error"
+            )
+        ) {
+
+            const error =
+                document.createElement("div");
+
+            error.className =
+                "image-error";
+
+            error.innerHTML =
+                `
+                ❌ Imagen
+                <br>
+                no disponible
+                `;
+
+            wrapper.insertBefore(
+                error,
+                img
+            );
+        }
+    };
+
+
+    img.src =
+        imagenFinal;
+
+
+    wrapper.appendChild(img);
+
+    wrapper.appendChild(numero);
+
+    wrapper.appendChild(debug);
 
     wrapper.title =
-        String(url);
-
-
-    intentarSiguiente();
+        imagenFinal;
 
 
     return wrapper;
-}
-
-
-/* =========================================================
-   NORMALIZAR PRODUCTO
-========================================================= */
-
-function normalizarProducto(
-    p,
-    index
-) {
-
-    return {
-
-        id:
-            p.id ||
-            `prod-${Date.now()}-${index}`,
-
-        titulo:
-            p.titulo ||
-            p.title ||
-            "Sin título",
-
-        description:
-            p.description ||
-            p.descripcion ||
-            "",
-
-        imagenes:
-            Array.isArray(
-                p.imagenes
-            )
-                ? [
-                    ...new Set(
-                        p.imagenes
-                            .filter(Boolean)
-                            .map(
-                                x =>
-                                    String(x).trim()
-                            )
-                    )
-                ]
-                : [],
-
-        categoria: {
-
-            main:
-                p.categoria?.main ||
-                p.mainCat ||
-                "Sin categoría",
-
-            sub:
-                p.categoria?.sub ||
-                p.subCat ||
-                ""
-
-        },
-
-        price:
-            Number(
-                p.price
-            ) || 0,
-
-        stock:
-            Number(
-                p.stock
-            ) || 0
-
-    };
 }
 
 
@@ -1599,28 +1445,29 @@ function normalizarProducto(
 
 async function cargarProductos() {
 
-    console.log(
-        "================================="
+    actualizarEstadoServidor(
+        true,
+        "Connecting..."
     );
 
-    console.log(
-        "CARGANDO PRODUCTOS"
-    );
-
-    console.log(
-        "================================="
-    );
+    listaProductos.innerHTML =
+        `
+        <div class="loading-box">
+            ⏳ Loading products...
+        </div>
+        `;
 
 
     try {
 
         const endpoint =
-            BASE_URL +
-            "/api/productos";
+            apiUrl(
+                "/api/productos"
+            );
 
 
         console.log(
-            "API:",
+            "📡 GET:",
             endpoint
         );
 
@@ -1629,30 +1476,24 @@ async function cargarProductos() {
             await fetch(
                 endpoint,
                 {
-                    cache:
-                        "no-store",
-
+                    method: "GET",
+                    cache: "no-store",
                     headers: {
 
                         "Authorization":
-                            AUTH_TOKEN
+                            AUTH_TOKEN,
 
+                        "Accept":
+                            "application/json"
                     }
                 }
             );
 
 
-        console.log(
-            "Respuesta API:",
-            res.status,
-            res.statusText
-        );
-
-
         if (!res.ok) {
 
             throw new Error(
-                `HTTP ${res.status} - ${res.statusText}`
+                `HTTP ${res.status} ${res.statusText}`
             );
         }
 
@@ -1661,77 +1502,71 @@ async function cargarProductos() {
             await res.json();
 
 
-        console.log(
-            "Productos recibidos:",
-            data
-        );
+        /*
+            Algunas APIs devuelven:
+
+            []
+
+            otras:
+
+            { productos: [] }
+
+            o:
+
+            { data: [] }
+        */
+
+        let lista = [];
 
 
         if (
-            !Array.isArray(data)
+            Array.isArray(data)
         ) {
 
-            throw new Error(
-                "La API no devolvió un array de productos"
-            );
+            lista = data;
+
+        } else if (
+            Array.isArray(
+                data.productos
+            )
+        ) {
+
+            lista =
+                data.productos;
+
+        } else if (
+            Array.isArray(
+                data.products
+            )
+        ) {
+
+            lista =
+                data.products;
+
+        } else if (
+            Array.isArray(
+                data.data
+            )
+        ) {
+
+            lista =
+                data.data;
         }
 
 
         productos =
-            data.map(
-                normalizarProducto
+            lista.map(
+                (p, index) =>
+                    normalizarProducto(
+                        p,
+                        index
+                    )
             );
 
 
         console.log(
-            "================================="
-        );
-
-        console.log(
-            "PRODUCTOS PREPARADOS:"
-        );
-
-        console.log(
-            productos
-        );
-
-        console.log(
-            "================================="
-        );
-
-
-        /*
-           Mostrar todas las imágenes en consola
-        */
-
-        productos.forEach(
-            (producto, productoIndex) => {
-
-                console.log(
-                    `📦 PRODUCTO ${productoIndex + 1}:`,
-                    producto.titulo
-                );
-
-
-                producto.imagenes.forEach(
-                    (imagen, imagenIndex) => {
-
-                        console.log(
-                            `   🖼️ ${imagenIndex + 1}:`,
-                            imagen
-                        );
-
-                        console.log(
-                            "   Variantes:",
-                            obtenerVariantesImagen(
-                                imagen
-                            )
-                        );
-
-                    }
-                );
-
-            }
+            "✅ Productos:",
+            productos.length
         );
 
 
@@ -1744,11 +1579,12 @@ async function cargarProductos() {
         renderProductos();
 
     }
-    catch (err) {
+
+    catch (error) {
 
         console.error(
-            "ERROR CARGANDO PRODUCTOS:",
-            err
+            "❌ Error cargando productos:",
+            error
         );
 
 
@@ -1758,15 +1594,17 @@ async function cargarProductos() {
         );
 
 
-        listaProductos.innerHTML = `
-
-            <div style="
-                background:#3a1e1e;
-                padding:20px;
-                border-radius:10px;
-                color:#ff5555;
-                grid-column:1/-1;
-            ">
+        listaProductos.innerHTML =
+            `
+            <div
+                style="
+                    background:#3a1e1e;
+                    padding:20px;
+                    border-radius:10px;
+                    color:#ff5555;
+                    grid-column:1/-1;
+                "
+            >
 
                 <h3>
                     ❌ No se pudieron cargar los productos
@@ -1775,7 +1613,9 @@ async function cargarProductos() {
                 <br>
 
                 <p>
-                    ${err.message}
+                    ${escaparHtml(
+                        error.message
+                    )}
                 </p>
 
                 <br>
@@ -1785,8 +1625,7 @@ async function cargarProductos() {
                 </p>
 
             </div>
-
-        `;
+            `;
     }
 }
 
@@ -1798,12 +1637,6 @@ async function cargarProductos() {
 function renderProductos(
     filter = ""
 ) {
-
-    console.log(
-        "Renderizando productos:",
-        productos.length
-    );
-
 
     listaProductos.innerHTML =
         "";
@@ -1825,17 +1658,42 @@ function renderProductos(
                     )
                     .toLowerCase();
 
+
                 const descripcion =
                     String(
                         p.description || ""
                     )
                     .toLowerCase();
 
+
+                const categoria =
+                    String(
+                        p.categoria?.main || ""
+                    )
+                    .toLowerCase();
+
+
+                const subcategoria =
+                    String(
+                        p.categoria?.sub || ""
+                    )
+                    .toLowerCase();
+
+
                 return (
                     titulo.includes(
                         textoBusqueda
                     ) ||
+
                     descripcion.includes(
+                        textoBusqueda
+                    ) ||
+
+                    categoria.includes(
+                        textoBusqueda
+                    ) ||
+
+                    subcategoria.includes(
                         textoBusqueda
                     )
                 );
@@ -1847,20 +1705,19 @@ function renderProductos(
         filtrados.length === 0
     ) {
 
-        listaProductos.innerHTML = `
-
-            <div style="
-                padding:20px;
-                background:#2a2a2a;
-                border-radius:10px;
-                grid-column:1/-1;
-            ">
-
+        listaProductos.innerHTML =
+            `
+            <div
+                style="
+                    padding:20px;
+                    background:#2a2a2a;
+                    border-radius:10px;
+                    grid-column:1/-1;
+                "
+            >
                 No products found.
-
             </div>
-
-        `;
+            `;
 
         return;
     }
@@ -1892,61 +1749,38 @@ function renderProductos(
 
 
             if (
-                Array.isArray(
-                    p.imagenes
-                ) &&
                 p.imagenes.length > 0
             ) {
 
-                /*
-                   ELIMINAR DUPLICADOS
-                */
-
-                const imagenesUnicas =
-                    [
-                        ...new Set(
-                            p.imagenes
-                                .filter(Boolean)
-                        )
-                    ];
-
-
-                imagenesUnicas.forEach(
+                p.imagenes.forEach(
                     (
                         url,
                         index
                     ) => {
 
-                        const image =
+                        miniImgs.appendChild(
                             crearImagenProducto(
                                 url,
                                 p.titulo,
                                 index
-                            );
-
-
-                        miniImgs.appendChild(
-                            image
+                            )
                         );
-
                     }
                 );
 
-            }
-            else {
+            } else {
 
-                miniImgs.innerHTML = `
-
-                    <div style="
-                        color:#888;
-                        padding:10px;
-                    ">
-
+                miniImgs.innerHTML =
+                    `
+                    <div
+                        style="
+                            color:#888;
+                            padding:10px;
+                        "
+                    >
                         No images
-
                     </div>
-
-                `;
+                    `;
             }
 
 
@@ -1956,28 +1790,23 @@ function renderProductos(
 
 
             /* =================================================
-               DEBUG
+               IMAGE COUNT
             ================================================= */
 
-            if (
-                p.imagenes.length > 0
-            ) {
-
-                const debug =
-                    document.createElement(
-                        "div"
-                    );
-
-                debug.className =
-                    "image-debug";
-
-                debug.textContent =
-                    `${p.imagenes.length} image(s)`;
-
-                div.appendChild(
-                    debug
+            const imageCount =
+                document.createElement(
+                    "div"
                 );
-            }
+
+            imageCount.className =
+                "image-debug";
+
+            imageCount.textContent =
+                `${p.imagenes.length} image(s)`;
+
+            div.appendChild(
+                imageCount
+            );
 
 
             /* =================================================
@@ -1997,6 +1826,9 @@ function renderProductos(
 
             tituloInput.value =
                 p.titulo;
+
+            tituloInput.placeholder =
+                "Título";
 
 
             div.appendChild(
@@ -2018,6 +1850,9 @@ function renderProductos(
 
             descTextarea.value =
                 p.description;
+
+            descTextarea.placeholder =
+                "Descripción";
 
 
             div.appendChild(
@@ -2090,6 +1925,9 @@ function renderProductos(
             priceInput.step =
                 "0.01";
 
+            priceInput.min =
+                "0";
+
             priceInput.id =
                 `price-${p.id}`;
 
@@ -2113,6 +1951,12 @@ function renderProductos(
 
             stockInput.type =
                 "number";
+
+            stockInput.min =
+                "0";
+
+            stockInput.step =
+                "1";
 
             stockInput.id =
                 `stock-${p.id}`;
@@ -2166,17 +2010,33 @@ function renderProductos(
                 "button";
 
             guardarBtn.textContent =
-                "Guardar";
+                "💾 Guardar";
 
 
             guardarBtn.addEventListener(
                 "click",
                 async () => {
 
-                    await actualizarProducto(
-                        p.id
-                    );
+                    guardarBtn.disabled =
+                        true;
 
+                    guardarBtn.textContent =
+                        "⏳ Guardando...";
+
+                    try {
+
+                        await actualizarProducto(
+                            p.id
+                        );
+
+                    } finally {
+
+                        guardarBtn.disabled =
+                            false;
+
+                        guardarBtn.textContent =
+                            "💾 Guardar";
+                    }
                 }
             );
 
@@ -2199,7 +2059,7 @@ function renderProductos(
                 "button";
 
             eliminarBtn.textContent =
-                "Eliminar";
+                "🗑️ Eliminar";
 
 
             eliminarBtn.addEventListener(
@@ -2209,7 +2069,6 @@ function renderProductos(
                     await eliminarProducto(
                         p.id
                     );
-
                 }
             );
 
@@ -2222,294 +2081,8 @@ function renderProductos(
             listaProductos.appendChild(
                 div
             );
-
         }
     );
-}
-
-
-/* =========================================================
-   ACTUALIZAR PRODUCTO
-========================================================= */
-
-async function actualizarProducto(
-    id
-) {
-
-    const prod =
-        productos.find(
-            p => p.id === id
-        );
-
-
-    if (!prod) {
-
-        console.error(
-            "Producto no encontrado:",
-            id
-        );
-
-        return;
-    }
-
-
-    /* =====================================================
-       NUEVAS IMÁGENES
-    ===================================================== */
-
-    let nuevasImagenes = [];
-
-
-    const fileInput =
-        document.getElementById(
-            `img-${id}`
-        );
-
-
-    if (
-        fileInput &&
-        fileInput.files.length > 0
-    ) {
-
-        nuevasImagenes =
-            await subirImagenes(
-                fileInput.files
-            );
-    }
-
-
-    /* =====================================================
-       DATOS
-    ===================================================== */
-
-    const updated = {
-
-        titulo:
-            document.getElementById(
-                `titulo-${id}`
-            ).value,
-
-        description:
-            document.getElementById(
-                `desc-${id}`
-            ).value,
-
-        categoria: {
-
-            main:
-                document.getElementById(
-                    `mainCat-${id}`
-                ).value,
-
-            sub:
-                document.getElementById(
-                    `subCat-${id}`
-                ).value
-
-        },
-
-        price:
-            Number(
-                document.getElementById(
-                    `price-${id}`
-                ).value
-            ),
-
-        stock:
-            Number(
-                document.getElementById(
-                    `stock-${id}`
-                ).value
-            ),
-
-        /*
-           Mantener imágenes existentes
-           y agregar nuevas sin duplicarlas.
-        */
-
-        imagenes:
-            [
-                ...new Set(
-                    [
-                        ...prod.imagenes,
-                        ...nuevasImagenes
-                    ]
-                )
-            ]
-
-    };
-
-
-    try {
-
-        const res =
-            await fetch(
-                `${BASE_URL}/api/productos/${id}`,
-                {
-
-                    method:
-                        "PUT",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            AUTH_TOKEN
-
-                    },
-
-                    body:
-                        JSON.stringify(
-                            updated
-                        )
-
-                }
-            );
-
-
-        if (!res.ok) {
-
-            throw new Error(
-                `HTTP ${res.status}`
-            );
-        }
-
-
-        const data =
-            await res.json();
-
-
-        productos =
-            productos.map(
-                p =>
-                    p.id === id
-                        ? normalizarProducto(
-                            {
-                                ...p,
-                                ...data,
-                                imagenes:
-                                    data.imagenes ||
-                                    updated.imagenes
-                            },
-                            0
-                        )
-                        : p
-            );
-
-
-        socket.emit(
-            "productos-actualizados",
-            productos
-        );
-
-
-        renderProductos(
-            searchInput.value
-        );
-
-
-        mostrarMensaje();
-
-
-    }
-    catch (err) {
-
-        console.error(
-            "Error actualizando producto:",
-            err
-        );
-
-
-        alert(
-            "❌ Error actualizando producto"
-        );
-    }
-}
-
-
-/* =========================================================
-   ELIMINAR PRODUCTO
-========================================================= */
-
-async function eliminarProducto(
-    id
-) {
-
-    if (
-        !confirm(
-            "¿Seguro que quieres eliminar este producto?"
-        )
-    ) {
-
-        return;
-    }
-
-
-    try {
-
-        const res =
-            await fetch(
-                `${BASE_URL}/api/productos/${id}`,
-                {
-
-                    method:
-                        "DELETE",
-
-                    headers: {
-
-                        "Authorization":
-                            AUTH_TOKEN
-
-                    }
-
-                }
-            );
-
-
-        if (!res.ok) {
-
-            throw new Error(
-                `HTTP ${res.status}`
-            );
-        }
-
-
-        productos =
-            productos.filter(
-                p =>
-                    p.id !== id
-            );
-
-
-        socket.emit(
-            "productos-actualizados",
-            productos
-        );
-
-
-        renderProductos(
-            searchInput.value
-        );
-
-
-        mostrarMensaje();
-
-
-    }
-    catch (err) {
-
-        console.error(
-            "Error eliminando producto:",
-            err
-        );
-
-
-        alert(
-            "❌ Error eliminando producto"
-        );
-    }
 }
 
 
@@ -2520,6 +2093,15 @@ async function eliminarProducto(
 async function subirImagenes(
     files
 ) {
+
+    if (
+        !files ||
+        files.length === 0
+    ) {
+
+        return [];
+    }
+
 
     const formData =
         new FormData();
@@ -2538,39 +2120,370 @@ async function subirImagenes(
     }
 
 
+    console.log(
+        `📤 Subiendo ${files.length} imagen(es)...`
+    );
+
+
+    const res =
+        await fetch(
+            apiUrl(
+                "/api/subir-imagenes"
+            ),
+            {
+                method: "POST",
+
+                headers: {
+
+                    "Authorization":
+                        AUTH_TOKEN
+                },
+
+                body:
+                    formData
+            }
+        );
+
+
+    if (!res.ok) {
+
+        let mensaje =
+            `HTTP ${res.status}`;
+
+        try {
+
+            const errorData =
+                await res.json();
+
+            mensaje =
+                errorData.error ||
+                errorData.message ||
+                mensaje;
+
+        } catch (e) {
+            // Nada
+        }
+
+
+        throw new Error(
+            `Error subiendo imágenes: ${mensaje}`
+        );
+    }
+
+
+    const data =
+        await res.json();
+
+
+    console.log(
+        "📥 Respuesta del servidor:",
+        data
+    );
+
+
+    /*
+        Aceptar diferentes formatos
+        de respuesta del backend.
+    */
+
+    let urls = [];
+
+
+    if (
+        Array.isArray(data.urls)
+    ) {
+
+        urls =
+            data.urls;
+
+    } else if (
+        Array.isArray(data.imagenes)
+    ) {
+
+        urls =
+            data.imagenes;
+
+    } else if (
+        Array.isArray(data.images)
+    ) {
+
+        urls =
+            data.images;
+
+    } else if (
+        Array.isArray(data.files)
+    ) {
+
+        urls =
+            data.files;
+    }
+
+
+    /*
+        Normalizar objetos
+        secure_url/url/path.
+    */
+
+    urls =
+        normalizarListaImagenes(
+            urls
+        );
+
+
+    if (
+        urls.length === 0
+    ) {
+
+        console.warn(
+            "⚠️ El servidor no devolvió URLs de imágenes."
+        );
+
+        throw new Error(
+            "El servidor no devolvió ninguna URL de imagen."
+        );
+    }
+
+
+    /*
+        Verificación importante:
+
+        las imágenes nuevas deberían ser
+        Cloudinary si tu backend está configurado
+        correctamente.
+    */
+
+    const cloudinaryCount =
+        urls.filter(
+            esCloudinary
+        ).length;
+
+
+    console.log(
+        `✅ ${urls.length} URL(s) recibidas.`
+    );
+
+    console.log(
+        `☁️ ${cloudinaryCount} URL(s) de Cloudinary.`
+    );
+
+
+    return [
+        ...new Set(
+            urls
+        )
+    ];
+}
+
+
+/* =========================================================
+   ACTUALIZAR PRODUCTO
+========================================================= */
+
+async function actualizarProducto(
+    id
+) {
+
+    const prod =
+        productos.find(
+            p =>
+                String(p.id) ===
+                String(id)
+        );
+
+
+    if (!prod) {
+
+        alert(
+            "❌ Producto no encontrado."
+        );
+
+        return;
+    }
+
+
     try {
+
+        /*
+            -----------------------------------------------
+            NUEVAS IMÁGENES
+            -----------------------------------------------
+        */
+
+        let nuevasImagenes = [];
+
+
+        const fileInput =
+            document.getElementById(
+                `img-${id}`
+            );
+
+
+        if (
+            fileInput &&
+            fileInput.files.length > 0
+        ) {
+
+            mostrarMensaje(
+                "⏳ Subiendo nuevas imágenes..."
+            );
+
+
+            nuevasImagenes =
+                await subirImagenes(
+                    fileInput.files
+                );
+        }
+
+
+        /*
+            -----------------------------------------------
+            DATOS DEL PRODUCTO
+            -----------------------------------------------
+        */
+
+        const titulo =
+            document.getElementById(
+                `titulo-${id}`
+            ).value.trim();
+
+
+        const description =
+            document.getElementById(
+                `desc-${id}`
+            ).value.trim();
+
+
+        const mainCat =
+            document.getElementById(
+                `mainCat-${id}`
+            ).value.trim();
+
+
+        const subCat =
+            document.getElementById(
+                `subCat-${id}`
+            ).value.trim();
+
+
+        const price =
+            Number(
+                document.getElementById(
+                    `price-${id}`
+                ).value
+            );
+
+
+        const stock =
+            Number(
+                document.getElementById(
+                    `stock-${id}`
+                ).value
+            );
+
+
+        /*
+            -----------------------------------------------
+            IMÁGENES EXISTENTES + NUEVAS
+            SIN DUPLICADOS
+            -----------------------------------------------
+        */
+
+        const imagenesFinales =
+            normalizarListaImagenes(
+                [
+                    ...prod.imagenes,
+                    ...nuevasImagenes
+                ]
+            );
+
+
+        const updated = {
+
+            titulo,
+
+            description,
+
+            categoria: {
+
+                main:
+                    mainCat,
+
+                sub:
+                    subCat
+            },
+
+            price,
+
+            stock,
+
+            imagenes:
+                imagenesFinales
+        };
+
+
+        console.log(
+            "📦 Actualizando producto:",
+            updated
+        );
+
+
+        /*
+            -----------------------------------------------
+            PUT
+            -----------------------------------------------
+        */
 
         const res =
             await fetch(
-                `${BASE_URL}/api/subir-imagenes`,
+                apiUrl(
+                    `/api/productos/${encodeURIComponent(id)}`
+                ),
                 {
-
-                    method:
-                        "POST",
+                    method: "PUT",
 
                     headers: {
 
-                        "Authorization":
-                            AUTH_TOKEN
+                        "Content-Type":
+                            "application/json",
 
+                        "Authorization":
+                            AUTH_TOKEN,
+
+                        "Accept":
+                            "application/json"
                     },
 
                     body:
-                        formData
-
+                        JSON.stringify(
+                            updated
+                        )
                 }
             );
 
 
         if (!res.ok) {
 
-            console.error(
-                "Error subiendo imágenes:",
-                res.status,
-                res.statusText
-            );
+            let mensaje =
+                `HTTP ${res.status}`;
 
-            return [];
+            try {
+
+                const errorData =
+                    await res.json();
+
+                mensaje =
+                    errorData.error ||
+                    errorData.message ||
+                    mensaje;
+
+            } catch (e) {
+                // Nada
+            }
+
+
+            throw new Error(
+                mensaje
+            );
         }
 
 
@@ -2579,32 +2492,221 @@ async function subirImagenes(
 
 
         console.log(
-            "Respuesta subida:",
+            "✅ Producto actualizado:",
             data
         );
 
 
-        return Array.isArray(
-            data.urls
-        )
+        /*
+            Actualizar producto local.
+        */
 
-            ? [
-                ...new Set(
-                    data.urls
-                )
-            ]
+        productos =
+            productos.map(
+                p => {
 
-            : [];
+                    if (
+                        String(p.id) !==
+                        String(id)
+                    ) {
 
-    }
-    catch (err) {
+                        return p;
+                    }
 
-        console.error(
-            "Error subiendo imágenes:",
-            err
+
+                    return normalizarProducto(
+                        {
+                            ...p,
+                            ...data,
+                            id: p.id,
+                            titulo:
+                                data.titulo ??
+                                updated.titulo,
+                            description:
+                                data.description ??
+                                updated.description,
+                            categoria:
+                                data.categoria ??
+                                updated.categoria,
+                            price:
+                                data.price ??
+                                updated.price,
+                            stock:
+                                data.stock ??
+                                updated.stock,
+                            imagenes:
+                                data.imagenes ??
+                                updated.imagenes
+                        }
+                    );
+                }
+            );
+
+
+        /*
+            Limpiar input de imágenes.
+        */
+
+        if (fileInput) {
+            fileInput.value = "";
+        }
+
+
+        renderProductos(
+            searchInput.value
         );
 
-        return [];
+
+        if (socket) {
+
+            socket.emit(
+                "productos-actualizados",
+                productos
+            );
+        }
+
+
+        mostrarMensaje(
+            "✅ Producto actualizado correctamente"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Error actualizando producto:",
+            error
+        );
+
+
+        alert(
+            "❌ Error actualizando producto:\n\n" +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   ELIMINAR PRODUCTO
+========================================================= */
+
+async function eliminarProducto(
+    id
+) {
+
+    const prod =
+        productos.find(
+            p =>
+                String(p.id) ===
+                String(id)
+        );
+
+
+    if (!prod) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            `¿Seguro que quieres eliminar "${prod.titulo}"?`
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        const res =
+            await fetch(
+                apiUrl(
+                    `/api/productos/${encodeURIComponent(id)}`
+                ),
+                {
+                    method: "DELETE",
+
+                    headers: {
+
+                        "Authorization":
+                            AUTH_TOKEN,
+
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        if (!res.ok) {
+
+            let mensaje =
+                `HTTP ${res.status}`;
+
+            try {
+
+                const data =
+                    await res.json();
+
+                mensaje =
+                    data.error ||
+                    data.message ||
+                    mensaje;
+
+            } catch (e) {
+                // Nada
+            }
+
+
+            throw new Error(
+                mensaje
+            );
+        }
+
+
+        productos =
+            productos.filter(
+                p =>
+                    String(p.id) !==
+                    String(id)
+            );
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+
+        if (socket) {
+
+            socket.emit(
+                "productos-actualizados",
+                productos
+            );
+        }
+
+
+        mostrarMensaje(
+            "✅ Producto eliminado"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Error eliminando producto:",
+            error
+        );
+
+
+        alert(
+            "❌ Error eliminando producto:\n\n" +
+            error.message
+        );
     }
 }
 
@@ -2641,98 +2743,208 @@ agregarBtn.addEventListener(
             ).value.trim();
 
 
-        const price =
+        const priceValue =
             document.getElementById(
                 "price"
             ).value;
 
 
-        const stock =
+        const stockValue =
             document.getElementById(
                 "stock"
             ).value;
 
 
-        if (
-            !titulo ||
-            !description ||
-            !mainCat ||
-            !subCat ||
-            price === "" ||
-            stock === ""
-        ) {
+        /*
+            Validación
+        */
+
+        if (!titulo) {
 
             alert(
-                "❌ Por favor completa todos los campos"
+                "❌ Escribe el título."
             );
 
             return;
         }
 
 
-        /* =================================================
-           IMÁGENES
-        ================================================= */
+        if (!description) {
 
-        let imagenesUrls = [];
+            alert(
+                "❌ Escribe la descripción."
+            );
 
-
-        if (
-            imagenesFileInput.files.length > 0
-        ) {
-
-            imagenesUrls =
-                await subirImagenes(
-                    imagenesFileInput.files
-                );
+            return;
         }
 
 
-        /* =================================================
-           NUEVO PRODUCTO
-        ================================================= */
+        if (!mainCat) {
 
-        const nuevo = {
+            alert(
+                "❌ Escribe la categoría principal."
+            );
 
-            titulo,
+            return;
+        }
 
-            description,
 
-            imagenes:
-                [
-                    ...new Set(
-                        imagenesUrls
-                    )
-                ],
+        if (!subCat) {
 
-            categoria: {
+            alert(
+                "❌ Escribe la subcategoría."
+            );
 
-                main:
-                    mainCat,
+            return;
+        }
 
-                sub:
-                    subCat
 
-            },
+        if (priceValue === "") {
 
-            price:
-                Number(price),
+            alert(
+                "❌ Escribe el precio."
+            );
 
-            stock:
-                Number(stock)
+            return;
+        }
 
-        };
+
+        if (stockValue === "") {
+
+            alert(
+                "❌ Escribe el stock."
+            );
+
+            return;
+        }
+
+
+        const price =
+            Number(
+                priceValue
+            );
+
+
+        const stock =
+            Number(
+                stockValue
+            );
+
+
+        if (
+            !Number.isFinite(price) ||
+            price < 0
+        ) {
+
+            alert(
+                "❌ Precio inválido."
+            );
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(stock) ||
+            stock < 0
+        ) {
+
+            alert(
+                "❌ Stock inválido."
+            );
+
+            return;
+        }
 
 
         try {
 
+            agregarBtn.disabled =
+                true;
+
+            agregarBtn.textContent =
+                "⏳ Procesando producto...";
+
+
+            /*
+                -------------------------------------------
+                1. SUBIR IMÁGENES
+                -------------------------------------------
+            */
+
+            let imagenesUrls = [];
+
+
+            if (
+                imagenesFileInput.files.length > 0
+            ) {
+
+                agregarBtn.textContent =
+                    "☁️ Subiendo imágenes...";
+
+
+                imagenesUrls =
+                    await subirImagenes(
+                        imagenesFileInput.files
+                    );
+            }
+
+
+            /*
+                -------------------------------------------
+                2. CREAR PRODUCTO
+                -------------------------------------------
+            */
+
+            const nuevo = {
+
+                titulo,
+
+                description,
+
+                imagenes:
+                    normalizarListaImagenes(
+                        imagenesUrls
+                    ),
+
+                categoria: {
+
+                    main:
+                        mainCat,
+
+                    sub:
+                        subCat
+                },
+
+                price,
+
+                stock
+            };
+
+
+            console.log(
+                "📦 Producto nuevo:",
+                nuevo
+            );
+
+
+            agregarBtn.textContent =
+                "💾 Guardando producto...";
+
+
+            /*
+                -------------------------------------------
+                3. POST PRODUCTO
+                -------------------------------------------
+            */
+
             const res =
                 await fetch(
-                    `${BASE_URL}/api/productos`,
+                    apiUrl(
+                        "/api/productos"
+                    ),
                     {
-
-                        method:
-                            "POST",
+                        method: "POST",
 
                         headers: {
 
@@ -2740,23 +2952,42 @@ agregarBtn.addEventListener(
                                 "application/json",
 
                             "Authorization":
-                                AUTH_TOKEN
+                                AUTH_TOKEN,
 
+                            "Accept":
+                                "application/json"
                         },
 
                         body:
                             JSON.stringify(
                                 nuevo
                             )
-
                     }
                 );
 
 
             if (!res.ok) {
 
+                let mensaje =
+                    `HTTP ${res.status}`;
+
+                try {
+
+                    const errorData =
+                        await res.json();
+
+                    mensaje =
+                        errorData.error ||
+                        errorData.message ||
+                        mensaje;
+
+                } catch (e) {
+                    // Nada
+                }
+
+
                 throw new Error(
-                    `HTTP ${res.status}`
+                    mensaje
                 );
             }
 
@@ -2765,30 +2996,69 @@ agregarBtn.addEventListener(
                 await res.json();
 
 
+            console.log(
+                "✅ Producto creado:",
+                data
+            );
+
+
+            /*
+                -------------------------------------------
+                4. AGREGARLO A LA LISTA
+                -------------------------------------------
+            */
+
             const productoCreado =
                 normalizarProducto(
                     {
                         ...nuevo,
-                        ...data
+                        ...data,
+                        imagenes:
+                            data.imagenes ??
+                            nuevo.imagenes
                     },
                     productos.length
                 );
 
 
-            productos.push(
+            productos.unshift(
                 productoCreado
             );
 
 
-            socket.emit(
-                "productos-actualizados",
-                productos
-            );
-
+            /*
+                -------------------------------------------
+                5. ACTUALIZAR UI
+                -------------------------------------------
+            */
 
             renderProductos(
                 searchInput.value
             );
+
+
+            /*
+                -------------------------------------------
+                6. SOCKET
+                -------------------------------------------
+            */
+
+            if (socket) {
+
+                socket.emit(
+                    "productos-actualizados",
+                    productos
+                );
+            }
+
+
+            /*
+                -------------------------------------------
+                7. LIMPIAR FORM
+                -------------------------------------------
+            */
+
+            formProducto.reset();
 
 
             mostrarMensaje(
@@ -2796,21 +3066,51 @@ agregarBtn.addEventListener(
             );
 
 
-            formProducto.reset();
+            /*
+                -------------------------------------------
+                CLOUDINARY CHECK
+                -------------------------------------------
+            */
 
+            if (
+                imagenesUrls.length > 0
+            ) {
+
+                const cloudinaryCount =
+                    imagenesUrls.filter(
+                        esCloudinary
+                    ).length;
+
+
+                console.log(
+                    `☁️ Cloudinary: ${cloudinaryCount}/${imagenesUrls.length}`
+                );
+            }
 
         }
-        catch (err) {
+
+        catch (error) {
 
             console.error(
-                "Error agregando producto:",
-                err
+                "❌ Error agregando producto:",
+                error
             );
 
 
             alert(
-                "❌ Error agregando producto"
+                "❌ Error agregando producto:\n\n" +
+                error.message
             );
+
+        }
+
+        finally {
+
+            agregarBtn.disabled =
+                false;
+
+            agregarBtn.textContent =
+                "➕ Agregar producto";
         }
     }
 );
@@ -2824,35 +3124,46 @@ loginBtn.addEventListener(
     "click",
     async () => {
 
+        const password =
+            passwordInput.value;
+
+
         if (
-            passwordInput.value ===
+            password !==
             ADMIN_PASSWORD
         ) {
-
-            AUTH_TOKEN =
-                "Basic " +
-                btoa(
-                    `admin:${passwordInput.value}`
-                );
-
-
-            loginScreen.style.display =
-                "none";
-
-
-            adminPanel.style.display =
-                "block";
-
-
-            await cargarProductos();
-
-        }
-        else {
 
             alert(
                 "❌ Contraseña incorrecta"
             );
+
+            passwordInput.focus();
+
+            return;
         }
+
+
+        /*
+            Basic Auth
+        */
+
+        AUTH_TOKEN =
+            "Basic " +
+            btoa(
+                `admin:${password}`
+            );
+
+
+        loginScreen.style.display =
+            "none";
+
+        adminPanel.style.display =
+            "block";
+
+
+        await iniciarSocket();
+
+        await cargarProductos();
     }
 );
 
@@ -2872,7 +3183,6 @@ passwordInput.addEventListener(
 
             loginBtn.click();
         }
-
     }
 );
 
@@ -2885,27 +3195,29 @@ logoutBtn.addEventListener(
     "click",
     () => {
 
-        loginScreen.style.display =
-            "flex";
+        AUTH_TOKEN = "";
 
-        adminPanel.style.display =
-            "none";
-
-        AUTH_TOKEN =
-            "";
-
-        passwordInput.value =
-            "";
+        productos = [];
 
         listaProductos.innerHTML =
             "";
 
+        adminPanel.style.display =
+            "none";
+
+        loginScreen.style.display =
+            "flex";
+
+        passwordInput.value =
+            "";
+
+        passwordInput.focus();
     }
 );
 
 
 /* =========================================================
-   GO SHOP
+   GO TO SHOP
 ========================================================= */
 
 goShopBtn.addEventListener(
@@ -2914,7 +3226,6 @@ goShopBtn.addEventListener(
 
         window.location.href =
             "shop.html";
-
     }
 );
 
@@ -2930,78 +3241,116 @@ searchInput.addEventListener(
         renderProductos(
             searchInput.value
         );
-
     }
 );
 
 
 /* =========================================================
-   SOCKET CONNECT
+   SOCKET.IO
 ========================================================= */
 
-socket.on(
-    "connect",
-    () => {
+async function iniciarSocket() {
 
-        console.log(
-            "🟢 Socket.IO conectado:",
-            socket.id
-        );
-
+    if (socket) {
+        return;
     }
-);
 
 
-/* =========================================================
-   SOCKET DISCONNECT
-========================================================= */
+    try {
 
-socket.on(
-    "disconnect",
-    () => {
-
-        console.log(
-            "🔴 Socket.IO desconectado"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   PRODUCTOS ACTUALIZADOS
-========================================================= */
-
-socket.on(
-    "productos-actualizados",
-    data => {
-
-        console.log(
-            "Productos actualizados por Socket.IO:",
-            data
-        );
-
-
-        if (
-            !Array.isArray(data)
-        ) {
-
-            return;
-        }
-
-
-        productos =
-            data.map(
-                normalizarProducto
+        socket =
+            io(
+                BASE_URL || undefined,
+                {
+                    transports: [
+                        "websocket",
+                        "polling"
+                    ]
+                }
             );
 
 
-        renderProductos(
-            searchInput.value
+        socket.on(
+            "connect",
+            () => {
+
+                console.log(
+                    "🟢 Socket.IO conectado:",
+                    socket.id
+                );
+            }
+        );
+
+
+        socket.on(
+            "disconnect",
+            () => {
+
+                console.log(
+                    "🔴 Socket.IO desconectado"
+                );
+            }
+        );
+
+
+        socket.on(
+            "connect_error",
+            error => {
+
+                console.warn(
+                    "⚠️ Socket.IO:",
+                    error.message
+                );
+            }
+        );
+
+
+        socket.on(
+            "productos-actualizados",
+            data => {
+
+                if (
+                    !Array.isArray(data)
+                ) {
+
+                    return;
+                }
+
+
+                console.log(
+                    "🔄 Productos actualizados por Socket.IO"
+                );
+
+
+                productos =
+                    data.map(
+                        (
+                            p,
+                            index
+                        ) =>
+                            normalizarProducto(
+                                p,
+                                index
+                            )
+                    );
+
+
+                renderProductos(
+                    searchInput.value
+                );
+            }
         );
 
     }
-);
+
+    catch (error) {
+
+        console.warn(
+            "⚠️ Socket.IO no disponible:",
+            error
+        );
+    }
+}
 
 
 /* =========================================================
@@ -3013,11 +3362,10 @@ window.addEventListener(
     event => {
 
         console.error(
-            "JavaScript error:",
+            "❌ JavaScript error:",
             event.error ||
             event.message
         );
-
     }
 );
 
@@ -3031,10 +3379,9 @@ window.addEventListener(
     event => {
 
         console.error(
-            "Unhandled Promise rejection:",
+            "❌ Unhandled Promise rejection:",
             event.reason
         );
-
     }
 );
 
@@ -3044,21 +3391,30 @@ window.addEventListener(
 ========================================================= */
 
 console.log(
-    "================================="
+    "======================================"
 );
 
 console.log(
-    "LaTRONIC Admin Panel cargado correctamente."
+    "LaTRONIC Admin Panel"
+);
+
+console.log(
+    "======================================"
 );
 
 console.log(
     "BASE_URL:",
-    BASE_URL
+    BASE_URL || "(same origin)"
 );
 
 console.log(
-    "IMAGE_SERVER_URL:",
-    IMAGE_SERVER_URL
+    "API productos:",
+    apiUrl("/api/productos")
+);
+
+console.log(
+    "API imágenes:",
+    apiUrl("/api/subir-imagenes")
 );
 
 console.log(
@@ -3067,7 +3423,7 @@ console.log(
 );
 
 console.log(
-    "================================="
+    "======================================"
 );
 
 </script>
