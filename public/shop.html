@@ -1369,552 +1369,690 @@ No, exit
 "use strict";
 
 /* =========================================================
-   SHOP INITIALIZATION
-========================================================= */
+   LATronic SHOP
+   SOCKET.IO SAFE VERSION
+   ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function(){
+    async function () {
 
-/* =========================================================
-   CONFIGURATION
-========================================================= */
+        /* =====================================================
+           CONFIGURATION
+        ===================================================== */
 
-const API_BASE =
-    window.location.origin;
+        const API_BASE =
+            window.location.origin;
 
-/*
- * Cloudinary
- */
+        const CLOUDINARY_BASE =
+            "https://res.cloudinary.com/ju0sskwe/image/upload";
 
-const CLOUDINARY_BASE =
-    "https://res.cloudinary.com/ju0sskwe/image/upload";
+        const CLOUDINARY_FOLDER =
+            "latronic/products";
 
-const CLOUDINARY_FOLDER =
-    "latronic/products";
-
-/*
- * El servidor que sirve shop.html.
- *
- * Si el mismo server.js tiene:
- *
- * /image/:filename
- * /uploads/:filename
- * /images/:filename
- *
- * estas rutas funcionarán automáticamente.
- */
-
-const IMAGE_SERVER_BASE =
-    window.location.origin;
+        const IMAGE_SERVER_BASE =
+            window.location.origin;
 
 
-/* =========================================================
-   DOM
-========================================================= */
+        /* =====================================================
+           DOM
+        ===================================================== */
 
-const contenedor =
-    document.getElementById(
-        "contenedor-productos"
-    );
-
-const cartCount =
-    document.getElementById(
-        "cart-count"
-    );
-
-
-/* =========================================================
-   DEBUG
-========================================================= */
-
-console.log(
-    "========================================"
-);
-
-console.log(
-    "LaTRONIC SHOP STARTING"
-);
-
-console.log(
-    "API:",
-    API_BASE
-);
-
-console.log(
-    "IMAGE SERVER:",
-    IMAGE_SERVER_BASE
-);
-
-console.log(
-    "CLOUDINARY:",
-    CLOUDINARY_BASE
-);
-
-console.log(
-    "========================================"
-);
-
-
-/* =========================================================
-   HELPER: SAFE STRING
-========================================================= */
-
-function safeString(value){
-
-    if(
-        value === null ||
-        value === undefined
-    ){
-        return "";
-    }
-
-    return String(value).trim();
-}
-
-
-/* =========================================================
-   HELPER: REMOVE QUERY
-========================================================= */
-
-function cleanUrl(value){
-
-    const text =
-        safeString(value);
-
-    if(!text){
-        return "";
-    }
-
-    return text
-        .split("#")[0]
-        .split("?")[0]
-        .trim();
-}
-
-
-/* =========================================================
-   HELPER: IS URL
-========================================================= */
-
-function isAbsoluteUrl(value){
-
-    return /^https?:\/\//i.test(
-        safeString(value)
-    );
-}
-
-
-/* =========================================================
-   HELPER: CLOUDINARY URL
-========================================================= */
-
-function isCloudinaryUrl(value){
-
-    return safeString(value)
-        .includes(
-            "res.cloudinary.com"
-        );
-}
-
-
-/* =========================================================
-   CLOUDINARY TRANSFORMATION
-========================================================= */
-
-function optimizeCloudinaryUrl(value){
-
-    const raw =
-        safeString(value);
-
-    if(!raw){
-        return "";
-    }
-
-    if(!isCloudinaryUrl(raw)){
-        return "";
-    }
-
-    try{
-
-        const url =
-            new URL(raw);
-
-        const parts =
-            url.pathname
-                .split("/")
-                .filter(Boolean);
-
-        const uploadIndex =
-            parts.indexOf("upload");
-
-        if(
-            uploadIndex === -1
-        ){
-
-            return raw;
-        }
-
-        const afterUpload =
-            parts.slice(
-                uploadIndex + 1
+        const contenedor =
+            document.getElementById(
+                "contenedor-productos"
             );
 
-        /*
-         * Si ya tiene transformación,
-         * no agregar otra.
-         */
-
-        const firstPart =
-            afterUpload[0] || "";
-
-        const hasTransformation =
-            firstPart.includes(",") ||
-            /^f_/i.test(firstPart) ||
-            /^q_/i.test(firstPart) ||
-            /^w_/i.test(firstPart) ||
-            /^h_/i.test(firstPart) ||
-            /^c_/i.test(firstPart) ||
-            /^dpr_/i.test(firstPart);
-
-        if(!hasTransformation){
-
-            parts.splice(
-                uploadIndex + 1,
-                0,
-                "f_auto,q_auto"
+        const cartCount =
+            document.getElementById(
+                "cart-count"
             );
 
-            url.pathname =
-                "/" +
-                parts.join("/");
-        }
+        const searchInput =
+            document.getElementById(
+                "search-input"
+            );
 
-        return url.toString();
+        const searchBtn =
+            document.getElementById(
+                "search-btn"
+            );
 
-    }catch(error){
+        const aside =
+            document.querySelector(
+                "aside"
+            );
 
-        console.warn(
-            "Cloudinary URL parse failed:",
-            raw,
-            error
+
+        /* =====================================================
+           SHOP STATE
+        ===================================================== */
+
+        let productosMaster = [];
+
+        let currentFilter = {
+            type: "all",
+            main: "",
+            sub: ""
+        };
+
+        let currentSearch = "";
+
+        let socket = null;
+
+        let socketConnected = false;
+
+        let isUpdatingFromSocket = false;
+
+
+        /* =====================================================
+           DEBUG
+        ===================================================== */
+
+        console.log(
+            "========================================"
         );
 
-        return raw;
-    }
-}
+        console.log(
+            "LaTRONIC SHOP STARTING"
+        );
+
+        console.log(
+            "API:",
+            API_BASE
+        );
+
+        console.log(
+            "IMAGE SERVER:",
+            IMAGE_SERVER_BASE
+        );
+
+        console.log(
+            "CLOUDINARY:",
+            CLOUDINARY_BASE
+        );
+
+        console.log(
+            "========================================"
+        );
 
 
-/* =========================================================
-   EXTRACT FILENAME
-========================================================= */
+        /* =====================================================
+           SAFE STRING
+        ===================================================== */
 
-function extractFilename(value){
+        function safeString(value) {
 
-    let raw =
-        safeString(value);
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return "";
+            }
 
-    if(!raw){
-        return "";
-    }
+            return String(value).trim();
+        }
 
-    /*
-     * URL absoluta
-     */
 
-    if(
-        isAbsoluteUrl(raw)
-    ){
+        /* =====================================================
+           CLEAN URL
+        ===================================================== */
 
-        try{
+        function cleanUrl(value) {
 
-            const parsed =
-                new URL(raw);
+            const text =
+                safeString(value);
+
+            if (!text) {
+                return "";
+            }
+
+            return text
+                .split("#")[0]
+                .split("?")[0]
+                .trim();
+        }
+
+
+        /* =====================================================
+           ABSOLUTE URL
+        ===================================================== */
+
+        function isAbsoluteUrl(value) {
+
+            return /^https?:\/\//i.test(
+                safeString(value)
+            );
+        }
+
+
+        /* =====================================================
+           CLOUDINARY URL
+        ===================================================== */
+
+        function isCloudinaryUrl(value) {
+
+            return safeString(value)
+                .includes(
+                    "res.cloudinary.com"
+                );
+        }
+
+
+        /* =====================================================
+           CLOUDINARY OPTIMIZATION
+        ===================================================== */
+
+        function optimizeCloudinaryUrl(value) {
+
+            const raw =
+                safeString(value);
+
+            if (!raw) {
+                return "";
+            }
+
+            if (!isCloudinaryUrl(raw)) {
+                return "";
+            }
+
+            try {
+
+                const url =
+                    new URL(raw);
+
+                const parts =
+                    url.pathname
+                        .split("/")
+                        .filter(Boolean);
+
+                const uploadIndex =
+                    parts.indexOf("upload");
+
+                if (
+                    uploadIndex === -1
+                ) {
+                    return raw;
+                }
+
+                const afterUpload =
+                    parts.slice(
+                        uploadIndex + 1
+                    );
+
+                const firstPart =
+                    afterUpload[0] || "";
+
+                const hasTransformation =
+                    firstPart.includes(",") ||
+                    /^f_/i.test(firstPart) ||
+                    /^q_/i.test(firstPart) ||
+                    /^w_/i.test(firstPart) ||
+                    /^h_/i.test(firstPart) ||
+                    /^c_/i.test(firstPart) ||
+                    /^dpr_/i.test(firstPart);
+
+                if (!hasTransformation) {
+
+                    parts.splice(
+                        uploadIndex + 1,
+                        0,
+                        "f_auto,q_auto"
+                    );
+
+                    url.pathname =
+                        "/" +
+                        parts.join("/");
+                }
+
+                return url.toString();
+
+            } catch (error) {
+
+                console.warn(
+                    "Cloudinary URL parse failed:",
+                    raw,
+                    error
+                );
+
+                return raw;
+            }
+        }
+
+
+        /* =====================================================
+           EXTRACT FILENAME
+        ===================================================== */
+
+        function extractFilename(value) {
+
+            let raw =
+                safeString(value);
+
+            if (!raw) {
+                return "";
+            }
+
+            if (
+                isAbsoluteUrl(raw)
+            ) {
+
+                try {
+
+                    const parsed =
+                        new URL(raw);
+
+                    raw =
+                        parsed.pathname;
+
+                } catch (error) {
+
+                    return "";
+                }
+            }
+
+            try {
+
+                raw =
+                    decodeURIComponent(raw);
+
+            } catch (error) {
+                /* ignore */
+            }
 
             raw =
-                parsed.pathname;
+                raw
+                    .split("?")[0]
+                    .split("#")[0]
+                    .replace(/\\/g, "/")
+                    .replace(/^\/+/, "");
 
-        }catch(error){
+            const parts =
+                raw
+                    .split("/")
+                    .filter(Boolean);
 
-            return "";
+            if (!parts.length) {
+                return "";
+            }
+
+            return parts[
+                parts.length - 1
+            ];
         }
-    }
-
-    /*
-     * Decodificar URL cuando sea posible.
-     */
-
-    try{
-
-        raw =
-            decodeURIComponent(raw);
-
-    }catch(error){
-
-        /* mantener original */
-    }
-
-    raw =
-        raw
-            .split("?")[0]
-            .split("#")[0];
-
-    raw =
-        raw.replace(
-            /\\/g,
-            "/"
-        );
-
-    raw =
-        raw.replace(
-            /^\/+/,
-            ""
-        );
-
-    /*
-     * El último segmento.
-     */
-
-    const parts =
-        raw
-            .split("/")
-            .filter(Boolean);
-
-    if(!parts.length){
-        return "";
-    }
-
-    return parts[
-        parts.length - 1
-    ];
-}
 
 
-/* =========================================================
-   REMOVE EXTENSION
-========================================================= */
+        /* =====================================================
+           REMOVE IMAGE EXTENSION
+        ===================================================== */
 
-function removeImageExtension(value){
+        function removeImageExtension(value) {
 
-    return safeString(value)
-        .replace(
-            /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i,
-            ""
-        );
-}
-
-
-/* =========================================================
-   CLOUDINARY PUBLIC ID
-========================================================= */
-
-/*
- * IMPORTANTE:
- *
- * Esta función solamente se utiliza cuando
- * estamos razonablemente seguros de que el
- * valor representa un nombre de imagen que
- * fue subido a:
- *
- * latronic/products
- *
- * NO se utiliza para convertir una URL de
- * Render completa arbitrariamente.
- */
-
-function buildCloudinaryFromFilename(value){
-
-    const filename =
-        extractFilename(value);
-
-    if(!filename){
-        return "";
-    }
-
-    const publicId =
-        removeImageExtension(
-            filename
-        );
-
-    if(!publicId){
-        return "";
-    }
-
-    /*
-     * encodeURIComponent del filename completo
-     * puede romper public IDs con caracteres.
-     *
-     * Codificamos cada segmento.
-     */
-
-    const encodedId =
-        publicId
-            .split("/")
-            .map(
-                part =>
-                    encodeURIComponent(part)
-            )
-            .join("/");
-
-    return (
-        CLOUDINARY_BASE +
-        "/f_auto,q_auto/" +
-        CLOUDINARY_FOLDER +
-        "/" +
-        encodedId
-    );
-}
+            return safeString(value)
+                .replace(
+                    /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i,
+                    ""
+                );
+        }
 
 
-/* =========================================================
-   NORMALIZE IMAGE VALUE
-========================================================= */
+        /* =====================================================
+           CLOUDINARY FROM FILENAME
+        ===================================================== */
 
-function normalizeSingleImageValue(value){
+        function buildCloudinaryFromFilename(value) {
 
-    if(
-        value === null ||
-        value === undefined
-    ){
-        return [];
-    }
+            const filename =
+                extractFilename(value);
 
-    /*
-     * OBJETO
-     */
+            if (!filename) {
+                return "";
+            }
 
-    if(
-        typeof value === "object" &&
-        !Array.isArray(value)
-    ){
+            const publicId =
+                removeImageExtension(
+                    filename
+                );
 
-        const candidate =
-            value.url ||
-            value.src ||
-            value.path ||
-            value.filename ||
-            value.file ||
-            value.image ||
-            value.imagen ||
-            value.public_id ||
-            value.publicId ||
-            "";
+            if (!publicId) {
+                return "";
+            }
 
-        if(candidate){
-            return normalizeSingleImageValue(
-                candidate
+            const encodedId =
+                publicId
+                    .split("/")
+                    .map(
+                        part =>
+                            encodeURIComponent(part)
+                    )
+                    .join("/");
+
+            return (
+                CLOUDINARY_BASE +
+                "/f_auto,q_auto/" +
+                CLOUDINARY_FOLDER +
+                "/" +
+                encodedId
             );
         }
 
-        return [];
-    }
 
-    const raw =
-        safeString(value);
+        /* =====================================================
+           NORMALIZE SINGLE IMAGE
+        ===================================================== */
 
-    if(!raw){
-        return [];
-    }
+        function normalizeSingleImageValue(value) {
 
-    const cleaned =
-        cleanUrl(raw);
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return [];
+            }
 
-    if(!cleaned){
-        return [];
-    }
+            if (
+                typeof value === "object" &&
+                !Array.isArray(value)
+            ) {
 
-    const result = [];
+                const candidate =
+                    value.url ||
+                    value.src ||
+                    value.path ||
+                    value.filename ||
+                    value.file ||
+                    value.image ||
+                    value.imagen ||
+                    value.public_id ||
+                    value.publicId ||
+                    "";
 
+                if (candidate) {
 
-    /* =====================================================
-       1. CLOUDINARY EXISTENTE
-    ===================================================== */
+                    return normalizeSingleImageValue(
+                        candidate
+                    );
+                }
 
-    if(
-        isCloudinaryUrl(cleaned)
-    ){
+                return [];
+            }
 
-        /*
-         * Primero URL original.
-         */
+            const raw =
+                safeString(value);
 
-        result.push(
-            cleaned
-        );
+            if (!raw) {
+                return [];
+            }
 
-        /*
-         * Luego optimizada.
-         */
+            const cleaned =
+                cleanUrl(raw);
 
-        const optimized =
-            optimizeCloudinaryUrl(
-                cleaned
-            );
+            if (!cleaned) {
+                return [];
+            }
 
-        if(
-            optimized &&
-            optimized !== cleaned
-        ){
-
-            result.push(
-                optimized
-            );
-        }
-
-        return result;
-    }
+            const result = [];
 
 
-    /* =====================================================
-       2. ABSOLUTE URL NON-CLOUDINARY
-    ===================================================== */
+            /* =================================================
+               CLOUDINARY
+            ================================================= */
 
-    if(
-        isAbsoluteUrl(cleaned)
-    ){
+            if (
+                isCloudinaryUrl(cleaned)
+            ) {
 
-        /*
-         * NO sustituimos automáticamente
-         * la URL original.
-         */
+                result.push(
+                    cleaned
+                );
 
-        result.push(
-            cleaned
-        );
+                const optimized =
+                    optimizeCloudinaryUrl(
+                        cleaned
+                    );
 
-        /*
-         * Si parece un archivo, también
-         * probar Cloudinary.
-         *
-         * Esto permite migraciones donde
-         * la DB todavía tiene:
-         *
-         * https://old-server/uploads/file.webp
-         */
+                if (
+                    optimized &&
+                    optimized !== cleaned
+                ) {
 
-        const cloud =
-            buildCloudinaryFromFilename(
-                cleaned
-            );
+                    result.push(
+                        optimized
+                    );
+                }
 
-        if(
-            cloud &&
-            !result.includes(cloud)
-        ){
+                return result;
+            }
 
-            result.push(
-                cloud
-            );
-        }
 
-        /*
-         * Fallbacks del servidor actual.
-         */
+            /* =================================================
+               ABSOLUTE NON CLOUDINARY
+            ================================================= */
 
-        const filename =
-            extractFilename(cleaned);
+            if (
+                isAbsoluteUrl(cleaned)
+            ) {
 
-        if(filename){
+                result.push(
+                    cleaned
+                );
+
+                const cloud =
+                    buildCloudinaryFromFilename(
+                        cleaned
+                    );
+
+                if (
+                    cloud &&
+                    !result.includes(cloud)
+                ) {
+
+                    result.push(
+                        cloud
+                    );
+                }
+
+                const filename =
+                    extractFilename(cleaned);
+
+                if (filename) {
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/image/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/uploads/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/images/" +
+                        encodeURIComponent(filename)
+                    );
+                }
+
+                return [
+                    ...new Set(result)
+                ];
+            }
+
+
+            /* =================================================
+               RELATIVE
+            ================================================= */
+
+            let relative =
+                cleaned.replace(
+                    /^\/+/,
+                    ""
+                );
+
+
+            /* =================================================
+               UPLOADS
+            ================================================= */
+
+            if (
+                /^uploads\//i.test(relative)
+            ) {
+
+                const filename =
+                    extractFilename(relative);
+
+                if (filename) {
+
+                    const cloud =
+                        buildCloudinaryFromFilename(
+                            filename
+                        );
+
+                    if (cloud) {
+                        result.push(cloud);
+                    }
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/" +
+                        relative
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/image/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/uploads/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    return [
+                        ...new Set(result)
+                    ];
+                }
+            }
+
+
+            /* =================================================
+               IMAGES
+            ================================================= */
+
+            if (
+                /^images\//i.test(relative)
+            ) {
+
+                const filename =
+                    extractFilename(relative);
+
+                if (filename) {
+
+                    const cloud =
+                        buildCloudinaryFromFilename(
+                            filename
+                        );
+
+                    if (cloud) {
+                        result.push(cloud);
+                    }
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/" +
+                        relative
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/image/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/uploads/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    return [
+                        ...new Set(result)
+                    ];
+                }
+            }
+
+
+            /* =================================================
+               IMAGE
+            ================================================= */
+
+            if (
+                /^image\//i.test(relative)
+            ) {
+
+                const filename =
+                    extractFilename(relative);
+
+                if (filename) {
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/" +
+                        relative
+                    );
+
+                    const cloud =
+                        buildCloudinaryFromFilename(
+                            filename
+                        );
+
+                    if (cloud) {
+                        result.push(cloud);
+                    }
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/uploads/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    result.push(
+                        IMAGE_SERVER_BASE +
+                        "/images/" +
+                        encodeURIComponent(filename)
+                    );
+
+                    return [
+                        ...new Set(result)
+                    ];
+                }
+            }
+
+
+            /* =================================================
+               FILENAME ONLY
+            ================================================= */
+
+            const filename =
+                extractFilename(relative);
+
+            if (!filename) {
+                return [];
+            }
+
+            const cloud =
+                buildCloudinaryFromFilename(
+                    filename
+                );
+
+            if (cloud) {
+                result.push(cloud);
+            }
 
             result.push(
                 IMAGE_SERVER_BASE +
@@ -1933,590 +2071,271 @@ function normalizeSingleImageValue(value){
                 "/images/" +
                 encodeURIComponent(filename)
             );
-        }
-
-        return result;
-    }
-
-
-    /* =====================================================
-       3. RELATIVE PATH
-    ===================================================== */
-
-    let relative =
-        cleaned
-            .replace(
-                /^\/+/,
-                ""
-            );
-
-    /*
-     * Ya es /uploads/...
-     */
-
-    if(
-        /^uploads\//i.test(relative)
-    ){
-
-        const filename =
-            extractFilename(relative);
-
-        if(filename){
-
-            /*
-             * Cloudinary primero.
-             */
-
-            const cloud =
-                buildCloudinaryFromFilename(
-                    filename
-                );
-
-            if(cloud){
-                result.push(cloud);
-            }
-
-            /*
-             * Ruta exacta.
-             */
 
             result.push(
-                IMAGE_SERVER_BASE +
                 "/" +
                 relative
             );
 
-            /*
-             * Ruta /image.
-             */
-
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/image/" +
-                encodeURIComponent(filename)
-            );
-
             return [
-                ...new Set(result)
+                ...new Set(
+                    result.filter(Boolean)
+                )
             ];
         }
-    }
 
 
-    /* =====================================================
-       4. /images/...
-    ===================================================== */
+        /* =====================================================
+           NORMALIZE IMAGE ARRAY
+        ===================================================== */
 
-    if(
-        /^images\//i.test(relative)
-    ){
+        function normalizeImageArray(value) {
 
-        const filename =
-            extractFilename(relative);
-
-        if(filename){
-
-            const cloud =
-                buildCloudinaryFromFilename(
-                    filename
-                );
-
-            if(cloud){
-                result.push(cloud);
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return [];
             }
 
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/" +
-                relative
-            );
 
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/image/" +
-                encodeURIComponent(filename)
-            );
+            if (
+                typeof value === "string"
+            ) {
 
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/uploads/" +
-                encodeURIComponent(filename)
-            );
+                const trimmed =
+                    value.trim();
 
-            return [
-                ...new Set(result)
-            ];
-        }
-    }
+                if (!trimmed) {
+                    return [];
+                }
+
+                try {
+
+                    const parsed =
+                        JSON.parse(trimmed);
+
+                    if (
+                        parsed !== trimmed
+                    ) {
+
+                        return normalizeImageArray(
+                            parsed
+                        );
+                    }
+
+                } catch (error) {
+                    /* not JSON */
+                }
 
 
-    /* =====================================================
-       5. /image/...
-    ===================================================== */
+                if (
+                    trimmed.includes(",") &&
+                    !trimmed.startsWith("http")
+                ) {
 
-    if(
-        /^image\//i.test(relative)
-    ){
+                    return trimmed
+                        .split(",")
+                        .flatMap(
+                            item =>
+                                normalizeSingleImageValue(
+                                    item.trim()
+                                )
+                        );
+                }
 
-        const filename =
-            extractFilename(relative);
-
-        if(filename){
-
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/" +
-                relative
-            );
-
-            const cloud =
-                buildCloudinaryFromFilename(
-                    filename
+                return normalizeSingleImageValue(
+                    trimmed
                 );
-
-            if(cloud){
-                result.push(cloud);
             }
 
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/uploads/" +
-                encodeURIComponent(filename)
-            );
 
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/images/" +
-                encodeURIComponent(filename)
-            );
+            if (
+                Array.isArray(value)
+            ) {
 
-            return [
-                ...new Set(result)
-            ];
-        }
-    }
+                const result = [];
 
+                value.forEach(
+                    item => {
 
-    /* =====================================================
-       6. FILENAME ONLY
-    ===================================================== */
+                        result.push(
+                            ...normalizeImageArray(
+                                item
+                            )
+                        );
+                    }
+                );
 
-    const filename =
-        extractFilename(relative);
-
-    if(!filename){
-
-        return [];
-    }
+                return [
+                    ...new Set(
+                        result
+                            .map(
+                                safeString
+                            )
+                            .filter(Boolean)
+                    )
+                ];
+            }
 
 
-    /*
-     * Cloudinary
-     */
+            if (
+                typeof value === "object"
+            ) {
 
-    const cloud =
-        buildCloudinaryFromFilename(
-            filename
-        );
-
-    if(cloud){
-        result.push(cloud);
-    }
+                return normalizeSingleImageValue(
+                    value
+                );
+            }
 
 
-    /*
-     * Image server primary
-     */
-
-    result.push(
-        IMAGE_SERVER_BASE +
-        "/image/" +
-        encodeURIComponent(filename)
-    );
-
-
-    /*
-     * Compatibility route
-     */
-
-    result.push(
-        IMAGE_SERVER_BASE +
-        "/uploads/" +
-        encodeURIComponent(filename)
-    );
-
-
-    /*
-     * Static route
-     */
-
-    result.push(
-        IMAGE_SERVER_BASE +
-        "/images/" +
-        encodeURIComponent(filename)
-    );
-
-
-    /*
-     * Relative original
-     */
-
-    result.push(
-        "/" +
-        relative
-    );
-
-
-    return [
-        ...new Set(
-            result.filter(Boolean)
-        )
-    ];
-}
-
-
-/* =========================================================
-   NORMALIZE IMAGE ARRAY
-========================================================= */
-
-function normalizeImageArray(value){
-
-    if(
-        value === null ||
-        value === undefined
-    ){
-        return [];
-    }
-
-    /*
-     * STRING
-     */
-
-    if(
-        typeof value === "string"
-    ){
-
-        const trimmed =
-            value.trim();
-
-        if(!trimmed){
             return [];
         }
 
-        /*
-         * Intentar JSON.
-         */
 
-        try{
+        /* =====================================================
+           PRODUCT IMAGES
+        ===================================================== */
 
-            const parsed =
-                JSON.parse(trimmed);
+        function getProductImages(product) {
 
-            if(
-                parsed !== trimmed
-            ){
+            if (!product) {
+                return [];
+            }
 
-                return normalizeImageArray(
-                    parsed
+            const sources = [];
+
+            if (
+                product.imagenes !== undefined
+            ) {
+                sources.push(
+                    product.imagenes
                 );
             }
 
-        }catch(error){
+            if (
+                product.images !== undefined
+            ) {
+                sources.push(
+                    product.images
+                );
+            }
 
-            /*
-             * No es JSON.
-             */
-        }
+            if (
+                product.image !== undefined
+            ) {
+                sources.push(
+                    product.image
+                );
+            }
 
-        /*
-         * Algunos datos pueden estar
-         * separados por comas.
-         */
+            if (
+                product.imagen !== undefined
+            ) {
+                sources.push(
+                    product.imagen
+                );
+            }
 
-        if(
-            trimmed.includes(",") &&
-            !trimmed.startsWith("http")
-        ){
+            const result = [];
 
-            return trimmed
-                .split(",")
-                .flatMap(
-                    item =>
-                        normalizeSingleImageValue(
-                            item.trim()
+            sources.forEach(
+                source => {
+
+                    result.push(
+                        ...normalizeImageArray(
+                            source
                         )
-                );
-        }
-
-        return normalizeSingleImageValue(
-            trimmed
-        );
-    }
-
-
-    /*
-     * ARRAY
-     */
-
-    if(
-        Array.isArray(value)
-    ){
-
-        const result = [];
-
-        value.forEach(
-            item => {
-
-                const urls =
-                    normalizeImageArray(
-                        item
                     );
-
-                result.push(
-                    ...urls
-                );
-            }
-        );
-
-        return [
-            ...new Set(
-                result
-                    .map(
-                        url =>
-                            safeString(url)
-                    )
-                    .filter(Boolean)
-            )
-        ];
-    }
-
-
-    /*
-     * OBJETO
-     */
-
-    if(
-        typeof value === "object"
-    ){
-
-        return normalizeSingleImageValue(
-            value
-        );
-    }
-
-
-    return [];
-}
-
-
-/* =========================================================
-   EXTRACT PRODUCT IMAGES
-========================================================= */
-
-function getProductImages(product){
-
-    if(!product){
-        return [];
-    }
-
-    const sources = [];
-
-
-    /*
-     * imagenes
-     */
-
-    if(
-        product.imagenes !== undefined &&
-        product.imagenes !== null
-    ){
-
-        sources.push(
-            product.imagenes
-        );
-    }
-
-
-    /*
-     * images
-     */
-
-    if(
-        product.images !== undefined &&
-        product.images !== null
-    ){
-
-        sources.push(
-            product.images
-        );
-    }
-
-
-    /*
-     * image
-     */
-
-    if(
-        product.image !== undefined &&
-        product.image !== null
-    ){
-
-        sources.push(
-            product.image
-        );
-    }
-
-
-    /*
-     * imagen
-     */
-
-    if(
-        product.imagen !== undefined &&
-        product.imagen !== null
-    ){
-
-        sources.push(
-            product.imagen
-        );
-    }
-
-
-    const result = [];
-
-
-    sources.forEach(
-        source => {
-
-            result.push(
-                ...normalizeImageArray(
-                    source
-                )
+                }
             );
+
+            return [
+                ...new Set(
+                    result.filter(Boolean)
+                )
+            ];
         }
-    );
 
 
-    return [
-        ...new Set(
-            result.filter(Boolean)
-        )
-    ];
-}
+        /* =====================================================
+           CATEGORY
+        ===================================================== */
+
+        function normalizeCategory(product) {
+
+            let categoria =
+                product.categoria ||
+                product.category ||
+                product.categorias ||
+                {};
 
 
-/* =========================================================
-   NORMALIZE CATEGORY
-========================================================= */
+            if (
+                typeof categoria === "string"
+            ) {
 
-function normalizeCategory(product){
+                const value =
+                    categoria.trim();
 
-    let categoria =
-        product.categoria ||
-        product.category ||
-        product.categorias ||
-        {};
+                if (!value) {
+                    return {};
+                }
+
+                try {
+
+                    const parsed =
+                        JSON.parse(value);
+
+                    if (
+                        parsed &&
+                        typeof parsed === "object"
+                    ) {
+
+                        return parsed;
+                    }
+
+                } catch (error) {
+
+                    return {
+                        main: value,
+                        sub: ""
+                    };
+                }
+            }
 
 
-    if(
-        typeof categoria === "string"
-    ){
+            if (
+                categoria &&
+                typeof categoria === "object"
+            ) {
 
-        const value =
-            categoria.trim();
+                return categoria;
+            }
 
-        if(!value){
+
             return {};
         }
 
-        try{
 
-            const parsed =
-                JSON.parse(value);
+        /* =====================================================
+           TAGS
+        ===================================================== */
 
-            if(
-                parsed &&
-                typeof parsed === "object"
-            ){
+        function normalizeTags(product) {
 
-                return parsed;
-            }
-
-        }catch(error){
-
-            /*
-             * Puede ser simplemente
-             * una categoría string.
-             */
-
-            return {
-                main:value,
-                sub:""
-            };
-        }
-    }
+            let tags =
+                product.tags ||
+                product.tag ||
+                [];
 
 
-    if(
-        categoria &&
-        typeof categoria === "object"
-    ){
+            if (
+                Array.isArray(tags)
+            ) {
 
-        return categoria;
-    }
-
-
-    return {};
-}
-
-
-/* =========================================================
-   NORMALIZE TAGS
-========================================================= */
-
-function normalizeTags(product){
-
-    let tags =
-        product.tags ||
-        product.tag ||
-        [];
-
-
-    if(
-        Array.isArray(tags)
-    ){
-
-        return tags
-            .flat(Infinity)
-            .map(
-                item =>
-                    safeString(item)
-            )
-            .filter(Boolean);
-    }
-
-
-    if(
-        typeof tags === "string"
-    ){
-
-        const trimmed =
-            tags.trim();
-
-        if(!trimmed){
-            return [];
-        }
-
-        try{
-
-            const parsed =
-                JSON.parse(trimmed);
-
-            if(
-                Array.isArray(parsed)
-            ){
-
-                return parsed
+                return tags
+                    .flat(Infinity)
                     .map(
                         item =>
                             safeString(item)
@@ -2524,1515 +2343,1394 @@ function normalizeTags(product){
                     .filter(Boolean);
             }
 
-        }catch(error){
 
-            /*
-             * continuar abajo
-             */
-        }
+            if (
+                typeof tags === "string"
+            ) {
 
-        return trimmed
-            .split(",")
-            .map(
-                item =>
-                    item.trim()
-            )
-            .filter(Boolean);
-    }
+                const trimmed =
+                    tags.trim();
 
+                if (!trimmed) {
+                    return [];
+                }
 
-    return [];
-}
+                try {
 
+                    const parsed =
+                        JSON.parse(trimmed);
 
-/* =========================================================
-   NORMALIZE PRODUCT
-========================================================= */
+                    if (
+                        Array.isArray(parsed)
+                    ) {
 
-function normalizeProduct(product){
-
-    if(
-        !product ||
-        typeof product !== "object"
-    ){
-
-        return null;
-    }
-
-
-    const images =
-        getProductImages(
-            product
-        );
-
-
-    const categoria =
-        normalizeCategory(
-            product
-        );
-
-
-    const tags =
-        normalizeTags(
-            product
-        );
-
-
-    let price =
-        product.price ??
-        product.precio ??
-        product.precioVenta ??
-        product.salePrice ??
-        0;
-
-
-    let stock =
-        product.stock ??
-        product.cantidad ??
-        product.quantity ??
-        0;
-
-
-    price =
-        Number(price);
-
-    if(
-        !Number.isFinite(price)
-    ){
-        price = 0;
-    }
-
-
-    stock =
-        Number(stock);
-
-    if(
-        !Number.isFinite(stock)
-    ){
-        stock = 0;
-    }
-
-
-    return {
-
-        ...product,
-
-        id:
-            product.id ??
-            product.productId ??
-            product._id ??
-            product.titulo ??
-            product.title,
-
-        titulo:
-            safeString(
-                product.titulo ||
-                product.title ||
-                product.nombre ||
-                "Untitled Product"
-            ),
-
-        description:
-            safeString(
-                product.description ||
-                product.descripcion ||
-                product.desc ||
-                ""
-            ),
-
-        price,
-
-        stock,
-
-        categoria,
-
-        tags,
-
-        imagenes:
-            images
-    };
-}
-
-
-/* =========================================================
-   LOAD PRODUCTS
-========================================================= */
-
-async function loadProducts(){
-
-    const apiUrls = [
-
-        API_BASE +
-        "/api/productos",
-
-        API_BASE +
-        "/api/products"
-
-    ];
-
-
-    for(
-        const apiUrl of apiUrls
-    ){
-
-        try{
-
-            console.log(
-                "Loading products:",
-                apiUrl
-            );
-
-
-            const response =
-                await fetch(
-                    apiUrl +
-                    "?_=" +
-                    Date.now(),
-                    {
-                        method:"GET",
-
-                        cache:"no-store",
-
-                        headers:{
-                            "Accept":
-                                "application/json"
-                        }
+                        return parsed
+                            .map(
+                                item =>
+                                    safeString(item)
+                            )
+                            .filter(Boolean);
                     }
-                );
 
+                } catch (error) {
+                    /* continue */
+                }
 
-            if(
-                !response.ok
-            ){
-
-                console.warn(
-                    "API failed:",
-                    apiUrl,
-                    response.status
-                );
-
-                continue;
-            }
-
-
-            const data =
-                await response.json();
-
-
-            let products =
-                data;
-
-
-            /*
-             * Soportar diferentes respuestas.
-             */
-
-            if(
-                data &&
-                typeof data === "object" &&
-                !Array.isArray(data)
-            ){
-
-                products =
-                    data.productos ||
-                    data.products ||
-                    data.data ||
-                    data.items ||
-                    [];
-            }
-
-
-            if(
-                !Array.isArray(products)
-            ){
-
-                console.warn(
-                    "API did not return array:",
-                    apiUrl
-                );
-
-                continue;
-            }
-
-
-            const normalized =
-                products
+                return trimmed
+                    .split(",")
                     .map(
-                        normalizeProduct
+                        item =>
+                            item.trim()
                     )
                     .filter(Boolean);
+            }
 
 
-            console.log(
-                "Products loaded:",
-                normalized.length
-            );
+            return [];
+        }
 
 
-            let totalImages = 0;
+        /* =====================================================
+           NORMALIZE PRODUCT
+        ===================================================== */
+
+        function normalizeProduct(product) {
+
+            if (
+                !product ||
+                typeof product !== "object"
+            ) {
+                return null;
+            }
 
 
-            normalized.forEach(
-                product => {
+            const images =
+                getProductImages(
+                    product
+                );
 
-                    totalImages +=
-                        product.imagenes.length;
+
+            const categoria =
+                normalizeCategory(
+                    product
+                );
+
+
+            const tags =
+                normalizeTags(
+                    product
+                );
+
+
+            let price =
+                product.price ??
+                product.precio ??
+                product.precioVenta ??
+                product.salePrice ??
+                0;
+
+
+            let stock =
+                product.stock ??
+                product.cantidad ??
+                product.quantity ??
+                0;
+
+
+            price =
+                Number(price);
+
+            if (
+                !Number.isFinite(price)
+            ) {
+                price = 0;
+            }
+
+
+            stock =
+                Number(stock);
+
+            if (
+                !Number.isFinite(stock)
+            ) {
+                stock = 0;
+            }
+
+
+            return {
+
+                ...product,
+
+                id:
+                    product.id ??
+                    product.productId ??
+                    product._id ??
+                    product.titulo ??
+                    product.title,
+
+                titulo:
+                    safeString(
+                        product.titulo ||
+                        product.title ||
+                        product.nombre ||
+                        "Untitled Product"
+                    ),
+
+                description:
+                    safeString(
+                        product.description ||
+                        product.descripcion ||
+                        product.desc ||
+                        ""
+                    ),
+
+                price,
+
+                stock,
+
+                categoria,
+
+                tags,
+
+                imagenes:
+                    images
+            };
+        }
+
+
+        /* =====================================================
+           LOAD PRODUCTS
+        ===================================================== */
+
+        async function loadProducts() {
+
+            const apiUrls = [
+
+                API_BASE +
+                "/api/productos",
+
+                API_BASE +
+                "/api/products"
+
+            ];
+
+
+            for (
+                const apiUrl of apiUrls
+            ) {
+
+                try {
 
                     console.log(
-                        "PRODUCT:",
-                        product.id,
-                        product.titulo,
-                        "IMAGES:",
-                        product.imagenes.length
+                        "Loading products:",
+                        apiUrl
                     );
 
 
-                    if(
-                        product.imagenes.length
-                    ){
+                    const response =
+                        await fetch(
+                            apiUrl +
+                            "?_=" +
+                            Date.now(),
+                            {
+                                method: "GET",
 
-                        console.log(
-                            "Image sources:",
-                            product.imagenes
+                                cache: "no-store",
+
+                                headers: {
+                                    "Accept":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+
+                    if (
+                        !response.ok
+                    ) {
+
+                        console.warn(
+                            "API failed:",
+                            apiUrl,
+                            response.status
+                        );
+
+                        continue;
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    let products =
+                        data;
+
+
+                    if (
+                        data &&
+                        typeof data === "object" &&
+                        !Array.isArray(data)
+                    ) {
+
+                        products =
+                            data.productos ||
+                            data.products ||
+                            data.data ||
+                            data.items ||
+                            [];
+                    }
+
+
+                    if (
+                        !Array.isArray(products)
+                    ) {
+
+                        continue;
+                    }
+
+
+                    const normalized =
+                        products
+                            .map(
+                                normalizeProduct
+                            )
+                            .filter(Boolean);
+
+
+                    console.log(
+                        "Products loaded:",
+                        normalized.length
+                    );
+
+
+                    try {
+
+                        localStorage.setItem(
+                            "productos",
+                            JSON.stringify(
+                                normalized
+                            )
+                        );
+
+                    } catch (error) {
+
+                        console.warn(
+                            "Could not save products:",
+                            error
                         );
                     }
+
+
+                    return normalized;
+
+                } catch (error) {
+
+                    console.error(
+                        "Error loading:",
+                        apiUrl,
+                        error
+                    );
                 }
-            );
+            }
 
 
-            console.log(
-                "Total image source URLs:",
-                totalImages
-            );
+            /* =================================================
+               LOCAL STORAGE FALLBACK
+            ================================================= */
+
+            try {
+
+                const saved =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "productos"
+                        ) || "[]"
+                    );
 
 
-            /*
-             * Guardar copia.
-             */
+                if (
+                    Array.isArray(saved) &&
+                    saved.length
+                ) {
 
-            try{
+                    console.warn(
+                        "Using localStorage products:",
+                        saved.length
+                    );
 
-                localStorage.setItem(
-                    "productos",
-                    JSON.stringify(
-                        normalized
-                    )
-                );
+                    return saved
+                        .map(
+                            normalizeProduct
+                        )
+                        .filter(Boolean);
+                }
 
-            }catch(error){
+            } catch (error) {
 
-                console.warn(
-                    "Could not save products:",
+                console.error(
+                    "localStorage error:",
                     error
                 );
             }
 
 
-            return normalized;
-
-        }catch(error){
-
-            console.error(
-                "Error loading:",
-                apiUrl,
-                error
-            );
-        }
-    }
-
-
-    /*
-     * FALLBACK LOCAL STORAGE
-     */
-
-    try{
-
-        const saved =
-            JSON.parse(
-                localStorage.getItem(
-                    "productos"
-                ) || "[]"
-            );
-
-
-        if(
-            Array.isArray(saved) &&
-            saved.length
-        ){
-
-            console.warn(
-                "Using localStorage products:",
-                saved.length
-            );
-
-
-            return saved
-                .map(
-                    normalizeProduct
-                )
-                .filter(Boolean);
+            return [];
         }
 
-    }catch(error){
 
-        console.error(
-            "localStorage error:",
-            error
-        );
-    }
+        /* =====================================================
+           CART
+        ===================================================== */
 
+        function getCart() {
 
-    return [];
-}
+            try {
 
+                const cart =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "productos-en-cart"
+                        ) || "[]"
+                    );
 
-/* =========================================================
-   LOAD MASTER
-========================================================= */
+                return Array.isArray(cart)
+                    ? cart
+                    : [];
 
-let productosMaster =
-    await loadProducts();
+            } catch (error) {
 
-
-/* =========================================================
-   CART
-========================================================= */
-
-function getCart(){
-
-    try{
-
-        const cart =
-            JSON.parse(
-                localStorage.getItem(
-                    "productos-en-cart"
-                ) || "[]"
-            );
-
-        return Array.isArray(cart)
-            ? cart
-            : [];
-
-    }catch(error){
-
-        return [];
-    }
-}
-
-
-/* =========================================================
-   CART COUNT
-========================================================= */
-
-function updateCartCount(){
-
-    const cart =
-        getCart();
-
-
-    const total =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) => {
-
-                return (
-                    sum +
-                    Number(
-                        item.quantity || 0
-                    )
-                );
-
-            },
-            0
-        );
-
-
-    if(cartCount){
-
-        cartCount.textContent =
-            total;
-    }
-}
-
-
-updateCartCount();
-
-
-/* =========================================================
-   CART BUTTON
-========================================================= */
-
-document
-    .getElementById("cart-btn")
-    ?.addEventListener(
-        "click",
-        function(){
-
-            window.location.href =
-                "cart.html";
+                return [];
+            }
         }
-    );
 
 
-/* =========================================================
-   ADMIN
-========================================================= */
+        /* =====================================================
+           CART COUNT
+        ===================================================== */
 
-document
-    .getElementById("admin-access")
-    ?.addEventListener(
-        "click",
-        function(){
+        function updateCartCount() {
 
-            window.location.href =
-                "admin.html";
-        }
-    );
+            const cart =
+                getCart();
 
 
-/* =========================================================
-   MOBILE
-========================================================= */
+            const total =
+                cart.reduce(
+                    (
+                        sum,
+                        item
+                    ) => {
 
-const hamburger =
-    document.querySelector(
-        ".hamburger"
-    );
-
-const aside =
-    document.querySelector(
-        "aside"
-    );
-
-
-hamburger?.addEventListener(
-    "click",
-    function(){
-
-        aside?.classList.toggle(
-            "active"
-        );
-    }
-);
-
-
-/* =========================================================
-   SUBMENUS
-========================================================= */
-
-document
-    .querySelectorAll(
-        ".toggle-submenu"
-    )
-    .forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                function(){
-
-                    const submenu =
-                        button.nextElementSibling;
-
-
-                    if(!submenu){
-                        return;
-                    }
-
-
-                    const open =
-                        submenu.style.display ===
-                        "block";
-
-
-                    document
-                        .querySelectorAll(
-                            ".submenu"
-                        )
-                        .forEach(
-                            menu => {
-
-                                menu.style.display =
-                                    "none";
-                            }
+                        return (
+                            sum +
+                            Number(
+                                item.quantity || 0
+                            )
                         );
 
+                    },
+                    0
+                );
 
-                    document
-                        .querySelectorAll(
-                            ".toggle-submenu"
-                        )
-                        .forEach(
-                            btn => {
 
-                                btn.classList.remove(
+            if (cartCount) {
+
+                cartCount.textContent =
+                    total;
+            }
+        }
+
+
+        updateCartCount();
+
+
+        /* =====================================================
+           CART BUTTON
+        ===================================================== */
+
+        document
+            .getElementById("cart-btn")
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "cart.html";
+                }
+            );
+
+
+        /* =====================================================
+           ADMIN BUTTON
+        ===================================================== */
+
+        document
+            .getElementById("admin-access")
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "admin.html";
+                }
+            );
+
+
+        /* =====================================================
+           MOBILE MENU
+        ===================================================== */
+
+        const hamburger =
+            document.querySelector(
+                ".hamburger"
+            );
+
+
+        hamburger?.addEventListener(
+            "click",
+            function () {
+
+                aside?.classList.toggle(
+                    "active"
+                );
+            }
+        );
+
+
+        /* =====================================================
+           SUBMENUS
+        ===================================================== */
+
+        document
+            .querySelectorAll(
+                ".toggle-submenu"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            const submenu =
+                                button.nextElementSibling;
+
+                            if (!submenu) {
+                                return;
+                            }
+
+                            const open =
+                                submenu.style.display ===
+                                "block";
+
+
+                            document
+                                .querySelectorAll(
+                                    ".submenu"
+                                )
+                                .forEach(
+                                    menu => {
+
+                                        menu.style.display =
+                                            "none";
+                                    }
+                                );
+
+
+                            document
+                                .querySelectorAll(
+                                    ".toggle-submenu"
+                                )
+                                .forEach(
+                                    btn => {
+
+                                        btn.classList.remove(
+                                            "active"
+                                        );
+                                    }
+                                );
+
+
+                            if (!open) {
+
+                                submenu.style.display =
+                                    "block";
+
+                                button.classList.add(
                                     "active"
                                 );
                             }
-                        );
-
-
-                    if(!open){
-
-                        submenu.style.display =
-                            "block";
-
-                        button.classList.add(
-                            "active"
-                        );
-                    }
+                        }
+                    );
                 }
             );
-        }
-    );
 
 
-/* =========================================================
-   CAPITALIZE
-========================================================= */
+        /* =====================================================
+           CAPITALIZE
+        ===================================================== */
 
-function capitalize(text){
+        function capitalize(text) {
 
-    return String(
-        text || ""
-    )
-        .replace(
-            /[-_]/g,
-            " "
-        )
-        .replace(
-            /\b\w/g,
-            char =>
-                char.toUpperCase()
-        );
-}
-
-
-/* =========================================================
-   ZOOM MODAL
-========================================================= */
-
-const zoomModal =
-    document.createElement(
-        "div"
-    );
-
-zoomModal.id =
-    "zoom-modal";
-
-zoomModal.innerHTML = `
-
-    <button
-        id="zoom-prev"
-        class="zoom-control"
-        type="button"
-    >
-        &#9664;
-    </button>
-
-    <img
-        id="zoom-img"
-        alt="Product image"
-    >
-
-    <button
-        id="zoom-next"
-        class="zoom-control"
-        type="button"
-    >
-        &#9654;
-    </button>
-
-    <div id="zoom-desc"></div>
-
-`;
-
-document.body.appendChild(
-    zoomModal
-);
-
-
-const zoomImg =
-    document.getElementById(
-        "zoom-img"
-    );
-
-const zoomDesc =
-    document.getElementById(
-        "zoom-desc"
-    );
-
-const zoomPrev =
-    document.getElementById(
-        "zoom-prev"
-    );
-
-const zoomNext =
-    document.getElementById(
-        "zoom-next"
-    );
-
-
-let zoomImages = [];
-
-let zoomIndex = 0;
-
-let zoomProduct = null;
-
-
-/* =========================================================
-   OPEN ZOOM
-========================================================= */
-
-function openZoom(
-    product,
-    index
-){
-
-    zoomProduct =
-        product;
-
-
-    zoomImages =
-        Array.isArray(
-            product.imagenes
-        )
-            ? product.imagenes
-            : [];
-
-
-    if(
-        !zoomImages.length
-    ){
-
-        return;
-    }
-
-
-    zoomIndex =
-        Math.max(
-            0,
-            Math.min(
-                Number(index) || 0,
-                zoomImages.length - 1
+            return String(
+                text || ""
             )
-        );
+                .replace(
+                    /[-_]/g,
+                    " "
+                )
+                .replace(
+                    /\b\w/g,
+                    char =>
+                        char.toUpperCase()
+                );
+        }
 
 
-    updateZoom();
+        /* =====================================================
+           ZOOM MODAL
+        ===================================================== */
 
-
-    zoomModal.style.display =
-        "flex";
-}
-
-
-/* =========================================================
-   UPDATE ZOOM
-========================================================= */
-
-function updateZoom(){
-
-    if(
-        !zoomImages.length
-    ){
-
-        return;
-    }
-
-
-    zoomImg.style.opacity =
-        "0.5";
-
-
-    const url =
-        zoomImages[
-            zoomIndex
-        ];
-
-
-    const temp =
-        new Image();
-
-
-    temp.onload =
-        function(){
-
-            zoomImg.src =
-                url;
-
-            zoomImg.style.opacity =
-                "1";
-        };
-
-
-    temp.onerror =
-        function(){
-
-            console.error(
-                "Zoom image failed:",
-                url
+        const zoomModal =
+            document.createElement(
+                "div"
             );
 
-            zoomImg.src =
-                url;
+        zoomModal.id =
+            "zoom-modal";
 
-            zoomImg.style.opacity =
-                "1";
-        };
+        zoomModal.innerHTML = `
 
+            <button
+                id="zoom-prev"
+                class="zoom-control"
+                type="button"
+            >
+                &#9664;
+            </button>
 
-    temp.src =
-        url;
+            <img
+                id="zoom-img"
+                alt="Product image"
+            >
 
+            <button
+                id="zoom-next"
+                class="zoom-control"
+                type="button"
+            >
+                &#9654;
+            </button>
 
-    zoomDesc.textContent =
-        zoomProduct?.description ||
-        "";
+            <div id="zoom-desc"></div>
 
+        `;
 
-    const multiple =
-        zoomImages.length > 1;
-
-
-    zoomPrev.style.display =
-        multiple
-            ? "block"
-            : "none";
-
-
-    zoomNext.style.display =
-        multiple
-            ? "block"
-            : "none";
-}
-
-
-/* =========================================================
-   ZOOM PREVIOUS
-========================================================= */
-
-zoomPrev.addEventListener(
-    "click",
-    function(event){
-
-        event.stopPropagation();
-
-
-        if(
-            !zoomImages.length
-        ){
-            return;
-        }
-
-
-        zoomIndex =
-            (
-                zoomIndex -
-                1 +
-                zoomImages.length
-            ) %
-            zoomImages.length;
-
-
-        updateZoom();
-    }
-);
-
-
-/* =========================================================
-   ZOOM NEXT
-========================================================= */
-
-zoomNext.addEventListener(
-    "click",
-    function(event){
-
-        event.stopPropagation();
-
-
-        if(
-            !zoomImages.length
-        ){
-            return;
-        }
-
-
-        zoomIndex =
-            (
-                zoomIndex +
-                1
-            ) %
-            zoomImages.length;
-
-
-        updateZoom();
-    }
-);
-
-
-/* =========================================================
-   ZOOM IMAGE CLICK
-========================================================= */
-
-zoomImg.addEventListener(
-    "click",
-    function(event){
-
-        event.stopPropagation();
-    }
-);
-
-
-/* =========================================================
-   CLOSE ZOOM
-========================================================= */
-
-zoomModal.addEventListener(
-    "click",
-    function(){
-
-        zoomModal.style.display =
-            "none";
-
-        zoomImg.src =
-            "";
-
-        zoomImages = [];
-
-        zoomProduct = null;
-    }
-);
-
-
-/* =========================================================
-   IMAGE CANDIDATES
-========================================================= */
-
-/*
- * IMPORTANTE:
- *
- * Aquí se generan TODAS las posibilidades
- * para una imagen.
- */
-
-function getImageCandidates(
-    source
-){
-
-    const candidates =
-        normalizeSingleImageValue(
-            source
+        document.body.appendChild(
+            zoomModal
         );
 
 
-    /*
-     * Si normalizeSingleImageValue ya
-     * produjo candidatos, devolverlos.
-     */
+        const zoomImg =
+            document.getElementById(
+                "zoom-img"
+            );
 
-    return [
-        ...new Set(
-            candidates
-                .filter(Boolean)
-        )
-    ];
-}
+        const zoomDesc =
+            document.getElementById(
+                "zoom-desc"
+            );
 
+        const zoomPrev =
+            document.getElementById(
+                "zoom-prev"
+            );
 
-/* =========================================================
-   LOAD PRODUCT IMAGE
-========================================================= */
-
-function loadImage(
-    img,
-    product
-){
-
-    const sourceImages =
-        Array.isArray(
-            product.imagenes
-        )
-            ? product.imagenes
-            : [];
+        const zoomNext =
+            document.getElementById(
+                "zoom-next"
+            );
 
 
-    const gallery =
-        img.parentElement;
+        let zoomImages = [];
+
+        let zoomIndex = 0;
+
+        let zoomProduct = null;
 
 
-    const loading =
-        gallery?.querySelector(
-            ".image-loading"
-        );
+        function openZoom(
+            product,
+            index
+        ) {
 
+            zoomProduct =
+                product;
 
-    const error =
-        gallery?.querySelector(
-            ".image-error"
-        );
+            zoomImages =
+                Array.isArray(
+                    product.imagenes
+                )
+                    ? product.imagenes
+                    : [];
 
+            if (
+                !zoomImages.length
+            ) {
+                return;
+            }
 
-    if(
-        !sourceImages.length
-    ){
-
-        loading?.classList.add(
-            "hidden"
-        );
-
-        error?.classList.add(
-            "show"
-        );
-
-        console.warn(
-            "PRODUCT WITHOUT IMAGES:",
-            product.id,
-            product.titulo
-        );
-
-        return;
-    }
-
-
-    /*
-     * Construir lista completa.
-     */
-
-    const allCandidates = [];
-
-
-    sourceImages.forEach(
-        source => {
-
-            const candidates =
-                getImageCandidates(
-                    source
+            zoomIndex =
+                Math.max(
+                    0,
+                    Math.min(
+                        Number(index) || 0,
+                        zoomImages.length - 1
+                    )
                 );
 
+            updateZoom();
 
-            allCandidates.push(
-                ...candidates
-            );
-        }
-    );
-
-
-    const candidates =
-        [
-            ...new Set(
-                allCandidates
-            )
-        ];
-
-
-    if(
-        !candidates.length
-    ){
-
-        loading?.classList.add(
-            "hidden"
-        );
-
-        error?.classList.add(
-            "show"
-        );
-
-        return;
-    }
-
-
-    let candidateIndex = 0;
-
-
-    function tryNext(){
-
-        if(
-            candidateIndex >=
-            candidates.length
-        ){
-
-            loading?.classList.add(
-                "hidden"
-            );
-
-            error?.classList.add(
-                "show"
-            );
-
-
-            console.error(
-                "========================================"
-            );
-
-            console.error(
-                "ALL IMAGE SOURCES FAILED"
-            );
-
-            console.error(
-                "Product:",
-                product.id,
-                product.titulo
-            );
-
-            console.error(
-                "Original images:",
-                sourceImages
-            );
-
-            console.error(
-                "Candidates:",
-                candidates
-            );
-
-            console.error(
-                "========================================"
-            );
-
-            return;
+            zoomModal.style.display =
+                "flex";
         }
 
 
-        const url =
-            candidates[
-                candidateIndex
+        function updateZoom() {
+
+            if (
+                !zoomImages.length
+            ) {
+                return;
+            }
+
+            zoomImg.style.opacity =
+                "0.5";
+
+            const url =
+                zoomImages[
+                    zoomIndex
+                ];
+
+            const temp =
+                new Image();
+
+            temp.onload =
+                function () {
+
+                    zoomImg.src =
+                        url;
+
+                    zoomImg.style.opacity =
+                        "1";
+                };
+
+            temp.onerror =
+                function () {
+
+                    zoomImg.src =
+                        url;
+
+                    zoomImg.style.opacity =
+                        "1";
+                };
+
+            temp.src =
+                url;
+
+            zoomDesc.textContent =
+                zoomProduct?.description ||
+                "";
+
+            const multiple =
+                zoomImages.length > 1;
+
+            zoomPrev.style.display =
+                multiple
+                    ? "block"
+                    : "none";
+
+            zoomNext.style.display =
+                multiple
+                    ? "block"
+                    : "none";
+        }
+
+
+        zoomPrev.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+                if (
+                    !zoomImages.length
+                ) {
+                    return;
+                }
+
+                zoomIndex =
+                    (
+                        zoomIndex -
+                        1 +
+                        zoomImages.length
+                    ) %
+                    zoomImages.length;
+
+                updateZoom();
+            }
+        );
+
+
+        zoomNext.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+                if (
+                    !zoomImages.length
+                ) {
+                    return;
+                }
+
+                zoomIndex =
+                    (
+                        zoomIndex +
+                        1
+                    ) %
+                    zoomImages.length;
+
+                updateZoom();
+            }
+        );
+
+
+        zoomImg.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+            }
+        );
+
+
+        zoomModal.addEventListener(
+            "click",
+            function () {
+
+                zoomModal.style.display =
+                    "none";
+
+                zoomImg.src =
+                    "";
+
+                zoomImages = [];
+
+                zoomProduct = null;
+            }
+        );
+
+
+        /* =====================================================
+           IMAGE CANDIDATES
+        ===================================================== */
+
+        function getImageCandidates(
+            source
+        ) {
+
+            return [
+                ...new Set(
+                    normalizeSingleImageValue(
+                        source
+                    ).filter(Boolean)
+                )
             ];
+        }
 
 
-        const current =
-            candidateIndex;
+        /* =====================================================
+           FIND ORIGINAL IMAGE INDEX
+        ===================================================== */
+
+        function findOriginalImageIndex(
+            product,
+            loadedUrl
+        ) {
+
+            const original =
+                Array.isArray(
+                    product.imagenes
+                )
+                    ? product.imagenes
+                    : [];
 
 
-        candidateIndex++;
+            for (
+                let i = 0;
+                i < original.length;
+                i++
+            ) {
 
-
-        console.log(
-            "Loading image:",
-            product.titulo,
-            current + 1,
-            "/",
-            candidates.length,
-            url
-        );
-
-
-        img.onload =
-            function(){
-
-                img.dataset.index =
-                    String(
-                        findOriginalImageIndex(
-                            product,
-                            url
-                        )
+                const candidates =
+                    getImageCandidates(
+                        original[i]
                     );
 
 
-                img.dataset.loadedUrl =
-                    url;
+                if (
+                    candidates.includes(
+                        loadedUrl
+                    )
+                ) {
+
+                    return i;
+                }
 
 
-                img.classList.add(
-                    "loaded"
+                const loadedFilename =
+                    extractFilename(
+                        loadedUrl
+                    );
+
+                const originalFilename =
+                    extractFilename(
+                        original[i]
+                    );
+
+
+                if (
+                    loadedFilename &&
+                    originalFilename &&
+                    loadedFilename.toLowerCase() ===
+                    originalFilename.toLowerCase()
+                ) {
+
+                    return i;
+                }
+            }
+
+
+            return 0;
+        }
+
+
+        /* =====================================================
+           LOAD PRODUCT IMAGE
+        ===================================================== */
+
+        function loadImage(
+            img,
+            product
+        ) {
+
+            const sourceImages =
+                Array.isArray(
+                    product.imagenes
+                )
+                    ? product.imagenes
+                    : [];
+
+
+            const gallery =
+                img.parentElement;
+
+
+            const loading =
+                gallery?.querySelector(
+                    ".image-loading"
                 );
 
+
+            const error =
+                gallery?.querySelector(
+                    ".image-error"
+                );
+
+
+            if (
+                !sourceImages.length
+            ) {
 
                 loading?.classList.add(
                     "hidden"
                 );
 
-
-                error?.classList.remove(
+                error?.classList.add(
                     "show"
                 );
-
-
-                console.log(
-                    "IMAGE SUCCESS:",
-                    product.titulo,
-                    url
-                );
-            };
-
-
-        img.onerror =
-            function(){
-
-                console.warn(
-                    "IMAGE FAILED:",
-                    product.titulo,
-                    url
-                );
-
-
-                img.classList.remove(
-                    "loaded"
-                );
-
-
-                /*
-                 * MUY IMPORTANTE:
-                 *
-                 * seguir con la siguiente
-                 * fuente inmediatamente.
-                 */
-
-                setTimeout(
-                    tryNext,
-                    0
-                );
-            };
-
-
-        /*
-         * Limpiar src antes de cambiarlo.
-         */
-
-        img.removeAttribute(
-            "src"
-        );
-
-
-        img.src =
-            url;
-    }
-
-
-    tryNext();
-}
-
-
-/* =========================================================
-   FIND ORIGINAL IMAGE INDEX
-========================================================= */
-
-function findOriginalImageIndex(
-    product,
-    loadedUrl
-){
-
-    const original =
-        Array.isArray(
-            product.imagenes
-        )
-            ? product.imagenes
-            : [];
-
-
-    if(
-        !original.length
-    ){
-
-        return 0;
-    }
-
-
-    for(
-        let i = 0;
-        i < original.length;
-        i++
-    ){
-
-        const candidates =
-            getImageCandidates(
-                original[i]
-            );
-
-
-        if(
-            candidates.includes(
-                loadedUrl
-            )
-        ){
-
-            return i;
-        }
-
-
-        /*
-         * Comparar filename.
-         */
-
-        const loadedFilename =
-            extractFilename(
-                loadedUrl
-            );
-
-
-        const originalFilename =
-            extractFilename(
-                original[i]
-            );
-
-
-        if(
-            loadedFilename &&
-            originalFilename &&
-            loadedFilename.toLowerCase() ===
-            originalFilename.toLowerCase()
-        ){
-
-            return i;
-        }
-    }
-
-
-    return 0;
-}
-
-
-/* =========================================================
-   RENDER PRODUCTS
-========================================================= */
-
-function renderProducts(
-    list
-){
-
-    if(!contenedor){
-
-        console.error(
-            "Missing #contenedor-productos"
-        );
-
-        return;
-    }
-
-
-    contenedor.innerHTML =
-        "";
-
-
-    if(
-        !Array.isArray(list) ||
-        !list.length
-    ){
-
-        contenedor.innerHTML = `
-
-            <p
-                style="
-                    width:100%;
-                    text-align:center;
-                    color:#888;
-                    padding:40px;
-                "
-            >
-                Coming soon...
-            </p>
-
-        `;
-
-        return;
-    }
-
-
-    const cart =
-        getCart();
-
-
-    /*
-     * Eliminar duplicados.
-     */
-
-    const uniqueProducts =
-        [];
-
-    const productIds =
-        new Set();
-
-
-    list.forEach(
-        product => {
-
-            const key =
-                String(
-                    product.id ??
-                    product.titulo
-                );
-
-
-            if(
-                productIds.has(
-                    key
-                )
-            ){
 
                 return;
             }
 
 
-            productIds.add(
-                key
-            );
+            const allCandidates = [];
 
 
-            uniqueProducts.push(
-                product
-            );
-        }
-    );
+            sourceImages.forEach(
+                source => {
 
-
-    uniqueProducts.forEach(
-        product => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "producto";
-
-
-            card.dataset.id =
-                product.id;
-
-
-            /* =================================================
-               GALLERY
-            ================================================= */
-
-            const gallery =
-                document.createElement(
-                    "div"
-                );
-
-
-            gallery.className =
-                "galeria";
-
-
-            const loading =
-                document.createElement(
-                    "div"
-                );
-
-
-            loading.className =
-                "image-loading";
-
-
-            loading.textContent =
-                "Loading...";
-
-
-            const error =
-                document.createElement(
-                    "div"
-                );
-
-
-            error.className =
-                "image-error";
-
-
-            error.innerHTML = `
-
-                <i class="bi bi-image"></i>
-
-                <span>
-                    Image unavailable
-                </span>
-
-            `;
-
-
-            const img =
-                document.createElement(
-                    "img"
-                );
-
-
-            img.className =
-                "main-img";
-
-
-            img.alt =
-                product.titulo;
-
-
-            img.loading =
-                "lazy";
-
-
-            img.decoding =
-                "async";
-
-
-            img.dataset.index =
-                "0";
-
-
-            gallery.append(
-                loading,
-                error,
-                img
-            );
-
-
-            loadImage(
-                img,
-                product
-            );
-
-
-            img.addEventListener(
-                "click",
-                function(event){
-
-                    event.stopPropagation();
-
-
-                    openZoom(
-                        product,
-                        Number(
-                            img.dataset.index
-                        ) || 0
+                    allCandidates.push(
+                        ...getImageCandidates(
+                            source
+                        )
                     );
                 }
             );
 
 
-            /* =================================================
+            const candidates =
+                [
+                    ...new Set(
+                        allCandidates
+                            .filter(Boolean)
+                    )
+                ];
+
+
+            if (
+                !candidates.length
+            ) {
+
+                loading?.classList.add(
+                    "hidden"
+                );
+
+                error?.classList.add(
+                    "show"
+                );
+
+                return;
+            }
+
+
+            let candidateIndex = 0;
+
+
+            function tryNext() {
+
+                if (
+                    candidateIndex >=
+                    candidates.length
+                ) {
+
+                    loading?.classList.add(
+                        "hidden"
+                    );
+
+                    error?.classList.add(
+                        "show"
+                    );
+
+                    return;
+                }
+
+
+                const url =
+                    candidates[
+                        candidateIndex
+                    ];
+
+                candidateIndex++;
+
+
+                img.onload =
+                    function () {
+
+                        img.dataset.index =
+                            String(
+                                findOriginalImageIndex(
+                                    product,
+                                    url
+                                )
+                            );
+
+                        img.dataset.loadedUrl =
+                            url;
+
+                        img.classList.add(
+                            "loaded"
+                        );
+
+                        loading?.classList.add(
+                            "hidden"
+                        );
+
+                        error?.classList.remove(
+                            "show"
+                        );
+                    };
+
+
+                img.onerror =
+                    function () {
+
+                        img.classList.remove(
+                            "loaded"
+                        );
+
+                        setTimeout(
+                            tryNext,
+                            0
+                        );
+                    };
+
+
+                img.removeAttribute(
+                    "src"
+                );
+
+                img.src =
+                    url;
+            }
+
+
+            tryNext();
+        }
+
+
+        /* =====================================================
+           VISIBLE PRODUCTS
+        ===================================================== */
+
+        function visibleProducts() {
+
+            return productosMaster.filter(
+                product => {
+
+                    const sub =
+                        String(
+                            product.categoria?.sub ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .trim();
+
+                    return (
+                        sub !==
+                        "adultmagazines"
+                    );
+                }
+            );
+        }
+
+
+        /* =====================================================
+           FILTER PRODUCTS
+        ===================================================== */
+
+        function getFilteredProducts() {
+
+            let products =
+                [...productosMaster];
+
+
+            /* ================================================
+               ADULT FILTER
+            ================================================= */
+
+            if (
+                currentFilter.type ===
+                "all"
+            ) {
+
+                products =
+                    products.filter(
+                        product => {
+
+                            const sub =
+                                String(
+                                    product.categoria?.sub ||
+                                    ""
+                                )
+                                    .toLowerCase()
+                                    .trim();
+
+                            return (
+                                sub !==
+                                "adultmagazines"
+                            );
+                        }
+                    );
+            }
+
+
+            /* ================================================
+               CATEGORY
+            ================================================= */
+
+            if (
+                currentFilter.type ===
+                "category"
+            ) {
+
+                products =
+                    products.filter(
+                        product => {
+
+                            const main =
+                                String(
+                                    product.categoria?.main ||
+                                    ""
+                                )
+                                    .toLowerCase()
+                                    .trim();
+
+
+                            const sub =
+                                String(
+                                    product.categoria?.sub ||
+                                    ""
+                                )
+                                    .toLowerCase()
+                                    .trim();
+
+
+                            return (
+                                main ===
+                                currentFilter.main &&
+                                sub ===
+                                currentFilter.sub
+                            );
+                        }
+                    );
+            }
+
+
+            /* ================================================
+               SEARCH
+            ================================================= */
+
+            if (
+                currentSearch
+            ) {
+
+                const query =
+                    normalizeText(
+                        currentSearch
+                    )
+                        .trim();
+
+
+                const terms =
+                    query
+                        .split(/\s+/)
+                        .filter(Boolean);
+
+
+                products =
+                    products.filter(
+                        product => {
+
+                            const sub =
+                                String(
+                                    product.categoria?.sub ||
+                                    ""
+                                )
+                                    .toLowerCase()
+                                    .trim();
+
+
+                            if (
+                                sub ===
+                                "adultmagazines"
+                            ) {
+                                return false;
+                            }
+
+
+                            const fields = [
+
+                                normalizeText(
+                                    product.titulo
+                                ),
+
+                                normalizeText(
+                                    product.description
+                                ),
+
+                                normalizeText(
+                                    product.categoria?.main
+                                ),
+
+                                normalizeText(
+                                    product.categoria?.sub
+                                )
+
+                            ];
+
+
+                            if (
+                                Array.isArray(
+                                    product.tags
+                                )
+                            ) {
+
+                                fields.push(
+                                    ...product.tags.map(
+                                        normalizeText
+                                    )
+                                );
+                            }
+
+
+                            return terms.every(
+                                term =>
+                                    fields.some(
+                                        field =>
+                                            field.includes(
+                                                term
+                                            )
+                                    )
+                            );
+                        }
+                    );
+            }
+
+
+            return products;
+        }
+
+
+        /* =====================================================
+           UPDATE CARD WITHOUT RERENDERING SHOP
+        ===================================================== */
+
+        function updateProductCard(
+            product
+        ) {
+
+            if (!contenedor) {
+                return;
+            }
+
+
+            const card =
+                contenedor.querySelector(
+                    `.producto[data-id="${CSS.escape(String(product.id))}"]`
+                );
+
+
+            if (!card) {
+                return false;
+            }
+
+
+            /* ================================================
                TITLE
             ================================================= */
 
             const title =
-                document.createElement(
+                card.querySelector(
                     "h3"
                 );
 
+            if (title) {
 
-            title.textContent =
-                product.titulo;
+                title.textContent =
+                    product.titulo;
+            }
 
 
-            /* =================================================
+            /* ================================================
                DESCRIPTION
             ================================================= */
 
             const description =
-                document.createElement(
-                    "div"
+                card.querySelector(
+                    ".product-description"
                 );
 
 
-            description.className =
-                "product-description";
+            if (
+                product.description &&
+                product.description.trim()
+            ) {
+
+                if (description) {
+
+                    description.textContent =
+                        product.description;
+
+                } else {
+
+                    const newDescription =
+                        document.createElement(
+                            "div"
+                        );
+
+                    newDescription.className =
+                        "product-description";
+
+                    newDescription.textContent =
+                        product.description;
+
+                    const stock =
+                        card.querySelector(
+                            ".stock"
+                        );
+
+                    if (stock) {
+
+                        card.insertBefore(
+                            newDescription,
+                            stock
+                        );
+
+                    } else {
+
+                        card.appendChild(
+                            newDescription
+                        );
+                    }
+                }
+
+            } else if (description) {
+
+                description.remove();
+            }
 
 
-            description.textContent =
-                product.description;
-
-
-            /* =================================================
-               CART
+            /* ================================================
+               PRICE
             ================================================= */
+
+            const price =
+                card.querySelector(
+                    ".price"
+                );
+
+            if (price) {
+
+                price.textContent =
+                    "$" +
+                    Number(
+                        product.price || 0
+                    ).toFixed(2);
+            }
+
+
+            /* ================================================
+               STOCK
+            ================================================= */
+
+            const stockEl =
+                card.querySelector(
+                    ".stock"
+                );
+
+
+            const stock =
+                Number(
+                    product.stock || 0
+                );
+
+
+            const cart =
+                getCart();
+
 
             const cartItem =
                 cart.find(
@@ -4048,12 +3746,6 @@ function renderProducts(
                 );
 
 
-            const stock =
-                Number(
-                    product.stock || 0
-                );
-
-
             const remaining =
                 Math.max(
                     0,
@@ -4062,926 +3754,1720 @@ function renderProducts(
                 );
 
 
-            /* =================================================
-               STOCK
-            ================================================= */
+            if (stockEl) {
 
-            const stockEl =
-                document.createElement(
-                    "p"
-                );
+                stockEl.textContent =
+                    remaining > 0
+                        ? `Stock: ${remaining}`
+                        : "Out of stock";
 
-
-            stockEl.className =
-                "stock";
-
-
-            stockEl.textContent =
-                remaining > 0
-                    ? `Stock: ${remaining}`
-                    : "Out of stock";
+                stockEl.style.color =
+                    remaining > 0
+                        ? "#888"
+                        : "#ff3333";
+            }
 
 
-            stockEl.style.color =
-                remaining > 0
-                    ? "#888"
-                    : "#ff3333";
-
-
-            /* =================================================
-               PRICE
-            ================================================= */
-
-            const price =
-                document.createElement(
-                    "p"
-                );
-
-
-            price.className =
-                "price";
-
-
-            price.textContent =
-                "$" +
-                Number(
-                    product.price || 0
-                ).toFixed(2);
-
-
-            /* =================================================
-               ADD CART
+            /* ================================================
+               ADD BUTTON
             ================================================= */
 
             const add =
-                document.createElement(
-                    "button"
+                card.querySelector(
+                    ".agregar-carrito"
                 );
 
 
-            add.className =
-                "agregar-carrito";
+            if (add) {
+
+                add.disabled =
+                    remaining <= 0;
+
+                add.textContent =
+                    remaining > 0
+                        ? (
+                            cartQuantity
+                                ? `Add (${cartQuantity})`
+                                : "Add"
+                        )
+                        : "Out of stock";
+            }
 
 
-            add.type =
-                "button";
+            /* ================================================
+               IMAGE UPDATE
+            ================================================= */
+
+            const img =
+                card.querySelector(
+                    ".main-img"
+                );
 
 
-            add.textContent =
-                remaining > 0
-                    ? (
-                        cartQuantity
-                            ? `Add (${cartQuantity})`
-                            : "Add"
-                    )
-                    : "Out of stock";
+            const oldImages =
+                card.dataset.imageList || "";
 
 
-            add.disabled =
-                remaining <= 0;
+            const newImages =
+                JSON.stringify(
+                    product.imagenes || []
+                );
 
 
-            add.addEventListener(
-                "click",
-                function(event){
+            if (
+                oldImages !==
+                newImages
+            ) {
 
-                    event.stopPropagation();
-
-
-                    const currentCart =
-                        getCart();
+                card.dataset.imageList =
+                    newImages;
 
 
-                    const index =
-                        currentCart.findIndex(
+                if (img) {
+
+                    img.classList.remove(
+                        "loaded"
+                    );
+
+                    loadImage(
+                        img,
+                        product
+                    );
+                }
+            }
+
+
+            return true;
+        }
+
+
+        /* =====================================================
+           RENDER PRODUCTS
+        ===================================================== */
+
+        function renderProducts(
+            list,
+            preserveScroll = true
+        ) {
+
+            if (!contenedor) {
+
+                console.error(
+                    "Missing #contenedor-productos"
+                );
+
+                return;
+            }
+
+
+            const previousScroll =
+                window.scrollY;
+
+
+            contenedor.innerHTML =
+                "";
+
+
+            if (
+                !Array.isArray(list) ||
+                !list.length
+            ) {
+
+                contenedor.innerHTML = `
+
+                    <p
+                        style="
+                            width:100%;
+                            text-align:center;
+                            color:#888;
+                            padding:40px;
+                        "
+                    >
+                        Coming soon...
+                    </p>
+
+                `;
+
+                return;
+            }
+
+
+            const cart =
+                getCart();
+
+
+            const uniqueProducts =
+                [];
+
+            const productIds =
+                new Set();
+
+
+            list.forEach(
+                product => {
+
+                    const key =
+                        String(
+                            product.id ??
+                            product.titulo
+                        );
+
+
+                    if (
+                        productIds.has(key)
+                    ) {
+                        return;
+                    }
+
+
+                    productIds.add(key);
+
+                    uniqueProducts.push(
+                        product
+                    );
+                }
+            );
+
+
+            uniqueProducts.forEach(
+                product => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "producto";
+
+                    card.dataset.id =
+                        product.id;
+
+
+                    card.dataset.imageList =
+                        JSON.stringify(
+                            product.imagenes || []
+                        );
+
+
+                    /* =========================================
+                       GALLERY
+                    ========================================= */
+
+                    const gallery =
+                        document.createElement(
+                            "div"
+                        );
+
+                    gallery.className =
+                        "galeria";
+
+
+                    const loading =
+                        document.createElement(
+                            "div"
+                        );
+
+                    loading.className =
+                        "image-loading";
+
+                    loading.textContent =
+                        "Loading...";
+
+
+                    const error =
+                        document.createElement(
+                            "div"
+                        );
+
+                    error.className =
+                        "image-error";
+
+                    error.innerHTML = `
+
+                        <i class="bi bi-image"></i>
+
+                        <span>
+                            Image unavailable
+                        </span>
+
+                    `;
+
+
+                    const img =
+                        document.createElement(
+                            "img"
+                        );
+
+                    img.className =
+                        "main-img";
+
+                    img.alt =
+                        product.titulo;
+
+                    img.loading =
+                        "lazy";
+
+                    img.decoding =
+                        "async";
+
+                    img.dataset.index =
+                        "0";
+
+
+                    gallery.append(
+                        loading,
+                        error,
+                        img
+                    );
+
+
+                    card.append(
+                        gallery
+                    );
+
+
+                    loadImage(
+                        img,
+                        product
+                    );
+
+
+                    img.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.stopPropagation();
+
+                            openZoom(
+                                product,
+                                Number(
+                                    img.dataset.index
+                                ) || 0
+                            );
+                        }
+                    );
+
+
+                    /* =========================================
+                       TITLE
+                    ========================================= */
+
+                    const title =
+                        document.createElement(
+                            "h3"
+                        );
+
+                    title.textContent =
+                        product.titulo;
+
+
+                    card.append(
+                        title
+                    );
+
+
+                    /* =========================================
+                       DESCRIPTION
+                    ========================================= */
+
+                    if (
+                        product.description &&
+                        product.description.trim()
+                    ) {
+
+                        const description =
+                            document.createElement(
+                                "div"
+                            );
+
+                        description.className =
+                            "product-description";
+
+                        description.textContent =
+                            product.description;
+
+                        card.append(
+                            description
+                        );
+                    }
+
+
+                    /* =========================================
+                       CART
+                    ========================================= */
+
+                    const cartItem =
+                        cart.find(
                             item =>
                                 String(item.id) ===
                                 String(product.id)
                         );
 
 
-                    const current =
-                        index >= 0
-                            ? Number(
+                    const cartQuantity =
+                        Number(
+                            cartItem?.quantity || 0
+                        );
+
+
+                    const stock =
+                        Number(
+                            product.stock || 0
+                        );
+
+
+                    const remaining =
+                        Math.max(
+                            0,
+                            stock -
+                            cartQuantity
+                        );
+
+
+                    /* =========================================
+                       STOCK
+                    ========================================= */
+
+                    const stockEl =
+                        document.createElement(
+                            "p"
+                        );
+
+                    stockEl.className =
+                        "stock";
+
+                    stockEl.textContent =
+                        remaining > 0
+                            ? `Stock: ${remaining}`
+                            : "Out of stock";
+
+                    stockEl.style.color =
+                        remaining > 0
+                            ? "#888"
+                            : "#ff3333";
+
+
+                    card.append(
+                        stockEl
+                    );
+
+
+                    /* =========================================
+                       PRICE
+                    ========================================= */
+
+                    const price =
+                        document.createElement(
+                            "p"
+                        );
+
+                    price.className =
+                        "price";
+
+                    price.textContent =
+                        "$" +
+                        Number(
+                            product.price || 0
+                        ).toFixed(2);
+
+
+                    card.append(
+                        price
+                    );
+
+
+                    /* =========================================
+                       ADD CART
+                    ========================================= */
+
+                    const add =
+                        document.createElement(
+                            "button"
+                        );
+
+                    add.className =
+                        "agregar-carrito";
+
+                    add.type =
+                        "button";
+
+                    add.textContent =
+                        remaining > 0
+                            ? (
+                                cartQuantity
+                                    ? `Add (${cartQuantity})`
+                                    : "Add"
+                            )
+                            : "Out of stock";
+
+                    add.disabled =
+                        remaining <= 0;
+
+
+                    add.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.stopPropagation();
+
+
+                            const currentCart =
+                                getCart();
+
+
+                            const index =
+                                currentCart.findIndex(
+                                    item =>
+                                        String(item.id) ===
+                                        String(product.id)
+                                );
+
+
+                            const current =
+                                index >= 0
+                                    ? Number(
+                                        currentCart[
+                                            index
+                                        ].quantity || 0
+                                    )
+                                    : 0;
+
+
+                            if (
+                                current >=
+                                Number(product.stock || 0)
+                            ) {
+
+                                return;
+                            }
+
+
+                            if (
+                                index >= 0
+                            ) {
+
                                 currentCart[
                                     index
-                                ].quantity || 0
-                            )
-                            : 0;
+                                ].quantity =
+                                    current + 1;
+
+                            } else {
+
+                                currentCart.push({
+
+                                    id:
+                                        product.id,
+
+                                    titulo:
+                                        product.titulo,
+
+                                    price:
+                                        product.price,
+
+                                    imagenes:
+                                        product.imagenes,
+
+                                    quantity:
+                                        1
+                                });
+                            }
 
 
-                    if(
-                        current >= stock
-                    ){
-
-                        return;
-                    }
-
-
-                    if(
-                        index >= 0
-                    ){
-
-                        currentCart[
-                            index
-                        ].quantity =
-                            current + 1;
-
-                    }else{
-
-                        currentCart.push({
-
-                            id:
-                                product.id,
-
-                            titulo:
-                                product.titulo,
-
-                            price:
-                                product.price,
-
-                            imagenes:
-                                product.imagenes,
-
-                            quantity:
-                                1
-                        });
-                    }
+                            localStorage.setItem(
+                                "productos-en-cart",
+                                JSON.stringify(
+                                    currentCart
+                                )
+                            );
 
 
-                    localStorage.setItem(
-                        "productos-en-cart",
-                        JSON.stringify(
-                            currentCart
-                        )
+                            updateCartCount();
+
+
+                            /*
+                             * IMPORTANTE:
+                             *
+                             * No reconstruimos toda la tienda.
+                             *
+                             * Solamente actualizamos
+                             * esta tarjeta.
+                             */
+
+                            const updated =
+                                productosMaster.find(
+                                    p =>
+                                        String(p.id) ===
+                                        String(product.id)
+                                );
+
+
+                            if (updated) {
+
+                                updateProductCard(
+                                    updated
+                                );
+                            }
+                        }
                     );
 
 
-                    updateCartCount();
+                    card.append(
+                        add
+                    );
 
 
-                    renderProducts(
-                        list
+                    /* =========================================
+                       OFFER
+                    ========================================= */
+
+                    const offer =
+                        document.createElement(
+                            "button"
+                        );
+
+                    offer.className =
+                        "negociar";
+
+                    offer.type =
+                        "button";
+
+                    offer.textContent =
+                        "Make Offer";
+
+
+                    offer.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.stopPropagation();
+
+
+                            const modal =
+                                document.getElementById(
+                                    "negociar-modal"
+                                );
+
+
+                            const productName =
+                                document.getElementById(
+                                    "negociar-producto"
+                                );
+
+
+                            if (modal) {
+
+                                modal.style.display =
+                                    "flex";
+                            }
+
+
+                            if (productName) {
+
+                                productName.textContent =
+                                    product.titulo;
+                            }
+                        }
+                    );
+
+
+                    card.append(
+                        offer
+                    );
+
+
+                    contenedor.appendChild(
+                        card
                     );
                 }
             );
 
 
-            /* =================================================
-               OFFER
-            ================================================= */
-
-            const offer =
-                document.createElement(
-                    "button"
-                );
+            updateCartCount();
 
 
-            offer.className =
-                "negociar";
+            /*
+             * Solamente restaurar scroll cuando
+             * realmente fue necesario reconstruir.
+             */
 
+            if (
+                preserveScroll
+            ) {
 
-            offer.type =
-                "button";
+                requestAnimationFrame(
+                    function () {
 
-
-            offer.textContent =
-                "Make Offer";
-
-
-            offer.addEventListener(
-                "click",
-                function(event){
-
-                    event.stopPropagation();
-
-
-                    const modal =
-                        document.getElementById(
-                            "negociar-modal"
+                        window.scrollTo(
+                            0,
+                            previousScroll
                         );
-
-
-                    const productName =
-                        document.getElementById(
-                            "negociar-producto"
-                        );
-
-
-                    if(modal){
-
-                        modal.style.display =
-                            "flex";
                     }
-
-
-                    if(productName){
-
-                        productName.textContent =
-                            product.titulo;
-                    }
-                }
-            );
-
-
-            /* =================================================
-               APPEND
-            ================================================= */
-
-            card.append(
-                gallery,
-                title
-            );
-
-
-            if(
-                product.description &&
-                product.description.trim()
-            ){
-
-                card.append(
-                    description
                 );
-            }
-
-
-            card.append(
-                stockEl,
-                price,
-                add,
-                offer
-            );
-
-
-            contenedor.appendChild(
-                card
-            );
-        }
-    );
-
-
-    updateCartCount();
-}
-
-
-/* =========================================================
-   VISIBLE PRODUCTS
-========================================================= */
-
-function visibleProducts(){
-
-    return productosMaster.filter(
-        product => {
-
-            const sub =
-                String(
-                    product.categoria?.sub ||
-                    ""
-                )
-                    .toLowerCase()
-                    .trim();
-
-
-            return (
-                sub !==
-                "adultmagazines"
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   INITIAL RENDER
-========================================================= */
-
-renderProducts(
-    visibleProducts()
-);
-
-
-/* =========================================================
-   CATEGORY FILTER
-========================================================= */
-
-aside?.addEventListener(
-    "click",
-    function(event){
-
-        const button =
-            event.target.closest(
-                ".submenu .boton-categoria"
-            );
-
-
-        if(!button){
-            return;
-        }
-
-
-        const main =
-            String(
-                button.dataset.main ||
-                ""
-            )
-                .toLowerCase()
-                .trim();
-
-
-        const sub =
-            String(
-                button.dataset.sub ||
-                ""
-            )
-                .toLowerCase()
-                .trim();
-
-
-        /*
-         * Adult content.
-         */
-
-        if(
-            sub ===
-            "adultmagazines"
-        ){
-
-            const answer =
-                confirm(
-                    "This section contains adult material. Are you 18 or older?"
-                );
-
-
-            if(!answer){
-
-                return;
             }
         }
 
 
-        const filtered =
-            productosMaster.filter(
-                product => {
+        /* =====================================================
+           INITIAL LOAD
+        ===================================================== */
 
-                    const productMain =
-                        String(
-                            product.categoria?.main ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .trim();
+        productosMaster =
+            await loadProducts();
 
 
-                    const productSub =
-                        String(
-                            product.categoria?.sub ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .trim();
+        /* =====================================================
+           INITIAL RENDER
+        ===================================================== */
+
+        renderProducts(
+            getFilteredProducts(),
+            false
+        );
 
 
-                    return (
-                        productMain === main &&
-                        productSub === sub
+        /* =====================================================
+           CATEGORY FILTER
+        ===================================================== */
+
+        aside?.addEventListener(
+            "click",
+            function (event) {
+
+                const button =
+                    event.target.closest(
+                        ".submenu .boton-categoria"
                     );
+
+
+                if (!button) {
+                    return;
                 }
-            );
 
 
-        const title =
-            document.getElementById(
-                "titulo-principal"
-            );
-
-
-        if(title){
-
-            title.textContent =
-                capitalize(main) +
-                " · " +
-                capitalize(sub);
-        }
-
-
-        renderProducts(
-            filtered
-        );
-
-
-        aside?.classList.remove(
-            "active"
-        );
-    }
-);
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-const searchInput =
-    document.getElementById(
-        "search-input"
-    );
-
-const searchBtn =
-    document.getElementById(
-        "search-btn"
-    );
-
-
-function normalizeText(text){
-
-    return String(
-        text || ""
-    )
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(
-            /[\u0300-\u036f]/g,
-            ""
-        );
-}
-
-
-function searchProducts(){
-
-    if(!searchInput){
-        return;
-    }
-
-
-    const query =
-        normalizeText(
-            searchInput.value
-        )
-            .trim();
-
-
-    if(!query){
-
-        const title =
-            document.getElementById(
-                "titulo-principal"
-            );
-
-
-        if(title){
-
-            title.textContent =
-                "All Products";
-        }
-
-
-        renderProducts(
-            visibleProducts()
-        );
-
-
-        return;
-    }
-
-
-    const terms =
-        query
-            .split(/\s+/)
-            .filter(Boolean);
-
-
-    const filtered =
-        productosMaster.filter(
-            product => {
-
-                const sub =
+                const main =
                     String(
-                        product.categoria?.sub ||
+                        button.dataset.main ||
                         ""
                     )
                         .toLowerCase()
                         .trim();
 
 
-                if(
+                const sub =
+                    String(
+                        button.dataset.sub ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .trim();
+
+
+                if (
                     sub ===
                     "adultmagazines"
-                ){
+                ) {
 
-                    return false;
+                    const answer =
+                        confirm(
+                            "This section contains adult material. Are you 18 or older?"
+                        );
+
+
+                    if (!answer) {
+                        return;
+                    }
                 }
 
 
-                const fields = [
+                currentFilter = {
 
-                    normalizeText(
-                        product.titulo
-                    ),
+                    type:
+                        "category",
 
-                    normalizeText(
-                        product.description
-                    ),
+                    main,
 
-                    normalizeText(
-                        product.categoria?.main
-                    ),
-
-                    normalizeText(
-                        product.categoria?.sub
-                    )
-
-                ];
+                    sub
+                };
 
 
-                if(
-                    Array.isArray(
-                        product.tags
-                    )
-                ){
+                currentSearch =
+                    "";
 
-                    fields.push(
-                        ...product.tags.map(
-                            normalizeText
-                        )
+
+                if (searchInput) {
+                    searchInput.value =
+                        "";
+                }
+
+
+                const title =
+                    document.getElementById(
+                        "titulo-principal"
                     );
+
+
+                if (title) {
+
+                    title.textContent =
+                        capitalize(main) +
+                        " · " +
+                        capitalize(sub);
                 }
 
 
-                return terms.every(
-                    term =>
-                        fields.some(
-                            field =>
-                                field.includes(
-                                    term
-                                )
-                        )
+                renderProducts(
+                    getFilteredProducts()
+                );
+
+
+                aside?.classList.remove(
+                    "active"
                 );
             }
         );
 
 
-    const title =
-        document.getElementById(
-            "titulo-principal"
-        );
+        /* =====================================================
+           SEARCH NORMALIZATION
+        ===================================================== */
 
+        function normalizeText(text) {
 
-    if(title){
-
-        title.textContent =
-            `Search: "${searchInput.value}" (${filtered.length})`;
-    }
-
-
-    renderProducts(
-        filtered
-    );
-}
-
-
-searchBtn?.addEventListener(
-    "click",
-    searchProducts
-);
-
-
-searchInput?.addEventListener(
-    "keydown",
-    function(event){
-
-        if(
-            event.key ===
-            "Enter"
-        ){
-
-            searchProducts();
+            return String(
+                text || ""
+            )
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                );
         }
-    }
-);
 
 
-/* =========================================================
-   OFFER MODAL
-========================================================= */
+        /* =====================================================
+           SEARCH
+        ===================================================== */
 
-const offerModal =
-    document.getElementById(
-        "negociar-modal"
-    );
+        function searchProducts() {
 
-
-document
-    .getElementById(
-        "cerrar-negociar"
-    )
-    ?.addEventListener(
-        "click",
-        function(){
-
-            if(offerModal){
-
-                offerModal.style.display =
-                    "none";
+            if (!searchInput) {
+                return;
             }
-        }
-    );
 
 
-/* =========================================================
-   CLOSE OFFER WHEN CLICK OUTSIDE
-========================================================= */
-
-offerModal?.addEventListener(
-    "click",
-    function(event){
-
-        if(
-            event.target ===
-            offerModal
-        ){
-
-            offerModal.style.display =
-                "none";
-        }
-    }
-);
+            currentSearch =
+                searchInput.value.trim();
 
 
-/* =========================================================
-   SEND OFFER
-========================================================= */
+            currentFilter = {
 
-document
-    .getElementById(
-        "enviar-negociacion"
-    )
-    ?.addEventListener(
-        "click",
-        async function(){
+                type:
+                    "all",
 
-            const email =
-                document
-                    .getElementById(
-                        "negociar-email"
-                    )
-                    ?.value
-                    .trim();
+                main:
+                    "",
+
+                sub:
+                    ""
+            };
 
 
-            const oferta =
-                document
-                    .getElementById(
-                        "negociar-precio"
-                    )
-                    ?.value
-                    .trim();
-
-
-            const producto =
-                document
-                    .getElementById(
-                        "negociar-producto"
-                    )
-                    ?.textContent ||
-                "";
-
-
-            const status =
+            const title =
                 document.getElementById(
-                    "negociar-status"
+                    "titulo-principal"
                 );
 
 
-            if(
-                !email ||
-                !oferta
-            ){
+            if (
+                !currentSearch
+            ) {
 
-                alert(
-                    "Please complete all fields."
+                if (title) {
+
+                    title.textContent =
+                        "All Products";
+                }
+
+            } else {
+
+                const filtered =
+                    getFilteredProducts();
+
+
+                if (title) {
+
+                    title.textContent =
+                        `Search: "${currentSearch}" (${filtered.length})`;
+                }
+            }
+
+
+            renderProducts(
+                getFilteredProducts()
+            );
+        }
+
+
+        searchBtn?.addEventListener(
+            "click",
+            searchProducts
+        );
+
+
+        searchInput?.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    searchProducts();
+                }
+            }
+        );
+
+
+        /* =====================================================
+           OFFER MODAL
+        ===================================================== */
+
+        const offerModal =
+            document.getElementById(
+                "negociar-modal"
+            );
+
+
+        document
+            .getElementById(
+                "cerrar-negociar"
+            )
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    if (offerModal) {
+
+                        offerModal.style.display =
+                            "none";
+                    }
+                }
+            );
+
+
+        offerModal?.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    offerModal
+                ) {
+
+                    offerModal.style.display =
+                        "none";
+                }
+            }
+        );
+
+
+        /* =====================================================
+           SEND OFFER
+        ===================================================== */
+
+        document
+            .getElementById(
+                "enviar-negociacion"
+            )
+            ?.addEventListener(
+                "click",
+                async function () {
+
+                    const email =
+                        document
+                            .getElementById(
+                                "negociar-email"
+                            )
+                            ?.value
+                            .trim();
+
+
+                    const oferta =
+                        document
+                            .getElementById(
+                                "negociar-precio"
+                            )
+                            ?.value
+                            .trim();
+
+
+                    const producto =
+                        document
+                            .getElementById(
+                                "negociar-producto"
+                            )
+                            ?.textContent ||
+                        "";
+
+
+                    const status =
+                        document.getElementById(
+                            "negociar-status"
+                        );
+
+
+                    if (
+                        !email ||
+                        !oferta
+                    ) {
+
+                        alert(
+                            "Please complete all fields."
+                        );
+
+                        return;
+                    }
+
+
+                    try {
+
+                        if (status) {
+
+                            status.textContent =
+                                "Sending offer...";
+                        }
+
+
+                        const response =
+                            await fetch(
+                                API_BASE +
+                                "/api/send-offer",
+                                {
+                                    method:
+                                        "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            producto,
+
+                                            email,
+
+                                            oferta
+                                        })
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (
+                            !response.ok
+                        ) {
+
+                            throw new Error(
+                                data.error ||
+                                "Error sending offer"
+                            );
+                        }
+
+
+                        if (status) {
+
+                            status.textContent =
+                                "Offer sent!";
+                        }
+
+
+                        setTimeout(
+                            function () {
+
+                                if (
+                                    offerModal
+                                ) {
+
+                                    offerModal.style.display =
+                                        "none";
+                                }
+
+
+                                if (status) {
+
+                                    status.textContent =
+                                        "";
+                                }
+
+                            },
+                            900
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "Offer error:",
+                            error
+                        );
+
+
+                        if (status) {
+
+                            status.textContent =
+                                "Error sending offer.";
+                        }
+                    }
+                }
+            );
+
+
+        /* =====================================================
+           AGE CHECK
+        ===================================================== */
+
+        const ageModal =
+            document.getElementById(
+                "ageCheckModal"
+            );
+
+        const ageYes =
+            document.getElementById(
+                "ageYes"
+            );
+
+        const ageNo =
+            document.getElementById(
+                "ageNo"
+            );
+
+
+        ageYes?.addEventListener(
+            "click",
+            function () {
+
+                sessionStorage.setItem(
+                    "latronic-age-confirmed",
+                    "1"
+                );
+
+                ageModal?.classList.remove(
+                    "show"
+                );
+            }
+        );
+
+
+        ageNo?.addEventListener(
+            "click",
+            function () {
+
+                /*
+                 * ESTA es una navegación intencional
+                 * del usuario.
+                 *
+                 * Socket.IO JAMÁS utiliza esto.
+                 */
+
+                window.location.href =
+                    "index.html";
+            }
+        );
+
+
+        /* =====================================================
+           SOCKET.IO
+           SAFE LIVE PRODUCT UPDATES
+        ===================================================== */
+
+        function initializeSocket() {
+
+            if (
+                typeof io !==
+                "function"
+            ) {
+
+                console.warn(
+                    "Socket.IO library not available."
                 );
 
                 return;
             }
 
 
-            try{
+            try {
 
-                if(status){
-
-                    status.textContent =
-                        "Sending offer...";
-                }
-
-
-                const response =
-                    await fetch(
-                        API_BASE +
-                        "/api/send-offer",
+                socket =
+                    io(
+                        API_BASE,
                         {
-                            method:"POST",
+                            transports: [
+                                "websocket",
+                                "polling"
+                            ],
 
-                            headers:{
-                                "Content-Type":
-                                    "application/json"
-                            },
+                            reconnection:
+                                true,
 
-                            body:
-                                JSON.stringify({
+                            reconnectionAttempts:
+                                Infinity,
 
-                                    producto,
+                            reconnectionDelay:
+                                1000,
 
-                                    email,
+                            reconnectionDelayMax:
+                                5000,
 
-                                    oferta
-                                })
+                            timeout:
+                                10000,
+
+                            autoConnect:
+                                true
                         }
                     );
 
 
-                const data =
-                    await response.json();
+                /* =============================================
+                   CONNECT
+                ============================================= */
+
+                socket.on(
+                    "connect",
+                    function () {
+
+                        socketConnected =
+                            true;
+
+                        console.log(
+                            "========================================"
+                        );
+
+                        console.log(
+                            "SHOP SOCKET CONNECTED"
+                        );
+
+                        console.log(
+                            "Socket ID:",
+                            socket.id
+                        );
+
+                        console.log(
+                            "========================================"
+                        );
+                    }
+                );
 
 
-                if(
-                    !response.ok
-                ){
+                /* =============================================
+                   DISCONNECT
+                ============================================= */
 
-                    throw new Error(
-                        data.error ||
-                        "Error sending offer"
-                    );
-                }
+                socket.on(
+                    "disconnect",
+                    function (reason) {
+
+                        socketConnected =
+                            false;
+
+                        console.warn(
+                            "Shop Socket disconnected:",
+                            reason
+                        );
+
+                        /*
+                         * IMPORTANT:
+                         *
+                         * No redirect.
+                         *
+                         * No reload.
+                         *
+                         * No home.
+                         */
+                    }
+                );
 
 
-                if(status){
+                /* =============================================
+                   CONNECT ERROR
+                ============================================= */
 
-                    status.textContent =
-                        "Offer sent!";
-                }
+                socket.on(
+                    "connect_error",
+                    function (error) {
+
+                        socketConnected =
+                            false;
+
+                        console.warn(
+                            "Socket.IO connection error:",
+                            error?.message ||
+                            error
+                        );
+
+                        /*
+                         * IMPORTANT:
+                         *
+                         * No window.location.
+                         * No reload.
+                         */
+                    }
+                );
 
 
-                setTimeout(
-                    function(){
+                /* =============================================
+                   PRODUCT UPDATE
+                ============================================= */
 
-                        if(offerModal){
+                socket.on(
+                    "actualizar-productos",
+                    function (payload) {
 
-                            offerModal.style.display =
-                                "none";
+                        console.log(
+                            "========================================"
+                        );
+
+                        console.log(
+                            "LIVE PRODUCT UPDATE RECEIVED"
+                        );
+
+                        console.log(
+                            payload
+                        );
+
+                        console.log(
+                            "========================================"
+                        );
+
+
+                        /*
+                         * NEVER redirect.
+                         *
+                         * NEVER reload.
+                         */
+
+                        if (
+                            !payload
+                        ) {
+
+                            return;
                         }
 
 
-                        if(status){
+                        let updates = [];
 
-                            status.textContent =
-                                "";
+
+                        /* =====================================
+                           ARRAY
+                        ===================================== */
+
+                        if (
+                            Array.isArray(
+                                payload
+                            )
+                        ) {
+
+                            updates =
+                                payload;
+
                         }
 
-                    },
-                    900
+
+                        /* =====================================
+                           PRODUCT WRAPPER
+                        ===================================== */
+
+                        else if (
+                            payload.producto
+                        ) {
+
+                            updates = [
+                                payload.producto
+                            ];
+
+                        }
+
+
+                        /* =====================================
+                           PRODUCTS WRAPPER
+                        ===================================== */
+
+                        else if (
+                            Array.isArray(
+                                payload.productos
+                            )
+                        ) {
+
+                            updates =
+                                payload.productos;
+
+                        }
+
+
+                        /* =====================================
+                           SINGLE PRODUCT
+                        ===================================== */
+
+                        else {
+
+                            updates = [
+                                payload
+                            ];
+                        }
+
+
+                        /*
+                         * Process each update.
+                         */
+
+                        updates.forEach(
+                            rawProduct => {
+
+                                if (
+                                    !rawProduct ||
+                                    typeof rawProduct !==
+                                    "object"
+                                ) {
+
+                                    return;
+                                }
+
+
+                                /*
+                                 * Algunos servidores
+                                 * envían:
+                                 *
+                                 * {
+                                 *   id: 123,
+                                 *   changes: {...}
+                                 * }
+                                 *
+                                 * o:
+                                 *
+                                 * {
+                                 *   product: {...}
+                                 * }
+                                 */
+
+                                let incoming =
+                                    rawProduct.product ||
+                                    rawProduct.producto ||
+                                    rawProduct;
+
+
+                                if (
+                                    incoming &&
+                                    incoming.changes
+                                ) {
+
+                                    incoming = {
+
+                                        ...incoming,
+
+                                        ...incoming.changes
+                                    };
+                                }
+
+
+                                const normalized =
+                                    normalizeProduct(
+                                        incoming
+                                    );
+
+
+                                if (
+                                    !normalized ||
+                                    normalized.id ===
+                                    undefined ||
+                                    normalized.id ===
+                                    null
+                                ) {
+
+                                    console.warn(
+                                        "Socket update ignored: invalid product",
+                                        incoming
+                                    );
+
+                                    return;
+                                }
+
+
+                                const index =
+                                    productosMaster.findIndex(
+                                        product =>
+                                            String(
+                                                product.id
+                                            ) ===
+                                            String(
+                                                normalized.id
+                                            )
+                                    );
+
+
+                                /* =================================
+                                   EXISTING PRODUCT
+                                ================================= */
+
+                                if (
+                                    index >=
+                                    0
+                                ) {
+
+                                    /*
+                                     * IMPORTANTE:
+                                     *
+                                     * Mergeamos.
+                                     *
+                                     * No reemplazamos datos
+                                     * importantes accidentalmente.
+                                     */
+
+                                    const oldProduct =
+                                        productosMaster[
+                                            index
+                                        ];
+
+
+                                    const merged =
+                                        {
+
+                                            ...oldProduct,
+
+                                            ...normalized,
+
+                                            id:
+                                                oldProduct.id,
+
+                                            imagenes:
+                                                normalized.imagenes.length
+                                                    ? normalized.imagenes
+                                                    : oldProduct.imagenes
+                                        };
+
+
+                                    productosMaster[
+                                        index
+                                    ] =
+                                        merged;
+
+
+                                    /*
+                                     * Guardar en localStorage.
+                                     */
+
+                                    try {
+
+                                        localStorage.setItem(
+                                            "productos",
+                                            JSON.stringify(
+                                                productosMaster
+                                            )
+                                        );
+
+                                    } catch (error) {
+
+                                        console.warn(
+                                            "localStorage socket update failed:",
+                                            error
+                                        );
+                                    }
+
+
+                                    /*
+                                     * Intentar actualizar
+                                     * solamente la tarjeta.
+                                     */
+
+                                    const updatedCard =
+                                        updateProductCard(
+                                            merged
+                                        );
+
+
+                                    /*
+                                     * Si la tarjeta no está
+                                     * visible porque cambió
+                                     * de filtro/búsqueda,
+                                     * NO reconstruimos toda
+                                     * la página.
+                                     */
+
+                                    if (
+                                        !updatedCard
+                                    ) {
+
+                                        /*
+                                         * Si el producto
+                                         * pertenece al filtro
+                                         * actual, reconstruimos
+                                         * silenciosamente.
+                                         *
+                                         * Esto NO navega.
+                                         */
+
+                                        const filtered =
+                                            getFilteredProducts();
+
+
+                                        const shouldBeVisible =
+                                            filtered.some(
+                                                product =>
+                                                    String(
+                                                        product.id
+                                                    ) ===
+                                                    String(
+                                                        merged.id
+                                                    )
+                                            );
+
+
+                                        if (
+                                            shouldBeVisible
+                                        ) {
+
+                                            const scroll =
+                                                window.scrollY;
+
+
+                                            renderProducts(
+                                                filtered,
+                                                false
+                                            );
+
+
+                                            requestAnimationFrame(
+                                                function () {
+
+                                                    window.scrollTo(
+                                                        0,
+                                                        scroll
+                                                    );
+                                                }
+                                            );
+                                        }
+                                    }
+                                }
+
+
+                                /* =================================
+                                   NEW PRODUCT
+                                ================================= */
+
+                                else {
+
+                                    productosMaster.push(
+                                        normalized
+                                    );
+
+
+                                    try {
+
+                                        localStorage.setItem(
+                                            "productos",
+                                            JSON.stringify(
+                                                productosMaster
+                                            )
+                                        );
+
+                                    } catch (error) {
+
+                                        console.warn(
+                                            "Could not save new product:",
+                                            error
+                                        );
+                                    }
+
+
+                                    /*
+                                     * Solo mostrarlo si
+                                     * pertenece al filtro
+                                     * actual.
+                                     */
+
+                                    const filtered =
+                                        getFilteredProducts();
+
+
+                                    const shouldShow =
+                                        filtered.some(
+                                            product =>
+                                                String(
+                                                    product.id
+                                                ) ===
+                                                String(
+                                                    normalized.id
+                                                )
+                                        );
+
+
+                                    if (
+                                        shouldShow
+                                    ) {
+
+                                        const scroll =
+                                            window.scrollY;
+
+
+                                        renderProducts(
+                                            filtered,
+                                            false
+                                        );
+
+
+                                        requestAnimationFrame(
+                                            function () {
+
+                                                window.scrollTo(
+                                                    0,
+                                                    scroll
+                                                );
+                                            }
+                                        );
+                                    }
+                                }
+
+                            }
+                        );
+
+
+                        updateCartCount();
+                    }
                 );
 
-            }catch(error){
 
-                console.error(
-                    "Offer error:",
-                    error
-                );
+                /* =============================================
+                   PRODUCT DELETED
+                ============================================= */
 
+                socket.on(
+                    "eliminar-producto",
+                    function (payload) {
 
-                if(status){
-
-                    status.textContent =
-                        "Error sending offer.";
-                }
-            }
-        }
-    );
+                        console.log(
+                            "Product delete received:",
+                            payload
+                        );
 
 
-/* =========================================================
-   AGE CHECK
-========================================================= */
-
-const ageModal =
-    document.getElementById(
-        "ageCheckModal"
-    );
-
-const ageYes =
-    document.getElementById(
-        "ageYes"
-    );
-
-const ageNo =
-    document.getElementById(
-        "ageNo"
-    );
+                        let id =
+                            payload?.id ??
+                            payload?.productId ??
+                            payload?.productoId ??
+                            payload?.producto?.id;
 
 
-ageYes?.addEventListener(
-    "click",
-    function(){
-
-        sessionStorage.setItem(
-            "latronic-age-confirmed",
-            "1"
-        );
-
-
-        ageModal?.classList.remove(
-            "show"
-        );
-    }
-);
-
-
-ageNo?.addEventListener(
-    "click",
-    function(){
-
-        window.location.href =
-            "index.html";
-    }
-);
-
-
-/* =========================================================
-   SOCKET.IO
-========================================================= */
-
-if(
-    typeof io ===
-    "function"
-){
-
-    try{
-
-        const socket =
-            io(
-                API_BASE,
-                {
-                    transports:[
-                        "websocket",
-                        "polling"
-                    ]
-                }
-            );
-
-
-        socket.on(
-            "connect",
-            function(){
-
-                console.log(
-                    "Socket.IO connected:",
-                    socket.id
-                );
-            }
-        );
-
-
-        socket.on(
-            "connect_error",
-            function(error){
-
-                console.warn(
-                    "Socket.IO error:",
-                    error.message
-                );
-            }
-        );
-
-
-        socket.on(
-            "actualizar-productos",
-            function(updated){
-
-                console.log(
-                    "Product update received:",
-                    updated
-                );
-
-
-                const updates =
-                    Array.isArray(
-                        updated
-                    )
-                        ? updated
-                        : [updated];
-
-
-                updates.forEach(
-                    item => {
-
-                        const normalized =
-                            normalizeProduct(
-                                item
-                            );
-
-
-                        if(
-                            !normalized
-                        ){
+                        if (
+                            id ===
+                            undefined ||
+                            id ===
+                            null
+                        ) {
 
                             return;
                         }
@@ -4989,198 +5475,296 @@ if(
 
                         const index =
                             productosMaster.findIndex(
-                                p =>
+                                product =>
                                     String(
-                                        p.id
+                                        product.id
                                     ) ===
-                                    String(
-                                        normalized.id
-                                    )
+                                    String(id)
                             );
 
 
-                        if(
-                            index >= 0
-                        ){
+                        if (
+                            index <
+                            0
+                        ) {
 
-                            productosMaster[
-                                index
-                            ] = {
+                            return;
+                        }
 
-                                ...productosMaster[
-                                    index
-                                ],
 
-                                ...normalized
-                            };
+                        productosMaster.splice(
+                            index,
+                            1
+                        );
 
-                        }else{
 
-                            productosMaster.push(
-                                normalized
+                        try {
+
+                            localStorage.setItem(
+                                "productos",
+                                JSON.stringify(
+                                    productosMaster
+                                )
+                            );
+
+                        } catch (error) {
+
+                            console.warn(
+                                "localStorage delete failed:",
+                                error
                             );
                         }
+
+
+                        /*
+                         * Solo reconstruir la lista
+                         * si el producto estaba visible.
+                         */
+
+                        const card =
+                            contenedor?.querySelector(
+                                `.producto[data-id="${CSS.escape(String(id))}"]`
+                            );
+
+
+                        if (
+                            card
+                        ) {
+
+                            card.remove();
+                        }
+
+
+                        updateCartCount();
                     }
                 );
 
 
-                try{
+                /* =============================================
+                   OPTIONAL FULL UPDATE EVENT
+                ============================================= */
 
-                    localStorage.setItem(
-                        "productos",
-                        JSON.stringify(
-                            productosMaster
-                        )
-                    );
+                socket.on(
+                    "productos-actualizados",
+                    function (payload) {
 
-                }catch(error){
-
-                    console.warn(
-                        "Could not update localStorage:",
-                        error
-                    );
-                }
+                        console.log(
+                            "Products updated event received"
+                        );
 
 
-                renderProducts(
-                    visibleProducts()
+                        /*
+                         * Si el servidor manda
+                         * la lista completa,
+                         * actualizamos el estado.
+                         *
+                         * Pero no navegamos.
+                         */
+
+                        const list =
+                            Array.isArray(
+                                payload
+                            )
+                                ? payload
+                                : (
+                                    payload?.productos ||
+                                    payload?.products ||
+                                    null
+                                );
+
+
+                        if (
+                            !Array.isArray(list)
+                        ) {
+
+                            return;
+                        }
+
+
+                        const normalized =
+                            list
+                                .map(
+                                    normalizeProduct
+                                )
+                                .filter(Boolean);
+
+
+                        if (
+                            !normalized.length
+                        ) {
+
+                            return;
+                        }
+
+
+                        productosMaster =
+                            normalized;
+
+
+                        try {
+
+                            localStorage.setItem(
+                                "productos",
+                                JSON.stringify(
+                                    productosMaster
+                                )
+                            );
+
+                        } catch (error) {
+
+                            console.warn(
+                                "Could not save full socket update:",
+                                error
+                            );
+                        }
+
+
+                        /*
+                         * Guardamos posición.
+                         */
+
+                        const scroll =
+                            window.scrollY;
+
+
+                        renderProducts(
+                            getFilteredProducts(),
+                            false
+                        );
+
+
+                        requestAnimationFrame(
+                            function () {
+
+                                window.scrollTo(
+                                    0,
+                                    scroll
+                                );
+                            }
+                        );
+                    }
+                );
+
+
+            } catch (error) {
+
+                console.warn(
+                    "Socket.IO initialization failed:",
+                    error
                 );
             }
-        );
-
-    }catch(error){
-
-        console.warn(
-            "Socket.IO initialization failed:",
-            error
-        );
-    }
-}
+        }
 
 
-/* =========================================================
-   IMAGE PRELOAD
-========================================================= */
+        /* =====================================================
+           START SOCKET
+        ===================================================== */
 
-/*
- * NO hacemos preload de las 2,000+ imágenes.
- *
- * Eso era una de las cosas que podía provocar
- * demasiadas solicitudes simultáneas.
- *
- * Solamente precargamos las primeras imágenes
- * visibles.
- */
+        initializeSocket();
 
-setTimeout(
-    function(){
 
-        const products =
-            visibleProducts()
-                .slice(
-                    0,
-                    30
+        /* =====================================================
+           IMAGE PRELOAD
+        ===================================================== */
+
+        setTimeout(
+            function () {
+
+                const products =
+                    visibleProducts()
+                        .slice(
+                            0,
+                            20
+                        );
+
+
+                products.forEach(
+                    product => {
+
+                        const first =
+                            product.imagenes?.[0];
+
+
+                        if (!first) {
+                            return;
+                        }
+
+
+                        const candidates =
+                            getImageCandidates(
+                                first
+                            );
+
+
+                        const url =
+                            candidates[0];
+
+
+                        if (!url) {
+                            return;
+                        }
+
+
+                        const image =
+                            new Image();
+
+
+                        image.src =
+                            url;
+                    }
                 );
 
+            },
+            1500
+        );
 
-        products.forEach(
+
+        /* =====================================================
+           DIAGNOSTICS
+        ===================================================== */
+
+        let diagnosticImages =
+            0;
+
+
+        productosMaster.forEach(
             product => {
 
-                const first =
-                    product.imagenes?.[0];
-
-
-                if(!first){
-                    return;
-                }
-
-
-                const candidates =
-                    getImageCandidates(
-                        first
-                    );
-
-
-                /*
-                 * Solamente probar la primera
-                 * fuente aquí.
-                 *
-                 * loadImage() manejará los
-                 * fallbacks cuando la tarjeta
-                 * realmente se cargue.
-                 */
-
-                const url =
-                    candidates[0];
-
-
-                if(!url){
-                    return;
-                }
-
-
-                const image =
-                    new Image();
-
-
-                image.src =
-                    url;
+                diagnosticImages +=
+                    product.imagenes.length;
             }
         );
 
-    },
-    1500
-);
 
+        console.log(
+            "========================================"
+        );
 
-/* =========================================================
-   DIAGNOSTICS
-========================================================= */
+        console.log(
+            "LaTRONIC SHOP READY"
+        );
 
-let diagnosticImages = 0;
+        console.log(
+            "Products:",
+            productosMaster.length
+        );
 
-productosMaster.forEach(
-    product => {
+        console.log(
+            "Image records:",
+            diagnosticImages
+        );
 
-        diagnosticImages +=
-            product.imagenes.length;
+        console.log(
+            "Socket:",
+            socket ? "INITIALIZED" : "NOT AVAILABLE"
+        );
+
+        console.log(
+            "========================================"
+        );
+
     }
 );
-
-
-console.log(
-    "========================================"
-);
-
-console.log(
-    "LaTRONIC SHOP READY"
-);
-
-console.log(
-    "Products:",
-    productosMaster.length
-);
-
-console.log(
-    "Image records:",
-    diagnosticImages
-);
-
-console.log(
-    "Cloudinary:",
-    CLOUDINARY_BASE
-);
-
-console.log(
-    "Image server:",
-    IMAGE_SERVER_BASE
-);
-
-console.log(
-    "========================================"
-);
-
-});
 
 </script>
 
