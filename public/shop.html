@@ -1,39 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>LaTRONIC Store</title>
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:wght@100..700&display=swap"
-    rel="stylesheet"
->
-
-<link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:wght@100..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 
 <style>
-
-/* =========================================================
-   RESET
-========================================================= */
 
 *{
     box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
     min-height:100%;
@@ -45,9 +27,9 @@ body{
     color:rgba(255,255,255,.82);
 }
 
-/* =========================================================
+/* =========================
    SIDEBAR
-========================================================= */
+========================= */
 
 aside{
     position:fixed;
@@ -56,29 +38,20 @@ aside{
     width:220px;
     height:100vh;
     overflow-y:auto;
-
     background:rgba(26,26,26,.96);
-
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
-
     padding:1rem .8rem;
-
     z-index:1500;
-
     border-right:1px solid rgba(226,143,47,.4);
 }
 
 aside h2{
     font-family:"Bebas Neue",sans-serif;
     font-size:2rem;
-
     text-align:center;
-
     margin:0 0 1.5rem;
-
     color:#e28f2f;
-
     letter-spacing:1px;
 }
 
@@ -96,45 +69,29 @@ aside h2{
 .boton-categoria{
     display:block;
     width:100%;
-
     background:transparent;
-
     color:#e28f2f;
-
     border:none;
-
     text-align:left;
-
     text-decoration:none;
-
     font-size:.95rem;
-
     padding:.45rem .7rem;
-
     border-radius:8px;
-
     cursor:pointer;
-
     transition:.2s;
 }
 
 .boton-categoria:hover{
     background:rgba(226,143,47,.25);
-
     transform:translateX(3px);
-
     color:#fff;
 }
 
 .submenu{
     display:none;
-
     list-style:none;
-
     margin:0;
-
     padding-left:.7rem;
-
     border-left:2px solid rgba(226,143,47,.3);
 }
 
@@ -152,68 +109,49 @@ aside h2{
     color:#000;
 }
 
-/* =========================================================
+/* =========================
    MAIN
-========================================================= */
+========================= */
 
 main{
     margin-left:220px;
-
     padding:1rem;
-
     min-height:100vh;
 }
 
 #titulo-principal{
     font-family:"Bebas Neue",sans-serif;
-
     font-size:2.5rem;
-
     text-align:center;
-
     color:#f16413;
-
     letter-spacing:2px;
-
     margin:0 0 10px;
-
     text-shadow:
         0 0 10px rgba(241,100,19,.35),
         0 0 20px rgba(226,143,47,.25);
 }
 
-/* =========================================================
+/* =========================
    SEARCH
-========================================================= */
+========================= */
 
 .search-bar{
     display:flex;
-
     justify-content:center;
     align-items:center;
-
     gap:8px;
-
     margin:0 auto 14px;
-
     max-width:600px;
 }
 
 #search-input{
     padding:9px 14px;
-
     width:100%;
-
     border-radius:24px;
-
     border:1px solid #333;
-
     background:#141414;
-
     color:#fff;
-
     outline:none;
-
     font-size:.9rem;
 }
 
@@ -224,44 +162,38 @@ main{
 #search-btn{
     width:38px;
     height:38px;
-
     flex-shrink:0;
-
     border-radius:50%;
-
     border:none;
-
     background:#e28f2f;
-
     cursor:pointer;
 }
 
-/* =========================================================
+/* =========================
    PRODUCTS
-========================================================= */
+========================= */
 
 #contenedor-productos{
     display:grid;
 
+    /*
+       TARJETAS COMPACTAS
+    */
     grid-template-columns:
         repeat(auto-fill,minmax(135px,1fr));
 
     gap:9px;
 
     width:100%;
-
     align-items:start;
 }
 
 .producto{
     width:100%;
-
     min-width:0;
 
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
 
     text-align:center;
@@ -283,18 +215,15 @@ main{
 
 .producto:hover{
     transform:translateY(-3px);
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,.5);
+    box-shadow:0 8px 18px rgba(0,0,0,.5);
 }
 
-/* =========================================================
+/* =========================
    IMAGE
-========================================================= */
+========================= */
 
 .galeria{
     width:100%;
-
     max-width:120px;
 
     aspect-ratio:1/1;
@@ -308,15 +237,12 @@ main{
     background:#1b1b1b;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 }
 
 .main-img{
     width:100%;
-
     height:100%;
 
     object-fit:contain;
@@ -346,13 +272,10 @@ main{
 
 .image-loading{
     position:absolute;
-
     inset:0;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     background:#181818;
@@ -370,13 +293,11 @@ main{
 
 .image-error{
     position:absolute;
-
     inset:0;
 
     display:none;
 
     align-items:center;
-
     justify-content:center;
 
     flex-direction:column;
@@ -400,13 +321,12 @@ main{
 
 .image-error i{
     font-size:20px;
-
     margin-bottom:3px;
 }
 
-/* =========================================================
+/* =========================
    TEXT
-========================================================= */
+========================= */
 
 .producto h3{
     width:100%;
@@ -450,13 +370,11 @@ main{
 
 .stock{
     font-size:.62rem;
-
     margin:2px 0;
 }
 
 .price{
     font-size:.82rem;
-
     margin:2px 0;
 
     color:#e28f2f !important;
@@ -464,19 +382,18 @@ main{
     font-weight:bold;
 }
 
-/* =========================================================
+/* =========================
    BUTTONS
-========================================================= */
+========================= */
 
 .agregar-carrito{
     width:92%;
 
-    background:
-        linear-gradient(
-            135deg,
-            #f16413,
-            #e28f2f
-        );
+    background:linear-gradient(
+        135deg,
+        #f16413,
+        #e28f2f
+    );
 
     color:#000;
 
@@ -497,9 +414,7 @@ main{
 
 .agregar-carrito:disabled{
     background:#444;
-
     color:#888;
-
     cursor:not-allowed;
 }
 
@@ -525,13 +440,12 @@ main{
 
 .negociar:hover{
     background:#e28f2f;
-
     color:#000;
 }
 
-/* =========================================================
+/* =========================
    CART
-========================================================= */
+========================= */
 
 .carrito{
     width:100%;
@@ -549,49 +463,41 @@ main{
     font-weight:bold;
 }
 
-/* =========================================================
+/* =========================
    FOOTER
-========================================================= */
+========================= */
 
 footer{
     text-align:center;
-
     padding:1rem 0;
-
     color:rgba(255,255,255,.6);
-
     font-size:.63rem;
-
     line-height:1.5;
 }
 
 .link{
     color:#e28f2f;
-
     text-decoration:none;
 }
 
-/* =========================================================
+/* =========================
    ADMIN
-========================================================= */
+========================= */
 
 #admin-access{
     position:fixed;
 
     bottom:18px;
-
     right:18px;
 
     width:40px;
-
     height:40px;
 
-    background:
-        linear-gradient(
-            135deg,
-            #e28f2f,
-            #f16413
-        );
+    background:linear-gradient(
+        135deg,
+        #e28f2f,
+        #f16413
+    );
 
     color:#000;
 
@@ -606,25 +512,25 @@ footer{
     z-index:9999;
 }
 
-/* =========================================================
-   OFFER MODAL
-========================================================= */
+/* =========================
+   MODAL
+========================= */
 
-#negociar-modal{
+#negociar-modal,
+#zoom-modal{
     position:fixed;
-
     inset:0;
 
     display:none;
 
     justify-content:center;
-
     align-items:center;
 
     z-index:999999;
+}
 
+#negociar-modal{
     background:rgba(0,0,0,.85);
-
     backdrop-filter:blur(8px);
 }
 
@@ -640,9 +546,7 @@ footer{
     width:min(90%,400px);
 
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
 }
 
@@ -662,50 +566,31 @@ footer{
     color:#fff;
 }
 
-/* =========================================================
+/* =========================
    ZOOM
-========================================================= */
+========================= */
 
 #zoom-modal{
-    position:fixed;
-
-    inset:0;
-
-    display:none;
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:999999;
-
     background:rgba(0,0,0,.95);
-
     flex-direction:column;
-
     cursor:pointer;
 }
 
 #zoom-img{
     max-width:85%;
-
     max-height:75%;
 
     object-fit:contain;
 
     border-radius:10px;
 
-    box-shadow:
-        0 0 25px rgba(0,0,0,.7);
+    box-shadow:0 0 25px rgba(0,0,0,.7);
 }
 
 #zoom-desc{
     color:#fff;
-
     text-align:center;
-
     max-width:90%;
-
     margin-top:10px;
 }
 
@@ -717,7 +602,6 @@ footer{
     transform:translateY(-50%);
 
     width:45px;
-
     height:45px;
 
     border:none;
@@ -743,13 +627,12 @@ footer{
     right:20px;
 }
 
-/* =========================================================
+/* =========================
    AGE MODAL
-========================================================= */
+========================= */
 
 .age-check-modal{
     position:fixed;
-
     inset:0;
 
     background:rgba(0,0,0,.95);
@@ -757,13 +640,11 @@ footer{
     display:flex;
 
     justify-content:center;
-
     align-items:center;
 
     z-index:10000;
 
     opacity:0;
-
     pointer-events:none;
 
     transition:opacity .3s;
@@ -771,7 +652,6 @@ footer{
 
 .age-check-modal.show{
     opacity:1;
-
     pointer-events:auto;
 }
 
@@ -793,7 +673,6 @@ footer{
 
 .age-check-box p{
     color:#fff;
-
     line-height:1.4;
 }
 
@@ -811,9 +690,9 @@ footer{
     margin:4px;
 }
 
-/* =========================================================
+/* =========================
    MOBILE
-========================================================= */
+========================= */
 
 .hamburger{
     display:none;
@@ -821,7 +700,6 @@ footer{
     position:fixed;
 
     top:12px;
-
     left:12px;
 
     font-size:30px;
@@ -837,9 +715,7 @@ footer{
 
     aside{
         left:-250px;
-
         width:220px;
-
         transition:left .3s ease;
     }
 
@@ -853,9 +729,7 @@ footer{
 
     main{
         margin-left:0;
-
         padding:12px;
-
         padding-top:55px;
     }
 
@@ -897,14 +771,11 @@ footer{
 
     #zoom-img{
         max-width:92%;
-
         max-height:65%;
     }
-
 }
 
 </style>
-
 </head>
 
 <body>
@@ -918,20 +789,12 @@ footer{
 <ul class="menu">
 
 <li>
-<a
-    class="boton-categoria"
-    href="index.html"
->
+<a class="boton-categoria" href="index.html">
 Home
 </a>
 </li>
 
-<!-- =====================================================
-     SIGNED CARD
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Signed Card
 </button>
@@ -957,15 +820,9 @@ Signed Card
 <li><button class="boton-categoria" data-main="sign" data-sub="music">Music Artist</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     NEW CARD
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 New Card
 </button>
@@ -991,15 +848,9 @@ New Card
 <li><button class="boton-categoria" data-main="new" data-sub="music">Music Artist</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     USED CARD
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Used Card
 </button>
@@ -1025,15 +876,9 @@ Used Card
 <li><button class="boton-categoria" data-main="used" data-sub="music">Music Artist</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     CLASSIC CARD
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Classic Card
 </button>
@@ -1052,15 +897,9 @@ Classic Card
 <li><button class="boton-categoria" data-main="classic" data-sub="race-car">Racecar</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     CLOTHES
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Clothes
 </button>
@@ -1077,15 +916,9 @@ Clothes
 <li><button class="boton-categoria" data-main="clothes" data-sub="unisexKids">Baby & Toddler Unisex</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     DECALS
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Vinyl Decals
 </button>
@@ -1096,15 +929,9 @@ Vinyl Decals
 <li><button class="boton-categoria" data-main="decals" data-sub="motorcycle">Motorcycle & Bike</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     JEWELRY
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Jewelry
 </button>
@@ -1116,15 +943,9 @@ Jewelry
 <li><button class="boton-categoria" data-main="jewelry" data-sub="watch">Watches</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     ELECTRONICS
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 Electronics
 </button>
@@ -1136,15 +957,9 @@ Electronics
 <li><button class="boton-categoria" data-main="electronics" data-sub="headphone">Headphones</button></li>
 
 </ul>
-
 </li>
 
-<!-- =====================================================
-     MORE
-===================================================== -->
-
 <li>
-
 <button class="boton-categoria toggle-submenu">
 More
 </button>
@@ -1160,19 +975,11 @@ More
 <li><button class="boton-categoria" data-main="more" data-sub="toys">Toys</button></li>
 
 </ul>
-
 </li>
-
-<!-- =====================================================
-     CART
-===================================================== -->
 
 <li>
 
-<button
-    id="cart-btn"
-    class="carrito"
->
+<button id="cart-btn" class="carrito">
 🛒 Cart (<span id="cart-count">0</span>)
 </button>
 
@@ -1182,21 +989,8 @@ More
 
 <footer>
 
-<a
-    href="aboutus.html"
-    class="link"
->
-About Us
-</a>
-
-|
-
-<a
-    href="contactus.html"
-    class="link"
->
-Contact Us
-</a>
+<a href="aboutus.html" class="link">About Us</a> |
+<a href="contactus.html" class="link">Contact Us</a>
 
 <br>
 
@@ -1214,10 +1008,6 @@ Located in Connecticut, USA
 
 </aside>
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
 <main>
 
 <h1 id="titulo-principal">
@@ -1233,10 +1023,7 @@ All Products
     autocomplete="off"
 >
 
-<button
-    id="search-btn"
-    type="button"
->
+<button id="search-btn">
 🔎
 </button>
 
@@ -1244,18 +1031,15 @@ All Products
 
 <div id="contenedor-productos"></div>
 
-<button
-    id="admin-access"
-    type="button"
->
+<button id="admin-access">
 ⚙️
 </button>
 
 </main>
 
-<!-- =====================================================
+<!-- =========================
      OFFER MODAL
-===================================================== -->
+========================= -->
 
 <div id="negociar-modal">
 
@@ -1275,10 +1059,7 @@ All Products
 &times;
 </span>
 
-<h2
-    id="negociar-producto"
-    style="color:#e28f2f;"
-></h2>
+<h2 id="negociar-producto" style="color:#e28f2f;"></h2>
 
 <input
     type="email"
@@ -1290,13 +1071,10 @@ All Products
     type="number"
     id="negociar-precio"
     placeholder="Offer Price"
-    min="0"
-    step="0.01"
 >
 
 <button
     id="enviar-negociacion"
-    type="button"
     style="
         padding:8px 14px;
         border:none;
@@ -1316,20 +1094,15 @@ Make an Offer
 
 </div>
 
-<!-- =====================================================
+<!-- =========================
      AGE MODAL
-===================================================== -->
+========================= -->
 
-<div
-    id="ageCheckModal"
-    class="age-check-modal"
->
+<div id="ageCheckModal" class="age-check-modal">
 
 <div class="age-check-box">
 
-<h2>
-Adult Content Warning
-</h2>
+<h2>Adult Content Warning</h2>
 
 <p>
 This section contains adult material that may not be suitable for minors.
@@ -1339,16 +1112,12 @@ By clicking “Yes, I am 18+”, you confirm that you are at least 18 years old
 
 <div class="age-check-buttons">
 
-<button
-    id="ageYes"
-    type="button"
->
+<button id="ageYes">
 Yes, I am 18+
 </button>
 
 <button
     id="ageNo"
-    type="button"
     style="background:#333;color:#fff;"
 >
 No, exit
@@ -1360,4996 +1129,1923 @@ No, exit
 
 </div>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>LaTRONIC Admin Panel</title>
-
-    <!-- =====================================================
-         HEIC / HEIF
-    ====================================================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js">
-    </script>
-
-
-    <!-- =====================================================
-         SOCKET.IO
-    ====================================================== -->
-
-    <script
-        src="https://cdn.socket.io/4.6.1/socket.io.min.js">
-    </script>
-
-
-    <style>
-
-        /* =====================================================
-           GLOBAL
-        ====================================================== */
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-
-        html {
-            background: #111;
-        }
-
-
-        body {
-            background: #1b1b1b;
-            color: #fff;
-            min-height: 100vh;
-        }
-
-
-        button,
-        input,
-        textarea {
-            font: inherit;
-        }
-
-
-        button {
-            cursor: pointer;
-        }
-
-
-        /* =====================================================
-           LOGIN
-        ====================================================== */
-
-        #login-screen {
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            min-height: 100vh;
-
-            padding: 20px;
-
-            background:
-                radial-gradient(
-                    circle at center,
-                    #292929 0%,
-                    #111 65%
-                );
-        }
-
-
-        #login-box {
-
-            width: 100%;
-
-            max-width: 380px;
-
-            background: #252525;
-
-            padding: 30px;
-
-            border-radius: 14px;
-
-            border: 1px solid #3b3b3b;
-
-            box-shadow:
-                0 20px 60px
-                rgba(0,0,0,.6);
-
-            text-align: center;
-        }
-
-
-        #login-box h1 {
-
-            margin-bottom: 8px;
-
-            font-size: 28px;
-        }
-
-
-        #login-box h6 {
-
-            color: #ff4444;
-
-            margin-bottom: 20px;
-
-            font-size: 12px;
-        }
-
-
-        #login-box input {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: 1px solid #3a3a3a;
-
-            border-radius: 7px;
-
-            background: #151515;
-
-            color: white;
-
-            outline: none;
-
-            margin-bottom: 10px;
-        }
-
-
-        #login-box input:focus {
-
-            border-color: #e28f2f;
-
-            box-shadow:
-                0 0 10px
-                rgba(226,143,47,.25);
-        }
-
-
-        #login-box button {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: none;
-
-            border-radius: 7px;
-
-            margin-top: 8px;
-
-            font-weight: bold;
-
-            background: #e28f2f;
-
-            color: #000;
-        }
-
-
-        #login-box button:hover {
-
-            background: #d65011;
-
-            color: white;
-        }
-
-
-        /* =====================================================
-           ADMIN
-        ====================================================== */
-
-        #admin-panel {
-
-            display: none;
-
-            width: 100%;
-
-            max-width: 1500px;
-
-            margin: 0 auto;
-
-            padding: 20px;
-        }
-
-
-        .admin-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 15px;
-
-            flex-wrap: wrap;
-
-            margin-bottom: 20px;
-        }
-
-
-        .admin-header h1 {
-
-            font-size: 28px;
-        }
-
-
-        .header-buttons {
-
-            display: flex;
-
-            gap: 8px;
-
-            flex-wrap: wrap;
-        }
-
-
-        /* =====================================================
-           BUTTONS
-        ====================================================== */
-
-        .btn {
-
-            border: none;
-
-            border-radius: 7px;
-
-            padding: 10px 14px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            transition: .15s;
-        }
-
-
-        .btn:hover {
-
-            transform: translateY(-1px);
-        }
-
-
-        .btn-orange {
-
-            background: #e28f2f;
-
-            color: #000;
-        }
-
-
-        .btn-orange:hover {
-
-            background: #d65011;
-
-            color: white;
-        }
-
-
-        .btn-red {
-
-            background: #b52b2b;
-
-            color: white;
-        }
-
-
-        .btn-red:hover {
-
-            background: #e33b3b;
-        }
-
-
-        .btn-gray {
-
-            background: #444;
-
-            color: white;
-        }
-
-
-        .btn-gray:hover {
-
-            background: #555;
-        }
-
-
-        .btn-green {
-
-            background: #2d9b52;
-
-            color: white;
-        }
-
-
-        .btn-green:hover {
-
-            background: #36b961;
-        }
-
-
-        .btn:disabled {
-
-            opacity: .5;
-
-            cursor: not-allowed;
-
-            transform: none;
-        }
-
-
-        /* =====================================================
-           STATUS
-        ====================================================== */
-
-        #server-status {
-
-            background: #252525;
-
-            border: 1px solid #333;
-
-            border-radius: 8px;
-
-            padding: 12px 15px;
-
-            margin-bottom: 15px;
-
-            font-size: 14px;
-        }
-
-
-        .status-loading {
-
-            color: #e28f2f;
-
-            font-weight: bold;
-        }
-
-
-        .status-ok {
-
-            color: #39d56a;
-
-            font-weight: bold;
-        }
-
-
-        .status-error {
-
-            color: #ff4d4d;
-
-            font-weight: bold;
-        }
-
-
-        /* =====================================================
-           SEARCH
-        ====================================================== */
-
-        .search-row {
-
-            display: flex;
-
-            gap: 8px;
-
-            margin-bottom: 18px;
-        }
-
-
-        #search-input {
-
-            flex: 1;
-
-            min-width: 0;
-
-            padding: 13px;
-
-            border: 1px solid #363636;
-
-            border-radius: 8px;
-
-            background: #252525;
-
-            color: white;
-
-            outline: none;
-        }
-
-
-        #search-input:focus {
-
-            border-color: #e28f2f;
-
-            box-shadow:
-                0 0 10px
-                rgba(226,143,47,.2);
-        }
-
-
-        /* =====================================================
-           ADD PRODUCT
-        ====================================================== */
-
-        #form-producto {
-
-            background: #252525;
-
-            border: 1px solid #333;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            margin-bottom: 25px;
-        }
-
-
-        #form-producto h2 {
-
-            margin-bottom: 15px;
-        }
-
-
-        .upload-info {
-
-            background: #171717;
-
-            border-left: 4px solid #e28f2f;
-
-            padding: 12px;
-
-            margin-bottom: 15px;
-
-            border-radius: 5px;
-
-            color: #bbb;
-
-            font-size: 13px;
-
-            line-height: 1.5;
-        }
-
-
-        .form-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0,1fr));
-
-            gap: 10px;
-        }
-
-
-        .form-full {
-
-            grid-column: 1 / -1;
-        }
-
-
-        #form-producto input,
-        #form-producto textarea {
-
-            width: 100%;
-
-            padding: 12px;
-
-            border: 1px solid #393939;
-
-            border-radius: 7px;
-
-            background: #171717;
-
-            color: white;
-
-            outline: none;
-        }
-
-
-        #form-producto textarea {
-
-            min-height: 110px;
-
-            resize: vertical;
-        }
-
-
-        #form-producto input:focus,
-        #form-producto textarea:focus {
-
-            border-color: #e28f2f;
-        }
-
-
-        #imagenes-file {
-
-            cursor: pointer;
-        }
-
-
-        #add-preview {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 8px;
-
-            margin: 10px 0;
-        }
-
-
-        .preview-item {
-
-            width: 90px;
-
-            height: 90px;
-
-            border-radius: 7px;
-
-            overflow: hidden;
-
-            border: 1px solid #444;
-
-            background: #111;
-
-            position: relative;
-        }
-
-
-        .preview-item img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-        }
-
-
-        .preview-number {
-
-            position: absolute;
-
-            bottom: 3px;
-
-            right: 3px;
-
-            background: rgba(0,0,0,.8);
-
-            color: white;
-
-            padding: 2px 5px;
-
-            font-size: 10px;
-
-            border-radius: 3px;
-        }
-
-
-        #agregar-btn {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: none;
-
-            border-radius: 7px;
-
-            background: #e28f2f;
-
-            color: #000;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            margin-top: 5px;
-        }
-
-
-        #agregar-btn:hover {
-
-            background: #d65011;
-
-            color: white;
-        }
-
-
-        #agregar-btn:disabled {
-
-            opacity: .5;
-
-            cursor: not-allowed;
-        }
-
-
-        /* =====================================================
-           PRODUCTS
-        ====================================================== */
-
-        .products-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 10px;
-
-            margin-bottom: 12px;
-
-            flex-wrap: wrap;
-        }
-
-
-        .products-header h2 {
-
-            font-size: 21px;
-        }
-
-
-        #product-count {
-
-            color: #aaa;
-
-            font-size: 13px;
-        }
-
-
-        .productos {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(270px,1fr)
-                );
-
-            gap: 15px;
-        }
-
-
-        .producto {
-
-            background: #252525;
-
-            border: 1px solid #363636;
-
-            border-radius: 11px;
-
-            padding: 13px;
-
-            overflow: hidden;
-        }
-
-
-        .producto:hover {
-
-            border-color: #555;
-        }
-
-
-        .producto-id {
-
-            font-size: 11px;
-
-            color: #777;
-
-            margin-bottom: 8px;
-
-            word-break: break-all;
-        }
-
-
-        /* =====================================================
-           IMAGE GRID
-        ====================================================== */
-
-        .mini-images {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(75px,1fr)
-                );
-
-            gap: 7px;
-
-            margin-bottom: 10px;
-        }
-
-
-        .image-wrapper {
-
-            position: relative;
-
-            width: 100%;
-
-            aspect-ratio: 1 / 1;
-
-            background: #111;
-
-            border-radius: 6px;
-
-            overflow: hidden;
-
-            border: 1px solid #444;
-        }
-
-
-        .image-wrapper img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-
-            display: block;
-        }
-
-
-        .image-wrapper img.loading {
-
-            opacity: .25;
-        }
-
-
-        .image-error {
-
-            position: absolute;
-
-            inset: 0;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            text-align: center;
-
-            padding: 5px;
-
-            color: #ff5555;
-
-            background: #211515;
-
-            font-size: 10px;
-        }
-
-
-        .image-number {
-
-            position: absolute;
-
-            bottom: 3px;
-
-            right: 3px;
-
-            background: rgba(0,0,0,.85);
-
-            color: white;
-
-            font-size: 9px;
-
-            padding: 2px 4px;
-
-            border-radius: 3px;
-
-            z-index: 3;
-        }
-
-
-        .image-debug {
-
-            margin-top: 5px;
-
-            margin-bottom: 9px;
-
-            padding: 6px;
-
-            background: #111;
-
-            border-radius: 5px;
-
-            color: #777;
-
-            font-size: 9px;
-
-            word-break: break-all;
-
-            line-height: 1.35;
-        }
-
-
-        .image-debug.ok {
-
-            color: #53d97b;
-        }
-
-
-        .image-debug.error {
-
-            color: #ff5555;
-        }
-
-
-        .image-count {
-
-            color: #aaa;
-
-            font-size: 12px;
-
-            margin-bottom: 10px;
-        }
-
-
-        /* =====================================================
-           PRODUCT INPUTS
-        ====================================================== */
-
-        .producto input,
-        .producto textarea {
-
-            width: 100%;
-
-            padding: 10px;
-
-            margin-bottom: 7px;
-
-            border: 1px solid #383838;
-
-            border-radius: 6px;
-
-            background: #171717;
-
-            color: white;
-
-            outline: none;
-        }
-
-
-        .producto input:focus,
-        .producto textarea:focus {
-
-            border-color: #e28f2f;
-        }
-
-
-        .producto textarea {
-
-            min-height: 90px;
-
-            resize: vertical;
-        }
-
-
-        .product-actions {
-
-            display: flex;
-
-            gap: 7px;
-
-            flex-wrap: wrap;
-
-            margin-top: 5px;
-        }
-
-
-        .product-actions button {
-
-            flex: 1;
-
-            min-width: 100px;
-
-            padding: 9px;
-
-            border: none;
-
-            border-radius: 6px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-
-        .save-btn {
-
-            background: #e28f2f;
-
-            color: #000;
-        }
-
-
-        .save-btn:hover {
-
-            background: #d65011;
-
-            color: white;
-        }
-
-
-        .delete-btn {
-
-            background: #a92b2b;
-
-            color: white;
-        }
-
-
-        .delete-btn:hover {
-
-            background: #dc3b3b;
-        }
-
-
-        /* =====================================================
-           EMPTY / LOADING
-        ====================================================== */
-
-        .loading-box,
-        .empty-box {
-
-            grid-column: 1 / -1;
-
-            padding: 35px;
-
-            text-align: center;
-
-            background: #252525;
-
-            border-radius: 10px;
-
-            color: #e28f2f;
-        }
-
-
-        .empty-box {
-
-            color: #aaa;
-        }
-
-
-        /* =====================================================
-           MESSAGE
-        ====================================================== */
-
-        #mensaje-guardado {
-
-            position: fixed;
-
-            top: 20px;
-
-            right: 20px;
-
-            max-width: 420px;
-
-            padding: 13px 17px;
-
-            background: #2d9b52;
-
-            color: white;
-
-            border-radius: 7px;
-
-            box-shadow:
-                0 8px 30px
-                rgba(0,0,0,.5);
-
-            display: none;
-
-            z-index: 99999;
-
-            font-weight: bold;
-        }
-
-
-        /* =====================================================
-           RESPONSIVE
-        ====================================================== */
-
-        @media (max-width: 800px) {
-
-            #admin-panel {
-
-                padding: 10px;
-            }
-
-
-            .form-grid {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .form-full {
-
-                grid-column: auto;
-            }
-
-
-            .productos {
-
-                grid-template-columns:
-                    repeat(
-                        auto-fill,
-                        minmax(220px,1fr)
-                    );
-            }
-        }
-
-
-        @media (max-width: 500px) {
-
-            .admin-header {
-
-                align-items: stretch;
-            }
-
-
-            .header-buttons {
-
-                width: 100%;
-            }
-
-
-            .header-buttons .btn {
-
-                flex: 1;
-            }
-
-
-            .search-row {
-
-                flex-direction: column;
-            }
-
-
-            .productos {
-
-                grid-template-columns: 1fr;
-            }
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-
-<!-- =========================================================
-     LOGIN
-========================================================== -->
-
-<section id="login-screen">
-
-    <div id="login-box">
-
-        <h1>🔒 Admin Access</h1>
-
-        <h6>
-            This site is only for the administrator
-        </h6>
-
-        <input
-            type="password"
-            id="admin-password"
-            placeholder="Enter Password"
-            autocomplete="current-password"
-        >
-
-        <button
-            type="button"
-            id="login-btn"
-        >
-            Enter
-        </button>
-
-        <button
-            type="button"
-            class="btn-gray"
-            onclick="window.location.href='shop.html'"
-        >
-            Exit
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ADMIN PANEL
-========================================================== -->
-
-<section id="admin-panel">
-
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <div class="admin-header">
-
-        <h1>
-            LaTRONIC Admin Panel
-        </h1>
-
-
-        <div class="header-buttons">
-
-            <button
-                class="btn btn-gray"
-                id="reload-btn"
-                type="button"
-            >
-                🔄 Reload
-            </button>
-
-
-            <button
-                class="btn btn-orange"
-                id="go-shop-btn"
-                type="button"
-            >
-                🛍️ Shop
-            </button>
-
-
-            <button
-                class="btn btn-red"
-                id="logout-btn"
-                type="button"
-            >
-                Logout
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         SERVER STATUS
-    ====================================================== -->
-
-    <div id="server-status">
-
-        Server:
-
-        <span
-            id="status-text"
-            class="status-loading"
-        >
-            Checking...
-        </span>
-
-    </div>
-
-
-    <!-- =====================================================
-         SEARCH
-    ====================================================== -->
-
-    <div class="search-row">
-
-        <input
-            type="text"
-            id="search-input"
-            placeholder="Search products..."
-            autocomplete="off"
-        >
-
-        <button
-            type="button"
-            class="btn btn-gray"
-            id="clear-search-btn"
-        >
-            Clear
-        </button>
-
-    </div>
-
-
-    <!-- =====================================================
-         ADD PRODUCT
-    ====================================================== -->
-
-    <form
-        id="form-producto"
-        novalidate
-    >
-
-        <h2>
-            ➕ Add New Product
-        </h2>
-
-
-        <div class="upload-info">
-
-            <strong>📸 Image system</strong>
-
-            <br>
-
-            Las imágenes se envían al backend mediante
-            <code>/api/subir-imagenes</code>.
-
-            El backend debe convertirlas/optimizar
-            y subirlas a Cloudinary.
-
-            <br><br>
-
-            Después de recibir las URLs, el producto
-            se guarda mediante:
-
-            <code>/api/productos</code>.
-
-            <br><br>
-
-            Las URLs de Cloudinary se guardan directamente
-            en el producto.
-
-        </div>
-
-
-        <div class="form-grid">
-
-
-            <div class="form-full">
-
-                <input
-                    type="text"
-                    id="titulo"
-                    placeholder="Título del producto"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-full">
-
-                <textarea
-                    id="description"
-                    placeholder="Descripción"
-                    required
-                ></textarea>
-
-            </div>
-
-
-            <div class="form-full">
-
-                <input
-                    type="file"
-                    id="imagenes-file"
-                    multiple
-                    accept="image/*,.webp,.heif,.heic"
-                >
-
-            </div>
-
-
-            <div class="form-full">
-
-                <div id="add-preview"></div>
-
-            </div>
-
-
-            <div>
-
-                <input
-                    type="text"
-                    id="mainCat"
-                    placeholder="Categoría principal"
-                    required
-                >
-
-            </div>
-
-
-            <div>
-
-                <input
-                    type="text"
-                    id="subCat"
-                    placeholder="Subcategoría"
-                    required
-                >
-
-            </div>
-
-
-            <div>
-
-                <input
-                    type="number"
-                    id="price"
-                    placeholder="Precio"
-                    step="0.01"
-                    min="0"
-                    required
-                >
-
-            </div>
-
-
-            <div>
-
-                <input
-                    type="number"
-                    id="stock"
-                    placeholder="Stock"
-                    step="1"
-                    min="0"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-full">
-
-                <button
-                    type="submit"
-                    id="agregar-btn"
-                >
-                    ➕ Agregar producto
-                </button>
-
-            </div>
-
-        </div>
-
-    </form>
-
-
-    <!-- =====================================================
-         PRODUCTS HEADER
-    ====================================================== -->
-
-    <div class="products-header">
-
-        <h2>
-            📦 Products
-        </h2>
-
-        <span id="product-count">
-            0 products
-        </span>
-
-    </div>
-
-
-    <!-- =====================================================
-         PRODUCTS
-    ====================================================== -->
-
-    <div
-        id="lista-productos"
-        class="productos"
-    >
-
-        <div class="loading-box">
-            ⏳ Loading products...
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     MESSAGE
-========================================================== -->
-
-<div id="mensaje-guardado"></div>
-
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 
 <script>
 
+"use strict";
+
+document.addEventListener(
+"DOMContentLoaded",
+async function(){
+
 /* =========================================================
    CONFIGURATION
-========================================================== */
+========================================================= */
+
+const API_BASE =
+    window.location.origin;
+
+const CLOUDINARY_BASE =
+    "https://res.cloudinary.com/ju0sskwe/image/upload";
+
+const CLOUDINARY_FOLDER =
+    "latronic/products";
 
 /*
-    IMPORTANTE:
+   IMPORTANTE:
 
-    El admin está diseñado para estar servido por
-    el mismo Express que maneja /api/productos.
+   Shop NO utiliza localhost/uploads.
 
-    Por eso BASE_URL = "".
+   Todos los archivos antiguos como:
 
-    Si admin.html está en:
+   /uploads/1786060320955.jpeg
 
-        https://latronicstore.com/admin.html
+   son transformados a:
 
-    entonces:
+   https://res.cloudinary.com/ju0sskwe/image/upload/
+   f_auto,q_auto/latronic/products/1786060320955
 
-        /api/productos
-
-    se convierte en:
-
-        https://latronicstore.com/api/productos
 */
 
-const BASE_URL = "";
+const contenedor =
+    document.getElementById(
+        "contenedor-productos"
+    );
 
-
-/*
-    NO pongas localhost aquí.
-
-    Las imágenes deben venir del backend o de Cloudinary.
-*/
-
-const IMAGE_SERVER_URL = "";
-
-
-/*
-    Tu contraseña actual.
-*/
-
-const ADMIN_PASSWORD = "042525";
-
+const cartCount =
+    document.getElementById(
+        "cart-count"
+    );
 
 /* =========================================================
-   DOM
-========================================================== */
+   CLOUDINARY URL
+========================================================= */
 
-const loginScreen =
-    document.getElementById(
-        "login-screen"
-    );
+function cloudinaryUrl(
+    value
+){
 
-const loginBtn =
-    document.getElementById(
-        "login-btn"
-    );
-
-const passwordInput =
-    document.getElementById(
-        "admin-password"
-    );
-
-const adminPanel =
-    document.getElementById(
-        "admin-panel"
-    );
-
-const logoutBtn =
-    document.getElementById(
-        "logout-btn"
-    );
-
-const reloadBtn =
-    document.getElementById(
-        "reload-btn"
-    );
-
-const goShopBtn =
-    document.getElementById(
-        "go-shop-btn"
-    );
-
-const statusText =
-    document.getElementById(
-        "status-text"
-    );
-
-const searchInput =
-    document.getElementById(
-        "search-input"
-    );
-
-const clearSearchBtn =
-    document.getElementById(
-        "clear-search-btn"
-    );
-
-const listaProductos =
-    document.getElementById(
-        "lista-productos"
-    );
-
-const productCount =
-    document.getElementById(
-        "product-count"
-    );
-
-const formProducto =
-    document.getElementById(
-        "form-producto"
-    );
-
-const agregarBtn =
-    document.getElementById(
-        "agregar-btn"
-    );
-
-const imagenesFileInput =
-    document.getElementById(
-        "imagenes-file"
-    );
-
-const addPreview =
-    document.getElementById(
-        "add-preview"
-    );
-
-const mensajeGuardado =
-    document.getElementById(
-        "mensaje-guardado"
-    );
-
-
-/* =========================================================
-   VARIABLES
-========================================================== */
-
-let productos = [];
-
-let AUTH_TOKEN = "";
-
-let socket = null;
-
-let cargandoProductos = false;
-
-let operacionEnCurso = false;
-
-
-/* =========================================================
-   API URL
-========================================================== */
-
-function apiUrl(path) {
-
-    const base =
-        String(BASE_URL || "")
-            .replace(/\/+$/, "");
-
-    const cleanPath =
-        String(path || "")
-            .startsWith("/")
-            ? path
-            : "/" + path;
-
-    return base + cleanPath;
-}
-
-
-/* =========================================================
-   MENSAJES
-========================================================== */
-
-function mostrarMensaje(
-    texto,
-    tipo = "success"
-) {
-
-    mensajeGuardado.textContent =
-        texto;
-
-
-    if (tipo === "error") {
-
-        mensajeGuardado.style.background =
-            "#a92b2b";
-
-    } else if (tipo === "loading") {
-
-        mensajeGuardado.style.background =
-            "#b87818";
-
-    } else {
-
-        mensajeGuardado.style.background =
-            "#2d9b52";
-    }
-
-
-    mensajeGuardado.style.display =
-        "block";
-
-
-    clearTimeout(
-        mostrarMensaje.timer
-    );
-
-
-    mostrarMensaje.timer =
-        setTimeout(
-            () => {
-
-                mensajeGuardado.style.display =
-                    "none";
-
-            },
-            4000
-        );
-}
-
-
-/* =========================================================
-   STATUS
-========================================================== */
-
-function actualizarEstadoServidor(
-    ok,
-    texto
-) {
-
-    statusText.textContent =
-        texto;
-
-
-    statusText.className =
-        ok
-            ? "status-ok"
-            : "status-error";
-}
-
-
-/* =========================================================
-   ESCAPAR HTML
-========================================================== */
-
-function escaparHtml(valor) {
-
-    return String(
-        valor ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   CLOUDINARY
-========================================================== */
-
-function esCloudinary(url) {
-
-    return /res\.cloudinary\.com|cloudinary\.com/i.test(
-        String(url || "")
-    );
-}
-
-
-/* =========================================================
-   PREPARAR CLOUDINARY
-========================================================== */
-
-function prepararCloudinary(url) {
-
-    if (!url) {
-
+    if(!value){
         return "";
     }
 
+    let raw =
+        String(value).trim();
 
-    let value =
-        String(url).trim();
-
-
-    if (!esCloudinary(value)) {
-
-        return value;
-    }
-
-
-    /*
-        Ya tiene f_auto / q_auto.
-    */
-
-    if (
-        /\/image\/upload\/[^/]*(f_auto|q_auto)/i.test(
-            value
-        )
-    ) {
-
-        return value;
-    }
-
-
-    /*
-        Insertar optimización.
-    */
-
-    if (
-        value.includes(
-            "/image/upload/"
-        )
-    ) {
-
-        return value.replace(
-            "/image/upload/",
-            "/image/upload/f_auto,q_auto/"
-        );
-    }
-
-
-    return value;
-}
-
-
-/* =========================================================
-   NORMALIZAR URL
-========================================================== */
-
-function normalizarImagenUrl(
-    url
-) {
-
-    if (!url) {
-
+    if(!raw){
         return "";
     }
 
-
-    let value =
-        String(url).trim();
-
-
-    if (!value) {
-
-        return "";
-    }
-
-
     /*
-        Cloudinary
+       Ya es Cloudinary.
     */
 
-    if (esCloudinary(value)) {
-
-        return prepararCloudinary(
-            value
-        );
-    }
-
-
-    /*
-        Data / Blob
-    */
-
-    if (
-        /^data:/i.test(value) ||
-        /^blob:/i.test(value)
-    ) {
-
-        return value;
-    }
-
-
-    /*
-        Windows paths
-    */
-
-    value =
-        value.replace(
-            /\\/g,
-            "/"
-        );
-
-
-    /*
-        Eliminar file://
-    */
-
-    value =
-        value.replace(
-            /^file:\/+/i,
-            "/"
-        );
-
-
-    /*
-        Detectar localhost.
-
-        NUNCA dejamos:
-
-        http://localhost:3001/...
-
-        porque el navegador del cliente
-        intentaría acceder a SU localhost.
-    */
-
-    try {
-
-        const parsed =
-            new URL(
-                value,
-                window.location.origin
-            );
-
-
-        const hostname =
-            String(
-                parsed.hostname || ""
-            ).toLowerCase();
-
-
-        if (
-            hostname === "localhost" ||
-            hostname === "127.0.0.1" ||
-            hostname === "::1"
-        ) {
-
-            value =
-                parsed.pathname +
-                parsed.search +
-                parsed.hash;
-        }
-
-    } catch (error) {
+    if(
+        raw.includes(
+            "res.cloudinary.com"
+        )
+    ){
 
         /*
-            Ruta relativa.
+           Si ya tiene transformaciones,
+           la dejamos.
+
+           Si no tiene f_auto/q_auto,
+           las agregamos.
         */
+
+        try{
+
+            const url =
+                new URL(raw);
+
+            const parts =
+                url.pathname
+                .split("/")
+                .filter(Boolean);
+
+            const uploadIndex =
+                parts.indexOf("upload");
+
+            if(
+                uploadIndex !== -1
+            ){
+
+                const afterUpload =
+                    parts.slice(
+                        uploadIndex + 1
+                    );
+
+                const hasAuto =
+                    afterUpload.some(
+                        x =>
+                            x.includes(
+                                "f_auto"
+                            )
+                    );
+
+                if(!hasAuto){
+
+                    parts.splice(
+                        uploadIndex + 1,
+                        0,
+                        "f_auto,q_auto"
+                    );
+
+                    url.pathname =
+                        "/" +
+                        parts.join("/");
+
+                    return url.toString();
+
+                }
+
+            }
+
+            return raw;
+
+        }catch(e){
+
+            return raw;
+
+        }
+
     }
 
-
     /*
-        Eliminar ./ inicial
+       Si viene como:
+
+       /uploads/file.jpeg
+
+       o:
+
+       uploads/file.jpeg
     */
 
-    value =
-        value.replace(
-            /^\.\//,
+    let filename =
+        raw
+        .split("?")[0]
+        .split("#")[0];
+
+    filename =
+        filename
+        .replace(/^\/+/, "");
+
+    /*
+       Extraer solamente el nombre.
+    */
+
+    filename =
+        filename
+        .split("/")
+        .pop();
+
+    if(!filename){
+        return "";
+    }
+
+    /*
+       El public_id normalmente no incluye
+       la extensión.
+    */
+
+    const publicId =
+        filename.replace(
+            /\.(jpe?g|png|webp|gif|avif|bmp|tiff?)$/i,
             ""
         );
 
-
     /*
-        URLs HTTP/HTTPS.
+       Cloudinary entrega automáticamente
+       el formato óptimo.
+
+       f_auto:
+       WebP / AVIF cuando el navegador
+       lo soporta.
+
+       q_auto:
+       compresión automática.
     */
-
-    if (
-        /^https?:\/\//i.test(value)
-    ) {
-
-        return value;
-    }
-
-
-    /*
-        Ruta absoluta.
-    */
-
-    if (
-        value.startsWith("/")
-    ) {
-
-        if (IMAGE_SERVER_URL) {
-
-            return (
-                IMAGE_SERVER_URL
-                    .replace(
-                        /\/+$/,
-                        ""
-                    ) +
-                value
-            );
-        }
-
-
-        return value;
-    }
-
-
-    /*
-        Ruta relativa.
-    */
-
-    if (IMAGE_SERVER_URL) {
-
-        return (
-            IMAGE_SERVER_URL
-                .replace(
-                    /\/+$/,
-                    ""
-                ) +
-            "/" +
-            value.replace(
-                /^\/+/,
-                ""
-            )
-        );
-    }
-
 
     return (
+        CLOUDINARY_BASE +
+        "/f_auto,q_auto/" +
+        CLOUDINARY_FOLDER +
         "/" +
-        value.replace(
-            /^\/+/,
-            ""
-        )
+        encodeURIComponent(publicId)
     );
+
 }
 
-
 /* =========================================================
-   EXTRAER URL DE OBJETO
-========================================================== */
+   EXTRAER IMÁGENES
+========================================================= */
 
-function extraerUrlImagen(
-    item
-) {
+function getProductImages(
+    product
+){
 
-    if (!item) {
+    let images = [];
 
-        return "";
+    if(
+        Array.isArray(
+            product.imagenes
+        )
+    ){
+
+        images =
+            product.imagenes;
+
+    }else if(
+        Array.isArray(
+            product.images
+        )
+    ){
+
+        images =
+            product.images;
+
+    }else if(
+        product.image
+    ){
+
+        images = [
+            product.image
+        ];
+
+    }else if(
+        product.imagen
+    ){
+
+        images = [
+            product.imagen
+        ];
+
     }
-
-
-    if (
-        typeof item === "string"
-    ) {
-
-        return item.trim();
-    }
-
-
-    if (
-        typeof item !== "object"
-    ) {
-
-        return "";
-    }
-
-
-    return String(
-        item.secure_url ||
-        item.secureUrl ||
-        item.url ||
-        item.src ||
-        item.path ||
-        item.location ||
-        item.image ||
-        item.imagen ||
-        ""
-    ).trim();
-}
-
-
-/* =========================================================
-   NORMALIZAR LISTA
-========================================================== */
-
-function normalizarListaImagenes(
-    imagenes
-) {
-
-    if (!Array.isArray(imagenes)) {
-
-        return [];
-    }
-
-
-    const resultado = [];
-
-    const vistos = new Set();
-
-
-    for (
-        const item of imagenes
-    ) {
-
-        let url =
-            extraerUrlImagen(
-                item
-            );
-
-
-        if (!url) {
-
-            continue;
-        }
-
-
-        url =
-            normalizarImagenUrl(
-                url
-            );
-
-
-        if (!url) {
-
-            continue;
-        }
-
-
-        /*
-            Para comparar duplicados
-            ignoramos query/hash.
-        */
-
-        const clave =
-            url
-                .split("?")[0]
-                .split("#")[0]
-                .toLowerCase();
-
-
-        if (
-            vistos.has(clave)
-        ) {
-
-            continue;
-        }
-
-
-        vistos.add(clave);
-
-        resultado.push(url);
-    }
-
-
-    return resultado;
-}
-
-
-/* =========================================================
-   EXTRAER ARRAY DE IMÁGENES DEL PRODUCTO
-========================================================== */
-
-function obtenerImagenesProducto(
-    p
-) {
-
-    if (!p || typeof p !== "object") {
-
-        return [];
-    }
-
-
-    const posibles = [
-
-        p.imagenes,
-
-        p.images,
-
-        p.imageUrls,
-
-        p.image_urls,
-
-        p.fotos,
-
-        p.photos
-
-    ];
-
-
-    for (
-        const lista of posibles
-    ) {
-
-        if (
-            Array.isArray(lista)
-        ) {
-
-            return normalizarListaImagenes(
-                lista
-            );
-        }
-    }
-
 
     /*
-        Algunos productos pueden tener
-        una sola imagen.
+       Convertir TODO a Cloudinary.
     */
 
-    const una =
-        p.imagen ||
-        p.image ||
-        p.imageUrl ||
-        p.image_url;
+    images =
+        images
+        .map(
+            cloudinaryUrl
+        )
+        .filter(Boolean);
 
+    /*
+       Eliminar duplicados.
+    */
 
-    if (una) {
+    return [
+        ...new Set(images)
+    ];
 
-        return normalizarListaImagenes(
-            [una]
-        );
-    }
-
-
-    return [];
 }
 
-
 /* =========================================================
-   NORMALIZAR PRODUCTO
-========================================================== */
+   NORMALIZAR PRODUCT
+========================================================= */
 
-function normalizarProducto(
-    p,
-    index = 0
-) {
+function normalizeProduct(
+    product
+){
 
-    if (
-        !p ||
-        typeof p !== "object"
-    ) {
-
-        p = {};
+    if(
+        !product ||
+        typeof product !== "object"
+    ){
+        return null;
     }
 
-
-    let categoria =
-        p.categoria;
-
-
-    if (
-        !categoria ||
-        typeof categoria !== "object"
-    ) {
-
-        categoria = {};
-    }
-
-
-    const id =
-        p.id ??
-        p.productId ??
-        p.product_id ??
-        p.ID ??
-        `temp-${Date.now()}-${index}`;
-
+    const images =
+        getProductImages(
+            product
+        );
 
     return {
 
-        ...p,
+        ...product,
 
-        id,
+        id:
+            product.id,
 
         titulo:
-            p.titulo ??
-            p.title ??
-            p.nombre ??
-            "Sin título",
+            product.titulo ||
+            product.title ||
+            "Untitled Product",
 
         description:
-            p.description ??
-            p.descripcion ??
-            p.desc ??
+            product.description ||
+            product.descripcion ||
             "",
-
-        imagenes:
-            obtenerImagenesProducto(
-                p
-            ),
-
-        categoria: {
-
-            main:
-                categoria.main ??
-                categoria.mainCat ??
-                p.mainCat ??
-                p.categoriaPrincipal ??
-                p.category ??
-                "Sin categoría",
-
-            sub:
-                categoria.sub ??
-                categoria.subCat ??
-                p.subCat ??
-                p.subcategoria ??
-                p.subcategory ??
-                ""
-        },
 
         price:
             Number(
-                p.price ??
-                p.precio ??
+                product.price ??
+                product.precio ??
                 0
-            ) || 0,
+            ),
 
         stock:
             Number(
-                p.stock ??
-                p.inventario ??
-                p.quantity ??
-                0
-            ) || 0
+                product.stock || 0
+            ),
+
+        categoria:
+            product.categoria ||
+            {},
+
+        imagenes:
+            images
+
     };
+
 }
 
-
 /* =========================================================
-   OBTENER RESPUESTA JSON CON ERROR
-========================================================== */
+   LOAD PRODUCTS
+========================================================= */
 
-async function obtenerErrorRespuesta(
-    response
-) {
+async function loadProducts(){
 
-    let mensaje =
-        `HTTP ${response.status} ${response.statusText}`;
-
-
-    try {
-
-        const text =
-            await response.text();
-
-
-        if (text) {
-
-            try {
-
-                const data =
-                    JSON.parse(
-                        text
-                    );
-
-
-                mensaje =
-                    data.error ||
-                    data.message ||
-                    data.mensaje ||
-                    data.detail ||
-                    mensaje;
-
-            } catch {
-
-                if (
-                    text.length < 500
-                ) {
-
-                    mensaje =
-                        text;
-                }
-            }
-        }
-
-    } catch {
-
-        // mantener mensaje HTTP
-    }
-
-
-    return mensaje;
-}
-
-
-/* =========================================================
-   FETCH API
-========================================================== */
-
-async function apiFetch(
-    path,
-    options = {}
-) {
-
-    const headers =
-        new Headers(
-            options.headers || {}
-        );
-
-
-    headers.set(
-        "Accept",
-        "application/json"
-    );
-
-
-    if (AUTH_TOKEN) {
-
-        headers.set(
-            "Authorization",
-            AUTH_TOKEN
-        );
-    }
-
-
-    const response =
-        await fetch(
-            apiUrl(path),
-            {
-                ...options,
-                headers
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const mensaje =
-            await obtenerErrorRespuesta(
-                response
-            );
-
-
-        throw new Error(
-            mensaje
-        );
-    }
-
-
-    return response;
-}
-
-
-/* =========================================================
-   EXTRAER ARRAY DE PRODUCTOS
-========================================================== */
-
-function extraerProductos(
-    data
-) {
-
-    if (
-        Array.isArray(data)
-    ) {
-
-        return data;
-    }
-
-
-    const posibles = [
-
-        data?.productos,
-
-        data?.products,
-
-        data?.data,
-
-        data?.items,
-
-        data?.results
-
-    ];
-
-
-    for (
-        const item of posibles
-    ) {
-
-        if (
-            Array.isArray(item)
-        ) {
-
-            return item;
-        }
-    }
-
-
-    return [];
-}
-
-
-/* =========================================================
-   CARGAR PRODUCTOS
-========================================================== */
-
-async function cargarProductos() {
-
-    if (cargandoProductos) {
-
-        return;
-    }
-
-
-    cargandoProductos =
-        true;
-
-
-    actualizarEstadoServidor(
-        true,
-        "Loading products..."
-    );
-
-
-    listaProductos.innerHTML =
-        `
-        <div class="loading-box">
-            ⏳ Loading products...
-        </div>
-        `;
-
-
-    try {
+    try{
 
         console.log(
-            "GET",
-            apiUrl(
-                "/api/productos"
-            )
+            "Loading products from:",
+            API_BASE +
+            "/api/productos"
         );
 
-
         const response =
-            await apiFetch(
-                "/api/productos",
+            await fetch(
+                API_BASE +
+                "/api/productos?_=" +
+                Date.now(),
                 {
-                    method: "GET",
-                    cache: "no-store"
+                    method:"GET",
+                    cache:"no-store",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    }
                 }
             );
 
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
 
         const data =
             await response.json();
 
+        if(!Array.isArray(data)){
 
-        const lista =
-            extraerProductos(
-                data
+            throw new Error(
+                "API did not return an array"
             );
 
-
-        productos =
-            lista.map(
-                (
-                    p,
-                    index
-                ) =>
-                    normalizarProducto(
-                        p,
-                        index
-                    )
-            );
-
-
-        console.log(
-            "✅ Productos cargados:",
-            productos.length
-        );
-
-
-        let totalImagenes = 0;
-
-        let cloudinaryImagenes = 0;
-
-
-        for (
-            const p of productos
-        ) {
-
-            totalImagenes +=
-                p.imagenes.length;
-
-
-            cloudinaryImagenes +=
-                p.imagenes.filter(
-                    esCloudinary
-                ).length;
         }
 
+        const normalized =
+            data
+            .map(
+                normalizeProduct
+            )
+            .filter(Boolean);
 
-        actualizarEstadoServidor(
-            true,
-            `Connected — ${productos.length} products — ${totalImagenes} images — ${cloudinaryImagenes} Cloudinary`
+        console.log(
+            "Products:",
+            normalized.length
         );
 
+        /*
+           Mostrar diagnóstico.
+        */
 
-        renderProductos(
-            searchInput.value
+        normalized.forEach(
+            product => {
+
+                console.log(
+                    "PRODUCT:",
+                    product.titulo
+                );
+
+                console.log(
+                    "CLOUDINARY:",
+                    product.imagenes
+                );
+
+            }
         );
 
-    }
+        localStorage.setItem(
+            "productos",
+            JSON.stringify(
+                normalized
+            )
+        );
 
-    catch (error) {
+        return normalized;
+
+    }catch(error){
 
         console.error(
-            "❌ cargarProductos:",
+            "Product loading error:",
             error
         );
 
+        try{
 
-        actualizarEstadoServidor(
-            false,
-            "Connection error"
-        );
+            const local =
+                JSON.parse(
+                    localStorage.getItem(
+                        "productos"
+                    )
+                ) || [];
 
+            return local
+                .map(
+                    normalizeProduct
+                )
+                .filter(Boolean);
 
-        listaProductos.innerHTML =
-            `
-            <div
-                class="empty-box"
-                style="
-                    color:#ff5555;
-                    background:#351c1c;
-                "
-            >
+        }catch(e){
 
-                <h3>
-                    ❌ No se pudieron cargar los productos
-                </h3>
+            return [];
 
-                <br>
-
-                <div>
-                    ${escaparHtml(
-                        error.message
-                    )}
-                </div>
-
-                <br>
-
-                <small>
-                    API:
-                    ${escaparHtml(
-                        apiUrl(
-                            "/api/productos"
-                        )
-                    )}
-                </small>
-
-            </div>
-            `;
+        }
 
     }
 
-    finally {
-
-        cargandoProductos =
-            false;
-    }
 }
 
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+let productosMaster =
+    await loadProducts();
 
 /* =========================================================
-   CREAR IMAGEN
-========================================================== */
+   CART
+========================================================= */
 
-function crearImagenProducto(
-    url,
-    titulo,
+function getCart(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "productos-en-cart"
+            )
+        ) || [];
+
+    }catch(e){
+
+        return [];
+
+    }
+
+}
+
+function updateCartCount(){
+
+    const cart =
+        getCart();
+
+    const total =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                Number(
+                    item.quantity || 0
+                ),
+            0
+        );
+
+    if(cartCount){
+
+        cartCount.textContent =
+            total;
+
+    }
+
+}
+
+updateCartCount();
+
+/* =========================================================
+   CART BUTTON
+========================================================= */
+
+document
+.getElementById("cart-btn")
+?.addEventListener(
+    "click",
+    function(){
+
+        window.location.href =
+            "cart.html";
+
+    }
+);
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+document
+.getElementById("admin-access")
+?.addEventListener(
+    "click",
+    function(){
+
+        window.location.href =
+            "admin.html";
+
+    }
+);
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+const hamburger =
+    document.querySelector(
+        ".hamburger"
+    );
+
+const aside =
+    document.querySelector(
+        "aside"
+    );
+
+hamburger?.addEventListener(
+    "click",
+    function(){
+
+        aside.classList.toggle(
+            "active"
+        );
+
+    }
+);
+
+/* =========================================================
+   SUBMENUS
+========================================================= */
+
+document
+.querySelectorAll(
+    ".toggle-submenu"
+)
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                const submenu =
+                    button.nextElementSibling;
+
+                if(!submenu){
+                    return;
+                }
+
+                const open =
+                    submenu.style.display
+                    ===
+                    "block";
+
+                document
+                .querySelectorAll(
+                    ".submenu"
+                )
+                .forEach(
+                    menu =>
+                        menu.style.display =
+                            "none"
+                );
+
+                document
+                .querySelectorAll(
+                    ".toggle-submenu"
+                )
+                .forEach(
+                    btn =>
+                        btn.classList.remove(
+                            "active"
+                        )
+                );
+
+                if(!open){
+
+                    submenu.style.display =
+                        "block";
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+const zoomModal =
+    document.createElement(
+        "div"
+    );
+
+zoomModal.id =
+    "zoom-modal";
+
+zoomModal.innerHTML = `
+
+<button
+    id="zoom-prev"
+    class="zoom-control"
+>
+    &#9664;
+</button>
+
+<img
+    id="zoom-img"
+    alt="Product image"
+>
+
+<button
+    id="zoom-next"
+    class="zoom-control"
+>
+    &#9654;
+</button>
+
+<div id="zoom-desc"></div>
+
+`;
+
+document.body.appendChild(
+    zoomModal
+);
+
+const zoomImg =
+    document.getElementById(
+        "zoom-img"
+    );
+
+const zoomDesc =
+    document.getElementById(
+        "zoom-desc"
+    );
+
+const zoomPrev =
+    document.getElementById(
+        "zoom-prev"
+    );
+
+const zoomNext =
+    document.getElementById(
+        "zoom-next"
+    );
+
+let zoomImages = [];
+let zoomIndex = 0;
+let zoomProduct = null;
+
+function openZoom(
+    product,
     index
-) {
+){
 
-    const wrapper =
-        document.createElement(
-            "div"
+    zoomProduct =
+        product;
+
+    zoomImages =
+        product.imagenes || [];
+
+    if(!zoomImages.length){
+        return;
+    }
+
+    zoomIndex =
+        Math.max(
+            0,
+            Math.min(
+                index || 0,
+                zoomImages.length - 1
+            )
         );
 
+    updateZoom();
 
-    wrapper.className =
-        "image-wrapper";
+    zoomModal.style.display =
+        "flex";
 
+}
 
-    const img =
-        document.createElement(
-            "img"
+function updateZoom(){
+
+    if(!zoomImages.length){
+        return;
+    }
+
+    zoomImg.src =
+        zoomImages[
+            zoomIndex
+        ];
+
+    zoomDesc.textContent =
+        zoomProduct?.description ||
+        "";
+
+    const multiple =
+        zoomImages.length > 1;
+
+    zoomPrev.style.display =
+        multiple
+            ? "block"
+            : "none";
+
+    zoomNext.style.display =
+        multiple
+            ? "block"
+            : "none";
+
+}
+
+zoomPrev.addEventListener(
+    "click",
+    function(e){
+
+        e.stopPropagation();
+
+        zoomIndex =
+            (
+                zoomIndex -
+                1 +
+                zoomImages.length
+            ) %
+            zoomImages.length;
+
+        updateZoom();
+
+    }
+);
+
+zoomNext.addEventListener(
+    "click",
+    function(e){
+
+        e.stopPropagation();
+
+        zoomIndex =
+            (
+                zoomIndex +
+                1
+            ) %
+            zoomImages.length;
+
+        updateZoom();
+
+    }
+);
+
+zoomImg.addEventListener(
+    "click",
+    function(e){
+
+        e.stopPropagation();
+
+    }
+);
+
+zoomModal.addEventListener(
+    "click",
+    function(){
+
+        zoomModal.style.display =
+            "none";
+
+        zoomImg.src = "";
+
+    }
+);
+
+/* =========================================================
+   IMAGE LOADER
+========================================================= */
+
+function loadImage(
+    img,
+    product
+){
+
+    const images =
+        product.imagenes || [];
+
+    const loading =
+        img.parentElement
+        .querySelector(
+            ".image-loading"
         );
 
-
-    img.alt =
-        titulo || "Product image";
-
-
-    img.loading =
-        "lazy";
-
-
-    img.decoding =
-        "async";
-
-
-    img.referrerPolicy =
-        "no-referrer";
-
-
-    img.className =
-        "loading";
-
-
-    const numero =
-        document.createElement(
-            "span"
+    const error =
+        img.parentElement
+        .querySelector(
+            ".image-error"
         );
 
+    if(!images.length){
 
-    numero.className =
-        "image-number";
-
-
-    numero.textContent =
-        String(index + 1);
-
-
-    const debug =
-        document.createElement(
-            "div"
+        loading?.classList.add(
+            "hidden"
         );
 
+        error?.classList.add(
+            "show"
+        );
 
-    debug.className =
-        "image-debug";
+        return;
 
+    }
 
-    const finalUrl =
-        normalizarImagenUrl(
+    let index = 0;
+
+    function next(){
+
+        if(
+            index >=
+            images.length
+        ){
+
+            loading?.classList.add(
+                "hidden"
+            );
+
+            error?.classList.add(
+                "show"
+            );
+
+            console.error(
+                "All Cloudinary images failed:",
+                product.titulo,
+                images
+            );
+
+            return;
+
+        }
+
+        const url =
+            images[index++];
+
+        /*
+           MUY IMPORTANTE:
+
+           Aquí solamente se utiliza
+           Cloudinary.
+
+           Nunca /uploads/.
+        */
+
+        console.log(
+            "Cloudinary image:",
             url
         );
 
+        img.onload =
+            function(){
 
-    if (!finalUrl) {
+                img.classList.add(
+                    "loaded"
+                );
 
-        const error =
-            document.createElement(
-                "div"
-            );
+                loading?.classList.add(
+                    "hidden"
+                );
 
+                error?.classList.remove(
+                    "show"
+                );
 
-        error.className =
-            "image-error";
+            };
 
+        img.onerror =
+            function(){
 
-        error.textContent =
-            "❌ Invalid image URL";
+                console.error(
+                    "Cloudinary image failed:",
+                    url
+                );
 
+                img.classList.remove(
+                    "loaded"
+                );
 
-        wrapper.appendChild(
-            error
-        );
+                next();
 
+            };
 
-        return wrapper;
+        img.src =
+            url;
+
     }
 
+    next();
 
-    debug.textContent =
-        finalUrl;
+}
 
+/* =========================================================
+   RENDER
+========================================================= */
 
-    img.onload =
-        () => {
+function renderProducts(
+    list
+){
 
-            img.classList.remove(
-                "loading"
-            );
+    contenedor.innerHTML = "";
 
+    if(
+        !Array.isArray(list) ||
+        !list.length
+    ){
 
-            debug.className =
-                "image-debug ok";
+        contenedor.innerHTML = `
 
+        <p style="
+            width:100%;
+            text-align:center;
+            color:#888;
+            padding:40px;
+        ">
+            Coming soon...
+        </p>
 
-            debug.textContent =
-                "✅ " + finalUrl;
-        };
+        `;
 
+        return;
 
-    img.onerror =
-        () => {
+    }
 
-            console.error(
-                "❌ IMAGE ERROR:",
-                finalUrl
-            );
+    const cart =
+        getCart();
 
+    list.forEach(
+        product => {
 
-            img.classList.remove(
-                "loading"
-            );
+            const card =
+                document.createElement(
+                    "div"
+                );
 
+            card.className =
+                "producto";
 
-            img.style.display =
-                "none";
+            card.dataset.id =
+                product.id;
 
+            /* IMAGE */
 
-            debug.className =
-                "image-debug error";
+            const gallery =
+                document.createElement(
+                    "div"
+                );
 
+            gallery.className =
+                "galeria";
 
-            debug.textContent =
-                "❌ " + finalUrl;
+            const loading =
+                document.createElement(
+                    "div"
+                );
 
+            loading.className =
+                "image-loading";
+
+            loading.textContent =
+                "Loading...";
 
             const error =
                 document.createElement(
                     "div"
                 );
 
-
             error.className =
                 "image-error";
 
+            error.innerHTML = `
 
-            error.innerHTML =
-                `
-                ❌ Image unavailable
-                `;
+                <i class="bi bi-image"></i>
 
+                <span>
+                    Image unavailable
+                </span>
 
-            wrapper.insertBefore(
+            `;
+
+            const img =
+                document.createElement(
+                    "img"
+                );
+
+            img.className =
+                "main-img";
+
+            img.alt =
+                product.titulo;
+
+            img.loading =
+                "lazy";
+
+            img.decoding =
+                "async";
+
+            img.dataset.index =
+                "0";
+
+            gallery.append(
+                loading,
                 error,
                 img
             );
-        };
 
+            loadImage(
+                img,
+                product
+            );
 
-    img.src =
-        finalUrl;
+            img.addEventListener(
+                "click",
+                function(e){
 
+                    e.stopPropagation();
 
-    wrapper.appendChild(
-        img
+                    openZoom(
+                        product,
+                        Number(
+                            img.dataset.index
+                        ) || 0
+                    );
+
+                }
+            );
+
+            /* TITLE */
+
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+            title.textContent =
+                product.titulo;
+
+            /* DESCRIPTION */
+
+            const description =
+                document.createElement(
+                    "div"
+                );
+
+            description.className =
+                "product-description";
+
+            description.textContent =
+                product.description;
+
+            /* CART */
+
+            const cartItem =
+                cart.find(
+                    item =>
+                        String(item.id)
+                        ===
+                        String(product.id)
+                );
+
+            const cartQuantity =
+                Number(
+                    cartItem?.quantity ||
+                    0
+                );
+
+            const stock =
+                Number(
+                    product.stock ||
+                    0
+                );
+
+            const remaining =
+                Math.max(
+                    0,
+                    stock -
+                    cartQuantity
+                );
+
+            /* STOCK */
+
+            const stockEl =
+                document.createElement(
+                    "p"
+                );
+
+            stockEl.className =
+                "stock";
+
+            stockEl.textContent =
+                remaining > 0
+                    ? `Stock: ${remaining}`
+                    : "Out of stock";
+
+            stockEl.style.color =
+                remaining > 0
+                    ? "#888"
+                    : "#ff3333";
+
+            /* PRICE */
+
+            const price =
+                document.createElement(
+                    "p"
+                );
+
+            price.className =
+                "price";
+
+            price.textContent =
+                "$" +
+                Number(
+                    product.price || 0
+                ).toFixed(2);
+
+            /* ADD */
+
+            const add =
+                document.createElement(
+                    "button"
+                );
+
+            add.className =
+                "agregar-carrito";
+
+            add.textContent =
+                remaining > 0
+                    ? cartQuantity
+                        ? `Add (${cartQuantity})`
+                        : "Add"
+                    : "Out of stock";
+
+            add.disabled =
+                remaining <= 0;
+
+            add.addEventListener(
+                "click",
+                function(e){
+
+                    e.stopPropagation();
+
+                    const currentCart =
+                        getCart();
+
+                    const index =
+                        currentCart.findIndex(
+                            item =>
+                                String(item.id)
+                                ===
+                                String(product.id)
+                        );
+
+                    const current =
+                        index >= 0
+                            ? Number(
+                                currentCart[index]
+                                    .quantity || 0
+                            )
+                            : 0;
+
+                    if(
+                        current >= stock
+                    ){
+                        return;
+                    }
+
+                    if(index >= 0){
+
+                        currentCart[
+                            index
+                        ].quantity =
+                            current + 1;
+
+                    }else{
+
+                        currentCart.push({
+
+                            id:
+                                product.id,
+
+                            titulo:
+                                product.titulo,
+
+                            price:
+                                product.price,
+
+                            imagenes:
+                                product.imagenes,
+
+                            quantity:
+                                1
+
+                        });
+
+                    }
+
+                    localStorage.setItem(
+                        "productos-en-cart",
+                        JSON.stringify(
+                            currentCart
+                        )
+                    );
+
+                    updateCartCount();
+
+                    renderProducts(
+                        list
+                    );
+
+                }
+            );
+
+            /* OFFER */
+
+            const offer =
+                document.createElement(
+                    "button"
+                );
+
+            offer.className =
+                "negociar";
+
+            offer.textContent =
+                "Make Offer";
+
+            offer.addEventListener(
+                "click",
+                function(e){
+
+                    e.stopPropagation();
+
+                    document
+                    .getElementById(
+                        "negociar-modal"
+                    )
+                    .style.display =
+                        "flex";
+
+                    document
+                    .getElementById(
+                        "negociar-producto"
+                    )
+                    .textContent =
+                        product.titulo;
+
+                }
+            );
+
+            card.append(
+                gallery,
+                title
+            );
+
+            if(
+                product.description &&
+                product.description.trim()
+            ){
+
+                card.append(
+                    description
+                );
+
+            }
+
+            card.append(
+                stockEl,
+                price,
+                add,
+                offer
+            );
+
+            contenedor.appendChild(
+                card
+            );
+
+        }
     );
 
+    updateCartCount();
 
-    wrapper.appendChild(
-        numero
-    );
-
-
-    wrapper.appendChild(
-        debug
-    );
-
-
-    wrapper.title =
-        finalUrl;
-
-
-    return wrapper;
 }
 
+/* =========================================================
+   INITIAL
+========================================================= */
+
+function visibleProducts(){
+
+    return productosMaster.filter(
+        product =>
+            String(
+                product.categoria?.sub ||
+                ""
+            ).toLowerCase()
+            !==
+            "adultmagazines"
+    );
+
+}
+
+renderProducts(
+    visibleProducts()
+);
 
 /* =========================================================
-   RENDER PRODUCTOS
-========================================================== */
+   CATEGORY FILTER
+========================================================= */
 
-function renderProductos(
-    filter = ""
-) {
+aside.addEventListener(
+    "click",
+    function(event){
 
-    listaProductos.innerHTML =
-        "";
+        const button =
+            event.target.closest(
+                ".submenu .boton-categoria"
+            );
 
+        if(!button){
+            return;
+        }
 
-    const texto =
-        String(
-            filter || ""
-        )
-            .toLowerCase()
-            .trim();
+        const main =
+            String(
+                button.dataset.main ||
+                ""
+            ).toLowerCase();
 
+        const sub =
+            String(
+                button.dataset.sub ||
+                ""
+            ).toLowerCase();
 
-    const filtrados =
-        productos.filter(
-            p => {
+        /*
+           Adult section.
+        */
 
-                const valores = [
+        if(
+            sub ===
+            "adultmagazines"
+        ){
 
-                    p.titulo,
+            const answer =
+                confirm(
+                    "This section contains adult material. Are you 18 or older?"
+                );
 
-                    p.description,
+            if(!answer){
+                return;
+            }
 
-                    p.categoria?.main,
+        }
 
-                    p.categoria?.sub,
+        const filtered =
+            productosMaster.filter(
+                product =>
 
-                    p.id
+                    String(
+                        product.categoria?.main ||
+                        ""
+                    ).toLowerCase()
+                    ===
+                    main
+
+                    &&
+
+                    String(
+                        product.categoria?.sub ||
+                        ""
+                    ).toLowerCase()
+                    ===
+                    sub
+            );
+
+        document.getElementById(
+            "titulo-principal"
+        ).textContent =
+            capitalize(main) +
+            " · " +
+            capitalize(sub);
+
+        renderProducts(
+            filtered
+        );
+
+        aside.classList.remove(
+            "active"
+        );
+
+    }
+);
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+const searchInput =
+    document.getElementById(
+        "search-input"
+    );
+
+const searchBtn =
+    document.getElementById(
+        "search-btn"
+    );
+
+function normalizeText(
+    text
+){
+
+    return String(
+        text || ""
+    )
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    );
+
+}
+
+function searchProducts(){
+
+    const query =
+        normalizeText(
+            searchInput.value
+        ).trim();
+
+    if(!query){
+
+        document.getElementById(
+            "titulo-principal"
+        ).textContent =
+            "All Products";
+
+        renderProducts(
+            visibleProducts()
+        );
+
+        return;
+
+    }
+
+    const terms =
+        query
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const filtered =
+        productosMaster.filter(
+            product => {
+
+                if(
+                    String(
+                        product.categoria?.sub ||
+                        ""
+                    ).toLowerCase()
+                    ===
+                    "adultmagazines"
+                ){
+                    return false;
+                }
+
+                const fields = [
+
+                    normalizeText(
+                        product.titulo
+                    ),
+
+                    normalizeText(
+                        product.description
+                    ),
+
+                    normalizeText(
+                        product.categoria?.main
+                    ),
+
+                    normalizeText(
+                        product.categoria?.sub
+                    )
 
                 ];
 
+                if(
+                    Array.isArray(
+                        product.tags
+                    )
+                ){
 
-                return valores.some(
-                    valor =>
-                        String(
-                            valor ?? ""
+                    fields.push(
+                        ...product.tags.map(
+                            normalizeText
                         )
-                            .toLowerCase()
-                            .includes(
-                                texto
-                            )
-                );
-            }
-        );
-
-
-    productCount.textContent =
-        `${filtrados.length} of ${productos.length} products`;
-
-
-    if (
-        filtrados.length === 0
-    ) {
-
-        listaProductos.innerHTML =
-            `
-            <div class="empty-box">
-                No products found.
-            </div>
-            `;
-
-        return;
-    }
-
-
-    for (
-        const producto of filtrados
-    ) {
-
-        listaProductos.appendChild(
-            crearTarjetaProducto(
-                producto
-            )
-        );
-    }
-}
-
-
-/* =========================================================
-   CREAR TARJETA PRODUCTO
-========================================================== */
-
-function crearTarjetaProducto(
-    p
-) {
-
-    const div =
-        document.createElement(
-            "article"
-        );
-
-
-    div.className =
-        "producto";
-
-
-    /*
-        ID
-    */
-
-    const idDiv =
-        document.createElement(
-            "div"
-        );
-
-
-    idDiv.className =
-        "producto-id";
-
-
-    idDiv.textContent =
-        `ID: ${p.id}`;
-
-
-    div.appendChild(
-        idDiv
-    );
-
-
-    /*
-        IMÁGENES
-    */
-
-    const miniImgs =
-        document.createElement(
-            "div"
-        );
-
-
-    miniImgs.className =
-        "mini-images";
-
-
-    if (
-        p.imagenes.length
-    ) {
-
-        p.imagenes.forEach(
-            (
-                url,
-                index
-            ) => {
-
-                miniImgs.appendChild(
-                    crearImagenProducto(
-                        url,
-                        p.titulo,
-                        index
-                    )
-                );
-            }
-        );
-
-    } else {
-
-        miniImgs.innerHTML =
-            `
-            <div
-                style="
-                    color:#777;
-                    padding:15px;
-                    grid-column:1/-1;
-                "
-            >
-                No images
-            </div>
-            `;
-    }
-
-
-    div.appendChild(
-        miniImgs
-    );
-
-
-    /*
-        IMAGE COUNT
-    */
-
-    const imageCount =
-        document.createElement(
-            "div"
-        );
-
-
-    imageCount.className =
-        "image-count";
-
-
-    imageCount.textContent =
-        `📸 ${p.imagenes.length} image(s)`;
-
-
-    div.appendChild(
-        imageCount
-    );
-
-
-    /*
-        TÍTULO
-    */
-
-    const tituloInput =
-        document.createElement(
-            "input"
-        );
-
-
-    tituloInput.type =
-        "text";
-
-
-    tituloInput.value =
-        p.titulo || "";
-
-
-    tituloInput.placeholder =
-        "Product title";
-
-
-    tituloInput.dataset.field =
-        "titulo";
-
-
-    div.appendChild(
-        tituloInput
-    );
-
-
-    /*
-        DESCRIPTION
-    */
-
-    const desc =
-        document.createElement(
-            "textarea"
-        );
-
-
-    desc.value =
-        p.description || "";
-
-
-    desc.placeholder =
-        "Description";
-
-
-    desc.dataset.field =
-        "description";
-
-
-    div.appendChild(
-        desc
-    );
-
-
-    /*
-        MAIN CATEGORY
-    */
-
-    const mainCat =
-        document.createElement(
-            "input"
-        );
-
-
-    mainCat.type =
-        "text";
-
-
-    mainCat.value =
-        p.categoria?.main || "";
-
-
-    mainCat.placeholder =
-        "Main category";
-
-
-    mainCat.dataset.field =
-        "mainCat";
-
-
-    div.appendChild(
-        mainCat
-    );
-
-
-    /*
-        SUBCATEGORY
-    */
-
-    const subCat =
-        document.createElement(
-            "input"
-        );
-
-
-    subCat.type =
-        "text";
-
-
-    subCat.value =
-        p.categoria?.sub || "";
-
-
-    subCat.placeholder =
-        "Subcategory";
-
-
-    subCat.dataset.field =
-        "subCat";
-
-
-    div.appendChild(
-        subCat
-    );
-
-
-    /*
-        PRICE
-    */
-
-    const price =
-        document.createElement(
-            "input"
-        );
-
-
-    price.type =
-        "number";
-
-
-    price.step =
-        "0.01";
-
-
-    price.min =
-        "0";
-
-
-    price.value =
-        p.price;
-
-
-    price.dataset.field =
-        "price";
-
-
-    div.appendChild(
-        price
-    );
-
-
-    /*
-        STOCK
-    */
-
-    const stock =
-        document.createElement(
-            "input"
-        );
-
-
-    stock.type =
-        "number";
-
-
-    stock.step =
-        "1";
-
-
-    stock.min =
-        "0";
-
-
-    stock.value =
-        p.stock;
-
-
-    stock.dataset.field =
-        "stock";
-
-
-    div.appendChild(
-        stock
-    );
-
-
-    /*
-        NUEVAS IMÁGENES
-    */
-
-    const fileInput =
-        document.createElement(
-            "input"
-        );
-
-
-    fileInput.type =
-        "file";
-
-
-    fileInput.multiple =
-        true;
-
-
-    fileInput.accept =
-        "image/*,.webp,.heif,.heic";
-
-
-    fileInput.dataset.field =
-        "images";
-
-
-    div.appendChild(
-        fileInput
-    );
-
-
-    /*
-        ACTIONS
-    */
-
-    const actions =
-        document.createElement(
-            "div"
-        );
-
-
-    actions.className =
-        "product-actions";
-
-
-    /*
-        SAVE
-    */
-
-    const saveBtn =
-        document.createElement(
-            "button"
-        );
-
-
-    saveBtn.type =
-        "button";
-
-
-    saveBtn.className =
-        "save-btn";
-
-
-    saveBtn.textContent =
-        "💾 Save";
-
-
-    saveBtn.addEventListener(
-        "click",
-        async () => {
-
-            saveBtn.disabled =
-                true;
-
-            saveBtn.textContent =
-                "⏳ Saving...";
-
-
-            try {
-
-                await actualizarProducto(
-                    p,
-                    div
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    error
-                );
-
-            }
-
-            finally {
-
-                saveBtn.disabled =
-                    false;
-
-                saveBtn.textContent =
-                    "💾 Save";
-            }
-        }
-    );
-
-
-    actions.appendChild(
-        saveBtn
-    );
-
-
-    /*
-        DELETE
-    */
-
-    const deleteBtn =
-        document.createElement(
-            "button"
-        );
-
-
-    deleteBtn.type =
-        "button";
-
-
-    deleteBtn.className =
-        "delete-btn";
-
-
-    deleteBtn.textContent =
-        "🗑️ Delete";
-
-
-    deleteBtn.addEventListener(
-        "click",
-        async () => {
-
-            await eliminarProducto(
-                p.id
-            );
-        }
-    );
-
-
-    actions.appendChild(
-        deleteBtn
-    );
-
-
-    div.appendChild(
-        actions
-    );
-
-
-    return div;
-}
-
-
-/* =========================================================
-   SUBIR IMÁGENES
-========================================================== */
-
-async function subirImagenes(
-    files
-) {
-
-    if (
-        !files ||
-        files.length === 0
-    ) {
-
-        return [];
-    }
-
-
-    const formData =
-        new FormData();
-
-
-    for (
-        let i = 0;
-        i < files.length;
-        i++
-    ) {
-
-        formData.append(
-            "imagenes",
-            files[i],
-            files[i].name
-        );
-    }
-
-
-    console.log(
-        `📤 Uploading ${files.length} image(s)`
-    );
-
-
-    const response =
-        await apiFetch(
-            "/api/subir-imagenes",
-            {
-                method: "POST",
-
-                body:
-                    formData
-            }
-        );
-
-
-    const data =
-        await response.json();
-
-
-    console.log(
-        "📥 Upload response:",
-        data
-    );
-
-
-    /*
-        Aceptar múltiples formatos.
-    */
-
-    let lista = [];
-
-
-    if (
-        Array.isArray(data)
-    ) {
-
-        lista =
-            data;
-
-    } else {
-
-        const posibles = [
-
-            data.urls,
-
-            data.imagenes,
-
-            data.images,
-
-            data.files,
-
-            data.uploaded,
-
-            data.data
-
-        ];
-
-
-        for (
-            const item of posibles
-        ) {
-
-            if (
-                Array.isArray(item)
-            ) {
-
-                lista =
-                    item;
-
-                break;
-            }
-        }
-    }
-
-
-    const urls =
-        normalizarListaImagenes(
-            lista
-        );
-
-
-    if (
-        urls.length === 0
-    ) {
-
-        console.error(
-            "❌ Upload server response:",
-            data
-        );
-
-
-        throw new Error(
-            "El servidor recibió las imágenes pero no devolvió URLs."
-        );
-    }
-
-
-    const cloudinary =
-        urls.filter(
-            esCloudinary
-        ).length;
-
-
-    console.log(
-        `✅ Uploaded: ${urls.length}`
-    );
-
-
-    console.log(
-        `☁️ Cloudinary: ${cloudinary}/${urls.length}`
-    );
-
-
-    return urls;
-}
-
-
-/* =========================================================
-   ACTUALIZAR PRODUCTO
-========================================================== */
-
-async function actualizarProducto(
-    producto,
-    tarjeta
-) {
-
-    if (!producto) {
-
-        throw new Error(
-            "Producto no encontrado."
-        );
-    }
-
-
-    /*
-        Obtener campos.
-    */
-
-    const titulo =
-        tarjeta
-            .querySelector(
-                '[data-field="titulo"]'
-            )
-            .value
-            .trim();
-
-
-    const description =
-        tarjeta
-            .querySelector(
-                '[data-field="description"]'
-            )
-            .value
-            .trim();
-
-
-    const mainCat =
-        tarjeta
-            .querySelector(
-                '[data-field="mainCat"]'
-            )
-            .value
-            .trim();
-
-
-    const subCat =
-        tarjeta
-            .querySelector(
-                '[data-field="subCat"]'
-            )
-            .value
-            .trim();
-
-
-    const priceValue =
-        tarjeta
-            .querySelector(
-                '[data-field="price"]'
-            )
-            .value;
-
-
-    const stockValue =
-        tarjeta
-            .querySelector(
-                '[data-field="stock"]'
-            )
-            .value;
-
-
-    const fileInput =
-        tarjeta
-            .querySelector(
-                '[data-field="images"]'
-            );
-
-
-    /*
-        VALIDACIÓN
-    */
-
-    if (!titulo) {
-
-        throw new Error(
-            "El título es obligatorio."
-        );
-    }
-
-
-    if (
-        priceValue === ""
-    ) {
-
-        throw new Error(
-            "El precio es obligatorio."
-        );
-    }
-
-
-    if (
-        stockValue === ""
-    ) {
-
-        throw new Error(
-            "El stock es obligatorio."
-        );
-    }
-
-
-    const price =
-        Number(
-            priceValue
-        );
-
-
-    const stock =
-        Number(
-            stockValue
-        );
-
-
-    if (
-        !Number.isFinite(price) ||
-        price < 0
-    ) {
-
-        throw new Error(
-            "Precio inválido."
-        );
-    }
-
-
-    if (
-        !Number.isFinite(stock) ||
-        stock < 0
-    ) {
-
-        throw new Error(
-            "Stock inválido."
-        );
-    }
-
-
-    /*
-        IMÁGENES NUEVAS
-    */
-
-    let nuevasImagenes = [];
-
-
-    if (
-        fileInput &&
-        fileInput.files &&
-        fileInput.files.length > 0
-    ) {
-
-        mostrarMensaje(
-            "☁️ Uploading new images...",
-            "loading"
-        );
-
-
-        nuevasImagenes =
-            await subirImagenes(
-                fileInput.files
-            );
-    }
-
-
-    /*
-        CONSERVAR IMÁGENES EXISTENTES
-        + NUEVAS
-    */
-
-    const imagenesFinales =
-        normalizarListaImagenes(
-            [
-                ...producto.imagenes,
-                ...nuevasImagenes
-            ]
-        );
-
-
-    const updated = {
-
-        titulo,
-
-        description,
-
-        categoria: {
-
-            main:
-                mainCat,
-
-            sub:
-                subCat
-        },
-
-        price,
-
-        stock,
-
-        imagenes:
-            imagenesFinales
-    };
-
-
-    console.log(
-        "📦 PUT product:",
-        producto.id,
-        updated
-    );
-
-
-    mostrarMensaje(
-        "💾 Saving product...",
-        "loading"
-    );
-
-
-    const response =
-        await apiFetch(
-            `/api/productos/${encodeURIComponent(producto.id)}`,
-            {
-                method: "PUT",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(
-                        updated
-                    )
-            }
-        );
-
-
-    const data =
-        await response.json();
-
-
-    console.log(
-        "✅ PUT response:",
-        data
-    );
-
-
-    /*
-        El backend puede devolver:
-          producto
-          data
-          o directamente el producto.
-    */
-
-    let productoRespuesta =
-        data;
-
-
-    if (
-        data &&
-        data.producto &&
-        typeof data.producto === "object"
-    ) {
-
-        productoRespuesta =
-            data.producto;
-
-    } else if (
-        data &&
-        data.data &&
-        !Array.isArray(data.data) &&
-        typeof data.data === "object"
-    ) {
-
-        productoRespuesta =
-            data.data;
-    }
-
-
-    /*
-        Combinar respuesta con valores
-        que acabamos de enviar.
-    */
-
-    const actualizado =
-        normalizarProducto(
-            {
-                ...producto,
-
-                ...productoRespuesta,
-
-                id:
-                    producto.id,
-
-                titulo:
-                    productoRespuesta?.titulo ??
-                    updated.titulo,
-
-                description:
-                    productoRespuesta?.description ??
-                    updated.description,
-
-                categoria:
-                    productoRespuesta?.categoria ??
-                    updated.categoria,
-
-                price:
-                    productoRespuesta?.price ??
-                    updated.price,
-
-                stock:
-                    productoRespuesta?.stock ??
-                    updated.stock,
-
-                imagenes:
-                    productoRespuesta?.imagenes ??
-                    updated.imagenes
-            }
-        );
-
-
-    productos =
-        productos.map(
-            p =>
-                String(p.id) ===
-                String(producto.id)
-                    ? actualizado
-                    : p
-        );
-
-
-    if (fileInput) {
-
-        fileInput.value =
-            "";
-    }
-
-
-    renderProductos(
-        searchInput.value
-    );
-
-
-    mostrarMensaje(
-        "✅ Product updated successfully"
-    );
-}
-
-
-/* =========================================================
-   ELIMINAR PRODUCTO
-========================================================== */
-
-async function eliminarProducto(
-    id
-) {
-
-    const producto =
-        productos.find(
-            p =>
-                String(p.id) ===
-                String(id)
-        );
-
-
-    if (!producto) {
-
-        alert(
-            "Product not found."
-        );
-
-        return;
-    }
-
-
-    const confirmado =
-        confirm(
-            `Are you sure you want to delete "${producto.titulo}"?`
-        );
-
-
-    if (!confirmado) {
-
-        return;
-    }
-
-
-    try {
-
-        mostrarMensaje(
-            "🗑️ Deleting product...",
-            "loading"
-        );
-
-
-        await apiFetch(
-            `/api/productos/${encodeURIComponent(id)}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-
-        productos =
-            productos.filter(
-                p =>
-                    String(p.id) !==
-                    String(id)
-            );
-
-
-        renderProductos(
-            searchInput.value
-        );
-
-
-        mostrarMensaje(
-            "✅ Product deleted"
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "❌ Delete error:",
-            error
-        );
-
-
-        mostrarMensaje(
-            "❌ " + error.message,
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADD PRODUCT
-========================================================== */
-
-formProducto.addEventListener(
-    "submit",
-    async event => {
-
-        event.preventDefault();
-
-
-        if (operacionEnCurso) {
-
-            return;
-        }
-
-
-        const titulo =
-            document
-                .getElementById(
-                    "titulo"
-                )
-                .value
-                .trim();
-
-
-        const description =
-            document
-                .getElementById(
-                    "description"
-                )
-                .value
-                .trim();
-
-
-        const mainCat =
-            document
-                .getElementById(
-                    "mainCat"
-                )
-                .value
-                .trim();
-
-
-        const subCat =
-            document
-                .getElementById(
-                    "subCat"
-                )
-                .value
-                .trim();
-
-
-        const priceValue =
-            document
-                .getElementById(
-                    "price"
-                )
-                .value;
-
-
-        const stockValue =
-            document
-                .getElementById(
-                    "stock"
-                )
-                .value;
-
-
-        /*
-            VALIDACIÓN
-        */
-
-        if (!titulo) {
-
-            alert(
-                "❌ Escribe el título."
-            );
-
-            return;
-        }
-
-
-        if (!description) {
-
-            alert(
-                "❌ Escribe la descripción."
-            );
-
-            return;
-        }
-
-
-        if (!mainCat) {
-
-            alert(
-                "❌ Escribe la categoría principal."
-            );
-
-            return;
-        }
-
-
-        if (!subCat) {
-
-            alert(
-                "❌ Escribe la subcategoría."
-            );
-
-            return;
-        }
-
-
-        if (
-            priceValue === ""
-        ) {
-
-            alert(
-                "❌ Escribe el precio."
-            );
-
-            return;
-        }
-
-
-        if (
-            stockValue === ""
-        ) {
-
-            alert(
-                "❌ Escribe el stock."
-            );
-
-            return;
-        }
-
-
-        const price =
-            Number(
-                priceValue
-            );
-
-
-        const stock =
-            Number(
-                stockValue
-            );
-
-
-        if (
-            !Number.isFinite(price) ||
-            price < 0
-        ) {
-
-            alert(
-                "❌ Precio inválido."
-            );
-
-            return;
-        }
-
-
-        if (
-            !Number.isFinite(stock) ||
-            stock < 0
-        ) {
-
-            alert(
-                "❌ Stock inválido."
-            );
-
-            return;
-        }
-
-
-        try {
-
-            operacionEnCurso =
-                true;
-
-
-            agregarBtn.disabled =
-                true;
-
-
-            /*
-                ============================================
-                1. UPLOAD IMAGES
-                ============================================
-            */
-
-            let imagenes =
-                [];
-
-
-            if (
-                imagenesFileInput.files.length > 0
-            ) {
-
-                agregarBtn.textContent =
-                    "☁️ Uploading images...";
-
-
-                imagenes =
-                    await subirImagenes(
-                        imagenesFileInput.files
                     );
 
+                }
 
-                console.log(
-                    "☁️ Uploaded URLs:",
-                    imagenes
+                return terms.every(
+                    term =>
+                        fields.some(
+                            field =>
+                                field.includes(
+                                    term
+                                )
+                        )
                 );
+
             }
+        );
 
+    document.getElementById(
+        "titulo-principal"
+    ).textContent =
+        `Search: "${searchInput.value}" (${filtered.length})`;
 
-            /*
-                ============================================
-                2. CREATE PRODUCT
-                ============================================
-            */
+    renderProducts(
+        filtered
+    );
 
-            const nuevoProducto = {
+}
 
-                titulo,
+searchBtn.addEventListener(
+    "click",
+    searchProducts
+);
 
-                description,
+searchInput.addEventListener(
+    "keydown",
+    function(e){
 
-                imagenes:
-                    normalizarListaImagenes(
-                        imagenes
-                    ),
+        if(
+            e.key ===
+            "Enter"
+        ){
 
-                categoria: {
+            searchProducts();
 
-                    main:
-                        mainCat,
+        }
 
-                    sub:
-                        subCat
-                },
+    }
+);
 
-                price,
+/* =========================================================
+   OFFER MODAL
+========================================================= */
 
-                stock
-            };
+const offerModal =
+    document.getElementById(
+        "negociar-modal"
+    );
 
+document
+.getElementById(
+    "cerrar-negociar"
+)
+.addEventListener(
+    "click",
+    function(){
 
-            console.log(
-                "📦 POST product:",
-                nuevoProducto
+        offerModal.style.display =
+            "none";
+
+    }
+);
+
+document
+.getElementById(
+    "enviar-negociacion"
+)
+.addEventListener(
+    "click",
+    async function(){
+
+        const email =
+            document
+            .getElementById(
+                "negociar-email"
+            )
+            .value
+            .trim();
+
+        const oferta =
+            document
+            .getElementById(
+                "negociar-precio"
+            )
+            .value
+            .trim();
+
+        const producto =
+            document
+            .getElementById(
+                "negociar-producto"
+            )
+            .textContent;
+
+        const status =
+            document
+            .getElementById(
+                "negociar-status"
             );
 
+        if(
+            !email ||
+            !oferta
+        ){
 
-            agregarBtn.textContent =
-                "💾 Saving product...";
+            alert(
+                "Please complete all fields."
+            );
 
+            return;
+
+        }
+
+        try{
+
+            status.textContent =
+                "Sending offer...";
 
             const response =
-                await apiFetch(
-                    "/api/productos",
+                await fetch(
+                    API_BASE +
+                    "/api/send-offer",
                     {
-                        method: "POST",
 
-                        headers: {
+                        method:
+                            "POST",
 
+                        headers:{
                             "Content-Type":
                                 "application/json"
                         },
 
                         body:
-                            JSON.stringify(
-                                nuevoProducto
-                            )
+                            JSON.stringify({
+
+                                producto:
+                                    producto,
+
+                                email:
+                                    email,
+
+                                oferta:
+                                    oferta
+
+                            })
+
                     }
                 );
-
 
             const data =
                 await response.json();
 
+            if(!response.ok){
 
-            console.log(
-                "✅ POST response:",
-                data
-            );
+                throw new Error(
+                    data.error ||
+                    "Error sending offer"
+                );
 
-
-            /*
-                ============================================
-                3. OBTENER PRODUCTO CREADO
-                ============================================
-            */
-
-            let creado =
-                data;
-
-
-            if (
-                data &&
-                data.producto &&
-                typeof data.producto === "object"
-            ) {
-
-                creado =
-                    data.producto;
-
-            } else if (
-                data &&
-                data.data &&
-                !Array.isArray(data.data) &&
-                typeof data.data === "object"
-            ) {
-
-                creado =
-                    data.data;
             }
 
+            status.textContent =
+                "Offer sent!";
 
-            const productoCreado =
-                normalizarProducto(
-                    {
-                        ...nuevoProducto,
+            setTimeout(
+                function(){
 
-                        ...creado,
+                    offerModal.style.display =
+                        "none";
 
-                        imagenes:
-                            creado?.imagenes ??
-                            creado?.images ??
-                            nuevoProducto.imagenes
-                    },
-                    0
-                );
+                    status.textContent =
+                        "";
 
-
-            /*
-                ============================================
-                4. AGREGAR LOCALMENTE
-                ============================================
-            */
-
-            /*
-                Evitar duplicado si el backend
-                devolvió el mismo producto.
-            */
-
-            productos =
-                productos.filter(
-                    p =>
-                        String(p.id) !==
-                        String(
-                            productoCreado.id
-                        )
-                );
-
-
-            productos.unshift(
-                productoCreado
+                },
+                900
             );
 
-
-            /*
-                ============================================
-                5. RENDER
-                ============================================
-            */
-
-            renderProductos(
-                searchInput.value
-            );
-
-
-            /*
-                ============================================
-                6. RESET
-                ============================================
-            */
-
-            formProducto.reset();
-
-            addPreview.innerHTML =
-                "";
-
-
-            /*
-                ============================================
-                7. MESSAGE
-                ============================================
-            */
-
-            mostrarMensaje(
-                "✅ Product added successfully"
-            );
-
-
-            console.log(
-                "🎉 Product created:",
-                productoCreado
-            );
-
-        }
-
-        catch (error) {
+        }catch(error){
 
             console.error(
-                "❌ Add product error:",
                 error
             );
 
-
-            mostrarMensaje(
-                "❌ " + error.message,
-                "error"
-            );
-
-
-            alert(
-                "❌ Error agregando producto:\n\n" +
-                error.message
-            );
+            status.textContent =
+                "Error sending offer.";
 
         }
 
-        finally {
-
-            operacionEnCurso =
-                false;
-
-
-            agregarBtn.disabled =
-                false;
-
-
-            agregarBtn.textContent =
-                "➕ Agregar producto";
-        }
     }
 );
-
-
-/* =========================================================
-   IMAGE PREVIEW
-========================================================== */
-
-imagenesFileInput.addEventListener(
-    "change",
-    () => {
-
-        addPreview.innerHTML =
-            "";
-
-
-        const files =
-            Array.from(
-                imagenesFileInput.files || []
-            );
-
-
-        if (!files.length) {
-
-            return;
-        }
-
-
-        files.forEach(
-            (
-                file,
-                index
-            ) => {
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                item.className =
-                    "preview-item";
-
-
-                const img =
-                    document.createElement(
-                        "img"
-                    );
-
-
-                img.alt =
-                    file.name;
-
-
-                img.loading =
-                    "lazy";
-
-
-                img.src =
-                    URL.createObjectURL(
-                        file
-                    );
-
-
-                img.onload =
-                    () => {
-
-                        URL.revokeObjectURL(
-                            img.src
-                        );
-                    };
-
-
-                const number =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                number.className =
-                    "preview-number";
-
-
-                number.textContent =
-                    String(index + 1);
-
-
-                item.appendChild(
-                    img
-                );
-
-
-                item.appendChild(
-                    number
-                );
-
-
-                addPreview.appendChild(
-                    item
-                );
-            }
-        );
-    }
-);
-
-
-/* =========================================================
-   LOGIN
-========================================================== */
-
-async function iniciarSesion() {
-
-    const password =
-        passwordInput.value;
-
-
-    if (!password) {
-
-        alert(
-            "❌ Enter the password."
-        );
-
-        passwordInput.focus();
-
-        return;
-    }
-
-
-    if (
-        password !==
-        ADMIN_PASSWORD
-    ) {
-
-        alert(
-            "❌ Incorrect password."
-        );
-
-        passwordInput.select();
-
-        return;
-    }
-
-
-    /*
-        Basic Authentication.
-
-        El backend debe aceptar:
-
-            admin
-            042525
-    */
-
-    AUTH_TOKEN =
-        "Basic " +
-        btoa(
-            `admin:${password}`
-        );
-
-
-    loginScreen.style.display =
-        "none";
-
-
-    adminPanel.style.display =
-        "block";
-
-
-    await iniciarSocket();
-
-    await cargarProductos();
-}
-
-
-loginBtn.addEventListener(
-    "click",
-    iniciarSesion
-);
-
-
-/* =========================================================
-   ENTER LOGIN
-========================================================== */
-
-passwordInput.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "Enter"
-        ) {
-
-            iniciarSesion();
-        }
-    }
-);
-
-
-/* =========================================================
-   LOGOUT
-========================================================== */
-
-logoutBtn.addEventListener(
-    "click",
-    () => {
-
-        AUTH_TOKEN =
-            "";
-
-
-        productos =
-            [];
-
-
-        if (socket) {
-
-            socket.disconnect();
-
-            socket =
-                null;
-        }
-
-
-        listaProductos.innerHTML =
-            "";
-
-
-        adminPanel.style.display =
-            "none";
-
-
-        loginScreen.style.display =
-            "flex";
-
-
-        passwordInput.value =
-            "";
-
-
-        passwordInput.focus();
-    }
-);
-
-
-/* =========================================================
-   RELOAD
-========================================================== */
-
-reloadBtn.addEventListener(
-    "click",
-    async () => {
-
-        if (!AUTH_TOKEN) {
-
-            return;
-        }
-
-
-        reloadBtn.disabled =
-            true;
-
-
-        reloadBtn.textContent =
-            "⏳ Loading...";
-
-
-        try {
-
-            await cargarProductos();
-
-        }
-
-        finally {
-
-            reloadBtn.disabled =
-                false;
-
-            reloadBtn.textContent =
-                "🔄 Reload";
-        }
-    }
-);
-
-
-/* =========================================================
-   SHOP
-========================================================== */
-
-goShopBtn.addEventListener(
-    "click",
-    () => {
-
-        window.location.href =
-            "shop.html";
-    }
-);
-
-
-/* =========================================================
-   SEARCH
-========================================================== */
-
-searchInput.addEventListener(
-    "input",
-    () => {
-
-        renderProductos(
-            searchInput.value
-        );
-    }
-);
-
-
-/* =========================================================
-   CLEAR SEARCH
-========================================================== */
-
-clearSearchBtn.addEventListener(
-    "click",
-    () => {
-
-        searchInput.value =
-            "";
-
-        renderProductos();
-    }
-);
-
 
 /* =========================================================
    SOCKET.IO
-========================================================== */
+========================================================= */
 
-async function iniciarSocket() {
+if(
+    typeof io ===
+    "function"
+){
 
-    if (socket) {
-
-        return;
-    }
-
-
-    if (
-        typeof io !==
-        "function"
-    ) {
-
-        console.warn(
-            "⚠️ Socket.IO not loaded."
+    const socket =
+        io(
+            API_BASE,
+            {
+                transports:[
+                    "websocket",
+                    "polling"
+                ]
+            }
         );
 
-        return;
-    }
+    socket.on(
+        "connect",
+        function(){
 
+            console.log(
+                "Socket.IO connected:",
+                socket.id
+            );
 
-    try {
+        }
+    );
 
-        socket =
-            io(
-                BASE_URL ||
-                window.location.origin,
-                {
-                    transports: [
-                        "websocket",
-                        "polling"
-                    ],
+    socket.on(
+        "actualizar-productos",
+        function(updated){
 
-                    reconnection: true,
+            const updates =
+                Array.isArray(updated)
+                    ? updated
+                    : [updated];
 
-                    reconnectionAttempts: 10,
+            updates.forEach(
+                item => {
 
-                    timeout: 10000
+                    const normalized =
+                        normalizeProduct(
+                            item
+                        );
+
+                    if(!normalized){
+                        return;
+                    }
+
+                    const index =
+                        productosMaster.findIndex(
+                            p =>
+                                String(p.id)
+                                ===
+                                String(
+                                    normalized.id
+                                )
+                        );
+
+                    if(index >= 0){
+
+                        productosMaster[
+                            index
+                        ] = {
+
+                            ...productosMaster[
+                                index
+                            ],
+
+                            ...normalized
+
+                        };
+
+                    }else{
+
+                        productosMaster.push(
+                            normalized
+                        );
+
+                    }
+
                 }
             );
 
+            renderProducts(
+                visibleProducts()
+            );
 
-        socket.on(
-            "connect",
-            () => {
+        }
+    );
 
-                console.log(
-                    "🟢 Socket.IO connected:",
-                    socket.id
-                );
-            }
-        );
+}
 
+/* =========================================================
+   PRELOAD CLOUDINARY
+========================================================= */
 
-        socket.on(
-            "disconnect",
-            reason => {
+setTimeout(
+    function(){
 
-                console.log(
-                    "🔴 Socket.IO disconnected:",
-                    reason
-                );
-            }
-        );
+        productosMaster.forEach(
+            product => {
 
-
-        socket.on(
-            "connect_error",
-            error => {
-
-                console.warn(
-                    "⚠️ Socket.IO error:",
-                    error.message
-                );
-            }
-        );
-
-
-        /*
-            IMPORTANTE:
-
-            El servidor debe emitir
-            productos-actualizados.
-
-            Puede devolver:
-
-                []
-
-            o:
-
-                {
-                    productos: []
-                }
-        */
-
-        socket.on(
-            "productos-actualizados",
-            data => {
-
-                const lista =
-                    extraerProductos(
-                        data
-                    );
-
-
-                if (
-                    !lista.length
-                ) {
-
+                if(
+                    !Array.isArray(
+                        product.imagenes
+                    )
+                ){
                     return;
                 }
 
+                product.imagenes.forEach(
+                    url => {
 
-                console.log(
-                    "🔄 Products received through Socket.IO"
-                );
+                        /*
+                           Solo Cloudinary.
+                        */
 
-
-                productos =
-                    lista.map(
-                        (
-                            p,
-                            index
-                        ) =>
-                            normalizarProducto(
-                                p,
-                                index
+                        if(
+                            !url.includes(
+                                "res.cloudinary.com"
                             )
-                    );
+                        ){
+                            return;
+                        }
 
+                        const image =
+                            new Image();
 
-                renderProductos(
-                    searchInput.value
+                        image.src =
+                            url;
+
+                    }
                 );
+
             }
         );
 
-    }
-
-    catch (error) {
-
-        console.warn(
-            "⚠️ Socket initialization failed:",
-            error
-        );
-
-
-        socket =
-            null;
-    }
-}
-
-
-/* =========================================================
-   DEBUG API
-========================================================== */
-
-async function verificarServidor() {
-
-    try {
-
-        const response =
-            await fetch(
-                apiUrl(
-                    "/api/productos"
-                ),
-                {
-                    method: "GET",
-                    cache: "no-store"
-                }
-            );
-
-
-        if (
-            response.ok
-        ) {
-
-            return true;
-        }
-
-
-        return false;
-
-    }
-
-    catch {
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   GLOBAL ERROR
-========================================================== */
-
-window.addEventListener(
-    "error",
-    event => {
-
-        console.error(
-            "❌ Global JS error:",
-            event.error ||
-            event.message
-        );
-    }
-);
-
-
-/* =========================================================
-   UNHANDLED PROMISE
-========================================================== */
-
-window.addEventListener(
-    "unhandledrejection",
-    event => {
-
-        console.error(
-            "❌ Unhandled Promise:",
-            event.reason
-        );
-    }
-);
-
-
-/* =========================================================
-   DEBUG INFORMATION
-========================================================== */
-
-console.log(
-    "========================================"
+    },
+    1500
 );
 
 console.log(
-    "LaTRONIC ADMIN"
+    "================================="
 );
 
 console.log(
-    "========================================"
+    "LaTRONIC Shop"
 );
 
 console.log(
-    "BASE_URL:",
-    BASE_URL ||
-    "(same origin)"
+    "Cloudinary image system ACTIVE"
 );
 
 console.log(
-    "Current origin:",
-    window.location.origin
+    "Cloudinary folder:",
+    CLOUDINARY_FOLDER
 );
 
 console.log(
-    "Products API:",
-    apiUrl(
-        "/api/productos"
-    )
+    "================================="
 );
 
-console.log(
-    "Upload API:",
-    apiUrl(
-        "/api/subir-imagenes"
-    )
-);
-
-console.log(
-    "HEIC decoder:",
-    typeof heic2any
-);
-
-console.log(
-    "Socket.IO:",
-    typeof io
-);
-
-console.log(
-    "========================================"
-);
-
-
-/* =========================================================
-   NO LOGIN AUTOMÁTICO
-========================================================== */
-
-passwordInput.focus();
-
+});
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
