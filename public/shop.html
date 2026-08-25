@@ -1132,871 +1132,1167 @@ No, exit
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 
 <script>
-
 "use strict";
 
-document.addEventListener(
-"DOMContentLoaded",
-async function(){
+document.addEventListener("DOMContentLoaded", async function () {
 
-/* =========================================================
-   CONFIGURATION
-========================================================= */
+    /* =========================================================
+       CONFIGURATION
+    ========================================================= */
 
-const API_BASE =
-    window.location.origin;
+    const API_BASE = window.location.origin;
 
-const CLOUDINARY_BASE =
-    "https://res.cloudinary.com/ju0sskwe/image/upload";
+    const CLOUDINARY_BASE =
+        "https://res.cloudinary.com/ju0sskwe/image/upload";
 
-const CLOUDINARY_FOLDER =
-    "latronic/products";
+    const CLOUDINARY_FOLDER =
+        "latronic/products";
 
-/*
-   IMPORTANTE:
+    const contenedor =
+        document.getElementById("contenedor-productos");
 
-   Shop NO utiliza localhost/uploads.
+    const cartCount =
+        document.getElementById("cart-count");
 
-   Todos los archivos antiguos como:
 
-   /uploads/1786060320955.jpeg
+    /* =========================================================
+       CLOUDINARY URL
+    ========================================================= */
 
-   son transformados a:
+    function cloudinaryUrl(value) {
 
-   https://res.cloudinary.com/ju0sskwe/image/upload/
-   f_auto,q_auto/latronic/products/1786060320955
-
-*/
-
-const contenedor =
-    document.getElementById(
-        "contenedor-productos"
-    );
-
-const cartCount =
-    document.getElementById(
-        "cart-count"
-    );
-
-/* =========================================================
-   CLOUDINARY URL
-========================================================= */
-
-function cloudinaryUrl(
-    value
-){
-
-    if(!value){
-        return "";
-    }
-
-    let raw =
-        String(value).trim();
-
-    if(!raw){
-        return "";
-    }
-
-    /*
-       Ya es Cloudinary.
-    */
-
-    if(
-        raw.includes(
-            "res.cloudinary.com"
-        )
-    ){
-
-        /*
-           Si ya tiene transformaciones,
-           la dejamos.
-
-           Si no tiene f_auto/q_auto,
-           las agregamos.
-        */
-
-        try{
-
-            const url =
-                new URL(raw);
-
-            const parts =
-                url.pathname
-                .split("/")
-                .filter(Boolean);
-
-            const uploadIndex =
-                parts.indexOf("upload");
-
-            if(
-                uploadIndex !== -1
-            ){
-
-                const afterUpload =
-                    parts.slice(
-                        uploadIndex + 1
-                    );
-
-                const hasAuto =
-                    afterUpload.some(
-                        x =>
-                            x.includes(
-                                "f_auto"
-                            )
-                    );
-
-                if(!hasAuto){
-
-                    parts.splice(
-                        uploadIndex + 1,
-                        0,
-                        "f_auto,q_auto"
-                    );
-
-                    url.pathname =
-                        "/" +
-                        parts.join("/");
-
-                    return url.toString();
-
-                }
-
-            }
-
-            return raw;
-
-        }catch(e){
-
-            return raw;
-
+        if (!value) {
+            return "";
         }
 
-    }
+        let raw = String(value).trim();
 
-    /*
-       Si viene como:
+        if (!raw) {
+            return "";
+        }
 
-       /uploads/file.jpeg
+        /*
+         * Si ya es una URL Cloudinary,
+         * no volver a transformarla.
+         */
 
-       o:
+        if (raw.includes("res.cloudinary.com")) {
 
-       uploads/file.jpeg
-    */
+            try {
 
-    let filename =
-        raw
-        .split("?")[0]
-        .split("#")[0];
+                const url = new URL(raw);
 
-    filename =
-        filename
-        .replace(/^\/+/, "");
+                const parts =
+                    url.pathname
+                        .split("/")
+                        .filter(Boolean);
 
-    /*
-       Extraer solamente el nombre.
-    */
+                const uploadIndex =
+                    parts.indexOf("upload");
 
-    filename =
-        filename
-        .split("/")
-        .pop();
+                if (uploadIndex !== -1) {
 
-    if(!filename){
-        return "";
-    }
+                    const afterUpload =
+                        parts.slice(uploadIndex + 1);
 
-    /*
-       El public_id normalmente no incluye
-       la extensión.
-    */
+                    const hasTransformation =
+                        afterUpload.some(part =>
+                            part.includes("f_auto") ||
+                            part.includes("q_auto")
+                        );
 
-    const publicId =
-        filename.replace(
-            /\.(jpe?g|png|webp|gif|avif|bmp|tiff?)$/i,
-            ""
-        );
+                    if (!hasTransformation) {
 
-    /*
-       Cloudinary entrega automáticamente
-       el formato óptimo.
+                        parts.splice(
+                            uploadIndex + 1,
+                            0,
+                            "f_auto,q_auto"
+                        );
 
-       f_auto:
-       WebP / AVIF cuando el navegador
-       lo soporta.
+                        url.pathname =
+                            "/" + parts.join("/");
 
-       q_auto:
-       compresión automática.
-    */
-
-    return (
-        CLOUDINARY_BASE +
-        "/f_auto,q_auto/" +
-        CLOUDINARY_FOLDER +
-        "/" +
-        encodeURIComponent(publicId)
-    );
-
-}
-
-/* =========================================================
-   EXTRAER IMÁGENES
-========================================================= */
-
-function getProductImages(
-    product
-){
-
-    let images = [];
-
-    if(
-        Array.isArray(
-            product.imagenes
-        )
-    ){
-
-        images =
-            product.imagenes;
-
-    }else if(
-        Array.isArray(
-            product.images
-        )
-    ){
-
-        images =
-            product.images;
-
-    }else if(
-        product.image
-    ){
-
-        images = [
-            product.image
-        ];
-
-    }else if(
-        product.imagen
-    ){
-
-        images = [
-            product.imagen
-        ];
-
-    }
-
-    /*
-       Convertir TODO a Cloudinary.
-    */
-
-    images =
-        images
-        .map(
-            cloudinaryUrl
-        )
-        .filter(Boolean);
-
-    /*
-       Eliminar duplicados.
-    */
-
-    return [
-        ...new Set(images)
-    ];
-
-}
-
-/* =========================================================
-   NORMALIZAR PRODUCT
-========================================================= */
-
-function normalizeProduct(
-    product
-){
-
-    if(
-        !product ||
-        typeof product !== "object"
-    ){
-        return null;
-    }
-
-    const images =
-        getProductImages(
-            product
-        );
-
-    return {
-
-        ...product,
-
-        id:
-            product.id,
-
-        titulo:
-            product.titulo ||
-            product.title ||
-            "Untitled Product",
-
-        description:
-            product.description ||
-            product.descripcion ||
-            "",
-
-        price:
-            Number(
-                product.price ??
-                product.precio ??
-                0
-            ),
-
-        stock:
-            Number(
-                product.stock || 0
-            ),
-
-        categoria:
-            product.categoria ||
-            {},
-
-        imagenes:
-            images
-
-    };
-
-}
-
-/* =========================================================
-   LOAD PRODUCTS
-========================================================= */
-
-async function loadProducts(){
-
-    try{
-
-        console.log(
-            "Loading products from:",
-            API_BASE +
-            "/api/productos"
-        );
-
-        const response =
-            await fetch(
-                API_BASE +
-                "/api/productos?_=" +
-                Date.now(),
-                {
-                    method:"GET",
-                    cache:"no-store",
-                    headers:{
-                        "Accept":
-                            "application/json"
+                        return url.toString();
                     }
                 }
-            );
 
-        if(!response.ok){
+                return raw;
 
-            throw new Error(
-                "HTTP " +
-                response.status
-            );
+            } catch (error) {
 
+                return raw;
+            }
         }
 
-        const data =
-            await response.json();
-
-        if(!Array.isArray(data)){
-
-            throw new Error(
-                "API did not return an array"
-            );
-
-        }
-
-        const normalized =
-            data
-            .map(
-                normalizeProduct
-            )
-            .filter(Boolean);
-
-        console.log(
-            "Products:",
-            normalized.length
-        );
 
         /*
-           Mostrar diagnóstico.
-        */
+         * URLs antiguas:
+         *
+         * /uploads/archivo.jpeg
+         * uploads/archivo.jpeg
+         * /images/archivo.webp
+         * images/archivo.webp
+         */
 
-        normalized.forEach(
-            product => {
+        let filename =
+            raw
+                .split("?")[0]
+                .split("#")[0]
+                .replace(/^\/+/, "");
 
-                console.log(
-                    "PRODUCT:",
-                    product.titulo
-                );
+        /*
+         * Si viene como URL absoluta de otro servidor,
+         * intentar obtener solamente el pathname.
+         */
 
-                console.log(
-                    "CLOUDINARY:",
-                    product.imagenes
-                );
+        if (
+            filename.startsWith("http://") ||
+            filename.startsWith("https://")
+        ) {
 
+            try {
+
+                const parsed =
+                    new URL(filename);
+
+                filename =
+                    parsed.pathname
+                        .replace(/^\/+/, "");
+
+            } catch (error) {
+                return "";
             }
-        );
+        }
 
-        localStorage.setItem(
-            "productos",
-            JSON.stringify(
-                normalized
+
+        /*
+         * Eliminar carpetas.
+         */
+
+        filename =
+            filename
+                .split("/")
+                .pop();
+
+
+        if (!filename) {
+            return "";
+        }
+
+
+        /*
+         * Eliminar extensión.
+         */
+
+        const publicId =
+            filename.replace(
+                /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i,
+                ""
+            );
+
+
+        if (!publicId) {
+            return "";
+        }
+
+
+        /*
+         * IMPORTANTE:
+         *
+         * Cloudinary public_id:
+         *
+         * latronic/products/NOMBRE
+         */
+
+        return (
+            CLOUDINARY_BASE +
+            "/f_auto,q_auto/" +
+            CLOUDINARY_FOLDER +
+            "/" +
+            encodeURIComponent(publicId)
+        );
+    }
+
+
+    /* =========================================================
+       NORMALIZE IMAGE ARRAY
+    ========================================================= */
+
+    function normalizeImageArray(value) {
+
+        if (!value) {
+            return [];
+        }
+
+
+        /*
+         * PostgreSQL puede devolver JSON como string.
+         */
+
+        if (typeof value === "string") {
+
+            const trimmed =
+                value.trim();
+
+            if (!trimmed) {
+                return [];
+            }
+
+
+            /*
+             * Intentar JSON.
+             */
+
+            try {
+
+                const parsed =
+                    JSON.parse(trimmed);
+
+                if (Array.isArray(parsed)) {
+                    value = parsed;
+                } else if (
+                    typeof parsed === "string"
+                ) {
+                    value = [parsed];
+                } else {
+                    value = [trimmed];
+                }
+
+            } catch (error) {
+
+                /*
+                 * Puede ser:
+                 *
+                 * url1,url2,url3
+                 */
+
+                if (trimmed.includes(",")) {
+
+                    value =
+                        trimmed
+                            .split(",")
+                            .map(x => x.trim());
+
+                } else {
+
+                    value = [trimmed];
+                }
+            }
+        }
+
+
+        /*
+         * Array.
+         */
+
+        if (!Array.isArray(value)) {
+
+            value = [value];
+        }
+
+
+        return value
+            .flat(Infinity)
+            .map(item => {
+
+                if (!item) {
+                    return "";
+                }
+
+                /*
+                 * Algunos sistemas guardan:
+                 *
+                 * { url: "..." }
+                 */
+
+                if (
+                    typeof item === "object"
+                ) {
+
+                    return (
+                        item.url ||
+                        item.src ||
+                        item.path ||
+                        item.filename ||
+                        item.public_id ||
+                        ""
+                    );
+                }
+
+                return String(item);
+            })
+            .map(cloudinaryUrl)
+            .filter(Boolean);
+    }
+
+
+    /* =========================================================
+       EXTRACT PRODUCT IMAGES
+    ========================================================= */
+
+    function getProductImages(product) {
+
+        if (!product) {
+            return [];
+        }
+
+        let source = [];
+
+
+        /*
+         * Prioridad:
+         *
+         * imagenes
+         * images
+         * image
+         * imagen
+         */
+
+        if (product.imagenes !== undefined) {
+
+            source = product.imagenes;
+
+        } else if (
+            product.images !== undefined
+        ) {
+
+            source = product.images;
+
+        } else if (
+            product.image
+        ) {
+
+            source = [product.image];
+
+        } else if (
+            product.imagen
+        ) {
+
+            source = [product.imagen];
+        }
+
+
+        /*
+         * Convertir todo a Cloudinary.
+         */
+
+        const images =
+            normalizeImageArray(source);
+
+
+        /*
+         * Eliminar duplicados.
+         */
+
+        return [
+            ...new Set(
+                images.map(url => url.trim())
             )
-        );
+        ];
+    }
 
-        return normalized;
 
-    }catch(error){
+    /* =========================================================
+       NORMALIZE PRODUCT
+    ========================================================= */
 
-        console.error(
-            "Product loading error:",
-            error
-        );
+    function normalizeProduct(product) {
 
-        try{
+        if (
+            !product ||
+            typeof product !== "object"
+        ) {
 
-            const local =
+            return null;
+        }
+
+
+        const images =
+            getProductImages(product);
+
+
+        /*
+         * Categoría puede venir como:
+         *
+         * objeto
+         * JSON string
+         */
+
+        let categoria =
+            product.categoria ||
+            product.category ||
+            {};
+
+
+        if (
+            typeof categoria === "string"
+        ) {
+
+            try {
+
+                categoria =
+                    JSON.parse(categoria);
+
+            } catch (error) {
+
+                categoria = {
+                    main: categoria,
+                    sub: ""
+                };
+            }
+        }
+
+
+        /*
+         * Tags.
+         */
+
+        let tags =
+            product.tags || [];
+
+
+        if (
+            typeof tags === "string"
+        ) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(tags);
+
+                tags =
+                    Array.isArray(parsed)
+                        ? parsed
+                        : [tags];
+
+            } catch (error) {
+
+                tags =
+                    tags
+                        .split(",")
+                        .map(x => x.trim())
+                        .filter(Boolean);
+            }
+        }
+
+
+        return {
+
+            ...product,
+
+            id:
+                product.id,
+
+            titulo:
+                product.titulo ||
+                product.title ||
+                product.nombre ||
+                "Untitled Product",
+
+            description:
+                product.description ||
+                product.descripcion ||
+                product.desc ||
+                "",
+
+            price:
+                Number(
+                    product.price ??
+                    product.precio ??
+                    product.precioVenta ??
+                    0
+                ),
+
+            stock:
+                Number(
+                    product.stock ??
+                    product.cantidad ??
+                    0
+                ),
+
+            categoria:
+                categoria || {},
+
+            tags:
+                Array.isArray(tags)
+                    ? tags
+                    : [],
+
+            imagenes:
+                images
+        };
+    }
+
+
+    /* =========================================================
+       LOAD PRODUCTS
+    ========================================================= */
+
+    async function loadProducts() {
+
+        const apiUrls = [
+
+            API_BASE +
+            "/api/productos",
+
+            API_BASE +
+            "/api/products"
+
+        ];
+
+
+        for (
+            const apiUrl of apiUrls
+        ) {
+
+            try {
+
+                console.log(
+                    "Loading products:",
+                    apiUrl
+                );
+
+
+                const response =
+                    await fetch(
+                        apiUrl +
+                        "?_=" +
+                        Date.now(),
+                        {
+                            method: "GET",
+                            cache: "no-store",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    console.warn(
+                        "API failed:",
+                        apiUrl,
+                        response.status
+                    );
+
+                    continue;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                /*
+                 * Algunos endpoints devuelven:
+                 *
+                 * []
+                 *
+                 * o:
+                 *
+                 * { products: [] }
+                 *
+                 * o:
+                 *
+                 * { productos: [] }
+                 */
+
+                let products = data;
+
+
+                if (
+                    data &&
+                    typeof data === "object" &&
+                    !Array.isArray(data)
+                ) {
+
+                    products =
+                        data.productos ||
+                        data.products ||
+                        data.data ||
+                        [];
+                }
+
+
+                if (
+                    !Array.isArray(products)
+                ) {
+
+                    console.warn(
+                        "API did not return product array:",
+                        apiUrl
+                    );
+
+                    continue;
+                }
+
+
+                const normalized =
+                    products
+                        .map(normalizeProduct)
+                        .filter(Boolean);
+
+
+                console.log(
+                    "Products loaded:",
+                    normalized.length
+                );
+
+
+                /*
+                 * Diagnóstico.
+                 */
+
+                let totalImages = 0;
+
+                normalized.forEach(product => {
+
+                    totalImages +=
+                        product.imagenes.length;
+
+                    console.log(
+                        "PRODUCT:",
+                        product.id,
+                        product.titulo,
+                        "IMAGES:",
+                        product.imagenes.length
+                    );
+
+                });
+
+
+                console.log(
+                    "Total Cloudinary images:",
+                    totalImages
+                );
+
+
+                /*
+                 * Guardar copia local.
+                 */
+
+                localStorage.setItem(
+                    "productos",
+                    JSON.stringify(normalized)
+                );
+
+
+                return normalized;
+
+            } catch (error) {
+
+                console.error(
+                    "Error loading:",
+                    apiUrl,
+                    error
+                );
+            }
+        }
+
+
+        /*
+         * Fallback localStorage.
+         */
+
+        try {
+
+            const saved =
                 JSON.parse(
                     localStorage.getItem(
                         "productos"
                     )
                 ) || [];
 
-            return local
-                .map(
-                    normalizeProduct
-                )
-                .filter(Boolean);
 
-        }catch(e){
+            if (
+                Array.isArray(saved)
+            ) {
 
-            return [];
+                console.warn(
+                    "Using localStorage products:",
+                    saved.length
+                );
 
+
+                return saved
+                    .map(normalizeProduct)
+                    .filter(Boolean);
+            }
+
+        } catch (error) {
+
+            console.error(
+                "localStorage error:",
+                error
+            );
         }
 
-    }
-
-}
-
-/* =========================================================
-   PRODUCTS
-========================================================= */
-
-let productosMaster =
-    await loadProducts();
-
-/* =========================================================
-   CART
-========================================================= */
-
-function getCart(){
-
-    try{
-
-        return JSON.parse(
-            localStorage.getItem(
-                "productos-en-cart"
-            )
-        ) || [];
-
-    }catch(e){
 
         return [];
-
     }
 
-}
 
-function updateCartCount(){
+    /* =========================================================
+       PRODUCTS MASTER
+    ========================================================= */
 
-    const cart =
-        getCart();
+    let productosMaster =
+        await loadProducts();
 
-    const total =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                Number(
-                    item.quantity || 0
-                ),
-            0
-        );
 
-    if(cartCount){
+    /* =========================================================
+       CART
+    ========================================================= */
 
-        cartCount.textContent =
-            total;
+    function getCart() {
 
+        try {
+
+            return (
+                JSON.parse(
+                    localStorage.getItem(
+                        "productos-en-cart"
+                    )
+                ) || []
+            );
+
+        } catch (error) {
+
+            return [];
+        }
     }
 
-}
 
-updateCartCount();
+    function updateCartCount() {
 
-/* =========================================================
-   CART BUTTON
-========================================================= */
+        const cart =
+            getCart();
 
-document
-.getElementById("cart-btn")
-?.addEventListener(
-    "click",
-    function(){
 
-        window.location.href =
-            "cart.html";
+        const total =
+            cart.reduce(
+                (
+                    sum,
+                    item
+                ) => {
 
-    }
-);
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-document
-.getElementById("admin-access")
-?.addEventListener(
-    "click",
-    function(){
-
-        window.location.href =
-            "admin.html";
-
-    }
-);
-
-/* =========================================================
-   MOBILE MENU
-========================================================= */
-
-const hamburger =
-    document.querySelector(
-        ".hamburger"
-    );
-
-const aside =
-    document.querySelector(
-        "aside"
-    );
-
-hamburger?.addEventListener(
-    "click",
-    function(){
-
-        aside.classList.toggle(
-            "active"
-        );
-
-    }
-);
-
-/* =========================================================
-   SUBMENUS
-========================================================= */
-
-document
-.querySelectorAll(
-    ".toggle-submenu"
-)
-.forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            function(){
-
-                const submenu =
-                    button.nextElementSibling;
-
-                if(!submenu){
-                    return;
-                }
-
-                const open =
-                    submenu.style.display
-                    ===
-                    "block";
-
-                document
-                .querySelectorAll(
-                    ".submenu"
-                )
-                .forEach(
-                    menu =>
-                        menu.style.display =
-                            "none"
-                );
-
-                document
-                .querySelectorAll(
-                    ".toggle-submenu"
-                )
-                .forEach(
-                    btn =>
-                        btn.classList.remove(
-                            "active"
+                    return (
+                        sum +
+                        Number(
+                            item.quantity || 0
                         )
-                );
-
-                if(!open){
-
-                    submenu.style.display =
-                        "block";
-
-                    button.classList.add(
-                        "active"
                     );
 
-                }
+                },
+                0
+            );
 
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                total;
+        }
+    }
+
+
+    updateCartCount();
+
+
+    /* =========================================================
+       CART BUTTON
+    ========================================================= */
+
+    document
+        .getElementById("cart-btn")
+        ?.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "cart.html";
             }
         );
 
-    }
-);
 
-/* =========================================================
-   ZOOM
-========================================================= */
+    /* =========================================================
+       ADMIN
+    ========================================================= */
 
-const zoomModal =
-    document.createElement(
-        "div"
-    );
+    document
+        .getElementById("admin-access")
+        ?.addEventListener(
+            "click",
+            function () {
 
-zoomModal.id =
-    "zoom-modal";
-
-zoomModal.innerHTML = `
-
-<button
-    id="zoom-prev"
-    class="zoom-control"
->
-    &#9664;
-</button>
-
-<img
-    id="zoom-img"
-    alt="Product image"
->
-
-<button
-    id="zoom-next"
-    class="zoom-control"
->
-    &#9654;
-</button>
-
-<div id="zoom-desc"></div>
-
-`;
-
-document.body.appendChild(
-    zoomModal
-);
-
-const zoomImg =
-    document.getElementById(
-        "zoom-img"
-    );
-
-const zoomDesc =
-    document.getElementById(
-        "zoom-desc"
-    );
-
-const zoomPrev =
-    document.getElementById(
-        "zoom-prev"
-    );
-
-const zoomNext =
-    document.getElementById(
-        "zoom-next"
-    );
-
-let zoomImages = [];
-let zoomIndex = 0;
-let zoomProduct = null;
-
-function openZoom(
-    product,
-    index
-){
-
-    zoomProduct =
-        product;
-
-    zoomImages =
-        product.imagenes || [];
-
-    if(!zoomImages.length){
-        return;
-    }
-
-    zoomIndex =
-        Math.max(
-            0,
-            Math.min(
-                index || 0,
-                zoomImages.length - 1
-            )
+                window.location.href =
+                    "admin.html";
+            }
         );
 
-    updateZoom();
 
-    zoomModal.style.display =
-        "flex";
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
 
-}
+    const hamburger =
+        document.querySelector(
+            ".hamburger"
+        );
 
-function updateZoom(){
+    const aside =
+        document.querySelector(
+            "aside"
+        );
 
-    if(!zoomImages.length){
-        return;
+
+    hamburger?.addEventListener(
+        "click",
+        function () {
+
+            aside?.classList.toggle(
+                "active"
+            );
+        }
+    );
+
+
+    /* =========================================================
+       SUBMENUS
+    ========================================================= */
+
+    document
+        .querySelectorAll(
+            ".toggle-submenu"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const submenu =
+                        button.nextElementSibling;
+
+
+                    if (!submenu) {
+                        return;
+                    }
+
+
+                    const open =
+                        submenu.style.display ===
+                        "block";
+
+
+                    document
+                        .querySelectorAll(
+                            ".submenu"
+                        )
+                        .forEach(menu => {
+
+                            menu.style.display =
+                                "none";
+                        });
+
+
+                    document
+                        .querySelectorAll(
+                            ".toggle-submenu"
+                        )
+                        .forEach(btn => {
+
+                            btn.classList.remove(
+                                "active"
+                            );
+                        });
+
+
+                    if (!open) {
+
+                        submenu.style.display =
+                            "block";
+
+                        button.classList.add(
+                            "active"
+                        );
+                    }
+                }
+            );
+        });
+
+
+    /* =========================================================
+       CAPITALIZE
+    ========================================================= */
+
+    function capitalize(text) {
+
+        return String(
+            text || ""
+        )
+            .replace(
+                /[-_]/g,
+                " "
+            )
+            .replace(
+                /\b\w/g,
+                char =>
+                    char.toUpperCase()
+            );
     }
 
-    zoomImg.src =
-        zoomImages[
-            zoomIndex
-        ];
 
-    zoomDesc.textContent =
-        zoomProduct?.description ||
-        "";
+    /* =========================================================
+       ZOOM MODAL
+    ========================================================= */
 
-    const multiple =
-        zoomImages.length > 1;
+    const zoomModal =
+        document.createElement(
+            "div"
+        );
 
-    zoomPrev.style.display =
-        multiple
-            ? "block"
-            : "none";
+    zoomModal.id =
+        "zoom-modal";
 
-    zoomNext.style.display =
-        multiple
-            ? "block"
-            : "none";
 
-}
+    zoomModal.innerHTML = `
 
-zoomPrev.addEventListener(
-    "click",
-    function(e){
+        <button
+            id="zoom-prev"
+            class="zoom-control"
+            type="button"
+        >
+            &#9664;
+        </button>
 
-        e.stopPropagation();
+        <img
+            id="zoom-img"
+            alt="Product image"
+        >
+
+        <button
+            id="zoom-next"
+            class="zoom-control"
+            type="button"
+        >
+            &#9654;
+        </button>
+
+        <div id="zoom-desc"></div>
+    `;
+
+
+    document.body.appendChild(
+        zoomModal
+    );
+
+
+    const zoomImg =
+        document.getElementById(
+            "zoom-img"
+        );
+
+    const zoomDesc =
+        document.getElementById(
+            "zoom-desc"
+        );
+
+    const zoomPrev =
+        document.getElementById(
+            "zoom-prev"
+        );
+
+    const zoomNext =
+        document.getElementById(
+            "zoom-next"
+        );
+
+
+    let zoomImages = [];
+
+    let zoomIndex = 0;
+
+    let zoomProduct = null;
+
+
+    function openZoom(
+        product,
+        index
+    ) {
+
+        zoomProduct =
+            product;
+
+        zoomImages =
+            product.imagenes || [];
+
+
+        if (
+            !zoomImages.length
+        ) {
+
+            return;
+        }
+
 
         zoomIndex =
-            (
-                zoomIndex -
-                1 +
-                zoomImages.length
-            ) %
-            zoomImages.length;
+            Math.max(
+                0,
+                Math.min(
+                    Number(index) || 0,
+                    zoomImages.length - 1
+                )
+            );
+
 
         updateZoom();
 
-    }
-);
-
-zoomNext.addEventListener(
-    "click",
-    function(e){
-
-        e.stopPropagation();
-
-        zoomIndex =
-            (
-                zoomIndex +
-                1
-            ) %
-            zoomImages.length;
-
-        updateZoom();
-
-    }
-);
-
-zoomImg.addEventListener(
-    "click",
-    function(e){
-
-        e.stopPropagation();
-
-    }
-);
-
-zoomModal.addEventListener(
-    "click",
-    function(){
 
         zoomModal.style.display =
-            "none";
-
-        zoomImg.src = "";
-
-    }
-);
-
-/* =========================================================
-   IMAGE LOADER
-========================================================= */
-
-function loadImage(
-    img,
-    product
-){
-
-    const images =
-        product.imagenes || [];
-
-    const loading =
-        img.parentElement
-        .querySelector(
-            ".image-loading"
-        );
-
-    const error =
-        img.parentElement
-        .querySelector(
-            ".image-error"
-        );
-
-    if(!images.length){
-
-        loading?.classList.add(
-            "hidden"
-        );
-
-        error?.classList.add(
-            "show"
-        );
-
-        return;
-
+            "flex";
     }
 
-    let index = 0;
 
-    function next(){
+    function updateZoom() {
 
-        if(
-            index >=
-            images.length
-        ){
+        if (
+            !zoomImages.length
+        ) {
+
+            return;
+        }
+
+
+        zoomImg.src =
+            zoomImages[
+                zoomIndex
+            ];
+
+
+        zoomDesc.textContent =
+            zoomProduct?.description ||
+            "";
+
+
+        const multiple =
+            zoomImages.length > 1;
+
+
+        zoomPrev.style.display =
+            multiple
+                ? "block"
+                : "none";
+
+
+        zoomNext.style.display =
+            multiple
+                ? "block"
+                : "none";
+    }
+
+
+    zoomPrev.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+
+            zoomIndex =
+                (
+                    zoomIndex -
+                    1 +
+                    zoomImages.length
+                ) %
+                zoomImages.length;
+
+
+            updateZoom();
+        }
+    );
+
+
+    zoomNext.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+
+            zoomIndex =
+                (
+                    zoomIndex +
+                    1
+                ) %
+                zoomImages.length;
+
+
+            updateZoom();
+        }
+    );
+
+
+    zoomImg.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+        }
+    );
+
+
+    zoomModal.addEventListener(
+        "click",
+        function () {
+
+            zoomModal.style.display =
+                "none";
+
+            zoomImg.src =
+                "";
+        }
+    );
+
+
+    /* =========================================================
+       IMAGE LOADER
+    ========================================================= */
+
+    function loadImage(
+        img,
+        product
+    ) {
+
+        const images =
+            Array.isArray(
+                product.imagenes
+            )
+                ? product.imagenes
+                : [];
+
+
+        const gallery =
+            img.parentElement;
+
+
+        const loading =
+            gallery?.querySelector(
+                ".image-loading"
+            );
+
+
+        const error =
+            gallery?.querySelector(
+                ".image-error"
+            );
+
+
+        if (
+            !images.length
+        ) {
 
             loading?.classList.add(
                 "hidden"
@@ -2006,1046 +2302,1370 @@ function loadImage(
                 "show"
             );
 
-            console.error(
-                "All Cloudinary images failed:",
-                product.titulo,
-                images
-            );
-
             return;
-
         }
 
-        const url =
-            images[index++];
 
-        /*
-           MUY IMPORTANTE:
+        let index = 0;
 
-           Aquí solamente se utiliza
-           Cloudinary.
 
-           Nunca /uploads/.
-        */
+        function nextImage() {
 
-        console.log(
-            "Cloudinary image:",
-            url
-        );
-
-        img.onload =
-            function(){
-
-                img.classList.add(
-                    "loaded"
-                );
+            if (
+                index >= images.length
+            ) {
 
                 loading?.classList.add(
                     "hidden"
                 );
 
-                error?.classList.remove(
+                error?.classList.add(
                     "show"
                 );
 
-            };
-
-        img.onerror =
-            function(){
 
                 console.error(
-                    "Cloudinary image failed:",
-                    url
+                    "ALL IMAGES FAILED:",
+                    product.titulo,
+                    images
                 );
 
-                img.classList.remove(
-                    "loaded"
-                );
 
-                next();
-
-            };
-
-        img.src =
-            url;
-
-    }
-
-    next();
-
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function renderProducts(
-    list
-){
-
-    contenedor.innerHTML = "";
-
-    if(
-        !Array.isArray(list) ||
-        !list.length
-    ){
-
-        contenedor.innerHTML = `
-
-        <p style="
-            width:100%;
-            text-align:center;
-            color:#888;
-            padding:40px;
-        ">
-            Coming soon...
-        </p>
-
-        `;
-
-        return;
-
-    }
-
-    const cart =
-        getCart();
-
-    list.forEach(
-        product => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "producto";
-
-            card.dataset.id =
-                product.id;
-
-            /* IMAGE */
-
-            const gallery =
-                document.createElement(
-                    "div"
-                );
-
-            gallery.className =
-                "galeria";
-
-            const loading =
-                document.createElement(
-                    "div"
-                );
-
-            loading.className =
-                "image-loading";
-
-            loading.textContent =
-                "Loading...";
-
-            const error =
-                document.createElement(
-                    "div"
-                );
-
-            error.className =
-                "image-error";
-
-            error.innerHTML = `
-
-                <i class="bi bi-image"></i>
-
-                <span>
-                    Image unavailable
-                </span>
-
-            `;
-
-            const img =
-                document.createElement(
-                    "img"
-                );
-
-            img.className =
-                "main-img";
-
-            img.alt =
-                product.titulo;
-
-            img.loading =
-                "lazy";
-
-            img.decoding =
-                "async";
-
-            img.dataset.index =
-                "0";
-
-            gallery.append(
-                loading,
-                error,
-                img
-            );
-
-            loadImage(
-                img,
-                product
-            );
-
-            img.addEventListener(
-                "click",
-                function(e){
-
-                    e.stopPropagation();
-
-                    openZoom(
-                        product,
-                        Number(
-                            img.dataset.index
-                        ) || 0
-                    );
-
-                }
-            );
-
-            /* TITLE */
-
-            const title =
-                document.createElement(
-                    "h3"
-                );
-
-            title.textContent =
-                product.titulo;
-
-            /* DESCRIPTION */
-
-            const description =
-                document.createElement(
-                    "div"
-                );
-
-            description.className =
-                "product-description";
-
-            description.textContent =
-                product.description;
-
-            /* CART */
-
-            const cartItem =
-                cart.find(
-                    item =>
-                        String(item.id)
-                        ===
-                        String(product.id)
-                );
-
-            const cartQuantity =
-                Number(
-                    cartItem?.quantity ||
-                    0
-                );
-
-            const stock =
-                Number(
-                    product.stock ||
-                    0
-                );
-
-            const remaining =
-                Math.max(
-                    0,
-                    stock -
-                    cartQuantity
-                );
-
-            /* STOCK */
-
-            const stockEl =
-                document.createElement(
-                    "p"
-                );
-
-            stockEl.className =
-                "stock";
-
-            stockEl.textContent =
-                remaining > 0
-                    ? `Stock: ${remaining}`
-                    : "Out of stock";
-
-            stockEl.style.color =
-                remaining > 0
-                    ? "#888"
-                    : "#ff3333";
-
-            /* PRICE */
-
-            const price =
-                document.createElement(
-                    "p"
-                );
-
-            price.className =
-                "price";
-
-            price.textContent =
-                "$" +
-                Number(
-                    product.price || 0
-                ).toFixed(2);
-
-            /* ADD */
-
-            const add =
-                document.createElement(
-                    "button"
-                );
-
-            add.className =
-                "agregar-carrito";
-
-            add.textContent =
-                remaining > 0
-                    ? cartQuantity
-                        ? `Add (${cartQuantity})`
-                        : "Add"
-                    : "Out of stock";
-
-            add.disabled =
-                remaining <= 0;
-
-            add.addEventListener(
-                "click",
-                function(e){
-
-                    e.stopPropagation();
-
-                    const currentCart =
-                        getCart();
-
-                    const index =
-                        currentCart.findIndex(
-                            item =>
-                                String(item.id)
-                                ===
-                                String(product.id)
-                        );
-
-                    const current =
-                        index >= 0
-                            ? Number(
-                                currentCart[index]
-                                    .quantity || 0
-                            )
-                            : 0;
-
-                    if(
-                        current >= stock
-                    ){
-                        return;
-                    }
-
-                    if(index >= 0){
-
-                        currentCart[
-                            index
-                        ].quantity =
-                            current + 1;
-
-                    }else{
-
-                        currentCart.push({
-
-                            id:
-                                product.id,
-
-                            titulo:
-                                product.titulo,
-
-                            price:
-                                product.price,
-
-                            imagenes:
-                                product.imagenes,
-
-                            quantity:
-                                1
-
-                        });
-
-                    }
-
-                    localStorage.setItem(
-                        "productos-en-cart",
-                        JSON.stringify(
-                            currentCart
-                        )
-                    );
-
-                    updateCartCount();
-
-                    renderProducts(
-                        list
-                    );
-
-                }
-            );
-
-            /* OFFER */
-
-            const offer =
-                document.createElement(
-                    "button"
-                );
-
-            offer.className =
-                "negociar";
-
-            offer.textContent =
-                "Make Offer";
-
-            offer.addEventListener(
-                "click",
-                function(e){
-
-                    e.stopPropagation();
-
-                    document
-                    .getElementById(
-                        "negociar-modal"
-                    )
-                    .style.display =
-                        "flex";
-
-                    document
-                    .getElementById(
-                        "negociar-producto"
-                    )
-                    .textContent =
-                        product.titulo;
-
-                }
-            );
-
-            card.append(
-                gallery,
-                title
-            );
-
-            if(
-                product.description &&
-                product.description.trim()
-            ){
-
-                card.append(
-                    description
-                );
-
-            }
-
-            card.append(
-                stockEl,
-                price,
-                add,
-                offer
-            );
-
-            contenedor.appendChild(
-                card
-            );
-
-        }
-    );
-
-    updateCartCount();
-
-}
-
-/* =========================================================
-   INITIAL
-========================================================= */
-
-function visibleProducts(){
-
-    return productosMaster.filter(
-        product =>
-            String(
-                product.categoria?.sub ||
-                ""
-            ).toLowerCase()
-            !==
-            "adultmagazines"
-    );
-
-}
-
-renderProducts(
-    visibleProducts()
-);
-
-/* =========================================================
-   CATEGORY FILTER
-========================================================= */
-
-aside.addEventListener(
-    "click",
-    function(event){
-
-        const button =
-            event.target.closest(
-                ".submenu .boton-categoria"
-            );
-
-        if(!button){
-            return;
-        }
-
-        const main =
-            String(
-                button.dataset.main ||
-                ""
-            ).toLowerCase();
-
-        const sub =
-            String(
-                button.dataset.sub ||
-                ""
-            ).toLowerCase();
-
-        /*
-           Adult section.
-        */
-
-        if(
-            sub ===
-            "adultmagazines"
-        ){
-
-            const answer =
-                confirm(
-                    "This section contains adult material. Are you 18 or older?"
-                );
-
-            if(!answer){
                 return;
             }
 
-        }
 
-        const filtered =
-            productosMaster.filter(
-                product =>
+            const url =
+                images[index];
 
-                    String(
-                        product.categoria?.main ||
-                        ""
-                    ).toLowerCase()
-                    ===
-                    main
 
-                    &&
+            const currentIndex =
+                index;
 
-                    String(
-                        product.categoria?.sub ||
-                        ""
-                    ).toLowerCase()
-                    ===
-                    sub
+
+            index++;
+
+
+            console.log(
+                "Loading image:",
+                product.titulo,
+                currentIndex + 1,
+                "/",
+                images.length,
+                url
             );
 
-        document.getElementById(
-            "titulo-principal"
-        ).textContent =
-            capitalize(main) +
-            " · " +
-            capitalize(sub);
 
-        renderProducts(
-            filtered
-        );
+            img.onload =
+                function () {
 
-        aside.classList.remove(
-            "active"
-        );
+                    img.dataset.index =
+                        String(
+                            currentIndex
+                        );
 
-    }
-);
 
-/* =========================================================
-   SEARCH
-========================================================= */
-
-const searchInput =
-    document.getElementById(
-        "search-input"
-    );
-
-const searchBtn =
-    document.getElementById(
-        "search-btn"
-    );
-
-function normalizeText(
-    text
-){
-
-    return String(
-        text || ""
-    )
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    );
-
-}
-
-function searchProducts(){
-
-    const query =
-        normalizeText(
-            searchInput.value
-        ).trim();
-
-    if(!query){
-
-        document.getElementById(
-            "titulo-principal"
-        ).textContent =
-            "All Products";
-
-        renderProducts(
-            visibleProducts()
-        );
-
-        return;
-
-    }
-
-    const terms =
-        query
-        .split(/\s+/)
-        .filter(Boolean);
-
-    const filtered =
-        productosMaster.filter(
-            product => {
-
-                if(
-                    String(
-                        product.categoria?.sub ||
-                        ""
-                    ).toLowerCase()
-                    ===
-                    "adultmagazines"
-                ){
-                    return false;
-                }
-
-                const fields = [
-
-                    normalizeText(
-                        product.titulo
-                    ),
-
-                    normalizeText(
-                        product.description
-                    ),
-
-                    normalizeText(
-                        product.categoria?.main
-                    ),
-
-                    normalizeText(
-                        product.categoria?.sub
-                    )
-
-                ];
-
-                if(
-                    Array.isArray(
-                        product.tags
-                    )
-                ){
-
-                    fields.push(
-                        ...product.tags.map(
-                            normalizeText
-                        )
+                    img.classList.add(
+                        "loaded"
                     );
 
-                }
 
-                return terms.every(
-                    term =>
-                        fields.some(
-                            field =>
-                                field.includes(
-                                    term
-                                )
-                        )
-                );
+                    loading?.classList.add(
+                        "hidden"
+                    );
 
-            }
-        );
 
-    document.getElementById(
-        "titulo-principal"
-    ).textContent =
-        `Search: "${searchInput.value}" (${filtered.length})`;
+                    error?.classList.remove(
+                        "show"
+                    );
+                };
 
-    renderProducts(
-        filtered
-    );
 
-}
+            img.onerror =
+                function () {
 
-searchBtn.addEventListener(
-    "click",
-    searchProducts
-);
+                    console.error(
+                        "IMAGE FAILED:",
+                        url
+                    );
 
-searchInput.addEventListener(
-    "keydown",
-    function(e){
 
-        if(
-            e.key ===
-            "Enter"
-        ){
+                    img.classList.remove(
+                        "loaded"
+                    );
 
-            searchProducts();
 
+                    nextImage();
+                };
+
+
+            img.src =
+                url;
         }
 
+
+        nextImage();
     }
-);
 
-/* =========================================================
-   OFFER MODAL
-========================================================= */
 
-const offerModal =
-    document.getElementById(
-        "negociar-modal"
-    );
+    /* =========================================================
+       RENDER PRODUCTS
+    ========================================================= */
 
-document
-.getElementById(
-    "cerrar-negociar"
-)
-.addEventListener(
-    "click",
-    function(){
+    function renderProducts(list) {
 
-        offerModal.style.display =
-            "none";
+        if (!contenedor) {
 
-    }
-);
-
-document
-.getElementById(
-    "enviar-negociacion"
-)
-.addEventListener(
-    "click",
-    async function(){
-
-        const email =
-            document
-            .getElementById(
-                "negociar-email"
-            )
-            .value
-            .trim();
-
-        const oferta =
-            document
-            .getElementById(
-                "negociar-precio"
-            )
-            .value
-            .trim();
-
-        const producto =
-            document
-            .getElementById(
-                "negociar-producto"
-            )
-            .textContent;
-
-        const status =
-            document
-            .getElementById(
-                "negociar-status"
-            );
-
-        if(
-            !email ||
-            !oferta
-        ){
-
-            alert(
-                "Please complete all fields."
+            console.error(
+                "Missing #contenedor-productos"
             );
 
             return;
-
         }
 
-        try{
 
-            status.textContent =
-                "Sending offer...";
+        contenedor.innerHTML =
+            "";
 
-            const response =
-                await fetch(
-                    API_BASE +
-                    "/api/send-offer",
-                    {
 
-                        method:
-                            "POST",
+        if (
+            !Array.isArray(list) ||
+            !list.length
+        ) {
 
-                        headers:{
-                            "Content-Type":
-                                "application/json"
-                        },
+            contenedor.innerHTML = `
 
-                        body:
-                            JSON.stringify({
+                <p style="
+                    width:100%;
+                    text-align:center;
+                    color:#888;
+                    padding:40px;
+                ">
+                    Coming soon...
+                </p>
+            `;
 
-                                producto:
-                                    producto,
+            return;
+        }
 
-                                email:
-                                    email,
 
-                                oferta:
-                                    oferta
+        const cart =
+            getCart();
 
-                            })
 
+        /*
+         * Evitar productos duplicados.
+         */
+
+        const uniqueProducts =
+            [];
+
+        const productIds =
+            new Set();
+
+
+        list.forEach(product => {
+
+            const key =
+                String(
+                    product.id ??
+                    product.titulo
+                );
+
+
+            if (
+                productIds.has(key)
+            ) {
+
+                return;
+            }
+
+
+            productIds.add(key);
+
+            uniqueProducts.push(
+                product
+            );
+        });
+
+
+        uniqueProducts.forEach(
+            product => {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "producto";
+
+
+                card.dataset.id =
+                    product.id;
+
+
+                /* =================================================
+                   IMAGE
+                ================================================= */
+
+
+                const gallery =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                gallery.className =
+                    "galeria";
+
+
+                const loading =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                loading.className =
+                    "image-loading";
+
+
+                loading.textContent =
+                    "Loading...";
+
+
+                const error =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                error.className =
+                    "image-error";
+
+
+                error.innerHTML = `
+
+                    <i class="bi bi-image"></i>
+
+                    <span>
+                        Image unavailable
+                    </span>
+                `;
+
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                img.className =
+                    "main-img";
+
+
+                img.alt =
+                    product.titulo;
+
+
+                img.loading =
+                    "lazy";
+
+
+                img.decoding =
+                    "async";
+
+
+                img.dataset.index =
+                    "0";
+
+
+                gallery.append(
+                    loading,
+                    error,
+                    img
+                );
+
+
+                loadImage(
+                    img,
+                    product
+                );
+
+
+                img.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        openZoom(
+                            product,
+                            Number(
+                                img.dataset.index
+                            ) || 0
+                        );
                     }
                 );
 
-            const data =
-                await response.json();
 
-            if(!response.ok){
+                /* =================================================
+                   TITLE
+                ================================================= */
 
-                throw new Error(
-                    data.error ||
-                    "Error sending offer"
+
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
+
+
+                title.textContent =
+                    product.titulo;
+
+
+                /* =================================================
+                   DESCRIPTION
+                ================================================= */
+
+
+                const description =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                description.className =
+                    "product-description";
+
+
+                description.textContent =
+                    product.description;
+
+
+                /* =================================================
+                   CART
+                ================================================= */
+
+
+                const cartItem =
+                    cart.find(
+                        item =>
+                            String(item.id) ===
+                            String(product.id)
+                    );
+
+
+                const cartQuantity =
+                    Number(
+                        cartItem?.quantity || 0
+                    );
+
+
+                const stock =
+                    Number(
+                        product.stock || 0
+                    );
+
+
+                const remaining =
+                    Math.max(
+                        0,
+                        stock -
+                        cartQuantity
+                    );
+
+
+                /* =================================================
+                   STOCK
+                ================================================= */
+
+
+                const stockEl =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                stockEl.className =
+                    "stock";
+
+
+                stockEl.textContent =
+                    remaining > 0
+                        ? `Stock: ${remaining}`
+                        : "Out of stock";
+
+
+                stockEl.style.color =
+                    remaining > 0
+                        ? "#888"
+                        : "#ff3333";
+
+
+                /* =================================================
+                   PRICE
+                ================================================= */
+
+
+                const price =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                price.className =
+                    "price";
+
+
+                price.textContent =
+                    "$" +
+                    Number(
+                        product.price || 0
+                    ).toFixed(2);
+
+
+                /* =================================================
+                   ADD TO CART
+                ================================================= */
+
+
+                const add =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                add.className =
+                    "agregar-carrito";
+
+
+                add.type =
+                    "button";
+
+
+                add.textContent =
+                    remaining > 0
+                        ? (
+                            cartQuantity
+                                ? `Add (${cartQuantity})`
+                                : "Add"
+                        )
+                        : "Out of stock";
+
+
+                add.disabled =
+                    remaining <= 0;
+
+
+                add.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        const currentCart =
+                            getCart();
+
+
+                        const index =
+                            currentCart.findIndex(
+                                item =>
+                                    String(item.id) ===
+                                    String(product.id)
+                            );
+
+
+                        const current =
+                            index >= 0
+                                ? Number(
+                                    currentCart[index]
+                                        .quantity || 0
+                                )
+                                : 0;
+
+
+                        if (
+                            current >= stock
+                        ) {
+
+                            return;
+                        }
+
+
+                        if (
+                            index >= 0
+                        ) {
+
+                            currentCart[
+                                index
+                            ].quantity =
+                                current + 1;
+
+                        } else {
+
+                            currentCart.push({
+
+                                id:
+                                    product.id,
+
+                                titulo:
+                                    product.titulo,
+
+                                price:
+                                    product.price,
+
+                                imagenes:
+                                    product.imagenes,
+
+                                quantity:
+                                    1
+                            });
+                        }
+
+
+                        localStorage.setItem(
+                            "productos-en-cart",
+                            JSON.stringify(
+                                currentCart
+                            )
+                        );
+
+
+                        updateCartCount();
+
+
+                        renderProducts(
+                            list
+                        );
+                    }
                 );
 
-            }
 
-            status.textContent =
-                "Offer sent!";
+                /* =================================================
+                   MAKE OFFER
+                ================================================= */
 
-            setTimeout(
-                function(){
 
-                    offerModal.style.display =
-                        "none";
+                const offer =
+                    document.createElement(
+                        "button"
+                    );
 
-                    status.textContent =
-                        "";
 
-                },
-                900
-            );
+                offer.className =
+                    "negociar";
 
-        }catch(error){
 
-            console.error(
-                error
-            );
+                offer.type =
+                    "button";
 
-            status.textContent =
-                "Error sending offer.";
 
-        }
+                offer.textContent =
+                    "Make Offer";
 
-    }
-);
 
-/* =========================================================
-   SOCKET.IO
-========================================================= */
+                offer.addEventListener(
+                    "click",
+                    function (event) {
 
-if(
-    typeof io ===
-    "function"
-){
+                        event.stopPropagation();
 
-    const socket =
-        io(
-            API_BASE,
-            {
-                transports:[
-                    "websocket",
-                    "polling"
-                ]
+
+                        const modal =
+                            document.getElementById(
+                                "negociar-modal"
+                            );
+
+
+                        const productName =
+                            document.getElementById(
+                                "negociar-producto"
+                            );
+
+
+                        if (modal) {
+
+                            modal.style.display =
+                                "flex";
+                        }
+
+
+                        if (
+                            productName
+                        ) {
+
+                            productName.textContent =
+                                product.titulo;
+                        }
+                    }
+                );
+
+
+                /* =================================================
+                   APPEND
+                ================================================= */
+
+
+                card.append(
+                    gallery,
+                    title
+                );
+
+
+                if (
+                    product.description &&
+                    product.description.trim()
+                ) {
+
+                    card.append(
+                        description
+                    );
+                }
+
+
+                card.append(
+                    stockEl,
+                    price,
+                    add,
+                    offer
+                );
+
+
+                contenedor.appendChild(
+                    card
+                );
             }
         );
 
-    socket.on(
-        "connect",
-        function(){
 
-            console.log(
-                "Socket.IO connected:",
-                socket.id
+        updateCartCount();
+    }
+
+
+    /* =========================================================
+       VISIBLE PRODUCTS
+    ========================================================= */
+
+    function visibleProducts() {
+
+        return productosMaster.filter(
+            product => {
+
+                const sub =
+                    String(
+                        product.categoria?.sub ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .trim();
+
+
+                return (
+                    sub !==
+                    "adultmagazines"
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       INITIAL RENDER
+    ========================================================= */
+
+    renderProducts(
+        visibleProducts()
+    );
+
+
+    /* =========================================================
+       CATEGORY FILTER
+    ========================================================= */
+
+    aside?.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".submenu .boton-categoria"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const main =
+                String(
+                    button.dataset.main ||
+                    ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+
+            const sub =
+                String(
+                    button.dataset.sub ||
+                    ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+
+            /*
+             * Adult section.
+             */
+
+            if (
+                sub ===
+                "adultmagazines"
+            ) {
+
+                const answer =
+                    confirm(
+                        "This section contains adult material. Are you 18 or older?"
+                    );
+
+
+                if (!answer) {
+                    return;
+                }
+            }
+
+
+            const filtered =
+                productosMaster.filter(
+                    product => {
+
+                        const productMain =
+                            String(
+                                product.categoria?.main ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .trim();
+
+
+                        const productSub =
+                            String(
+                                product.categoria?.sub ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .trim();
+
+
+                        return (
+                            productMain === main &&
+                            productSub === sub
+                        );
+                    }
+                );
+
+
+            const title =
+                document.getElementById(
+                    "titulo-principal"
+                );
+
+
+            if (title) {
+
+                title.textContent =
+                    capitalize(main) +
+                    " · " +
+                    capitalize(sub);
+            }
+
+
+            renderProducts(
+                filtered
             );
 
+
+            aside?.classList.remove(
+                "active"
+            );
         }
     );
 
-    socket.on(
-        "actualizar-productos",
-        function(updated){
 
-            const updates =
-                Array.isArray(updated)
-                    ? updated
-                    : [updated];
+    /* =========================================================
+       SEARCH
+    ========================================================= */
 
-            updates.forEach(
-                item => {
+    const searchInput =
+        document.getElementById(
+            "search-input"
+        );
 
-                    const normalized =
-                        normalizeProduct(
-                            item
-                        );
 
-                    if(!normalized){
-                        return;
-                    }
+    const searchBtn =
+        document.getElementById(
+            "search-btn"
+        );
 
-                    const index =
-                        productosMaster.findIndex(
-                            p =>
-                                String(p.id)
-                                ===
-                                String(
-                                    normalized.id
-                                )
-                        );
 
-                    if(index >= 0){
+    function normalizeText(text) {
 
-                        productosMaster[
-                            index
-                        ] = {
-
-                            ...productosMaster[
-                                index
-                            ],
-
-                            ...normalized
-
-                        };
-
-                    }else{
-
-                        productosMaster.push(
-                            normalized
-                        );
-
-                    }
-
-                }
+        return String(
+            text || ""
+        )
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
             );
+    }
+
+
+    function searchProducts() {
+
+        if (!searchInput) {
+            return;
+        }
+
+
+        const query =
+            normalizeText(
+                searchInput.value
+            )
+                .trim();
+
+
+        if (!query) {
+
+            const title =
+                document.getElementById(
+                    "titulo-principal"
+                );
+
+
+            if (title) {
+
+                title.textContent =
+                    "All Products";
+            }
+
 
             renderProducts(
                 visibleProducts()
             );
 
+
+            return;
+        }
+
+
+        const terms =
+            query
+                .split(/\s+/)
+                .filter(Boolean);
+
+
+        const filtered =
+            productosMaster.filter(
+                product => {
+
+                    const sub =
+                        String(
+                            product.categoria?.sub ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .trim();
+
+
+                    if (
+                        sub ===
+                        "adultmagazines"
+                    ) {
+
+                        return false;
+                    }
+
+
+                    const fields = [
+
+                        normalizeText(
+                            product.titulo
+                        ),
+
+                        normalizeText(
+                            product.description
+                        ),
+
+                        normalizeText(
+                            product.categoria?.main
+                        ),
+
+                        normalizeText(
+                            product.categoria?.sub
+                        )
+                    ];
+
+
+                    if (
+                        Array.isArray(
+                            product.tags
+                        )
+                    ) {
+
+                        fields.push(
+                            ...product.tags.map(
+                                normalizeText
+                            )
+                        );
+                    }
+
+
+                    return terms.every(
+                        term =>
+                            fields.some(
+                                field =>
+                                    field.includes(
+                                        term
+                                    )
+                            )
+                    );
+                }
+            );
+
+
+        const title =
+            document.getElementById(
+                "titulo-principal"
+            );
+
+
+        if (title) {
+
+            title.textContent =
+                `Search: "${searchInput.value}" (${filtered.length})`;
+        }
+
+
+        renderProducts(
+            filtered
+        );
+    }
+
+
+    searchBtn?.addEventListener(
+        "click",
+        searchProducts
+    );
+
+
+    searchInput?.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                searchProducts();
+            }
         }
     );
 
-}
 
-/* =========================================================
-   PRELOAD CLOUDINARY
-========================================================= */
+    /* =========================================================
+       OFFER MODAL
+    ========================================================= */
 
-setTimeout(
-    function(){
+    const offerModal =
+        document.getElementById(
+            "negociar-modal"
+        );
 
-        productosMaster.forEach(
-            product => {
 
-                if(
-                    !Array.isArray(
-                        product.imagenes
-                    )
-                ){
-                    return;
+    document
+        .getElementById(
+            "cerrar-negociar"
+        )
+        ?.addEventListener(
+            "click",
+            function () {
+
+                if (offerModal) {
+
+                    offerModal.style.display =
+                        "none";
                 }
-
-                product.imagenes.forEach(
-                    url => {
-
-                        /*
-                           Solo Cloudinary.
-                        */
-
-                        if(
-                            !url.includes(
-                                "res.cloudinary.com"
-                            )
-                        ){
-                            return;
-                        }
-
-                        const image =
-                            new Image();
-
-                        image.src =
-                            url;
-
-                    }
-                );
-
             }
         );
 
-    },
-    1500
-);
 
-console.log(
-    "================================="
-);
+    document
+        .getElementById(
+            "enviar-negociacion"
+        )
+        ?.addEventListener(
+            "click",
+            async function () {
 
-console.log(
-    "LaTRONIC Shop"
-);
+                const email =
+                    document
+                        .getElementById(
+                            "negociar-email"
+                        )
+                        ?.value
+                        .trim();
 
-console.log(
-    "Cloudinary image system ACTIVE"
-);
 
-console.log(
-    "Cloudinary folder:",
-    CLOUDINARY_FOLDER
-);
+                const oferta =
+                    document
+                        .getElementById(
+                            "negociar-precio"
+                        )
+                        ?.value
+                        .trim();
 
-console.log(
-    "================================="
-);
+
+                const producto =
+                    document
+                        .getElementById(
+                            "negociar-producto"
+                        )
+                        ?.textContent ||
+                    "";
+
+
+                const status =
+                    document.getElementById(
+                        "negociar-status"
+                    );
+
+
+                if (
+                    !email ||
+                    !oferta
+                ) {
+
+                    alert(
+                        "Please complete all fields."
+                    );
+
+                    return;
+                }
+
+
+                try {
+
+                    if (status) {
+
+                        status.textContent =
+                            "Sending offer...";
+                    }
+
+
+                    const response =
+                        await fetch(
+                            API_BASE +
+                            "/api/send-offer",
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+                                        producto,
+                                        email,
+                                        oferta
+                                    })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (
+                        !response.ok
+                    ) {
+
+                        throw new Error(
+                            data.error ||
+                            "Error sending offer"
+                        );
+                    }
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "Offer sent!";
+                    }
+
+
+                    setTimeout(
+                        function () {
+
+                            if (offerModal) {
+
+                                offerModal.style.display =
+                                    "none";
+                            }
+
+
+                            if (status) {
+
+                                status.textContent =
+                                    "";
+                            }
+
+                        },
+                        900
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Offer error:",
+                        error
+                    );
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "Error sending offer.";
+                    }
+                }
+            }
+        );
+
+
+    /* =========================================================
+       SOCKET.IO
+    ========================================================= */
+
+    if (
+        typeof io ===
+        "function"
+    ) {
+
+        try {
+
+            const socket =
+                io(
+                    API_BASE,
+                    {
+                        transports: [
+                            "websocket",
+                            "polling"
+                        ]
+                    }
+                );
+
+
+            socket.on(
+                "connect",
+                function () {
+
+                    console.log(
+                        "Socket.IO connected:",
+                        socket.id
+                    );
+                }
+            );
+
+
+            socket.on(
+                "connect_error",
+                function (error) {
+
+                    console.warn(
+                        "Socket.IO error:",
+                        error.message
+                    );
+                }
+            );
+
+
+            socket.on(
+                "actualizar-productos",
+                function (updated) {
+
+                    const updates =
+                        Array.isArray(updated)
+                            ? updated
+                            : [updated];
+
+
+                    updates.forEach(
+                        item => {
+
+                            const normalized =
+                                normalizeProduct(
+                                    item
+                                );
+
+
+                            if (
+                                !normalized
+                            ) {
+
+                                return;
+                            }
+
+
+                            const index =
+                                productosMaster.findIndex(
+                                    p =>
+                                        String(p.id) ===
+                                        String(
+                                            normalized.id
+                                        )
+                                );
+
+
+                            if (
+                                index >= 0
+                            ) {
+
+                                productosMaster[
+                                    index
+                                ] = {
+
+                                    ...productosMaster[
+                                        index
+                                    ],
+
+                                    ...normalized
+                                };
+
+                            } else {
+
+                                productosMaster.push(
+                                    normalized
+                                );
+                            }
+                        }
+                    );
+
+
+                    localStorage.setItem(
+                        "productos",
+                        JSON.stringify(
+                            productosMaster
+                        )
+                    );
+
+
+                    renderProducts(
+                        visibleProducts()
+                    );
+                }
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Socket.IO initialization failed:",
+                error
+            );
+        }
+    }
+
+
+    /* =========================================================
+       PRELOAD CLOUDINARY
+    ========================================================= */
+
+    setTimeout(
+        function () {
+
+            productosMaster.forEach(
+                product => {
+
+                    if (
+                        !Array.isArray(
+                            product.imagenes
+                        )
+                    ) {
+
+                        return;
+                    }
+
+
+                    product.imagenes.forEach(
+                        url => {
+
+                            if (
+                                !url.includes(
+                                    "res.cloudinary.com"
+                                )
+                            ) {
+
+                                return;
+                            }
+
+
+                            const image =
+                                new Image();
+
+
+                            image.src =
+                                url;
+                        }
+                    );
+                }
+            );
+
+        },
+        1500
+    );
+
+
+    /* =========================================================
+       FINAL DIAGNOSTICS
+    ========================================================= */
+
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "LaTRONIC Shop"
+    );
+
+    console.log(
+        "Products:",
+        productosMaster.length
+    );
+
+    console.log(
+        "Cloudinary image system ACTIVE"
+    );
+
+    console.log(
+        "Cloudinary folder:",
+        CLOUDINARY_FOLDER
+    );
+
+    console.log(
+        "================================="
+    );
 
 });
 </script>
-
 </body>
 </html>
