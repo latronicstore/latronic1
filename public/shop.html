@@ -1360,4413 +1360,4996 @@ No, exit
 
 </div>
 
-<script
-    src="https://cdn.socket.io/4.6.1/socket.io.min.js"
-></script>
+<!DOCTYPE html>
+<html lang="en">
 
-<script>
+<head>
 
-"use strict";
+    <meta charset="UTF-8">
 
-/* =========================================================
-   LATronic SHOP
-   SOCKET.IO SAFE VERSION
-   ========================================================= */
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
+    <title>LaTRONIC Admin Panel</title>
 
-        /* =====================================================
-           CONFIGURATION
-        ===================================================== */
+    <!-- =====================================================
+         HEIC / HEIF
+    ====================================================== -->
 
-        const API_BASE =
-            window.location.origin;
-
-        const CLOUDINARY_BASE =
-            "https://res.cloudinary.com/ju0sskwe/image/upload";
-
-        const CLOUDINARY_FOLDER =
-            "latronic/products";
-
-        const IMAGE_SERVER_BASE =
-            window.location.origin;
+    <script
+        src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js">
+    </script>
 
 
-        /* =====================================================
-           DOM
-        ===================================================== */
+    <!-- =====================================================
+         SOCKET.IO
+    ====================================================== -->
 
-        const contenedor =
-            document.getElementById(
-                "contenedor-productos"
-            );
+    <script
+        src="https://cdn.socket.io/4.6.1/socket.io.min.js">
+    </script>
 
-        const cartCount =
-            document.getElementById(
-                "cart-count"
-            );
 
-        const searchInput =
-            document.getElementById(
-                "search-input"
-            );
-
-        const searchBtn =
-            document.getElementById(
-                "search-btn"
-            );
-
-        const aside =
-            document.querySelector(
-                "aside"
-            );
-
+    <style>
 
         /* =====================================================
-           SHOP STATE
-        ===================================================== */
+           GLOBAL
+        ====================================================== */
 
-        let productosMaster = [];
-
-        let currentFilter = {
-            type: "all",
-            main: "",
-            sub: ""
-        };
-
-        let currentSearch = "";
-
-        let socket = null;
-
-        let socketConnected = false;
-
-        let isUpdatingFromSocket = false;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
 
-        /* =====================================================
-           DEBUG
-        ===================================================== */
-
-        console.log(
-            "========================================"
-        );
-
-        console.log(
-            "LaTRONIC SHOP STARTING"
-        );
-
-        console.log(
-            "API:",
-            API_BASE
-        );
-
-        console.log(
-            "IMAGE SERVER:",
-            IMAGE_SERVER_BASE
-        );
-
-        console.log(
-            "CLOUDINARY:",
-            CLOUDINARY_BASE
-        );
-
-        console.log(
-            "========================================"
-        );
+        html {
+            background: #111;
+        }
 
 
-        /* =====================================================
-           SAFE STRING
-        ===================================================== */
+        body {
+            background: #1b1b1b;
+            color: #fff;
+            min-height: 100vh;
+        }
 
-        function safeString(value) {
 
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return "";
-            }
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
 
-            return String(value).trim();
+
+        button {
+            cursor: pointer;
         }
 
 
         /* =====================================================
-           CLEAN URL
-        ===================================================== */
+           LOGIN
+        ====================================================== */
 
-        function cleanUrl(value) {
+        #login-screen {
 
-            const text =
-                safeString(value);
+            display: flex;
 
-            if (!text) {
-                return "";
-            }
+            justify-content: center;
 
-            return text
-                .split("#")[0]
-                .split("?")[0]
-                .trim();
-        }
+            align-items: center;
 
+            min-height: 100vh;
 
-        /* =====================================================
-           ABSOLUTE URL
-        ===================================================== */
+            padding: 20px;
 
-        function isAbsoluteUrl(value) {
-
-            return /^https?:\/\//i.test(
-                safeString(value)
-            );
-        }
-
-
-        /* =====================================================
-           CLOUDINARY URL
-        ===================================================== */
-
-        function isCloudinaryUrl(value) {
-
-            return safeString(value)
-                .includes(
-                    "res.cloudinary.com"
+            background:
+                radial-gradient(
+                    circle at center,
+                    #292929 0%,
+                    #111 65%
                 );
         }
 
 
-        /* =====================================================
-           CLOUDINARY OPTIMIZATION
-        ===================================================== */
+        #login-box {
 
-        function optimizeCloudinaryUrl(value) {
+            width: 100%;
 
-            const raw =
-                safeString(value);
+            max-width: 380px;
 
-            if (!raw) {
-                return "";
-            }
+            background: #252525;
 
-            if (!isCloudinaryUrl(raw)) {
-                return "";
-            }
+            padding: 30px;
 
-            try {
+            border-radius: 14px;
 
-                const url =
-                    new URL(raw);
+            border: 1px solid #3b3b3b;
 
-                const parts =
-                    url.pathname
-                        .split("/")
-                        .filter(Boolean);
+            box-shadow:
+                0 20px 60px
+                rgba(0,0,0,.6);
 
-                const uploadIndex =
-                    parts.indexOf("upload");
+            text-align: center;
+        }
 
-                if (
-                    uploadIndex === -1
-                ) {
-                    return raw;
-                }
 
-                const afterUpload =
-                    parts.slice(
-                        uploadIndex + 1
-                    );
+        #login-box h1 {
 
-                const firstPart =
-                    afterUpload[0] || "";
+            margin-bottom: 8px;
 
-                const hasTransformation =
-                    firstPart.includes(",") ||
-                    /^f_/i.test(firstPart) ||
-                    /^q_/i.test(firstPart) ||
-                    /^w_/i.test(firstPart) ||
-                    /^h_/i.test(firstPart) ||
-                    /^c_/i.test(firstPart) ||
-                    /^dpr_/i.test(firstPart);
+            font-size: 28px;
+        }
 
-                if (!hasTransformation) {
 
-                    parts.splice(
-                        uploadIndex + 1,
-                        0,
-                        "f_auto,q_auto"
-                    );
+        #login-box h6 {
 
-                    url.pathname =
-                        "/" +
-                        parts.join("/");
-                }
+            color: #ff4444;
 
-                return url.toString();
+            margin-bottom: 20px;
 
-            } catch (error) {
+            font-size: 12px;
+        }
 
-                console.warn(
-                    "Cloudinary URL parse failed:",
-                    raw,
-                    error
-                );
 
-                return raw;
-            }
+        #login-box input {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #3a3a3a;
+
+            border-radius: 7px;
+
+            background: #151515;
+
+            color: white;
+
+            outline: none;
+
+            margin-bottom: 10px;
+        }
+
+
+        #login-box input:focus {
+
+            border-color: #e28f2f;
+
+            box-shadow:
+                0 0 10px
+                rgba(226,143,47,.25);
+        }
+
+
+        #login-box button {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            margin-top: 8px;
+
+            font-weight: bold;
+
+            background: #e28f2f;
+
+            color: #000;
+        }
+
+
+        #login-box button:hover {
+
+            background: #d65011;
+
+            color: white;
         }
 
 
         /* =====================================================
-           EXTRACT FILENAME
-        ===================================================== */
+           ADMIN
+        ====================================================== */
 
-        function extractFilename(value) {
+        #admin-panel {
 
-            let raw =
-                safeString(value);
+            display: none;
 
-            if (!raw) {
-                return "";
-            }
+            width: 100%;
 
-            if (
-                isAbsoluteUrl(raw)
-            ) {
+            max-width: 1500px;
 
-                try {
+            margin: 0 auto;
 
-                    const parsed =
-                        new URL(raw);
+            padding: 20px;
+        }
 
-                    raw =
-                        parsed.pathname;
 
-                } catch (error) {
+        .admin-header {
 
-                    return "";
-                }
-            }
+            display: flex;
 
-            try {
+            justify-content: space-between;
 
-                raw =
-                    decodeURIComponent(raw);
+            align-items: center;
 
-            } catch (error) {
-                /* ignore */
-            }
+            gap: 15px;
 
-            raw =
-                raw
-                    .split("?")[0]
-                    .split("#")[0]
-                    .replace(/\\/g, "/")
-                    .replace(/^\/+/, "");
+            flex-wrap: wrap;
 
-            const parts =
-                raw
-                    .split("/")
-                    .filter(Boolean);
+            margin-bottom: 20px;
+        }
 
-            if (!parts.length) {
-                return "";
-            }
 
-            return parts[
-                parts.length - 1
-            ];
+        .admin-header h1 {
+
+            font-size: 28px;
+        }
+
+
+        .header-buttons {
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
         }
 
 
         /* =====================================================
-           REMOVE IMAGE EXTENSION
-        ===================================================== */
+           BUTTONS
+        ====================================================== */
 
-        function removeImageExtension(value) {
+        .btn {
 
-            return safeString(value)
-                .replace(
-                    /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i,
-                    ""
-                );
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 10px 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: .15s;
+        }
+
+
+        .btn:hover {
+
+            transform: translateY(-1px);
+        }
+
+
+        .btn-orange {
+
+            background: #e28f2f;
+
+            color: #000;
+        }
+
+
+        .btn-orange:hover {
+
+            background: #d65011;
+
+            color: white;
+        }
+
+
+        .btn-red {
+
+            background: #b52b2b;
+
+            color: white;
+        }
+
+
+        .btn-red:hover {
+
+            background: #e33b3b;
+        }
+
+
+        .btn-gray {
+
+            background: #444;
+
+            color: white;
+        }
+
+
+        .btn-gray:hover {
+
+            background: #555;
+        }
+
+
+        .btn-green {
+
+            background: #2d9b52;
+
+            color: white;
+        }
+
+
+        .btn-green:hover {
+
+            background: #36b961;
+        }
+
+
+        .btn:disabled {
+
+            opacity: .5;
+
+            cursor: not-allowed;
+
+            transform: none;
         }
 
 
         /* =====================================================
-           CLOUDINARY FROM FILENAME
-        ===================================================== */
+           STATUS
+        ====================================================== */
 
-        function buildCloudinaryFromFilename(value) {
+        #server-status {
 
-            const filename =
-                extractFilename(value);
+            background: #252525;
 
-            if (!filename) {
-                return "";
-            }
+            border: 1px solid #333;
 
-            const publicId =
-                removeImageExtension(
-                    filename
-                );
+            border-radius: 8px;
 
-            if (!publicId) {
-                return "";
-            }
+            padding: 12px 15px;
 
-            const encodedId =
-                publicId
-                    .split("/")
-                    .map(
-                        part =>
-                            encodeURIComponent(part)
-                    )
-                    .join("/");
+            margin-bottom: 15px;
 
-            return (
-                CLOUDINARY_BASE +
-                "/f_auto,q_auto/" +
-                CLOUDINARY_FOLDER +
-                "/" +
-                encodedId
-            );
+            font-size: 14px;
         }
 
 
-        /* =====================================================
-           NORMALIZE SINGLE IMAGE
-        ===================================================== */
+        .status-loading {
 
-        function normalizeSingleImageValue(value) {
+            color: #e28f2f;
 
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return [];
-            }
-
-            if (
-                typeof value === "object" &&
-                !Array.isArray(value)
-            ) {
-
-                const candidate =
-                    value.url ||
-                    value.src ||
-                    value.path ||
-                    value.filename ||
-                    value.file ||
-                    value.image ||
-                    value.imagen ||
-                    value.public_id ||
-                    value.publicId ||
-                    "";
-
-                if (candidate) {
-
-                    return normalizeSingleImageValue(
-                        candidate
-                    );
-                }
-
-                return [];
-            }
-
-            const raw =
-                safeString(value);
-
-            if (!raw) {
-                return [];
-            }
-
-            const cleaned =
-                cleanUrl(raw);
-
-            if (!cleaned) {
-                return [];
-            }
-
-            const result = [];
-
-
-            /* =================================================
-               CLOUDINARY
-            ================================================= */
-
-            if (
-                isCloudinaryUrl(cleaned)
-            ) {
-
-                result.push(
-                    cleaned
-                );
-
-                const optimized =
-                    optimizeCloudinaryUrl(
-                        cleaned
-                    );
-
-                if (
-                    optimized &&
-                    optimized !== cleaned
-                ) {
-
-                    result.push(
-                        optimized
-                    );
-                }
-
-                return result;
-            }
-
-
-            /* =================================================
-               ABSOLUTE NON CLOUDINARY
-            ================================================= */
-
-            if (
-                isAbsoluteUrl(cleaned)
-            ) {
-
-                result.push(
-                    cleaned
-                );
-
-                const cloud =
-                    buildCloudinaryFromFilename(
-                        cleaned
-                    );
-
-                if (
-                    cloud &&
-                    !result.includes(cloud)
-                ) {
-
-                    result.push(
-                        cloud
-                    );
-                }
-
-                const filename =
-                    extractFilename(cleaned);
-
-                if (filename) {
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/image/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/uploads/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/images/" +
-                        encodeURIComponent(filename)
-                    );
-                }
-
-                return [
-                    ...new Set(result)
-                ];
-            }
-
-
-            /* =================================================
-               RELATIVE
-            ================================================= */
-
-            let relative =
-                cleaned.replace(
-                    /^\/+/,
-                    ""
-                );
-
-
-            /* =================================================
-               UPLOADS
-            ================================================= */
-
-            if (
-                /^uploads\//i.test(relative)
-            ) {
-
-                const filename =
-                    extractFilename(relative);
-
-                if (filename) {
-
-                    const cloud =
-                        buildCloudinaryFromFilename(
-                            filename
-                        );
-
-                    if (cloud) {
-                        result.push(cloud);
-                    }
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/" +
-                        relative
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/image/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/uploads/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    return [
-                        ...new Set(result)
-                    ];
-                }
-            }
-
-
-            /* =================================================
-               IMAGES
-            ================================================= */
-
-            if (
-                /^images\//i.test(relative)
-            ) {
-
-                const filename =
-                    extractFilename(relative);
-
-                if (filename) {
-
-                    const cloud =
-                        buildCloudinaryFromFilename(
-                            filename
-                        );
-
-                    if (cloud) {
-                        result.push(cloud);
-                    }
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/" +
-                        relative
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/image/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/uploads/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    return [
-                        ...new Set(result)
-                    ];
-                }
-            }
-
-
-            /* =================================================
-               IMAGE
-            ================================================= */
-
-            if (
-                /^image\//i.test(relative)
-            ) {
-
-                const filename =
-                    extractFilename(relative);
-
-                if (filename) {
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/" +
-                        relative
-                    );
-
-                    const cloud =
-                        buildCloudinaryFromFilename(
-                            filename
-                        );
-
-                    if (cloud) {
-                        result.push(cloud);
-                    }
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/uploads/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    result.push(
-                        IMAGE_SERVER_BASE +
-                        "/images/" +
-                        encodeURIComponent(filename)
-                    );
-
-                    return [
-                        ...new Set(result)
-                    ];
-                }
-            }
-
-
-            /* =================================================
-               FILENAME ONLY
-            ================================================= */
-
-            const filename =
-                extractFilename(relative);
-
-            if (!filename) {
-                return [];
-            }
-
-            const cloud =
-                buildCloudinaryFromFilename(
-                    filename
-                );
-
-            if (cloud) {
-                result.push(cloud);
-            }
-
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/image/" +
-                encodeURIComponent(filename)
-            );
-
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/uploads/" +
-                encodeURIComponent(filename)
-            );
-
-            result.push(
-                IMAGE_SERVER_BASE +
-                "/images/" +
-                encodeURIComponent(filename)
-            );
-
-            result.push(
-                "/" +
-                relative
-            );
-
-            return [
-                ...new Set(
-                    result.filter(Boolean)
-                )
-            ];
+            font-weight: bold;
         }
 
 
-        /* =====================================================
-           NORMALIZE IMAGE ARRAY
-        ===================================================== */
+        .status-ok {
 
-        function normalizeImageArray(value) {
+            color: #39d56a;
 
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return [];
-            }
-
-
-            if (
-                typeof value === "string"
-            ) {
-
-                const trimmed =
-                    value.trim();
-
-                if (!trimmed) {
-                    return [];
-                }
-
-                try {
-
-                    const parsed =
-                        JSON.parse(trimmed);
-
-                    if (
-                        parsed !== trimmed
-                    ) {
-
-                        return normalizeImageArray(
-                            parsed
-                        );
-                    }
-
-                } catch (error) {
-                    /* not JSON */
-                }
-
-
-                if (
-                    trimmed.includes(",") &&
-                    !trimmed.startsWith("http")
-                ) {
-
-                    return trimmed
-                        .split(",")
-                        .flatMap(
-                            item =>
-                                normalizeSingleImageValue(
-                                    item.trim()
-                                )
-                        );
-                }
-
-                return normalizeSingleImageValue(
-                    trimmed
-                );
-            }
-
-
-            if (
-                Array.isArray(value)
-            ) {
-
-                const result = [];
-
-                value.forEach(
-                    item => {
-
-                        result.push(
-                            ...normalizeImageArray(
-                                item
-                            )
-                        );
-                    }
-                );
-
-                return [
-                    ...new Set(
-                        result
-                            .map(
-                                safeString
-                            )
-                            .filter(Boolean)
-                    )
-                ];
-            }
-
-
-            if (
-                typeof value === "object"
-            ) {
-
-                return normalizeSingleImageValue(
-                    value
-                );
-            }
-
-
-            return [];
+            font-weight: bold;
         }
 
 
-        /* =====================================================
-           PRODUCT IMAGES
-        ===================================================== */
+        .status-error {
 
-        function getProductImages(product) {
+            color: #ff4d4d;
 
-            if (!product) {
-                return [];
-            }
-
-            const sources = [];
-
-            if (
-                product.imagenes !== undefined
-            ) {
-                sources.push(
-                    product.imagenes
-                );
-            }
-
-            if (
-                product.images !== undefined
-            ) {
-                sources.push(
-                    product.images
-                );
-            }
-
-            if (
-                product.image !== undefined
-            ) {
-                sources.push(
-                    product.image
-                );
-            }
-
-            if (
-                product.imagen !== undefined
-            ) {
-                sources.push(
-                    product.imagen
-                );
-            }
-
-            const result = [];
-
-            sources.forEach(
-                source => {
-
-                    result.push(
-                        ...normalizeImageArray(
-                            source
-                        )
-                    );
-                }
-            );
-
-            return [
-                ...new Set(
-                    result.filter(Boolean)
-                )
-            ];
-        }
-
-
-        /* =====================================================
-           CATEGORY
-        ===================================================== */
-
-        function normalizeCategory(product) {
-
-            let categoria =
-                product.categoria ||
-                product.category ||
-                product.categorias ||
-                {};
-
-
-            if (
-                typeof categoria === "string"
-            ) {
-
-                const value =
-                    categoria.trim();
-
-                if (!value) {
-                    return {};
-                }
-
-                try {
-
-                    const parsed =
-                        JSON.parse(value);
-
-                    if (
-                        parsed &&
-                        typeof parsed === "object"
-                    ) {
-
-                        return parsed;
-                    }
-
-                } catch (error) {
-
-                    return {
-                        main: value,
-                        sub: ""
-                    };
-                }
-            }
-
-
-            if (
-                categoria &&
-                typeof categoria === "object"
-            ) {
-
-                return categoria;
-            }
-
-
-            return {};
-        }
-
-
-        /* =====================================================
-           TAGS
-        ===================================================== */
-
-        function normalizeTags(product) {
-
-            let tags =
-                product.tags ||
-                product.tag ||
-                [];
-
-
-            if (
-                Array.isArray(tags)
-            ) {
-
-                return tags
-                    .flat(Infinity)
-                    .map(
-                        item =>
-                            safeString(item)
-                    )
-                    .filter(Boolean);
-            }
-
-
-            if (
-                typeof tags === "string"
-            ) {
-
-                const trimmed =
-                    tags.trim();
-
-                if (!trimmed) {
-                    return [];
-                }
-
-                try {
-
-                    const parsed =
-                        JSON.parse(trimmed);
-
-                    if (
-                        Array.isArray(parsed)
-                    ) {
-
-                        return parsed
-                            .map(
-                                item =>
-                                    safeString(item)
-                            )
-                            .filter(Boolean);
-                    }
-
-                } catch (error) {
-                    /* continue */
-                }
-
-                return trimmed
-                    .split(",")
-                    .map(
-                        item =>
-                            item.trim()
-                    )
-                    .filter(Boolean);
-            }
-
-
-            return [];
-        }
-
-
-        /* =====================================================
-           NORMALIZE PRODUCT
-        ===================================================== */
-
-        function normalizeProduct(product) {
-
-            if (
-                !product ||
-                typeof product !== "object"
-            ) {
-                return null;
-            }
-
-
-            const images =
-                getProductImages(
-                    product
-                );
-
-
-            const categoria =
-                normalizeCategory(
-                    product
-                );
-
-
-            const tags =
-                normalizeTags(
-                    product
-                );
-
-
-            let price =
-                product.price ??
-                product.precio ??
-                product.precioVenta ??
-                product.salePrice ??
-                0;
-
-
-            let stock =
-                product.stock ??
-                product.cantidad ??
-                product.quantity ??
-                0;
-
-
-            price =
-                Number(price);
-
-            if (
-                !Number.isFinite(price)
-            ) {
-                price = 0;
-            }
-
-
-            stock =
-                Number(stock);
-
-            if (
-                !Number.isFinite(stock)
-            ) {
-                stock = 0;
-            }
-
-
-            return {
-
-                ...product,
-
-                id:
-                    product.id ??
-                    product.productId ??
-                    product._id ??
-                    product.titulo ??
-                    product.title,
-
-                titulo:
-                    safeString(
-                        product.titulo ||
-                        product.title ||
-                        product.nombre ||
-                        "Untitled Product"
-                    ),
-
-                description:
-                    safeString(
-                        product.description ||
-                        product.descripcion ||
-                        product.desc ||
-                        ""
-                    ),
-
-                price,
-
-                stock,
-
-                categoria,
-
-                tags,
-
-                imagenes:
-                    images
-            };
-        }
-
-
-        /* =====================================================
-           LOAD PRODUCTS
-        ===================================================== */
-
-        async function loadProducts() {
-
-            const apiUrls = [
-
-                API_BASE +
-                "/api/productos",
-
-                API_BASE +
-                "/api/products"
-
-            ];
-
-
-            for (
-                const apiUrl of apiUrls
-            ) {
-
-                try {
-
-                    console.log(
-                        "Loading products:",
-                        apiUrl
-                    );
-
-
-                    const response =
-                        await fetch(
-                            apiUrl +
-                            "?_=" +
-                            Date.now(),
-                            {
-                                method: "GET",
-
-                                cache: "no-store",
-
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
-
-
-                    if (
-                        !response.ok
-                    ) {
-
-                        console.warn(
-                            "API failed:",
-                            apiUrl,
-                            response.status
-                        );
-
-                        continue;
-                    }
-
-
-                    const data =
-                        await response.json();
-
-
-                    let products =
-                        data;
-
-
-                    if (
-                        data &&
-                        typeof data === "object" &&
-                        !Array.isArray(data)
-                    ) {
-
-                        products =
-                            data.productos ||
-                            data.products ||
-                            data.data ||
-                            data.items ||
-                            [];
-                    }
-
-
-                    if (
-                        !Array.isArray(products)
-                    ) {
-
-                        continue;
-                    }
-
-
-                    const normalized =
-                        products
-                            .map(
-                                normalizeProduct
-                            )
-                            .filter(Boolean);
-
-
-                    console.log(
-                        "Products loaded:",
-                        normalized.length
-                    );
-
-
-                    try {
-
-                        localStorage.setItem(
-                            "productos",
-                            JSON.stringify(
-                                normalized
-                            )
-                        );
-
-                    } catch (error) {
-
-                        console.warn(
-                            "Could not save products:",
-                            error
-                        );
-                    }
-
-
-                    return normalized;
-
-                } catch (error) {
-
-                    console.error(
-                        "Error loading:",
-                        apiUrl,
-                        error
-                    );
-                }
-            }
-
-
-            /* =================================================
-               LOCAL STORAGE FALLBACK
-            ================================================= */
-
-            try {
-
-                const saved =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "productos"
-                        ) || "[]"
-                    );
-
-
-                if (
-                    Array.isArray(saved) &&
-                    saved.length
-                ) {
-
-                    console.warn(
-                        "Using localStorage products:",
-                        saved.length
-                    );
-
-                    return saved
-                        .map(
-                            normalizeProduct
-                        )
-                        .filter(Boolean);
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "localStorage error:",
-                    error
-                );
-            }
-
-
-            return [];
-        }
-
-
-        /* =====================================================
-           CART
-        ===================================================== */
-
-        function getCart() {
-
-            try {
-
-                const cart =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "productos-en-cart"
-                        ) || "[]"
-                    );
-
-                return Array.isArray(cart)
-                    ? cart
-                    : [];
-
-            } catch (error) {
-
-                return [];
-            }
-        }
-
-
-        /* =====================================================
-           CART COUNT
-        ===================================================== */
-
-        function updateCartCount() {
-
-            const cart =
-                getCart();
-
-
-            const total =
-                cart.reduce(
-                    (
-                        sum,
-                        item
-                    ) => {
-
-                        return (
-                            sum +
-                            Number(
-                                item.quantity || 0
-                            )
-                        );
-
-                    },
-                    0
-                );
-
-
-            if (cartCount) {
-
-                cartCount.textContent =
-                    total;
-            }
-        }
-
-
-        updateCartCount();
-
-
-        /* =====================================================
-           CART BUTTON
-        ===================================================== */
-
-        document
-            .getElementById("cart-btn")
-            ?.addEventListener(
-                "click",
-                function () {
-
-                    window.location.href =
-                        "cart.html";
-                }
-            );
-
-
-        /* =====================================================
-           ADMIN BUTTON
-        ===================================================== */
-
-        document
-            .getElementById("admin-access")
-            ?.addEventListener(
-                "click",
-                function () {
-
-                    window.location.href =
-                        "admin.html";
-                }
-            );
-
-
-        /* =====================================================
-           MOBILE MENU
-        ===================================================== */
-
-        const hamburger =
-            document.querySelector(
-                ".hamburger"
-            );
-
-
-        hamburger?.addEventListener(
-            "click",
-            function () {
-
-                aside?.classList.toggle(
-                    "active"
-                );
-            }
-        );
-
-
-        /* =====================================================
-           SUBMENUS
-        ===================================================== */
-
-        document
-            .querySelectorAll(
-                ".toggle-submenu"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            const submenu =
-                                button.nextElementSibling;
-
-                            if (!submenu) {
-                                return;
-                            }
-
-                            const open =
-                                submenu.style.display ===
-                                "block";
-
-
-                            document
-                                .querySelectorAll(
-                                    ".submenu"
-                                )
-                                .forEach(
-                                    menu => {
-
-                                        menu.style.display =
-                                            "none";
-                                    }
-                                );
-
-
-                            document
-                                .querySelectorAll(
-                                    ".toggle-submenu"
-                                )
-                                .forEach(
-                                    btn => {
-
-                                        btn.classList.remove(
-                                            "active"
-                                        );
-                                    }
-                                );
-
-
-                            if (!open) {
-
-                                submenu.style.display =
-                                    "block";
-
-                                button.classList.add(
-                                    "active"
-                                );
-                            }
-                        }
-                    );
-                }
-            );
-
-
-        /* =====================================================
-           CAPITALIZE
-        ===================================================== */
-
-        function capitalize(text) {
-
-            return String(
-                text || ""
-            )
-                .replace(
-                    /[-_]/g,
-                    " "
-                )
-                .replace(
-                    /\b\w/g,
-                    char =>
-                        char.toUpperCase()
-                );
-        }
-
-
-        /* =====================================================
-           ZOOM MODAL
-        ===================================================== */
-
-        const zoomModal =
-            document.createElement(
-                "div"
-            );
-
-        zoomModal.id =
-            "zoom-modal";
-
-        zoomModal.innerHTML = `
-
-            <button
-                id="zoom-prev"
-                class="zoom-control"
-                type="button"
-            >
-                &#9664;
-            </button>
-
-            <img
-                id="zoom-img"
-                alt="Product image"
-            >
-
-            <button
-                id="zoom-next"
-                class="zoom-control"
-                type="button"
-            >
-                &#9654;
-            </button>
-
-            <div id="zoom-desc"></div>
-
-        `;
-
-        document.body.appendChild(
-            zoomModal
-        );
-
-
-        const zoomImg =
-            document.getElementById(
-                "zoom-img"
-            );
-
-        const zoomDesc =
-            document.getElementById(
-                "zoom-desc"
-            );
-
-        const zoomPrev =
-            document.getElementById(
-                "zoom-prev"
-            );
-
-        const zoomNext =
-            document.getElementById(
-                "zoom-next"
-            );
-
-
-        let zoomImages = [];
-
-        let zoomIndex = 0;
-
-        let zoomProduct = null;
-
-
-        function openZoom(
-            product,
-            index
-        ) {
-
-            zoomProduct =
-                product;
-
-            zoomImages =
-                Array.isArray(
-                    product.imagenes
-                )
-                    ? product.imagenes
-                    : [];
-
-            if (
-                !zoomImages.length
-            ) {
-                return;
-            }
-
-            zoomIndex =
-                Math.max(
-                    0,
-                    Math.min(
-                        Number(index) || 0,
-                        zoomImages.length - 1
-                    )
-                );
-
-            updateZoom();
-
-            zoomModal.style.display =
-                "flex";
-        }
-
-
-        function updateZoom() {
-
-            if (
-                !zoomImages.length
-            ) {
-                return;
-            }
-
-            zoomImg.style.opacity =
-                "0.5";
-
-            const url =
-                zoomImages[
-                    zoomIndex
-                ];
-
-            const temp =
-                new Image();
-
-            temp.onload =
-                function () {
-
-                    zoomImg.src =
-                        url;
-
-                    zoomImg.style.opacity =
-                        "1";
-                };
-
-            temp.onerror =
-                function () {
-
-                    zoomImg.src =
-                        url;
-
-                    zoomImg.style.opacity =
-                        "1";
-                };
-
-            temp.src =
-                url;
-
-            zoomDesc.textContent =
-                zoomProduct?.description ||
-                "";
-
-            const multiple =
-                zoomImages.length > 1;
-
-            zoomPrev.style.display =
-                multiple
-                    ? "block"
-                    : "none";
-
-            zoomNext.style.display =
-                multiple
-                    ? "block"
-                    : "none";
-        }
-
-
-        zoomPrev.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                if (
-                    !zoomImages.length
-                ) {
-                    return;
-                }
-
-                zoomIndex =
-                    (
-                        zoomIndex -
-                        1 +
-                        zoomImages.length
-                    ) %
-                    zoomImages.length;
-
-                updateZoom();
-            }
-        );
-
-
-        zoomNext.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                if (
-                    !zoomImages.length
-                ) {
-                    return;
-                }
-
-                zoomIndex =
-                    (
-                        zoomIndex +
-                        1
-                    ) %
-                    zoomImages.length;
-
-                updateZoom();
-            }
-        );
-
-
-        zoomImg.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-            }
-        );
-
-
-        zoomModal.addEventListener(
-            "click",
-            function () {
-
-                zoomModal.style.display =
-                    "none";
-
-                zoomImg.src =
-                    "";
-
-                zoomImages = [];
-
-                zoomProduct = null;
-            }
-        );
-
-
-        /* =====================================================
-           IMAGE CANDIDATES
-        ===================================================== */
-
-        function getImageCandidates(
-            source
-        ) {
-
-            return [
-                ...new Set(
-                    normalizeSingleImageValue(
-                        source
-                    ).filter(Boolean)
-                )
-            ];
-        }
-
-
-        /* =====================================================
-           FIND ORIGINAL IMAGE INDEX
-        ===================================================== */
-
-        function findOriginalImageIndex(
-            product,
-            loadedUrl
-        ) {
-
-            const original =
-                Array.isArray(
-                    product.imagenes
-                )
-                    ? product.imagenes
-                    : [];
-
-
-            for (
-                let i = 0;
-                i < original.length;
-                i++
-            ) {
-
-                const candidates =
-                    getImageCandidates(
-                        original[i]
-                    );
-
-
-                if (
-                    candidates.includes(
-                        loadedUrl
-                    )
-                ) {
-
-                    return i;
-                }
-
-
-                const loadedFilename =
-                    extractFilename(
-                        loadedUrl
-                    );
-
-                const originalFilename =
-                    extractFilename(
-                        original[i]
-                    );
-
-
-                if (
-                    loadedFilename &&
-                    originalFilename &&
-                    loadedFilename.toLowerCase() ===
-                    originalFilename.toLowerCase()
-                ) {
-
-                    return i;
-                }
-            }
-
-
-            return 0;
-        }
-
-
-        /* =====================================================
-           LOAD PRODUCT IMAGE
-        ===================================================== */
-
-        function loadImage(
-            img,
-            product
-        ) {
-
-            const sourceImages =
-                Array.isArray(
-                    product.imagenes
-                )
-                    ? product.imagenes
-                    : [];
-
-
-            const gallery =
-                img.parentElement;
-
-
-            const loading =
-                gallery?.querySelector(
-                    ".image-loading"
-                );
-
-
-            const error =
-                gallery?.querySelector(
-                    ".image-error"
-                );
-
-
-            if (
-                !sourceImages.length
-            ) {
-
-                loading?.classList.add(
-                    "hidden"
-                );
-
-                error?.classList.add(
-                    "show"
-                );
-
-                return;
-            }
-
-
-            const allCandidates = [];
-
-
-            sourceImages.forEach(
-                source => {
-
-                    allCandidates.push(
-                        ...getImageCandidates(
-                            source
-                        )
-                    );
-                }
-            );
-
-
-            const candidates =
-                [
-                    ...new Set(
-                        allCandidates
-                            .filter(Boolean)
-                    )
-                ];
-
-
-            if (
-                !candidates.length
-            ) {
-
-                loading?.classList.add(
-                    "hidden"
-                );
-
-                error?.classList.add(
-                    "show"
-                );
-
-                return;
-            }
-
-
-            let candidateIndex = 0;
-
-
-            function tryNext() {
-
-                if (
-                    candidateIndex >=
-                    candidates.length
-                ) {
-
-                    loading?.classList.add(
-                        "hidden"
-                    );
-
-                    error?.classList.add(
-                        "show"
-                    );
-
-                    return;
-                }
-
-
-                const url =
-                    candidates[
-                        candidateIndex
-                    ];
-
-                candidateIndex++;
-
-
-                img.onload =
-                    function () {
-
-                        img.dataset.index =
-                            String(
-                                findOriginalImageIndex(
-                                    product,
-                                    url
-                                )
-                            );
-
-                        img.dataset.loadedUrl =
-                            url;
-
-                        img.classList.add(
-                            "loaded"
-                        );
-
-                        loading?.classList.add(
-                            "hidden"
-                        );
-
-                        error?.classList.remove(
-                            "show"
-                        );
-                    };
-
-
-                img.onerror =
-                    function () {
-
-                        img.classList.remove(
-                            "loaded"
-                        );
-
-                        setTimeout(
-                            tryNext,
-                            0
-                        );
-                    };
-
-
-                img.removeAttribute(
-                    "src"
-                );
-
-                img.src =
-                    url;
-            }
-
-
-            tryNext();
-        }
-
-
-        /* =====================================================
-           VISIBLE PRODUCTS
-        ===================================================== */
-
-        function visibleProducts() {
-
-            return productosMaster.filter(
-                product => {
-
-                    const sub =
-                        String(
-                            product.categoria?.sub ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .trim();
-
-                    return (
-                        sub !==
-                        "adultmagazines"
-                    );
-                }
-            );
-        }
-
-
-        /* =====================================================
-           FILTER PRODUCTS
-        ===================================================== */
-
-        function getFilteredProducts() {
-
-            let products =
-                [...productosMaster];
-
-
-            /* ================================================
-               ADULT FILTER
-            ================================================= */
-
-            if (
-                currentFilter.type ===
-                "all"
-            ) {
-
-                products =
-                    products.filter(
-                        product => {
-
-                            const sub =
-                                String(
-                                    product.categoria?.sub ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-                            return (
-                                sub !==
-                                "adultmagazines"
-                            );
-                        }
-                    );
-            }
-
-
-            /* ================================================
-               CATEGORY
-            ================================================= */
-
-            if (
-                currentFilter.type ===
-                "category"
-            ) {
-
-                products =
-                    products.filter(
-                        product => {
-
-                            const main =
-                                String(
-                                    product.categoria?.main ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-
-                            const sub =
-                                String(
-                                    product.categoria?.sub ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-
-                            return (
-                                main ===
-                                currentFilter.main &&
-                                sub ===
-                                currentFilter.sub
-                            );
-                        }
-                    );
-            }
-
-
-            /* ================================================
-               SEARCH
-            ================================================= */
-
-            if (
-                currentSearch
-            ) {
-
-                const query =
-                    normalizeText(
-                        currentSearch
-                    )
-                        .trim();
-
-
-                const terms =
-                    query
-                        .split(/\s+/)
-                        .filter(Boolean);
-
-
-                products =
-                    products.filter(
-                        product => {
-
-                            const sub =
-                                String(
-                                    product.categoria?.sub ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-
-                            if (
-                                sub ===
-                                "adultmagazines"
-                            ) {
-                                return false;
-                            }
-
-
-                            const fields = [
-
-                                normalizeText(
-                                    product.titulo
-                                ),
-
-                                normalizeText(
-                                    product.description
-                                ),
-
-                                normalizeText(
-                                    product.categoria?.main
-                                ),
-
-                                normalizeText(
-                                    product.categoria?.sub
-                                )
-
-                            ];
-
-
-                            if (
-                                Array.isArray(
-                                    product.tags
-                                )
-                            ) {
-
-                                fields.push(
-                                    ...product.tags.map(
-                                        normalizeText
-                                    )
-                                );
-                            }
-
-
-                            return terms.every(
-                                term =>
-                                    fields.some(
-                                        field =>
-                                            field.includes(
-                                                term
-                                            )
-                                    )
-                            );
-                        }
-                    );
-            }
-
-
-            return products;
-        }
-
-
-        /* =====================================================
-           UPDATE CARD WITHOUT RERENDERING SHOP
-        ===================================================== */
-
-        function updateProductCard(
-            product
-        ) {
-
-            if (!contenedor) {
-                return;
-            }
-
-
-            const card =
-                contenedor.querySelector(
-                    `.producto[data-id="${CSS.escape(String(product.id))}"]`
-                );
-
-
-            if (!card) {
-                return false;
-            }
-
-
-            /* ================================================
-               TITLE
-            ================================================= */
-
-            const title =
-                card.querySelector(
-                    "h3"
-                );
-
-            if (title) {
-
-                title.textContent =
-                    product.titulo;
-            }
-
-
-            /* ================================================
-               DESCRIPTION
-            ================================================= */
-
-            const description =
-                card.querySelector(
-                    ".product-description"
-                );
-
-
-            if (
-                product.description &&
-                product.description.trim()
-            ) {
-
-                if (description) {
-
-                    description.textContent =
-                        product.description;
-
-                } else {
-
-                    const newDescription =
-                        document.createElement(
-                            "div"
-                        );
-
-                    newDescription.className =
-                        "product-description";
-
-                    newDescription.textContent =
-                        product.description;
-
-                    const stock =
-                        card.querySelector(
-                            ".stock"
-                        );
-
-                    if (stock) {
-
-                        card.insertBefore(
-                            newDescription,
-                            stock
-                        );
-
-                    } else {
-
-                        card.appendChild(
-                            newDescription
-                        );
-                    }
-                }
-
-            } else if (description) {
-
-                description.remove();
-            }
-
-
-            /* ================================================
-               PRICE
-            ================================================= */
-
-            const price =
-                card.querySelector(
-                    ".price"
-                );
-
-            if (price) {
-
-                price.textContent =
-                    "$" +
-                    Number(
-                        product.price || 0
-                    ).toFixed(2);
-            }
-
-
-            /* ================================================
-               STOCK
-            ================================================= */
-
-            const stockEl =
-                card.querySelector(
-                    ".stock"
-                );
-
-
-            const stock =
-                Number(
-                    product.stock || 0
-                );
-
-
-            const cart =
-                getCart();
-
-
-            const cartItem =
-                cart.find(
-                    item =>
-                        String(item.id) ===
-                        String(product.id)
-                );
-
-
-            const cartQuantity =
-                Number(
-                    cartItem?.quantity || 0
-                );
-
-
-            const remaining =
-                Math.max(
-                    0,
-                    stock -
-                    cartQuantity
-                );
-
-
-            if (stockEl) {
-
-                stockEl.textContent =
-                    remaining > 0
-                        ? `Stock: ${remaining}`
-                        : "Out of stock";
-
-                stockEl.style.color =
-                    remaining > 0
-                        ? "#888"
-                        : "#ff3333";
-            }
-
-
-            /* ================================================
-               ADD BUTTON
-            ================================================= */
-
-            const add =
-                card.querySelector(
-                    ".agregar-carrito"
-                );
-
-
-            if (add) {
-
-                add.disabled =
-                    remaining <= 0;
-
-                add.textContent =
-                    remaining > 0
-                        ? (
-                            cartQuantity
-                                ? `Add (${cartQuantity})`
-                                : "Add"
-                        )
-                        : "Out of stock";
-            }
-
-
-            /* ================================================
-               IMAGE UPDATE
-            ================================================= */
-
-            const img =
-                card.querySelector(
-                    ".main-img"
-                );
-
-
-            const oldImages =
-                card.dataset.imageList || "";
-
-
-            const newImages =
-                JSON.stringify(
-                    product.imagenes || []
-                );
-
-
-            if (
-                oldImages !==
-                newImages
-            ) {
-
-                card.dataset.imageList =
-                    newImages;
-
-
-                if (img) {
-
-                    img.classList.remove(
-                        "loaded"
-                    );
-
-                    loadImage(
-                        img,
-                        product
-                    );
-                }
-            }
-
-
-            return true;
-        }
-
-
-        /* =====================================================
-           RENDER PRODUCTS
-        ===================================================== */
-
-        function renderProducts(
-            list,
-            preserveScroll = true
-        ) {
-
-            if (!contenedor) {
-
-                console.error(
-                    "Missing #contenedor-productos"
-                );
-
-                return;
-            }
-
-
-            const previousScroll =
-                window.scrollY;
-
-
-            contenedor.innerHTML =
-                "";
-
-
-            if (
-                !Array.isArray(list) ||
-                !list.length
-            ) {
-
-                contenedor.innerHTML = `
-
-                    <p
-                        style="
-                            width:100%;
-                            text-align:center;
-                            color:#888;
-                            padding:40px;
-                        "
-                    >
-                        Coming soon...
-                    </p>
-
-                `;
-
-                return;
-            }
-
-
-            const cart =
-                getCart();
-
-
-            const uniqueProducts =
-                [];
-
-            const productIds =
-                new Set();
-
-
-            list.forEach(
-                product => {
-
-                    const key =
-                        String(
-                            product.id ??
-                            product.titulo
-                        );
-
-
-                    if (
-                        productIds.has(key)
-                    ) {
-                        return;
-                    }
-
-
-                    productIds.add(key);
-
-                    uniqueProducts.push(
-                        product
-                    );
-                }
-            );
-
-
-            uniqueProducts.forEach(
-                product => {
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-                    card.className =
-                        "producto";
-
-                    card.dataset.id =
-                        product.id;
-
-
-                    card.dataset.imageList =
-                        JSON.stringify(
-                            product.imagenes || []
-                        );
-
-
-                    /* =========================================
-                       GALLERY
-                    ========================================= */
-
-                    const gallery =
-                        document.createElement(
-                            "div"
-                        );
-
-                    gallery.className =
-                        "galeria";
-
-
-                    const loading =
-                        document.createElement(
-                            "div"
-                        );
-
-                    loading.className =
-                        "image-loading";
-
-                    loading.textContent =
-                        "Loading...";
-
-
-                    const error =
-                        document.createElement(
-                            "div"
-                        );
-
-                    error.className =
-                        "image-error";
-
-                    error.innerHTML = `
-
-                        <i class="bi bi-image"></i>
-
-                        <span>
-                            Image unavailable
-                        </span>
-
-                    `;
-
-
-                    const img =
-                        document.createElement(
-                            "img"
-                        );
-
-                    img.className =
-                        "main-img";
-
-                    img.alt =
-                        product.titulo;
-
-                    img.loading =
-                        "lazy";
-
-                    img.decoding =
-                        "async";
-
-                    img.dataset.index =
-                        "0";
-
-
-                    gallery.append(
-                        loading,
-                        error,
-                        img
-                    );
-
-
-                    card.append(
-                        gallery
-                    );
-
-
-                    loadImage(
-                        img,
-                        product
-                    );
-
-
-                    img.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-                            openZoom(
-                                product,
-                                Number(
-                                    img.dataset.index
-                                ) || 0
-                            );
-                        }
-                    );
-
-
-                    /* =========================================
-                       TITLE
-                    ========================================= */
-
-                    const title =
-                        document.createElement(
-                            "h3"
-                        );
-
-                    title.textContent =
-                        product.titulo;
-
-
-                    card.append(
-                        title
-                    );
-
-
-                    /* =========================================
-                       DESCRIPTION
-                    ========================================= */
-
-                    if (
-                        product.description &&
-                        product.description.trim()
-                    ) {
-
-                        const description =
-                            document.createElement(
-                                "div"
-                            );
-
-                        description.className =
-                            "product-description";
-
-                        description.textContent =
-                            product.description;
-
-                        card.append(
-                            description
-                        );
-                    }
-
-
-                    /* =========================================
-                       CART
-                    ========================================= */
-
-                    const cartItem =
-                        cart.find(
-                            item =>
-                                String(item.id) ===
-                                String(product.id)
-                        );
-
-
-                    const cartQuantity =
-                        Number(
-                            cartItem?.quantity || 0
-                        );
-
-
-                    const stock =
-                        Number(
-                            product.stock || 0
-                        );
-
-
-                    const remaining =
-                        Math.max(
-                            0,
-                            stock -
-                            cartQuantity
-                        );
-
-
-                    /* =========================================
-                       STOCK
-                    ========================================= */
-
-                    const stockEl =
-                        document.createElement(
-                            "p"
-                        );
-
-                    stockEl.className =
-                        "stock";
-
-                    stockEl.textContent =
-                        remaining > 0
-                            ? `Stock: ${remaining}`
-                            : "Out of stock";
-
-                    stockEl.style.color =
-                        remaining > 0
-                            ? "#888"
-                            : "#ff3333";
-
-
-                    card.append(
-                        stockEl
-                    );
-
-
-                    /* =========================================
-                       PRICE
-                    ========================================= */
-
-                    const price =
-                        document.createElement(
-                            "p"
-                        );
-
-                    price.className =
-                        "price";
-
-                    price.textContent =
-                        "$" +
-                        Number(
-                            product.price || 0
-                        ).toFixed(2);
-
-
-                    card.append(
-                        price
-                    );
-
-
-                    /* =========================================
-                       ADD CART
-                    ========================================= */
-
-                    const add =
-                        document.createElement(
-                            "button"
-                        );
-
-                    add.className =
-                        "agregar-carrito";
-
-                    add.type =
-                        "button";
-
-                    add.textContent =
-                        remaining > 0
-                            ? (
-                                cartQuantity
-                                    ? `Add (${cartQuantity})`
-                                    : "Add"
-                            )
-                            : "Out of stock";
-
-                    add.disabled =
-                        remaining <= 0;
-
-
-                    add.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-
-                            const currentCart =
-                                getCart();
-
-
-                            const index =
-                                currentCart.findIndex(
-                                    item =>
-                                        String(item.id) ===
-                                        String(product.id)
-                                );
-
-
-                            const current =
-                                index >= 0
-                                    ? Number(
-                                        currentCart[
-                                            index
-                                        ].quantity || 0
-                                    )
-                                    : 0;
-
-
-                            if (
-                                current >=
-                                Number(product.stock || 0)
-                            ) {
-
-                                return;
-                            }
-
-
-                            if (
-                                index >= 0
-                            ) {
-
-                                currentCart[
-                                    index
-                                ].quantity =
-                                    current + 1;
-
-                            } else {
-
-                                currentCart.push({
-
-                                    id:
-                                        product.id,
-
-                                    titulo:
-                                        product.titulo,
-
-                                    price:
-                                        product.price,
-
-                                    imagenes:
-                                        product.imagenes,
-
-                                    quantity:
-                                        1
-                                });
-                            }
-
-
-                            localStorage.setItem(
-                                "productos-en-cart",
-                                JSON.stringify(
-                                    currentCart
-                                )
-                            );
-
-
-                            updateCartCount();
-
-
-                            /*
-                             * IMPORTANTE:
-                             *
-                             * No reconstruimos toda la tienda.
-                             *
-                             * Solamente actualizamos
-                             * esta tarjeta.
-                             */
-
-                            const updated =
-                                productosMaster.find(
-                                    p =>
-                                        String(p.id) ===
-                                        String(product.id)
-                                );
-
-
-                            if (updated) {
-
-                                updateProductCard(
-                                    updated
-                                );
-                            }
-                        }
-                    );
-
-
-                    card.append(
-                        add
-                    );
-
-
-                    /* =========================================
-                       OFFER
-                    ========================================= */
-
-                    const offer =
-                        document.createElement(
-                            "button"
-                        );
-
-                    offer.className =
-                        "negociar";
-
-                    offer.type =
-                        "button";
-
-                    offer.textContent =
-                        "Make Offer";
-
-
-                    offer.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-
-                            const modal =
-                                document.getElementById(
-                                    "negociar-modal"
-                                );
-
-
-                            const productName =
-                                document.getElementById(
-                                    "negociar-producto"
-                                );
-
-
-                            if (modal) {
-
-                                modal.style.display =
-                                    "flex";
-                            }
-
-
-                            if (productName) {
-
-                                productName.textContent =
-                                    product.titulo;
-                            }
-                        }
-                    );
-
-
-                    card.append(
-                        offer
-                    );
-
-
-                    contenedor.appendChild(
-                        card
-                    );
-                }
-            );
-
-
-            updateCartCount();
-
-
-            /*
-             * Solamente restaurar scroll cuando
-             * realmente fue necesario reconstruir.
-             */
-
-            if (
-                preserveScroll
-            ) {
-
-                requestAnimationFrame(
-                    function () {
-
-                        window.scrollTo(
-                            0,
-                            previousScroll
-                        );
-                    }
-                );
-            }
-        }
-
-
-        /* =====================================================
-           INITIAL LOAD
-        ===================================================== */
-
-        productosMaster =
-            await loadProducts();
-
-
-        /* =====================================================
-           INITIAL RENDER
-        ===================================================== */
-
-        renderProducts(
-            getFilteredProducts(),
-            false
-        );
-
-
-        /* =====================================================
-           CATEGORY FILTER
-        ===================================================== */
-
-        aside?.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".submenu .boton-categoria"
-                    );
-
-
-                if (!button) {
-                    return;
-                }
-
-
-                const main =
-                    String(
-                        button.dataset.main ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .trim();
-
-
-                const sub =
-                    String(
-                        button.dataset.sub ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .trim();
-
-
-                if (
-                    sub ===
-                    "adultmagazines"
-                ) {
-
-                    const answer =
-                        confirm(
-                            "This section contains adult material. Are you 18 or older?"
-                        );
-
-
-                    if (!answer) {
-                        return;
-                    }
-                }
-
-
-                currentFilter = {
-
-                    type:
-                        "category",
-
-                    main,
-
-                    sub
-                };
-
-
-                currentSearch =
-                    "";
-
-
-                if (searchInput) {
-                    searchInput.value =
-                        "";
-                }
-
-
-                const title =
-                    document.getElementById(
-                        "titulo-principal"
-                    );
-
-
-                if (title) {
-
-                    title.textContent =
-                        capitalize(main) +
-                        " · " +
-                        capitalize(sub);
-                }
-
-
-                renderProducts(
-                    getFilteredProducts()
-                );
-
-
-                aside?.classList.remove(
-                    "active"
-                );
-            }
-        );
-
-
-        /* =====================================================
-           SEARCH NORMALIZATION
-        ===================================================== */
-
-        function normalizeText(text) {
-
-            return String(
-                text || ""
-            )
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(
-                    /[\u0300-\u036f]/g,
-                    ""
-                );
+            font-weight: bold;
         }
 
 
         /* =====================================================
            SEARCH
-        ===================================================== */
+        ====================================================== */
 
-        function searchProducts() {
+        .search-row {
 
-            if (!searchInput) {
-                return;
-            }
+            display: flex;
 
+            gap: 8px;
 
-            currentSearch =
-                searchInput.value.trim();
-
-
-            currentFilter = {
-
-                type:
-                    "all",
-
-                main:
-                    "",
-
-                sub:
-                    ""
-            };
+            margin-bottom: 18px;
+        }
 
 
-            const title =
-                document.getElementById(
-                    "titulo-principal"
+        #search-input {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 13px;
+
+            border: 1px solid #363636;
+
+            border-radius: 8px;
+
+            background: #252525;
+
+            color: white;
+
+            outline: none;
+        }
+
+
+        #search-input:focus {
+
+            border-color: #e28f2f;
+
+            box-shadow:
+                0 0 10px
+                rgba(226,143,47,.2);
+        }
+
+
+        /* =====================================================
+           ADD PRODUCT
+        ====================================================== */
+
+        #form-producto {
+
+            background: #252525;
+
+            border: 1px solid #333;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            margin-bottom: 25px;
+        }
+
+
+        #form-producto h2 {
+
+            margin-bottom: 15px;
+        }
+
+
+        .upload-info {
+
+            background: #171717;
+
+            border-left: 4px solid #e28f2f;
+
+            padding: 12px;
+
+            margin-bottom: 15px;
+
+            border-radius: 5px;
+
+            color: #bbb;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0,1fr));
+
+            gap: 10px;
+        }
+
+
+        .form-full {
+
+            grid-column: 1 / -1;
+        }
+
+
+        #form-producto input,
+        #form-producto textarea {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #393939;
+
+            border-radius: 7px;
+
+            background: #171717;
+
+            color: white;
+
+            outline: none;
+        }
+
+
+        #form-producto textarea {
+
+            min-height: 110px;
+
+            resize: vertical;
+        }
+
+
+        #form-producto input:focus,
+        #form-producto textarea:focus {
+
+            border-color: #e28f2f;
+        }
+
+
+        #imagenes-file {
+
+            cursor: pointer;
+        }
+
+
+        #add-preview {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin: 10px 0;
+        }
+
+
+        .preview-item {
+
+            width: 90px;
+
+            height: 90px;
+
+            border-radius: 7px;
+
+            overflow: hidden;
+
+            border: 1px solid #444;
+
+            background: #111;
+
+            position: relative;
+        }
+
+
+        .preview-item img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .preview-number {
+
+            position: absolute;
+
+            bottom: 3px;
+
+            right: 3px;
+
+            background: rgba(0,0,0,.8);
+
+            color: white;
+
+            padding: 2px 5px;
+
+            font-size: 10px;
+
+            border-radius: 3px;
+        }
+
+
+        #agregar-btn {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #e28f2f;
+
+            color: #000;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+        }
+
+
+        #agregar-btn:hover {
+
+            background: #d65011;
+
+            color: white;
+        }
+
+
+        #agregar-btn:disabled {
+
+            opacity: .5;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           PRODUCTS
+        ====================================================== */
+
+        .products-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .products-header h2 {
+
+            font-size: 21px;
+        }
+
+
+        #product-count {
+
+            color: #aaa;
+
+            font-size: 13px;
+        }
+
+
+        .productos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(270px,1fr)
                 );
 
-
-            if (
-                !currentSearch
-            ) {
-
-                if (title) {
-
-                    title.textContent =
-                        "All Products";
-                }
-
-            } else {
-
-                const filtered =
-                    getFilteredProducts();
+            gap: 15px;
+        }
 
 
-                if (title) {
+        .producto {
 
-                    title.textContent =
-                        `Search: "${currentSearch}" (${filtered.length})`;
-                }
+            background: #252525;
+
+            border: 1px solid #363636;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            overflow: hidden;
+        }
+
+
+        .producto:hover {
+
+            border-color: #555;
+        }
+
+
+        .producto-id {
+
+            font-size: 11px;
+
+            color: #777;
+
+            margin-bottom: 8px;
+
+            word-break: break-all;
+        }
+
+
+        /* =====================================================
+           IMAGE GRID
+        ====================================================== */
+
+        .mini-images {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(75px,1fr)
+                );
+
+            gap: 7px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .image-wrapper {
+
+            position: relative;
+
+            width: 100%;
+
+            aspect-ratio: 1 / 1;
+
+            background: #111;
+
+            border-radius: 6px;
+
+            overflow: hidden;
+
+            border: 1px solid #444;
+        }
+
+
+        .image-wrapper img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+
+        .image-wrapper img.loading {
+
+            opacity: .25;
+        }
+
+
+        .image-error {
+
+            position: absolute;
+
+            inset: 0;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            text-align: center;
+
+            padding: 5px;
+
+            color: #ff5555;
+
+            background: #211515;
+
+            font-size: 10px;
+        }
+
+
+        .image-number {
+
+            position: absolute;
+
+            bottom: 3px;
+
+            right: 3px;
+
+            background: rgba(0,0,0,.85);
+
+            color: white;
+
+            font-size: 9px;
+
+            padding: 2px 4px;
+
+            border-radius: 3px;
+
+            z-index: 3;
+        }
+
+
+        .image-debug {
+
+            margin-top: 5px;
+
+            margin-bottom: 9px;
+
+            padding: 6px;
+
+            background: #111;
+
+            border-radius: 5px;
+
+            color: #777;
+
+            font-size: 9px;
+
+            word-break: break-all;
+
+            line-height: 1.35;
+        }
+
+
+        .image-debug.ok {
+
+            color: #53d97b;
+        }
+
+
+        .image-debug.error {
+
+            color: #ff5555;
+        }
+
+
+        .image-count {
+
+            color: #aaa;
+
+            font-size: 12px;
+
+            margin-bottom: 10px;
+        }
+
+
+        /* =====================================================
+           PRODUCT INPUTS
+        ====================================================== */
+
+        .producto input,
+        .producto textarea {
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-bottom: 7px;
+
+            border: 1px solid #383838;
+
+            border-radius: 6px;
+
+            background: #171717;
+
+            color: white;
+
+            outline: none;
+        }
+
+
+        .producto input:focus,
+        .producto textarea:focus {
+
+            border-color: #e28f2f;
+        }
+
+
+        .producto textarea {
+
+            min-height: 90px;
+
+            resize: vertical;
+        }
+
+
+        .product-actions {
+
+            display: flex;
+
+            gap: 7px;
+
+            flex-wrap: wrap;
+
+            margin-top: 5px;
+        }
+
+
+        .product-actions button {
+
+            flex: 1;
+
+            min-width: 100px;
+
+            padding: 9px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .save-btn {
+
+            background: #e28f2f;
+
+            color: #000;
+        }
+
+
+        .save-btn:hover {
+
+            background: #d65011;
+
+            color: white;
+        }
+
+
+        .delete-btn {
+
+            background: #a92b2b;
+
+            color: white;
+        }
+
+
+        .delete-btn:hover {
+
+            background: #dc3b3b;
+        }
+
+
+        /* =====================================================
+           EMPTY / LOADING
+        ====================================================== */
+
+        .loading-box,
+        .empty-box {
+
+            grid-column: 1 / -1;
+
+            padding: 35px;
+
+            text-align: center;
+
+            background: #252525;
+
+            border-radius: 10px;
+
+            color: #e28f2f;
+        }
+
+
+        .empty-box {
+
+            color: #aaa;
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ====================================================== */
+
+        #mensaje-guardado {
+
+            position: fixed;
+
+            top: 20px;
+
+            right: 20px;
+
+            max-width: 420px;
+
+            padding: 13px 17px;
+
+            background: #2d9b52;
+
+            color: white;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0,0,0,.5);
+
+            display: none;
+
+            z-index: 99999;
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 800px) {
+
+            #admin-panel {
+
+                padding: 10px;
             }
 
 
-            renderProducts(
-                getFilteredProducts()
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-full {
+
+                grid-column: auto;
+            }
+
+
+            .productos {
+
+                grid-template-columns:
+                    repeat(
+                        auto-fill,
+                        minmax(220px,1fr)
+                    );
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .admin-header {
+
+                align-items: stretch;
+            }
+
+
+            .header-buttons {
+
+                width: 100%;
+            }
+
+
+            .header-buttons .btn {
+
+                flex: 1;
+            }
+
+
+            .search-row {
+
+                flex-direction: column;
+            }
+
+
+            .productos {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     LOGIN
+========================================================== -->
+
+<section id="login-screen">
+
+    <div id="login-box">
+
+        <h1>🔒 Admin Access</h1>
+
+        <h6>
+            This site is only for the administrator
+        </h6>
+
+        <input
+            type="password"
+            id="admin-password"
+            placeholder="Enter Password"
+            autocomplete="current-password"
+        >
+
+        <button
+            type="button"
+            id="login-btn"
+        >
+            Enter
+        </button>
+
+        <button
+            type="button"
+            class="btn-gray"
+            onclick="window.location.href='shop.html'"
+        >
+            Exit
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ADMIN PANEL
+========================================================== -->
+
+<section id="admin-panel">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="admin-header">
+
+        <h1>
+            LaTRONIC Admin Panel
+        </h1>
+
+
+        <div class="header-buttons">
+
+            <button
+                class="btn btn-gray"
+                id="reload-btn"
+                type="button"
+            >
+                🔄 Reload
+            </button>
+
+
+            <button
+                class="btn btn-orange"
+                id="go-shop-btn"
+                type="button"
+            >
+                🛍️ Shop
+            </button>
+
+
+            <button
+                class="btn btn-red"
+                id="logout-btn"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SERVER STATUS
+    ====================================================== -->
+
+    <div id="server-status">
+
+        Server:
+
+        <span
+            id="status-text"
+            class="status-loading"
+        >
+            Checking...
+        </span>
+
+    </div>
+
+
+    <!-- =====================================================
+         SEARCH
+    ====================================================== -->
+
+    <div class="search-row">
+
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search products..."
+            autocomplete="off"
+        >
+
+        <button
+            type="button"
+            class="btn btn-gray"
+            id="clear-search-btn"
+        >
+            Clear
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         ADD PRODUCT
+    ====================================================== -->
+
+    <form
+        id="form-producto"
+        novalidate
+    >
+
+        <h2>
+            ➕ Add New Product
+        </h2>
+
+
+        <div class="upload-info">
+
+            <strong>📸 Image system</strong>
+
+            <br>
+
+            Las imágenes se envían al backend mediante
+            <code>/api/subir-imagenes</code>.
+
+            El backend debe convertirlas/optimizar
+            y subirlas a Cloudinary.
+
+            <br><br>
+
+            Después de recibir las URLs, el producto
+            se guarda mediante:
+
+            <code>/api/productos</code>.
+
+            <br><br>
+
+            Las URLs de Cloudinary se guardan directamente
+            en el producto.
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-full">
+
+                <input
+                    type="text"
+                    id="titulo"
+                    placeholder="Título del producto"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-full">
+
+                <textarea
+                    id="description"
+                    placeholder="Descripción"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-full">
+
+                <input
+                    type="file"
+                    id="imagenes-file"
+                    multiple
+                    accept="image/*,.webp,.heif,.heic"
+                >
+
+            </div>
+
+
+            <div class="form-full">
+
+                <div id="add-preview"></div>
+
+            </div>
+
+
+            <div>
+
+                <input
+                    type="text"
+                    id="mainCat"
+                    placeholder="Categoría principal"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <input
+                    type="text"
+                    id="subCat"
+                    placeholder="Subcategoría"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <input
+                    type="number"
+                    id="price"
+                    placeholder="Precio"
+                    step="0.01"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <input
+                    type="number"
+                    id="stock"
+                    placeholder="Stock"
+                    step="1"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-full">
+
+                <button
+                    type="submit"
+                    id="agregar-btn"
+                >
+                    ➕ Agregar producto
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <!-- =====================================================
+         PRODUCTS HEADER
+    ====================================================== -->
+
+    <div class="products-header">
+
+        <h2>
+            📦 Products
+        </h2>
+
+        <span id="product-count">
+            0 products
+        </span>
+
+    </div>
+
+
+    <!-- =====================================================
+         PRODUCTS
+    ====================================================== -->
+
+    <div
+        id="lista-productos"
+        class="productos"
+    >
+
+        <div class="loading-box">
+            ⏳ Loading products...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     MESSAGE
+========================================================== -->
+
+<div id="mensaje-guardado"></div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================== */
+
+/*
+    IMPORTANTE:
+
+    El admin está diseñado para estar servido por
+    el mismo Express que maneja /api/productos.
+
+    Por eso BASE_URL = "".
+
+    Si admin.html está en:
+
+        https://latronicstore.com/admin.html
+
+    entonces:
+
+        /api/productos
+
+    se convierte en:
+
+        https://latronicstore.com/api/productos
+*/
+
+const BASE_URL = "";
+
+
+/*
+    NO pongas localhost aquí.
+
+    Las imágenes deben venir del backend o de Cloudinary.
+*/
+
+const IMAGE_SERVER_URL = "";
+
+
+/*
+    Tu contraseña actual.
+*/
+
+const ADMIN_PASSWORD = "042525";
+
+
+/* =========================================================
+   DOM
+========================================================== */
+
+const loginScreen =
+    document.getElementById(
+        "login-screen"
+    );
+
+const loginBtn =
+    document.getElementById(
+        "login-btn"
+    );
+
+const passwordInput =
+    document.getElementById(
+        "admin-password"
+    );
+
+const adminPanel =
+    document.getElementById(
+        "admin-panel"
+    );
+
+const logoutBtn =
+    document.getElementById(
+        "logout-btn"
+    );
+
+const reloadBtn =
+    document.getElementById(
+        "reload-btn"
+    );
+
+const goShopBtn =
+    document.getElementById(
+        "go-shop-btn"
+    );
+
+const statusText =
+    document.getElementById(
+        "status-text"
+    );
+
+const searchInput =
+    document.getElementById(
+        "search-input"
+    );
+
+const clearSearchBtn =
+    document.getElementById(
+        "clear-search-btn"
+    );
+
+const listaProductos =
+    document.getElementById(
+        "lista-productos"
+    );
+
+const productCount =
+    document.getElementById(
+        "product-count"
+    );
+
+const formProducto =
+    document.getElementById(
+        "form-producto"
+    );
+
+const agregarBtn =
+    document.getElementById(
+        "agregar-btn"
+    );
+
+const imagenesFileInput =
+    document.getElementById(
+        "imagenes-file"
+    );
+
+const addPreview =
+    document.getElementById(
+        "add-preview"
+    );
+
+const mensajeGuardado =
+    document.getElementById(
+        "mensaje-guardado"
+    );
+
+
+/* =========================================================
+   VARIABLES
+========================================================== */
+
+let productos = [];
+
+let AUTH_TOKEN = "";
+
+let socket = null;
+
+let cargandoProductos = false;
+
+let operacionEnCurso = false;
+
+
+/* =========================================================
+   API URL
+========================================================== */
+
+function apiUrl(path) {
+
+    const base =
+        String(BASE_URL || "")
+            .replace(/\/+$/, "");
+
+    const cleanPath =
+        String(path || "")
+            .startsWith("/")
+            ? path
+            : "/" + path;
+
+    return base + cleanPath;
+}
+
+
+/* =========================================================
+   MENSAJES
+========================================================== */
+
+function mostrarMensaje(
+    texto,
+    tipo = "success"
+) {
+
+    mensajeGuardado.textContent =
+        texto;
+
+
+    if (tipo === "error") {
+
+        mensajeGuardado.style.background =
+            "#a92b2b";
+
+    } else if (tipo === "loading") {
+
+        mensajeGuardado.style.background =
+            "#b87818";
+
+    } else {
+
+        mensajeGuardado.style.background =
+            "#2d9b52";
+    }
+
+
+    mensajeGuardado.style.display =
+        "block";
+
+
+    clearTimeout(
+        mostrarMensaje.timer
+    );
+
+
+    mostrarMensaje.timer =
+        setTimeout(
+            () => {
+
+                mensajeGuardado.style.display =
+                    "none";
+
+            },
+            4000
+        );
+}
+
+
+/* =========================================================
+   STATUS
+========================================================== */
+
+function actualizarEstadoServidor(
+    ok,
+    texto
+) {
+
+    statusText.textContent =
+        texto;
+
+
+    statusText.className =
+        ok
+            ? "status-ok"
+            : "status-error";
+}
+
+
+/* =========================================================
+   ESCAPAR HTML
+========================================================== */
+
+function escaparHtml(valor) {
+
+    return String(
+        valor ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   CLOUDINARY
+========================================================== */
+
+function esCloudinary(url) {
+
+    return /res\.cloudinary\.com|cloudinary\.com/i.test(
+        String(url || "")
+    );
+}
+
+
+/* =========================================================
+   PREPARAR CLOUDINARY
+========================================================== */
+
+function prepararCloudinary(url) {
+
+    if (!url) {
+
+        return "";
+    }
+
+
+    let value =
+        String(url).trim();
+
+
+    if (!esCloudinary(value)) {
+
+        return value;
+    }
+
+
+    /*
+        Ya tiene f_auto / q_auto.
+    */
+
+    if (
+        /\/image\/upload\/[^/]*(f_auto|q_auto)/i.test(
+            value
+        )
+    ) {
+
+        return value;
+    }
+
+
+    /*
+        Insertar optimización.
+    */
+
+    if (
+        value.includes(
+            "/image/upload/"
+        )
+    ) {
+
+        return value.replace(
+            "/image/upload/",
+            "/image/upload/f_auto,q_auto/"
+        );
+    }
+
+
+    return value;
+}
+
+
+/* =========================================================
+   NORMALIZAR URL
+========================================================== */
+
+function normalizarImagenUrl(
+    url
+) {
+
+    if (!url) {
+
+        return "";
+    }
+
+
+    let value =
+        String(url).trim();
+
+
+    if (!value) {
+
+        return "";
+    }
+
+
+    /*
+        Cloudinary
+    */
+
+    if (esCloudinary(value)) {
+
+        return prepararCloudinary(
+            value
+        );
+    }
+
+
+    /*
+        Data / Blob
+    */
+
+    if (
+        /^data:/i.test(value) ||
+        /^blob:/i.test(value)
+    ) {
+
+        return value;
+    }
+
+
+    /*
+        Windows paths
+    */
+
+    value =
+        value.replace(
+            /\\/g,
+            "/"
+        );
+
+
+    /*
+        Eliminar file://
+    */
+
+    value =
+        value.replace(
+            /^file:\/+/i,
+            "/"
+        );
+
+
+    /*
+        Detectar localhost.
+
+        NUNCA dejamos:
+
+        http://localhost:3001/...
+
+        porque el navegador del cliente
+        intentaría acceder a SU localhost.
+    */
+
+    try {
+
+        const parsed =
+            new URL(
+                value,
+                window.location.origin
+            );
+
+
+        const hostname =
+            String(
+                parsed.hostname || ""
+            ).toLowerCase();
+
+
+        if (
+            hostname === "localhost" ||
+            hostname === "127.0.0.1" ||
+            hostname === "::1"
+        ) {
+
+            value =
+                parsed.pathname +
+                parsed.search +
+                parsed.hash;
+        }
+
+    } catch (error) {
+
+        /*
+            Ruta relativa.
+        */
+    }
+
+
+    /*
+        Eliminar ./ inicial
+    */
+
+    value =
+        value.replace(
+            /^\.\//,
+            ""
+        );
+
+
+    /*
+        URLs HTTP/HTTPS.
+    */
+
+    if (
+        /^https?:\/\//i.test(value)
+    ) {
+
+        return value;
+    }
+
+
+    /*
+        Ruta absoluta.
+    */
+
+    if (
+        value.startsWith("/")
+    ) {
+
+        if (IMAGE_SERVER_URL) {
+
+            return (
+                IMAGE_SERVER_URL
+                    .replace(
+                        /\/+$/,
+                        ""
+                    ) +
+                value
             );
         }
 
 
-        searchBtn?.addEventListener(
-            "click",
-            searchProducts
+        return value;
+    }
+
+
+    /*
+        Ruta relativa.
+    */
+
+    if (IMAGE_SERVER_URL) {
+
+        return (
+            IMAGE_SERVER_URL
+                .replace(
+                    /\/+$/,
+                    ""
+                ) +
+            "/" +
+            value.replace(
+                /^\/+/,
+                ""
+            )
         );
+    }
 
 
-        searchInput?.addEventListener(
-            "keydown",
-            function (event) {
+    return (
+        "/" +
+        value.replace(
+            /^\/+/,
+            ""
+        )
+    );
+}
+
+
+/* =========================================================
+   EXTRAER URL DE OBJETO
+========================================================== */
+
+function extraerUrlImagen(
+    item
+) {
+
+    if (!item) {
+
+        return "";
+    }
+
+
+    if (
+        typeof item === "string"
+    ) {
+
+        return item.trim();
+    }
+
+
+    if (
+        typeof item !== "object"
+    ) {
+
+        return "";
+    }
+
+
+    return String(
+        item.secure_url ||
+        item.secureUrl ||
+        item.url ||
+        item.src ||
+        item.path ||
+        item.location ||
+        item.image ||
+        item.imagen ||
+        ""
+    ).trim();
+}
+
+
+/* =========================================================
+   NORMALIZAR LISTA
+========================================================== */
+
+function normalizarListaImagenes(
+    imagenes
+) {
+
+    if (!Array.isArray(imagenes)) {
+
+        return [];
+    }
+
+
+    const resultado = [];
+
+    const vistos = new Set();
+
+
+    for (
+        const item of imagenes
+    ) {
+
+        let url =
+            extraerUrlImagen(
+                item
+            );
+
+
+        if (!url) {
+
+            continue;
+        }
+
+
+        url =
+            normalizarImagenUrl(
+                url
+            );
+
+
+        if (!url) {
+
+            continue;
+        }
+
+
+        /*
+            Para comparar duplicados
+            ignoramos query/hash.
+        */
+
+        const clave =
+            url
+                .split("?")[0]
+                .split("#")[0]
+                .toLowerCase();
+
+
+        if (
+            vistos.has(clave)
+        ) {
+
+            continue;
+        }
+
+
+        vistos.add(clave);
+
+        resultado.push(url);
+    }
+
+
+    return resultado;
+}
+
+
+/* =========================================================
+   EXTRAER ARRAY DE IMÁGENES DEL PRODUCTO
+========================================================== */
+
+function obtenerImagenesProducto(
+    p
+) {
+
+    if (!p || typeof p !== "object") {
+
+        return [];
+    }
+
+
+    const posibles = [
+
+        p.imagenes,
+
+        p.images,
+
+        p.imageUrls,
+
+        p.image_urls,
+
+        p.fotos,
+
+        p.photos
+
+    ];
+
+
+    for (
+        const lista of posibles
+    ) {
+
+        if (
+            Array.isArray(lista)
+        ) {
+
+            return normalizarListaImagenes(
+                lista
+            );
+        }
+    }
+
+
+    /*
+        Algunos productos pueden tener
+        una sola imagen.
+    */
+
+    const una =
+        p.imagen ||
+        p.image ||
+        p.imageUrl ||
+        p.image_url;
+
+
+    if (una) {
+
+        return normalizarListaImagenes(
+            [una]
+        );
+    }
+
+
+    return [];
+}
+
+
+/* =========================================================
+   NORMALIZAR PRODUCTO
+========================================================== */
+
+function normalizarProducto(
+    p,
+    index = 0
+) {
+
+    if (
+        !p ||
+        typeof p !== "object"
+    ) {
+
+        p = {};
+    }
+
+
+    let categoria =
+        p.categoria;
+
+
+    if (
+        !categoria ||
+        typeof categoria !== "object"
+    ) {
+
+        categoria = {};
+    }
+
+
+    const id =
+        p.id ??
+        p.productId ??
+        p.product_id ??
+        p.ID ??
+        `temp-${Date.now()}-${index}`;
+
+
+    return {
+
+        ...p,
+
+        id,
+
+        titulo:
+            p.titulo ??
+            p.title ??
+            p.nombre ??
+            "Sin título",
+
+        description:
+            p.description ??
+            p.descripcion ??
+            p.desc ??
+            "",
+
+        imagenes:
+            obtenerImagenesProducto(
+                p
+            ),
+
+        categoria: {
+
+            main:
+                categoria.main ??
+                categoria.mainCat ??
+                p.mainCat ??
+                p.categoriaPrincipal ??
+                p.category ??
+                "Sin categoría",
+
+            sub:
+                categoria.sub ??
+                categoria.subCat ??
+                p.subCat ??
+                p.subcategoria ??
+                p.subcategory ??
+                ""
+        },
+
+        price:
+            Number(
+                p.price ??
+                p.precio ??
+                0
+            ) || 0,
+
+        stock:
+            Number(
+                p.stock ??
+                p.inventario ??
+                p.quantity ??
+                0
+            ) || 0
+    };
+}
+
+
+/* =========================================================
+   OBTENER RESPUESTA JSON CON ERROR
+========================================================== */
+
+async function obtenerErrorRespuesta(
+    response
+) {
+
+    let mensaje =
+        `HTTP ${response.status} ${response.statusText}`;
+
+
+    try {
+
+        const text =
+            await response.text();
+
+
+        if (text) {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        text
+                    );
+
+
+                mensaje =
+                    data.error ||
+                    data.message ||
+                    data.mensaje ||
+                    data.detail ||
+                    mensaje;
+
+            } catch {
 
                 if (
-                    event.key ===
-                    "Enter"
+                    text.length < 500
                 ) {
 
-                    searchProducts();
+                    mensaje =
+                        text;
                 }
+            }
+        }
+
+    } catch {
+
+        // mantener mensaje HTTP
+    }
+
+
+    return mensaje;
+}
+
+
+/* =========================================================
+   FETCH API
+========================================================== */
+
+async function apiFetch(
+    path,
+    options = {}
+) {
+
+    const headers =
+        new Headers(
+            options.headers || {}
+        );
+
+
+    headers.set(
+        "Accept",
+        "application/json"
+    );
+
+
+    if (AUTH_TOKEN) {
+
+        headers.set(
+            "Authorization",
+            AUTH_TOKEN
+        );
+    }
+
+
+    const response =
+        await fetch(
+            apiUrl(path),
+            {
+                ...options,
+                headers
             }
         );
 
 
-        /* =====================================================
-           OFFER MODAL
-        ===================================================== */
+    if (!response.ok) {
 
-        const offerModal =
-            document.getElementById(
-                "negociar-modal"
+        const mensaje =
+            await obtenerErrorRespuesta(
+                response
             );
 
 
-        document
-            .getElementById(
-                "cerrar-negociar"
+        throw new Error(
+            mensaje
+        );
+    }
+
+
+    return response;
+}
+
+
+/* =========================================================
+   EXTRAER ARRAY DE PRODUCTOS
+========================================================== */
+
+function extraerProductos(
+    data
+) {
+
+    if (
+        Array.isArray(data)
+    ) {
+
+        return data;
+    }
+
+
+    const posibles = [
+
+        data?.productos,
+
+        data?.products,
+
+        data?.data,
+
+        data?.items,
+
+        data?.results
+
+    ];
+
+
+    for (
+        const item of posibles
+    ) {
+
+        if (
+            Array.isArray(item)
+        ) {
+
+            return item;
+        }
+    }
+
+
+    return [];
+}
+
+
+/* =========================================================
+   CARGAR PRODUCTOS
+========================================================== */
+
+async function cargarProductos() {
+
+    if (cargandoProductos) {
+
+        return;
+    }
+
+
+    cargandoProductos =
+        true;
+
+
+    actualizarEstadoServidor(
+        true,
+        "Loading products..."
+    );
+
+
+    listaProductos.innerHTML =
+        `
+        <div class="loading-box">
+            ⏳ Loading products...
+        </div>
+        `;
+
+
+    try {
+
+        console.log(
+            "GET",
+            apiUrl(
+                "/api/productos"
             )
-            ?.addEventListener(
-                "click",
-                function () {
+        );
 
-                    if (offerModal) {
 
-                        offerModal.style.display =
-                            "none";
-                    }
+        const response =
+            await apiFetch(
+                "/api/productos",
+                {
+                    method: "GET",
+                    cache: "no-store"
                 }
             );
 
 
-        offerModal?.addEventListener(
-            "click",
-            function (event) {
+        const data =
+            await response.json();
 
-                if (
-                    event.target ===
-                    offerModal
-                ) {
 
-                    offerModal.style.display =
-                        "none";
-                }
+        const lista =
+            extraerProductos(
+                data
+            );
+
+
+        productos =
+            lista.map(
+                (
+                    p,
+                    index
+                ) =>
+                    normalizarProducto(
+                        p,
+                        index
+                    )
+            );
+
+
+        console.log(
+            "✅ Productos cargados:",
+            productos.length
+        );
+
+
+        let totalImagenes = 0;
+
+        let cloudinaryImagenes = 0;
+
+
+        for (
+            const p of productos
+        ) {
+
+            totalImagenes +=
+                p.imagenes.length;
+
+
+            cloudinaryImagenes +=
+                p.imagenes.filter(
+                    esCloudinary
+                ).length;
+        }
+
+
+        actualizarEstadoServidor(
+            true,
+            `Connected — ${productos.length} products — ${totalImagenes} images — ${cloudinaryImagenes} Cloudinary`
+        );
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ cargarProductos:",
+            error
+        );
+
+
+        actualizarEstadoServidor(
+            false,
+            "Connection error"
+        );
+
+
+        listaProductos.innerHTML =
+            `
+            <div
+                class="empty-box"
+                style="
+                    color:#ff5555;
+                    background:#351c1c;
+                "
+            >
+
+                <h3>
+                    ❌ No se pudieron cargar los productos
+                </h3>
+
+                <br>
+
+                <div>
+                    ${escaparHtml(
+                        error.message
+                    )}
+                </div>
+
+                <br>
+
+                <small>
+                    API:
+                    ${escaparHtml(
+                        apiUrl(
+                            "/api/productos"
+                        )
+                    )}
+                </small>
+
+            </div>
+            `;
+
+    }
+
+    finally {
+
+        cargandoProductos =
+            false;
+    }
+}
+
+
+/* =========================================================
+   CREAR IMAGEN
+========================================================== */
+
+function crearImagenProducto(
+    url,
+    titulo,
+    index
+) {
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    wrapper.className =
+        "image-wrapper";
+
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+
+    img.alt =
+        titulo || "Product image";
+
+
+    img.loading =
+        "lazy";
+
+
+    img.decoding =
+        "async";
+
+
+    img.referrerPolicy =
+        "no-referrer";
+
+
+    img.className =
+        "loading";
+
+
+    const numero =
+        document.createElement(
+            "span"
+        );
+
+
+    numero.className =
+        "image-number";
+
+
+    numero.textContent =
+        String(index + 1);
+
+
+    const debug =
+        document.createElement(
+            "div"
+        );
+
+
+    debug.className =
+        "image-debug";
+
+
+    const finalUrl =
+        normalizarImagenUrl(
+            url
+        );
+
+
+    if (!finalUrl) {
+
+        const error =
+            document.createElement(
+                "div"
+            );
+
+
+        error.className =
+            "image-error";
+
+
+        error.textContent =
+            "❌ Invalid image URL";
+
+
+        wrapper.appendChild(
+            error
+        );
+
+
+        return wrapper;
+    }
+
+
+    debug.textContent =
+        finalUrl;
+
+
+    img.onload =
+        () => {
+
+            img.classList.remove(
+                "loading"
+            );
+
+
+            debug.className =
+                "image-debug ok";
+
+
+            debug.textContent =
+                "✅ " + finalUrl;
+        };
+
+
+    img.onerror =
+        () => {
+
+            console.error(
+                "❌ IMAGE ERROR:",
+                finalUrl
+            );
+
+
+            img.classList.remove(
+                "loading"
+            );
+
+
+            img.style.display =
+                "none";
+
+
+            debug.className =
+                "image-debug error";
+
+
+            debug.textContent =
+                "❌ " + finalUrl;
+
+
+            const error =
+                document.createElement(
+                    "div"
+                );
+
+
+            error.className =
+                "image-error";
+
+
+            error.innerHTML =
+                `
+                ❌ Image unavailable
+                `;
+
+
+            wrapper.insertBefore(
+                error,
+                img
+            );
+        };
+
+
+    img.src =
+        finalUrl;
+
+
+    wrapper.appendChild(
+        img
+    );
+
+
+    wrapper.appendChild(
+        numero
+    );
+
+
+    wrapper.appendChild(
+        debug
+    );
+
+
+    wrapper.title =
+        finalUrl;
+
+
+    return wrapper;
+}
+
+
+/* =========================================================
+   RENDER PRODUCTOS
+========================================================== */
+
+function renderProductos(
+    filter = ""
+) {
+
+    listaProductos.innerHTML =
+        "";
+
+
+    const texto =
+        String(
+            filter || ""
+        )
+            .toLowerCase()
+            .trim();
+
+
+    const filtrados =
+        productos.filter(
+            p => {
+
+                const valores = [
+
+                    p.titulo,
+
+                    p.description,
+
+                    p.categoria?.main,
+
+                    p.categoria?.sub,
+
+                    p.id
+
+                ];
+
+
+                return valores.some(
+                    valor =>
+                        String(
+                            valor ?? ""
+                        )
+                            .toLowerCase()
+                            .includes(
+                                texto
+                            )
+                );
             }
         );
 
 
-        /* =====================================================
-           SEND OFFER
-        ===================================================== */
+    productCount.textContent =
+        `${filtrados.length} of ${productos.length} products`;
 
-        document
-            .getElementById(
-                "enviar-negociacion"
+
+    if (
+        filtrados.length === 0
+    ) {
+
+        listaProductos.innerHTML =
+            `
+            <div class="empty-box">
+                No products found.
+            </div>
+            `;
+
+        return;
+    }
+
+
+    for (
+        const producto of filtrados
+    ) {
+
+        listaProductos.appendChild(
+            crearTarjetaProducto(
+                producto
             )
-            ?.addEventListener(
-                "click",
-                async function () {
-
-                    const email =
-                        document
-                            .getElementById(
-                                "negociar-email"
-                            )
-                            ?.value
-                            .trim();
+        );
+    }
+}
 
 
-                    const oferta =
-                        document
-                            .getElementById(
-                                "negociar-precio"
-                            )
-                            ?.value
-                            .trim();
+/* =========================================================
+   CREAR TARJETA PRODUCTO
+========================================================== */
+
+function crearTarjetaProducto(
+    p
+) {
+
+    const div =
+        document.createElement(
+            "article"
+        );
 
 
-                    const producto =
-                        document
-                            .getElementById(
-                                "negociar-producto"
-                            )
-                            ?.textContent ||
-                        "";
+    div.className =
+        "producto";
 
 
-                    const status =
-                        document.getElementById(
-                            "negociar-status"
-                        );
+    /*
+        ID
+    */
+
+    const idDiv =
+        document.createElement(
+            "div"
+        );
 
 
-                    if (
-                        !email ||
-                        !oferta
-                    ) {
-
-                        alert(
-                            "Please complete all fields."
-                        );
-
-                        return;
-                    }
+    idDiv.className =
+        "producto-id";
 
 
-                    try {
-
-                        if (status) {
-
-                            status.textContent =
-                                "Sending offer...";
-                        }
+    idDiv.textContent =
+        `ID: ${p.id}`;
 
 
-                        const response =
-                            await fetch(
-                                API_BASE +
-                                "/api/send-offer",
-                                {
-                                    method:
-                                        "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
-
-                                    body:
-                                        JSON.stringify({
-
-                                            producto,
-
-                                            email,
-
-                                            oferta
-                                        })
-                                }
-                            );
+    div.appendChild(
+        idDiv
+    );
 
 
-                        const data =
-                            await response.json();
+    /*
+        IMÁGENES
+    */
+
+    const miniImgs =
+        document.createElement(
+            "div"
+        );
 
 
-                        if (
-                            !response.ok
-                        ) {
-
-                            throw new Error(
-                                data.error ||
-                                "Error sending offer"
-                            );
-                        }
+    miniImgs.className =
+        "mini-images";
 
 
-                        if (status) {
+    if (
+        p.imagenes.length
+    ) {
 
-                            status.textContent =
-                                "Offer sent!";
-                        }
+        p.imagenes.forEach(
+            (
+                url,
+                index
+            ) => {
 
-
-                        setTimeout(
-                            function () {
-
-                                if (
-                                    offerModal
-                                ) {
-
-                                    offerModal.style.display =
-                                        "none";
-                                }
-
-
-                                if (status) {
-
-                                    status.textContent =
-                                        "";
-                                }
-
-                            },
-                            900
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Offer error:",
-                            error
-                        );
-
-
-                        if (status) {
-
-                            status.textContent =
-                                "Error sending offer.";
-                        }
-                    }
-                }
-            );
-
-
-        /* =====================================================
-           AGE CHECK
-        ===================================================== */
-
-        const ageModal =
-            document.getElementById(
-                "ageCheckModal"
-            );
-
-        const ageYes =
-            document.getElementById(
-                "ageYes"
-            );
-
-        const ageNo =
-            document.getElementById(
-                "ageNo"
-            );
-
-
-        ageYes?.addEventListener(
-            "click",
-            function () {
-
-                sessionStorage.setItem(
-                    "latronic-age-confirmed",
-                    "1"
-                );
-
-                ageModal?.classList.remove(
-                    "show"
+                miniImgs.appendChild(
+                    crearImagenProducto(
+                        url,
+                        p.titulo,
+                        index
+                    )
                 );
             }
         );
 
+    } else {
 
-        ageNo?.addEventListener(
-            "click",
-            function () {
+        miniImgs.innerHTML =
+            `
+            <div
+                style="
+                    color:#777;
+                    padding:15px;
+                    grid-column:1/-1;
+                "
+            >
+                No images
+            </div>
+            `;
+    }
 
-                /*
-                 * ESTA es una navegación intencional
-                 * del usuario.
-                 *
-                 * Socket.IO JAMÁS utiliza esto.
-                 */
 
-                window.location.href =
-                    "index.html";
-            }
+    div.appendChild(
+        miniImgs
+    );
+
+
+    /*
+        IMAGE COUNT
+    */
+
+    const imageCount =
+        document.createElement(
+            "div"
         );
 
 
-        /* =====================================================
-           SOCKET.IO
-           SAFE LIVE PRODUCT UPDATES
-        ===================================================== */
+    imageCount.className =
+        "image-count";
 
-        function initializeSocket() {
 
-            if (
-                typeof io !==
-                "function"
-            ) {
+    imageCount.textContent =
+        `📸 ${p.imagenes.length} image(s)`;
 
-                console.warn(
-                    "Socket.IO library not available."
-                );
 
-                return;
-            }
+    div.appendChild(
+        imageCount
+    );
+
+
+    /*
+        TÍTULO
+    */
+
+    const tituloInput =
+        document.createElement(
+            "input"
+        );
+
+
+    tituloInput.type =
+        "text";
+
+
+    tituloInput.value =
+        p.titulo || "";
+
+
+    tituloInput.placeholder =
+        "Product title";
+
+
+    tituloInput.dataset.field =
+        "titulo";
+
+
+    div.appendChild(
+        tituloInput
+    );
+
+
+    /*
+        DESCRIPTION
+    */
+
+    const desc =
+        document.createElement(
+            "textarea"
+        );
+
+
+    desc.value =
+        p.description || "";
+
+
+    desc.placeholder =
+        "Description";
+
+
+    desc.dataset.field =
+        "description";
+
+
+    div.appendChild(
+        desc
+    );
+
+
+    /*
+        MAIN CATEGORY
+    */
+
+    const mainCat =
+        document.createElement(
+            "input"
+        );
+
+
+    mainCat.type =
+        "text";
+
+
+    mainCat.value =
+        p.categoria?.main || "";
+
+
+    mainCat.placeholder =
+        "Main category";
+
+
+    mainCat.dataset.field =
+        "mainCat";
+
+
+    div.appendChild(
+        mainCat
+    );
+
+
+    /*
+        SUBCATEGORY
+    */
+
+    const subCat =
+        document.createElement(
+            "input"
+        );
+
+
+    subCat.type =
+        "text";
+
+
+    subCat.value =
+        p.categoria?.sub || "";
+
+
+    subCat.placeholder =
+        "Subcategory";
+
+
+    subCat.dataset.field =
+        "subCat";
+
+
+    div.appendChild(
+        subCat
+    );
+
+
+    /*
+        PRICE
+    */
+
+    const price =
+        document.createElement(
+            "input"
+        );
+
+
+    price.type =
+        "number";
+
+
+    price.step =
+        "0.01";
+
+
+    price.min =
+        "0";
+
+
+    price.value =
+        p.price;
+
+
+    price.dataset.field =
+        "price";
+
+
+    div.appendChild(
+        price
+    );
+
+
+    /*
+        STOCK
+    */
+
+    const stock =
+        document.createElement(
+            "input"
+        );
+
+
+    stock.type =
+        "number";
+
+
+    stock.step =
+        "1";
+
+
+    stock.min =
+        "0";
+
+
+    stock.value =
+        p.stock;
+
+
+    stock.dataset.field =
+        "stock";
+
+
+    div.appendChild(
+        stock
+    );
+
+
+    /*
+        NUEVAS IMÁGENES
+    */
+
+    const fileInput =
+        document.createElement(
+            "input"
+        );
+
+
+    fileInput.type =
+        "file";
+
+
+    fileInput.multiple =
+        true;
+
+
+    fileInput.accept =
+        "image/*,.webp,.heif,.heic";
+
+
+    fileInput.dataset.field =
+        "images";
+
+
+    div.appendChild(
+        fileInput
+    );
+
+
+    /*
+        ACTIONS
+    */
+
+    const actions =
+        document.createElement(
+            "div"
+        );
+
+
+    actions.className =
+        "product-actions";
+
+
+    /*
+        SAVE
+    */
+
+    const saveBtn =
+        document.createElement(
+            "button"
+        );
+
+
+    saveBtn.type =
+        "button";
+
+
+    saveBtn.className =
+        "save-btn";
+
+
+    saveBtn.textContent =
+        "💾 Save";
+
+
+    saveBtn.addEventListener(
+        "click",
+        async () => {
+
+            saveBtn.disabled =
+                true;
+
+            saveBtn.textContent =
+                "⏳ Saving...";
 
 
             try {
 
-                socket =
-                    io(
-                        API_BASE,
-                        {
-                            transports: [
-                                "websocket",
-                                "polling"
-                            ],
-
-                            reconnection:
-                                true,
-
-                            reconnectionAttempts:
-                                Infinity,
-
-                            reconnectionDelay:
-                                1000,
-
-                            reconnectionDelayMax:
-                                5000,
-
-                            timeout:
-                                10000,
-
-                            autoConnect:
-                                true
-                        }
-                    );
-
-
-                /* =============================================
-                   CONNECT
-                ============================================= */
-
-                socket.on(
-                    "connect",
-                    function () {
-
-                        socketConnected =
-                            true;
-
-                        console.log(
-                            "========================================"
-                        );
-
-                        console.log(
-                            "SHOP SOCKET CONNECTED"
-                        );
-
-                        console.log(
-                            "Socket ID:",
-                            socket.id
-                        );
-
-                        console.log(
-                            "========================================"
-                        );
-                    }
+                await actualizarProducto(
+                    p,
+                    div
                 );
 
+            }
 
-                /* =============================================
-                   DISCONNECT
-                ============================================= */
+            catch (error) {
 
-                socket.on(
-                    "disconnect",
-                    function (reason) {
-
-                        socketConnected =
-                            false;
-
-                        console.warn(
-                            "Shop Socket disconnected:",
-                            reason
-                        );
-
-                        /*
-                         * IMPORTANT:
-                         *
-                         * No redirect.
-                         *
-                         * No reload.
-                         *
-                         * No home.
-                         */
-                    }
-                );
-
-
-                /* =============================================
-                   CONNECT ERROR
-                ============================================= */
-
-                socket.on(
-                    "connect_error",
-                    function (error) {
-
-                        socketConnected =
-                            false;
-
-                        console.warn(
-                            "Socket.IO connection error:",
-                            error?.message ||
-                            error
-                        );
-
-                        /*
-                         * IMPORTANT:
-                         *
-                         * No window.location.
-                         * No reload.
-                         */
-                    }
-                );
-
-
-                /* =============================================
-                   PRODUCT UPDATE
-                ============================================= */
-
-                socket.on(
-                    "actualizar-productos",
-                    function (payload) {
-
-                        console.log(
-                            "========================================"
-                        );
-
-                        console.log(
-                            "LIVE PRODUCT UPDATE RECEIVED"
-                        );
-
-                        console.log(
-                            payload
-                        );
-
-                        console.log(
-                            "========================================"
-                        );
-
-
-                        /*
-                         * NEVER redirect.
-                         *
-                         * NEVER reload.
-                         */
-
-                        if (
-                            !payload
-                        ) {
-
-                            return;
-                        }
-
-
-                        let updates = [];
-
-
-                        /* =====================================
-                           ARRAY
-                        ===================================== */
-
-                        if (
-                            Array.isArray(
-                                payload
-                            )
-                        ) {
-
-                            updates =
-                                payload;
-
-                        }
-
-
-                        /* =====================================
-                           PRODUCT WRAPPER
-                        ===================================== */
-
-                        else if (
-                            payload.producto
-                        ) {
-
-                            updates = [
-                                payload.producto
-                            ];
-
-                        }
-
-
-                        /* =====================================
-                           PRODUCTS WRAPPER
-                        ===================================== */
-
-                        else if (
-                            Array.isArray(
-                                payload.productos
-                            )
-                        ) {
-
-                            updates =
-                                payload.productos;
-
-                        }
-
-
-                        /* =====================================
-                           SINGLE PRODUCT
-                        ===================================== */
-
-                        else {
-
-                            updates = [
-                                payload
-                            ];
-                        }
-
-
-                        /*
-                         * Process each update.
-                         */
-
-                        updates.forEach(
-                            rawProduct => {
-
-                                if (
-                                    !rawProduct ||
-                                    typeof rawProduct !==
-                                    "object"
-                                ) {
-
-                                    return;
-                                }
-
-
-                                /*
-                                 * Algunos servidores
-                                 * envían:
-                                 *
-                                 * {
-                                 *   id: 123,
-                                 *   changes: {...}
-                                 * }
-                                 *
-                                 * o:
-                                 *
-                                 * {
-                                 *   product: {...}
-                                 * }
-                                 */
-
-                                let incoming =
-                                    rawProduct.product ||
-                                    rawProduct.producto ||
-                                    rawProduct;
-
-
-                                if (
-                                    incoming &&
-                                    incoming.changes
-                                ) {
-
-                                    incoming = {
-
-                                        ...incoming,
-
-                                        ...incoming.changes
-                                    };
-                                }
-
-
-                                const normalized =
-                                    normalizeProduct(
-                                        incoming
-                                    );
-
-
-                                if (
-                                    !normalized ||
-                                    normalized.id ===
-                                    undefined ||
-                                    normalized.id ===
-                                    null
-                                ) {
-
-                                    console.warn(
-                                        "Socket update ignored: invalid product",
-                                        incoming
-                                    );
-
-                                    return;
-                                }
-
-
-                                const index =
-                                    productosMaster.findIndex(
-                                        product =>
-                                            String(
-                                                product.id
-                                            ) ===
-                                            String(
-                                                normalized.id
-                                            )
-                                    );
-
-
-                                /* =================================
-                                   EXISTING PRODUCT
-                                ================================= */
-
-                                if (
-                                    index >=
-                                    0
-                                ) {
-
-                                    /*
-                                     * IMPORTANTE:
-                                     *
-                                     * Mergeamos.
-                                     *
-                                     * No reemplazamos datos
-                                     * importantes accidentalmente.
-                                     */
-
-                                    const oldProduct =
-                                        productosMaster[
-                                            index
-                                        ];
-
-
-                                    const merged =
-                                        {
-
-                                            ...oldProduct,
-
-                                            ...normalized,
-
-                                            id:
-                                                oldProduct.id,
-
-                                            imagenes:
-                                                normalized.imagenes.length
-                                                    ? normalized.imagenes
-                                                    : oldProduct.imagenes
-                                        };
-
-
-                                    productosMaster[
-                                        index
-                                    ] =
-                                        merged;
-
-
-                                    /*
-                                     * Guardar en localStorage.
-                                     */
-
-                                    try {
-
-                                        localStorage.setItem(
-                                            "productos",
-                                            JSON.stringify(
-                                                productosMaster
-                                            )
-                                        );
-
-                                    } catch (error) {
-
-                                        console.warn(
-                                            "localStorage socket update failed:",
-                                            error
-                                        );
-                                    }
-
-
-                                    /*
-                                     * Intentar actualizar
-                                     * solamente la tarjeta.
-                                     */
-
-                                    const updatedCard =
-                                        updateProductCard(
-                                            merged
-                                        );
-
-
-                                    /*
-                                     * Si la tarjeta no está
-                                     * visible porque cambió
-                                     * de filtro/búsqueda,
-                                     * NO reconstruimos toda
-                                     * la página.
-                                     */
-
-                                    if (
-                                        !updatedCard
-                                    ) {
-
-                                        /*
-                                         * Si el producto
-                                         * pertenece al filtro
-                                         * actual, reconstruimos
-                                         * silenciosamente.
-                                         *
-                                         * Esto NO navega.
-                                         */
-
-                                        const filtered =
-                                            getFilteredProducts();
-
-
-                                        const shouldBeVisible =
-                                            filtered.some(
-                                                product =>
-                                                    String(
-                                                        product.id
-                                                    ) ===
-                                                    String(
-                                                        merged.id
-                                                    )
-                                            );
-
-
-                                        if (
-                                            shouldBeVisible
-                                        ) {
-
-                                            const scroll =
-                                                window.scrollY;
-
-
-                                            renderProducts(
-                                                filtered,
-                                                false
-                                            );
-
-
-                                            requestAnimationFrame(
-                                                function () {
-
-                                                    window.scrollTo(
-                                                        0,
-                                                        scroll
-                                                    );
-                                                }
-                                            );
-                                        }
-                                    }
-                                }
-
-
-                                /* =================================
-                                   NEW PRODUCT
-                                ================================= */
-
-                                else {
-
-                                    productosMaster.push(
-                                        normalized
-                                    );
-
-
-                                    try {
-
-                                        localStorage.setItem(
-                                            "productos",
-                                            JSON.stringify(
-                                                productosMaster
-                                            )
-                                        );
-
-                                    } catch (error) {
-
-                                        console.warn(
-                                            "Could not save new product:",
-                                            error
-                                        );
-                                    }
-
-
-                                    /*
-                                     * Solo mostrarlo si
-                                     * pertenece al filtro
-                                     * actual.
-                                     */
-
-                                    const filtered =
-                                        getFilteredProducts();
-
-
-                                    const shouldShow =
-                                        filtered.some(
-                                            product =>
-                                                String(
-                                                    product.id
-                                                ) ===
-                                                String(
-                                                    normalized.id
-                                                )
-                                        );
-
-
-                                    if (
-                                        shouldShow
-                                    ) {
-
-                                        const scroll =
-                                            window.scrollY;
-
-
-                                        renderProducts(
-                                            filtered,
-                                            false
-                                        );
-
-
-                                        requestAnimationFrame(
-                                            function () {
-
-                                                window.scrollTo(
-                                                    0,
-                                                    scroll
-                                                );
-                                            }
-                                        );
-                                    }
-                                }
-
-                            }
-                        );
-
-
-                        updateCartCount();
-                    }
-                );
-
-
-                /* =============================================
-                   PRODUCT DELETED
-                ============================================= */
-
-                socket.on(
-                    "eliminar-producto",
-                    function (payload) {
-
-                        console.log(
-                            "Product delete received:",
-                            payload
-                        );
-
-
-                        let id =
-                            payload?.id ??
-                            payload?.productId ??
-                            payload?.productoId ??
-                            payload?.producto?.id;
-
-
-                        if (
-                            id ===
-                            undefined ||
-                            id ===
-                            null
-                        ) {
-
-                            return;
-                        }
-
-
-                        const index =
-                            productosMaster.findIndex(
-                                product =>
-                                    String(
-                                        product.id
-                                    ) ===
-                                    String(id)
-                            );
-
-
-                        if (
-                            index <
-                            0
-                        ) {
-
-                            return;
-                        }
-
-
-                        productosMaster.splice(
-                            index,
-                            1
-                        );
-
-
-                        try {
-
-                            localStorage.setItem(
-                                "productos",
-                                JSON.stringify(
-                                    productosMaster
-                                )
-                            );
-
-                        } catch (error) {
-
-                            console.warn(
-                                "localStorage delete failed:",
-                                error
-                            );
-                        }
-
-
-                        /*
-                         * Solo reconstruir la lista
-                         * si el producto estaba visible.
-                         */
-
-                        const card =
-                            contenedor?.querySelector(
-                                `.producto[data-id="${CSS.escape(String(id))}"]`
-                            );
-
-
-                        if (
-                            card
-                        ) {
-
-                            card.remove();
-                        }
-
-
-                        updateCartCount();
-                    }
-                );
-
-
-                /* =============================================
-                   OPTIONAL FULL UPDATE EVENT
-                ============================================= */
-
-                socket.on(
-                    "productos-actualizados",
-                    function (payload) {
-
-                        console.log(
-                            "Products updated event received"
-                        );
-
-
-                        /*
-                         * Si el servidor manda
-                         * la lista completa,
-                         * actualizamos el estado.
-                         *
-                         * Pero no navegamos.
-                         */
-
-                        const list =
-                            Array.isArray(
-                                payload
-                            )
-                                ? payload
-                                : (
-                                    payload?.productos ||
-                                    payload?.products ||
-                                    null
-                                );
-
-
-                        if (
-                            !Array.isArray(list)
-                        ) {
-
-                            return;
-                        }
-
-
-                        const normalized =
-                            list
-                                .map(
-                                    normalizeProduct
-                                )
-                                .filter(Boolean);
-
-
-                        if (
-                            !normalized.length
-                        ) {
-
-                            return;
-                        }
-
-
-                        productosMaster =
-                            normalized;
-
-
-                        try {
-
-                            localStorage.setItem(
-                                "productos",
-                                JSON.stringify(
-                                    productosMaster
-                                )
-                            );
-
-                        } catch (error) {
-
-                            console.warn(
-                                "Could not save full socket update:",
-                                error
-                            );
-                        }
-
-
-                        /*
-                         * Guardamos posición.
-                         */
-
-                        const scroll =
-                            window.scrollY;
-
-
-                        renderProducts(
-                            getFilteredProducts(),
-                            false
-                        );
-
-
-                        requestAnimationFrame(
-                            function () {
-
-                                window.scrollTo(
-                                    0,
-                                    scroll
-                                );
-                            }
-                        );
-                    }
-                );
-
-
-            } catch (error) {
-
-                console.warn(
-                    "Socket.IO initialization failed:",
+                console.error(
                     error
                 );
+
+            }
+
+            finally {
+
+                saveBtn.disabled =
+                    false;
+
+                saveBtn.textContent =
+                    "💾 Save";
             }
         }
+    );
 
 
-        /* =====================================================
-           START SOCKET
-        ===================================================== */
-
-        initializeSocket();
+    actions.appendChild(
+        saveBtn
+    );
 
 
-        /* =====================================================
-           IMAGE PRELOAD
-        ===================================================== */
+    /*
+        DELETE
+    */
 
-        setTimeout(
-            function () {
-
-                const products =
-                    visibleProducts()
-                        .slice(
-                            0,
-                            20
-                        );
-
-
-                products.forEach(
-                    product => {
-
-                        const first =
-                            product.imagenes?.[0];
-
-
-                        if (!first) {
-                            return;
-                        }
-
-
-                        const candidates =
-                            getImageCandidates(
-                                first
-                            );
-
-
-                        const url =
-                            candidates[0];
-
-
-                        if (!url) {
-                            return;
-                        }
-
-
-                        const image =
-                            new Image();
-
-
-                        image.src =
-                            url;
-                    }
-                );
-
-            },
-            1500
+    const deleteBtn =
+        document.createElement(
+            "button"
         );
 
 
-        /* =====================================================
-           DIAGNOSTICS
-        ===================================================== */
-
-        let diagnosticImages =
-            0;
+    deleteBtn.type =
+        "button";
 
 
-        productosMaster.forEach(
-            product => {
+    deleteBtn.className =
+        "delete-btn";
 
-                diagnosticImages +=
-                    product.imagenes.length;
+
+    deleteBtn.textContent =
+        "🗑️ Delete";
+
+
+    deleteBtn.addEventListener(
+        "click",
+        async () => {
+
+            await eliminarProducto(
+                p.id
+            );
+        }
+    );
+
+
+    actions.appendChild(
+        deleteBtn
+    );
+
+
+    div.appendChild(
+        actions
+    );
+
+
+    return div;
+}
+
+
+/* =========================================================
+   SUBIR IMÁGENES
+========================================================== */
+
+async function subirImagenes(
+    files
+) {
+
+    if (
+        !files ||
+        files.length === 0
+    ) {
+
+        return [];
+    }
+
+
+    const formData =
+        new FormData();
+
+
+    for (
+        let i = 0;
+        i < files.length;
+        i++
+    ) {
+
+        formData.append(
+            "imagenes",
+            files[i],
+            files[i].name
+        );
+    }
+
+
+    console.log(
+        `📤 Uploading ${files.length} image(s)`
+    );
+
+
+    const response =
+        await apiFetch(
+            "/api/subir-imagenes",
+            {
+                method: "POST",
+
+                body:
+                    formData
             }
         );
 
 
-        console.log(
-            "========================================"
+    const data =
+        await response.json();
+
+
+    console.log(
+        "📥 Upload response:",
+        data
+    );
+
+
+    /*
+        Aceptar múltiples formatos.
+    */
+
+    let lista = [];
+
+
+    if (
+        Array.isArray(data)
+    ) {
+
+        lista =
+            data;
+
+    } else {
+
+        const posibles = [
+
+            data.urls,
+
+            data.imagenes,
+
+            data.images,
+
+            data.files,
+
+            data.uploaded,
+
+            data.data
+
+        ];
+
+
+        for (
+            const item of posibles
+        ) {
+
+            if (
+                Array.isArray(item)
+            ) {
+
+                lista =
+                    item;
+
+                break;
+            }
+        }
+    }
+
+
+    const urls =
+        normalizarListaImagenes(
+            lista
         );
 
-        console.log(
-            "LaTRONIC SHOP READY"
+
+    if (
+        urls.length === 0
+    ) {
+
+        console.error(
+            "❌ Upload server response:",
+            data
         );
 
-        console.log(
-            "Products:",
-            productosMaster.length
+
+        throw new Error(
+            "El servidor recibió las imágenes pero no devolvió URLs."
+        );
+    }
+
+
+    const cloudinary =
+        urls.filter(
+            esCloudinary
+        ).length;
+
+
+    console.log(
+        `✅ Uploaded: ${urls.length}`
+    );
+
+
+    console.log(
+        `☁️ Cloudinary: ${cloudinary}/${urls.length}`
+    );
+
+
+    return urls;
+}
+
+
+/* =========================================================
+   ACTUALIZAR PRODUCTO
+========================================================== */
+
+async function actualizarProducto(
+    producto,
+    tarjeta
+) {
+
+    if (!producto) {
+
+        throw new Error(
+            "Producto no encontrado."
+        );
+    }
+
+
+    /*
+        Obtener campos.
+    */
+
+    const titulo =
+        tarjeta
+            .querySelector(
+                '[data-field="titulo"]'
+            )
+            .value
+            .trim();
+
+
+    const description =
+        tarjeta
+            .querySelector(
+                '[data-field="description"]'
+            )
+            .value
+            .trim();
+
+
+    const mainCat =
+        tarjeta
+            .querySelector(
+                '[data-field="mainCat"]'
+            )
+            .value
+            .trim();
+
+
+    const subCat =
+        tarjeta
+            .querySelector(
+                '[data-field="subCat"]'
+            )
+            .value
+            .trim();
+
+
+    const priceValue =
+        tarjeta
+            .querySelector(
+                '[data-field="price"]'
+            )
+            .value;
+
+
+    const stockValue =
+        tarjeta
+            .querySelector(
+                '[data-field="stock"]'
+            )
+            .value;
+
+
+    const fileInput =
+        tarjeta
+            .querySelector(
+                '[data-field="images"]'
+            );
+
+
+    /*
+        VALIDACIÓN
+    */
+
+    if (!titulo) {
+
+        throw new Error(
+            "El título es obligatorio."
+        );
+    }
+
+
+    if (
+        priceValue === ""
+    ) {
+
+        throw new Error(
+            "El precio es obligatorio."
+        );
+    }
+
+
+    if (
+        stockValue === ""
+    ) {
+
+        throw new Error(
+            "El stock es obligatorio."
+        );
+    }
+
+
+    const price =
+        Number(
+            priceValue
         );
 
-        console.log(
-            "Image records:",
-            diagnosticImages
+
+    const stock =
+        Number(
+            stockValue
         );
 
-        console.log(
-            "Socket:",
-            socket ? "INITIALIZED" : "NOT AVAILABLE"
+
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        throw new Error(
+            "Precio inválido."
+        );
+    }
+
+
+    if (
+        !Number.isFinite(stock) ||
+        stock < 0
+    ) {
+
+        throw new Error(
+            "Stock inválido."
+        );
+    }
+
+
+    /*
+        IMÁGENES NUEVAS
+    */
+
+    let nuevasImagenes = [];
+
+
+    if (
+        fileInput &&
+        fileInput.files &&
+        fileInput.files.length > 0
+    ) {
+
+        mostrarMensaje(
+            "☁️ Uploading new images...",
+            "loading"
         );
 
-        console.log(
-            "========================================"
+
+        nuevasImagenes =
+            await subirImagenes(
+                fileInput.files
+            );
+    }
+
+
+    /*
+        CONSERVAR IMÁGENES EXISTENTES
+        + NUEVAS
+    */
+
+    const imagenesFinales =
+        normalizarListaImagenes(
+            [
+                ...producto.imagenes,
+                ...nuevasImagenes
+            ]
+        );
+
+
+    const updated = {
+
+        titulo,
+
+        description,
+
+        categoria: {
+
+            main:
+                mainCat,
+
+            sub:
+                subCat
+        },
+
+        price,
+
+        stock,
+
+        imagenes:
+            imagenesFinales
+    };
+
+
+    console.log(
+        "📦 PUT product:",
+        producto.id,
+        updated
+    );
+
+
+    mostrarMensaje(
+        "💾 Saving product...",
+        "loading"
+    );
+
+
+    const response =
+        await apiFetch(
+            `/api/productos/${encodeURIComponent(producto.id)}`,
+            {
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        updated
+                    )
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    console.log(
+        "✅ PUT response:",
+        data
+    );
+
+
+    /*
+        El backend puede devolver:
+          producto
+          data
+          o directamente el producto.
+    */
+
+    let productoRespuesta =
+        data;
+
+
+    if (
+        data &&
+        data.producto &&
+        typeof data.producto === "object"
+    ) {
+
+        productoRespuesta =
+            data.producto;
+
+    } else if (
+        data &&
+        data.data &&
+        !Array.isArray(data.data) &&
+        typeof data.data === "object"
+    ) {
+
+        productoRespuesta =
+            data.data;
+    }
+
+
+    /*
+        Combinar respuesta con valores
+        que acabamos de enviar.
+    */
+
+    const actualizado =
+        normalizarProducto(
+            {
+                ...producto,
+
+                ...productoRespuesta,
+
+                id:
+                    producto.id,
+
+                titulo:
+                    productoRespuesta?.titulo ??
+                    updated.titulo,
+
+                description:
+                    productoRespuesta?.description ??
+                    updated.description,
+
+                categoria:
+                    productoRespuesta?.categoria ??
+                    updated.categoria,
+
+                price:
+                    productoRespuesta?.price ??
+                    updated.price,
+
+                stock:
+                    productoRespuesta?.stock ??
+                    updated.stock,
+
+                imagenes:
+                    productoRespuesta?.imagenes ??
+                    updated.imagenes
+            }
+        );
+
+
+    productos =
+        productos.map(
+            p =>
+                String(p.id) ===
+                String(producto.id)
+                    ? actualizado
+                    : p
+        );
+
+
+    if (fileInput) {
+
+        fileInput.value =
+            "";
+    }
+
+
+    renderProductos(
+        searchInput.value
+    );
+
+
+    mostrarMensaje(
+        "✅ Product updated successfully"
+    );
+}
+
+
+/* =========================================================
+   ELIMINAR PRODUCTO
+========================================================== */
+
+async function eliminarProducto(
+    id
+) {
+
+    const producto =
+        productos.find(
+            p =>
+                String(p.id) ===
+                String(id)
+        );
+
+
+    if (!producto) {
+
+        alert(
+            "Product not found."
+        );
+
+        return;
+    }
+
+
+    const confirmado =
+        confirm(
+            `Are you sure you want to delete "${producto.titulo}"?`
+        );
+
+
+    if (!confirmado) {
+
+        return;
+    }
+
+
+    try {
+
+        mostrarMensaje(
+            "🗑️ Deleting product...",
+            "loading"
+        );
+
+
+        await apiFetch(
+            `/api/productos/${encodeURIComponent(id)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+        productos =
+            productos.filter(
+                p =>
+                    String(p.id) !==
+                    String(id)
+            );
+
+
+        renderProductos(
+            searchInput.value
+        );
+
+
+        mostrarMensaje(
+            "✅ Product deleted"
         );
 
     }
+
+    catch (error) {
+
+        console.error(
+            "❌ Delete error:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "❌ " + error.message,
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   ADD PRODUCT
+========================================================== */
+
+formProducto.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        if (operacionEnCurso) {
+
+            return;
+        }
+
+
+        const titulo =
+            document
+                .getElementById(
+                    "titulo"
+                )
+                .value
+                .trim();
+
+
+        const description =
+            document
+                .getElementById(
+                    "description"
+                )
+                .value
+                .trim();
+
+
+        const mainCat =
+            document
+                .getElementById(
+                    "mainCat"
+                )
+                .value
+                .trim();
+
+
+        const subCat =
+            document
+                .getElementById(
+                    "subCat"
+                )
+                .value
+                .trim();
+
+
+        const priceValue =
+            document
+                .getElementById(
+                    "price"
+                )
+                .value;
+
+
+        const stockValue =
+            document
+                .getElementById(
+                    "stock"
+                )
+                .value;
+
+
+        /*
+            VALIDACIÓN
+        */
+
+        if (!titulo) {
+
+            alert(
+                "❌ Escribe el título."
+            );
+
+            return;
+        }
+
+
+        if (!description) {
+
+            alert(
+                "❌ Escribe la descripción."
+            );
+
+            return;
+        }
+
+
+        if (!mainCat) {
+
+            alert(
+                "❌ Escribe la categoría principal."
+            );
+
+            return;
+        }
+
+
+        if (!subCat) {
+
+            alert(
+                "❌ Escribe la subcategoría."
+            );
+
+            return;
+        }
+
+
+        if (
+            priceValue === ""
+        ) {
+
+            alert(
+                "❌ Escribe el precio."
+            );
+
+            return;
+        }
+
+
+        if (
+            stockValue === ""
+        ) {
+
+            alert(
+                "❌ Escribe el stock."
+            );
+
+            return;
+        }
+
+
+        const price =
+            Number(
+                priceValue
+            );
+
+
+        const stock =
+            Number(
+                stockValue
+            );
+
+
+        if (
+            !Number.isFinite(price) ||
+            price < 0
+        ) {
+
+            alert(
+                "❌ Precio inválido."
+            );
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(stock) ||
+            stock < 0
+        ) {
+
+            alert(
+                "❌ Stock inválido."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            operacionEnCurso =
+                true;
+
+
+            agregarBtn.disabled =
+                true;
+
+
+            /*
+                ============================================
+                1. UPLOAD IMAGES
+                ============================================
+            */
+
+            let imagenes =
+                [];
+
+
+            if (
+                imagenesFileInput.files.length > 0
+            ) {
+
+                agregarBtn.textContent =
+                    "☁️ Uploading images...";
+
+
+                imagenes =
+                    await subirImagenes(
+                        imagenesFileInput.files
+                    );
+
+
+                console.log(
+                    "☁️ Uploaded URLs:",
+                    imagenes
+                );
+            }
+
+
+            /*
+                ============================================
+                2. CREATE PRODUCT
+                ============================================
+            */
+
+            const nuevoProducto = {
+
+                titulo,
+
+                description,
+
+                imagenes:
+                    normalizarListaImagenes(
+                        imagenes
+                    ),
+
+                categoria: {
+
+                    main:
+                        mainCat,
+
+                    sub:
+                        subCat
+                },
+
+                price,
+
+                stock
+            };
+
+
+            console.log(
+                "📦 POST product:",
+                nuevoProducto
+            );
+
+
+            agregarBtn.textContent =
+                "💾 Saving product...";
+
+
+            const response =
+                await apiFetch(
+                    "/api/productos",
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                nuevoProducto
+                            )
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "✅ POST response:",
+                data
+            );
+
+
+            /*
+                ============================================
+                3. OBTENER PRODUCTO CREADO
+                ============================================
+            */
+
+            let creado =
+                data;
+
+
+            if (
+                data &&
+                data.producto &&
+                typeof data.producto === "object"
+            ) {
+
+                creado =
+                    data.producto;
+
+            } else if (
+                data &&
+                data.data &&
+                !Array.isArray(data.data) &&
+                typeof data.data === "object"
+            ) {
+
+                creado =
+                    data.data;
+            }
+
+
+            const productoCreado =
+                normalizarProducto(
+                    {
+                        ...nuevoProducto,
+
+                        ...creado,
+
+                        imagenes:
+                            creado?.imagenes ??
+                            creado?.images ??
+                            nuevoProducto.imagenes
+                    },
+                    0
+                );
+
+
+            /*
+                ============================================
+                4. AGREGAR LOCALMENTE
+                ============================================
+            */
+
+            /*
+                Evitar duplicado si el backend
+                devolvió el mismo producto.
+            */
+
+            productos =
+                productos.filter(
+                    p =>
+                        String(p.id) !==
+                        String(
+                            productoCreado.id
+                        )
+                );
+
+
+            productos.unshift(
+                productoCreado
+            );
+
+
+            /*
+                ============================================
+                5. RENDER
+                ============================================
+            */
+
+            renderProductos(
+                searchInput.value
+            );
+
+
+            /*
+                ============================================
+                6. RESET
+                ============================================
+            */
+
+            formProducto.reset();
+
+            addPreview.innerHTML =
+                "";
+
+
+            /*
+                ============================================
+                7. MESSAGE
+                ============================================
+            */
+
+            mostrarMensaje(
+                "✅ Product added successfully"
+            );
+
+
+            console.log(
+                "🎉 Product created:",
+                productoCreado
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "❌ Add product error:",
+                error
+            );
+
+
+            mostrarMensaje(
+                "❌ " + error.message,
+                "error"
+            );
+
+
+            alert(
+                "❌ Error agregando producto:\n\n" +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            operacionEnCurso =
+                false;
+
+
+            agregarBtn.disabled =
+                false;
+
+
+            agregarBtn.textContent =
+                "➕ Agregar producto";
+        }
+    }
 );
 
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================== */
+
+imagenesFileInput.addEventListener(
+    "change",
+    () => {
+
+        addPreview.innerHTML =
+            "";
+
+
+        const files =
+            Array.from(
+                imagenesFileInput.files || []
+            );
+
+
+        if (!files.length) {
+
+            return;
+        }
+
+
+        files.forEach(
+            (
+                file,
+                index
+            ) => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "preview-item";
+
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                img.alt =
+                    file.name;
+
+
+                img.loading =
+                    "lazy";
+
+
+                img.src =
+                    URL.createObjectURL(
+                        file
+                    );
+
+
+                img.onload =
+                    () => {
+
+                        URL.revokeObjectURL(
+                            img.src
+                        );
+                    };
+
+
+                const number =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                number.className =
+                    "preview-number";
+
+
+                number.textContent =
+                    String(index + 1);
+
+
+                item.appendChild(
+                    img
+                );
+
+
+                item.appendChild(
+                    number
+                );
+
+
+                addPreview.appendChild(
+                    item
+                );
+            }
+        );
+    }
+);
+
+
+/* =========================================================
+   LOGIN
+========================================================== */
+
+async function iniciarSesion() {
+
+    const password =
+        passwordInput.value;
+
+
+    if (!password) {
+
+        alert(
+            "❌ Enter the password."
+        );
+
+        passwordInput.focus();
+
+        return;
+    }
+
+
+    if (
+        password !==
+        ADMIN_PASSWORD
+    ) {
+
+        alert(
+            "❌ Incorrect password."
+        );
+
+        passwordInput.select();
+
+        return;
+    }
+
+
+    /*
+        Basic Authentication.
+
+        El backend debe aceptar:
+
+            admin
+            042525
+    */
+
+    AUTH_TOKEN =
+        "Basic " +
+        btoa(
+            `admin:${password}`
+        );
+
+
+    loginScreen.style.display =
+        "none";
+
+
+    adminPanel.style.display =
+        "block";
+
+
+    await iniciarSocket();
+
+    await cargarProductos();
+}
+
+
+loginBtn.addEventListener(
+    "click",
+    iniciarSesion
+);
+
+
+/* =========================================================
+   ENTER LOGIN
+========================================================== */
+
+passwordInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+            iniciarSesion();
+        }
+    }
+);
+
+
+/* =========================================================
+   LOGOUT
+========================================================== */
+
+logoutBtn.addEventListener(
+    "click",
+    () => {
+
+        AUTH_TOKEN =
+            "";
+
+
+        productos =
+            [];
+
+
+        if (socket) {
+
+            socket.disconnect();
+
+            socket =
+                null;
+        }
+
+
+        listaProductos.innerHTML =
+            "";
+
+
+        adminPanel.style.display =
+            "none";
+
+
+        loginScreen.style.display =
+            "flex";
+
+
+        passwordInput.value =
+            "";
+
+
+        passwordInput.focus();
+    }
+);
+
+
+/* =========================================================
+   RELOAD
+========================================================== */
+
+reloadBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!AUTH_TOKEN) {
+
+            return;
+        }
+
+
+        reloadBtn.disabled =
+            true;
+
+
+        reloadBtn.textContent =
+            "⏳ Loading...";
+
+
+        try {
+
+            await cargarProductos();
+
+        }
+
+        finally {
+
+            reloadBtn.disabled =
+                false;
+
+            reloadBtn.textContent =
+                "🔄 Reload";
+        }
+    }
+);
+
+
+/* =========================================================
+   SHOP
+========================================================== */
+
+goShopBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "shop.html";
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================== */
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+        renderProductos(
+            searchInput.value
+        );
+    }
+);
+
+
+/* =========================================================
+   CLEAR SEARCH
+========================================================== */
+
+clearSearchBtn.addEventListener(
+    "click",
+    () => {
+
+        searchInput.value =
+            "";
+
+        renderProductos();
+    }
+);
+
+
+/* =========================================================
+   SOCKET.IO
+========================================================== */
+
+async function iniciarSocket() {
+
+    if (socket) {
+
+        return;
+    }
+
+
+    if (
+        typeof io !==
+        "function"
+    ) {
+
+        console.warn(
+            "⚠️ Socket.IO not loaded."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        socket =
+            io(
+                BASE_URL ||
+                window.location.origin,
+                {
+                    transports: [
+                        "websocket",
+                        "polling"
+                    ],
+
+                    reconnection: true,
+
+                    reconnectionAttempts: 10,
+
+                    timeout: 10000
+                }
+            );
+
+
+        socket.on(
+            "connect",
+            () => {
+
+                console.log(
+                    "🟢 Socket.IO connected:",
+                    socket.id
+                );
+            }
+        );
+
+
+        socket.on(
+            "disconnect",
+            reason => {
+
+                console.log(
+                    "🔴 Socket.IO disconnected:",
+                    reason
+                );
+            }
+        );
+
+
+        socket.on(
+            "connect_error",
+            error => {
+
+                console.warn(
+                    "⚠️ Socket.IO error:",
+                    error.message
+                );
+            }
+        );
+
+
+        /*
+            IMPORTANTE:
+
+            El servidor debe emitir
+            productos-actualizados.
+
+            Puede devolver:
+
+                []
+
+            o:
+
+                {
+                    productos: []
+                }
+        */
+
+        socket.on(
+            "productos-actualizados",
+            data => {
+
+                const lista =
+                    extraerProductos(
+                        data
+                    );
+
+
+                if (
+                    !lista.length
+                ) {
+
+                    return;
+                }
+
+
+                console.log(
+                    "🔄 Products received through Socket.IO"
+                );
+
+
+                productos =
+                    lista.map(
+                        (
+                            p,
+                            index
+                        ) =>
+                            normalizarProducto(
+                                p,
+                                index
+                            )
+                    );
+
+
+                renderProductos(
+                    searchInput.value
+                );
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "⚠️ Socket initialization failed:",
+            error
+        );
+
+
+        socket =
+            null;
+    }
+}
+
+
+/* =========================================================
+   DEBUG API
+========================================================== */
+
+async function verificarServidor() {
+
+    try {
+
+        const response =
+            await fetch(
+                apiUrl(
+                    "/api/productos"
+                ),
+                {
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
+
+
+        if (
+            response.ok
+        ) {
+
+            return true;
+        }
+
+
+        return false;
+
+    }
+
+    catch {
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   GLOBAL ERROR
+========================================================== */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "❌ Global JS error:",
+            event.error ||
+            event.message
+        );
+    }
+);
+
+
+/* =========================================================
+   UNHANDLED PROMISE
+========================================================== */
+
+window.addEventListener(
+    "unhandledrejection",
+    event => {
+
+        console.error(
+            "❌ Unhandled Promise:",
+            event.reason
+        );
+    }
+);
+
+
+/* =========================================================
+   DEBUG INFORMATION
+========================================================== */
+
+console.log(
+    "========================================"
+);
+
+console.log(
+    "LaTRONIC ADMIN"
+);
+
+console.log(
+    "========================================"
+);
+
+console.log(
+    "BASE_URL:",
+    BASE_URL ||
+    "(same origin)"
+);
+
+console.log(
+    "Current origin:",
+    window.location.origin
+);
+
+console.log(
+    "Products API:",
+    apiUrl(
+        "/api/productos"
+    )
+);
+
+console.log(
+    "Upload API:",
+    apiUrl(
+        "/api/subir-imagenes"
+    )
+);
+
+console.log(
+    "HEIC decoder:",
+    typeof heic2any
+);
+
+console.log(
+    "Socket.IO:",
+    typeof io
+);
+
+console.log(
+    "========================================"
+);
+
+
+/* =========================================================
+   NO LOGIN AUTOMÁTICO
+========================================================== */
+
+passwordInput.focus();
+
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
