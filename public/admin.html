@@ -12,6 +12,7 @@
 
     <title>LaTRONIC Admin Panel</title>
 
+
     <!-- =====================================================
          HEIC / HEIF
     ====================================================== -->
@@ -43,11 +44,9 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-
         html {
             background: #111;
         }
-
 
         body {
             background: #1b1b1b;
@@ -55,13 +54,11 @@
             min-height: 100vh;
         }
 
-
         button,
         input,
         textarea {
             font: inherit;
         }
-
 
         button {
             cursor: pointer;
@@ -92,7 +89,6 @@
                 );
         }
 
-
         #login-box {
 
             width: 100%;
@@ -114,14 +110,12 @@
             text-align: center;
         }
 
-
         #login-box h1 {
 
             margin-bottom: 8px;
 
             font-size: 28px;
         }
-
 
         #login-box h6 {
 
@@ -131,7 +125,6 @@
 
             font-size: 12px;
         }
-
 
         #login-box input {
 
@@ -152,7 +145,6 @@
             margin-bottom: 10px;
         }
 
-
         #login-box input:focus {
 
             border-color: #e28f2f;
@@ -161,7 +153,6 @@
                 0 0 10px
                 rgba(226,143,47,.25);
         }
-
 
         #login-box button {
 
@@ -182,12 +173,24 @@
             color: #000;
         }
 
-
         #login-box button:hover {
 
             background: #d65011;
 
             color: white;
+        }
+
+
+        #login-box .btn-gray {
+
+            background: #444;
+
+            color: white;
+        }
+
+        #login-box .btn-gray:hover {
+
+            background: #555;
         }
 
 
@@ -209,6 +212,10 @@
         }
 
 
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
         .admin-header {
 
             display: flex;
@@ -224,12 +231,10 @@
             margin-bottom: 20px;
         }
 
-
         .admin-header h1 {
 
             font-size: 28px;
         }
-
 
         .header-buttons {
 
@@ -260,12 +265,10 @@
             transition: .15s;
         }
 
-
         .btn:hover {
 
             transform: translateY(-1px);
         }
-
 
         .btn-orange {
 
@@ -274,14 +277,12 @@
             color: #000;
         }
 
-
         .btn-orange:hover {
 
             background: #d65011;
 
             color: white;
         }
-
 
         .btn-red {
 
@@ -290,12 +291,10 @@
             color: white;
         }
 
-
         .btn-red:hover {
 
             background: #e33b3b;
         }
-
 
         .btn-gray {
 
@@ -304,12 +303,10 @@
             color: white;
         }
 
-
         .btn-gray:hover {
 
             background: #555;
         }
-
 
         .btn-green {
 
@@ -318,12 +315,10 @@
             color: white;
         }
 
-
         .btn-green:hover {
 
             background: #36b961;
         }
-
 
         .btn:disabled {
 
@@ -336,7 +331,7 @@
 
 
         /* =====================================================
-           STATUS
+           SERVER STATUS
         ====================================================== */
 
         #server-status {
@@ -354,7 +349,6 @@
             font-size: 14px;
         }
 
-
         .status-loading {
 
             color: #e28f2f;
@@ -362,14 +356,12 @@
             font-weight: bold;
         }
 
-
         .status-ok {
 
             color: #39d56a;
 
             font-weight: bold;
         }
-
 
         .status-error {
 
@@ -392,7 +384,6 @@
             margin-bottom: 18px;
         }
 
-
         #search-input {
 
             flex: 1;
@@ -411,7 +402,6 @@
 
             outline: none;
         }
-
 
         #search-input:focus {
 
@@ -440,12 +430,10 @@
             margin-bottom: 25px;
         }
 
-
         #form-producto h2 {
 
             margin-bottom: 15px;
         }
-
 
         .upload-info {
 
@@ -466,6 +454,10 @@
             line-height: 1.5;
         }
 
+        .upload-info code {
+
+            color: #e28f2f;
+        }
 
         .form-grid {
 
@@ -477,12 +469,10 @@
             gap: 10px;
         }
 
-
         .form-full {
 
             grid-column: 1 / -1;
         }
-
 
         #form-producto input,
         #form-producto textarea {
@@ -502,7 +492,6 @@
             outline: none;
         }
 
-
         #form-producto textarea {
 
             min-height: 110px;
@@ -510,19 +499,21 @@
             resize: vertical;
         }
 
-
         #form-producto input:focus,
         #form-producto textarea:focus {
 
             border-color: #e28f2f;
         }
 
-
         #imagenes-file {
 
             cursor: pointer;
         }
 
+
+        /* =====================================================
+           ADD PREVIEW
+        ====================================================== */
 
         #add-preview {
 
@@ -534,7 +525,6 @@
 
             margin: 10px 0;
         }
-
 
         .preview-item {
 
@@ -553,7 +543,6 @@
             position: relative;
         }
 
-
         .preview-item img {
 
             width: 100%;
@@ -562,7 +551,6 @@
 
             object-fit: cover;
         }
-
 
         .preview-number {
 
@@ -582,7 +570,6 @@
 
             border-radius: 3px;
         }
-
 
         #agregar-btn {
 
@@ -605,14 +592,12 @@
             margin-top: 5px;
         }
 
-
         #agregar-btn:hover {
 
             background: #d65011;
 
             color: white;
         }
-
 
         #agregar-btn:disabled {
 
@@ -641,12 +626,10 @@
             flex-wrap: wrap;
         }
 
-
         .products-header h2 {
 
             font-size: 21px;
         }
-
 
         #product-count {
 
@@ -654,7 +637,6 @@
 
             font-size: 13px;
         }
-
 
         .productos {
 
@@ -669,7 +651,6 @@
             gap: 15px;
         }
 
-
         .producto {
 
             background: #252525;
@@ -683,12 +664,10 @@
             overflow: hidden;
         }
 
-
         .producto:hover {
 
             border-color: #555;
         }
-
 
         .producto-id {
 
@@ -721,7 +700,6 @@
             margin-bottom: 10px;
         }
 
-
         .image-wrapper {
 
             position: relative;
@@ -739,7 +717,6 @@
             border: 1px solid #444;
         }
 
-
         .image-wrapper img {
 
             width: 100%;
@@ -751,12 +728,10 @@
             display: block;
         }
 
-
         .image-wrapper img.loading {
 
             opacity: .25;
         }
-
 
         .image-error {
 
@@ -779,8 +754,9 @@
             background: #211515;
 
             font-size: 10px;
-        }
 
+            z-index: 2;
+        }
 
         .image-number {
 
@@ -803,7 +779,6 @@
             z-index: 3;
         }
 
-
         .image-debug {
 
             margin-top: 5px;
@@ -825,18 +800,15 @@
             line-height: 1.35;
         }
 
-
         .image-debug.ok {
 
             color: #53d97b;
         }
 
-
         .image-debug.error {
 
             color: #ff5555;
         }
-
 
         .image-count {
 
@@ -872,13 +844,11 @@
             outline: none;
         }
 
-
         .producto input:focus,
         .producto textarea:focus {
 
             border-color: #e28f2f;
         }
-
 
         .producto textarea {
 
@@ -887,6 +857,10 @@
             resize: vertical;
         }
 
+
+        /* =====================================================
+           PRODUCT ACTIONS
+        ====================================================== */
 
         .product-actions {
 
@@ -898,7 +872,6 @@
 
             margin-top: 5px;
         }
-
 
         .product-actions button {
 
@@ -917,14 +890,12 @@
             cursor: pointer;
         }
 
-
         .save-btn {
 
             background: #e28f2f;
 
             color: #000;
         }
-
 
         .save-btn:hover {
 
@@ -933,14 +904,12 @@
             color: white;
         }
 
-
         .delete-btn {
 
             background: #a92b2b;
 
             color: white;
         }
-
 
         .delete-btn:hover {
 
@@ -967,7 +936,6 @@
 
             color: #e28f2f;
         }
-
 
         .empty-box {
 
@@ -1020,18 +988,15 @@
                 padding: 10px;
             }
 
-
             .form-grid {
 
                 grid-template-columns: 1fr;
             }
 
-
             .form-full {
 
                 grid-column: auto;
             }
-
 
             .productos {
 
@@ -1043,7 +1008,6 @@
             }
         }
 
-
         @media (max-width: 500px) {
 
             .admin-header {
@@ -1051,24 +1015,20 @@
                 align-items: stretch;
             }
 
-
             .header-buttons {
 
                 width: 100%;
             }
-
 
             .header-buttons .btn {
 
                 flex: 1;
             }
 
-
             .search-row {
 
                 flex-direction: column;
             }
-
 
             .productos {
 
@@ -1115,7 +1075,7 @@
         <button
             type="button"
             class="btn-gray"
-            onclick="window.location.href='shop.html'"
+            id="exit-login-btn"
         >
             Exit
         </button>
@@ -1142,7 +1102,6 @@
             LaTRONIC Admin Panel
         </h1>
 
-
         <div class="header-buttons">
 
             <button
@@ -1153,6 +1112,13 @@
                 🔄 Reload
             </button>
 
+            <button
+                class="btn btn-orange"
+                id="btnMigrarImagenes"
+                type="button"
+            >
+                ☁️ ACTUALIZAR IMÁGENES
+            </button>
 
             <button
                 class="btn btn-orange"
@@ -1161,7 +1127,6 @@
             >
                 🛍️ Shop
             </button>
-
 
             <button
                 class="btn btn-red"
@@ -1231,7 +1196,6 @@
             ➕ Add New Product
         </h2>
 
-
         <div class="upload-info">
 
             <strong>📸 Image system</strong>
@@ -1260,7 +1224,6 @@
 
 
         <div class="form-grid">
-
 
             <div class="form-full">
 
@@ -1420,42 +1383,9 @@
    CONFIGURATION
 ========================================================== */
 
-/*
-    IMPORTANTE:
-
-    El admin está diseñado para estar servido por
-    el mismo Express que maneja /api/productos.
-
-    Por eso BASE_URL = "".
-
-    Si admin.html está en:
-
-        https://latronicstore.com/admin.html
-
-    entonces:
-
-        /api/productos
-
-    se convierte en:
-
-        https://latronicstore.com/api/productos
-*/
-
 const BASE_URL = "";
 
-
-/*
-    NO pongas localhost aquí.
-
-    Las imágenes deben venir del backend o de Cloudinary.
-*/
-
 const IMAGE_SERVER_URL = "";
-
-
-/*
-    Tu contraseña actual.
-*/
 
 const ADMIN_PASSWORD = "042525";
 
@@ -1479,6 +1409,11 @@ const passwordInput =
         "admin-password"
     );
 
+const exitLoginBtn =
+    document.getElementById(
+        "exit-login-btn"
+    );
+
 const adminPanel =
     document.getElementById(
         "admin-panel"
@@ -1497,6 +1432,11 @@ const reloadBtn =
 const goShopBtn =
     document.getElementById(
         "go-shop-btn"
+    );
+
+const btnMigrarImagenes =
+    document.getElementById(
+        "btnMigrarImagenes"
     );
 
 const statusText =
@@ -1563,6 +1503,8 @@ let socket = null;
 let cargandoProductos = false;
 
 let operacionEnCurso = false;
+
+let socketActualizando = false;
 
 
 /* =========================================================
@@ -1638,7 +1580,7 @@ function mostrarMensaje(
 
 
 /* =========================================================
-   STATUS
+   SERVER STATUS
 ========================================================== */
 
 function actualizarEstadoServidor(
@@ -1723,10 +1665,6 @@ function prepararCloudinary(url) {
     }
 
 
-    /*
-        Ya tiene f_auto / q_auto.
-    */
-
     if (
         /\/image\/upload\/[^/]*(f_auto|q_auto)/i.test(
             value
@@ -1736,10 +1674,6 @@ function prepararCloudinary(url) {
         return value;
     }
 
-
-    /*
-        Insertar optimización.
-    */
 
     if (
         value.includes(
@@ -1782,10 +1716,6 @@ function normalizarImagenUrl(
     }
 
 
-    /*
-        Cloudinary
-    */
-
     if (esCloudinary(value)) {
 
         return prepararCloudinary(
@@ -1793,10 +1723,6 @@ function normalizarImagenUrl(
         );
     }
 
-
-    /*
-        Data / Blob
-    */
 
     if (
         /^data:/i.test(value) ||
@@ -1807,20 +1733,12 @@ function normalizarImagenUrl(
     }
 
 
-    /*
-        Windows paths
-    */
-
     value =
         value.replace(
             /\\/g,
             "/"
         );
 
-
-    /*
-        Eliminar file://
-    */
 
     value =
         value.replace(
@@ -1830,14 +1748,11 @@ function normalizarImagenUrl(
 
 
     /*
-        Detectar localhost.
+        IMPORTANTE:
 
-        NUNCA dejamos:
-
-        http://localhost:3001/...
-
-        porque el navegador del cliente
-        intentaría acceder a SU localhost.
+        Si alguna URL vieja contiene localhost,
+        eliminamos el host para que el navegador
+        use el mismo dominio actual.
     */
 
     try {
@@ -1867,17 +1782,11 @@ function normalizarImagenUrl(
                 parsed.hash;
         }
 
-    } catch (error) {
+    } catch {
 
-        /*
-            Ruta relativa.
-        */
+        // Ruta relativa.
     }
 
-
-    /*
-        Eliminar ./ inicial
-    */
 
     value =
         value.replace(
@@ -1886,10 +1795,6 @@ function normalizarImagenUrl(
         );
 
 
-    /*
-        URLs HTTP/HTTPS.
-    */
-
     if (
         /^https?:\/\//i.test(value)
     ) {
@@ -1897,10 +1802,6 @@ function normalizarImagenUrl(
         return value;
     }
 
-
-    /*
-        Ruta absoluta.
-    */
 
     if (
         value.startsWith("/")
@@ -1922,10 +1823,6 @@ function normalizarImagenUrl(
         return value;
     }
 
-
-    /*
-        Ruta relativa.
-    */
 
     if (IMAGE_SERVER_URL) {
 
@@ -1999,7 +1896,7 @@ function extraerUrlImagen(
 
 
 /* =========================================================
-   NORMALIZAR LISTA
+   NORMALIZAR LISTA DE IMÁGENES
 ========================================================== */
 
 function normalizarListaImagenes(
@@ -2045,11 +1942,6 @@ function normalizarListaImagenes(
         }
 
 
-        /*
-            Para comparar duplicados
-            ignoramos query/hash.
-        */
-
         const clave =
             url
                 .split("?")[0]
@@ -2076,7 +1968,7 @@ function normalizarListaImagenes(
 
 
 /* =========================================================
-   EXTRAER ARRAY DE IMÁGENES DEL PRODUCTO
+   OBTENER IMÁGENES DEL PRODUCTO
 ========================================================== */
 
 function obtenerImagenesProducto(
@@ -2120,11 +2012,6 @@ function obtenerImagenesProducto(
         }
     }
 
-
-    /*
-        Algunos productos pueden tener
-        una sola imagen.
-    */
 
     const una =
         p.imagen ||
@@ -2245,7 +2132,7 @@ function normalizarProducto(
 
 
 /* =========================================================
-   OBTENER RESPUESTA JSON CON ERROR
+   ERROR RESPONSE
 ========================================================== */
 
 async function obtenerErrorRespuesta(
@@ -2293,7 +2180,7 @@ async function obtenerErrorRespuesta(
 
     } catch {
 
-        // mantener mensaje HTTP
+        // mantener error HTTP
     }
 
 
@@ -2302,7 +2189,7 @@ async function obtenerErrorRespuesta(
 
 
 /* =========================================================
-   FETCH API
+   API FETCH
 ========================================================== */
 
 async function apiFetch(
@@ -2360,7 +2247,7 @@ async function apiFetch(
 
 
 /* =========================================================
-   EXTRAER ARRAY DE PRODUCTOS
+   EXTRAER PRODUCTOS
 ========================================================== */
 
 function extraerProductos(
@@ -2414,6 +2301,12 @@ function extraerProductos(
 async function cargarProductos() {
 
     if (cargandoProductos) {
+
+        return;
+    }
+
+
+    if (!AUTH_TOKEN) {
 
         return;
     }
@@ -2480,12 +2373,6 @@ async function cargarProductos() {
             );
 
 
-        console.log(
-            "✅ Productos cargados:",
-            productos.length
-        );
-
-
         let totalImagenes = 0;
 
         let cloudinaryImagenes = 0;
@@ -2514,6 +2401,12 @@ async function cargarProductos() {
 
         renderProductos(
             searchInput.value
+        );
+
+
+        console.log(
+            "✅ Productos cargados:",
+            productos.length
         );
 
     }
@@ -2736,10 +2629,8 @@ function crearImagenProducto(
                 "image-error";
 
 
-            error.innerHTML =
-                `
-                ❌ Image unavailable
-                `;
+            error.textContent =
+                "❌ Image unavailable";
 
 
             wrapper.insertBefore(
@@ -2777,7 +2668,7 @@ function crearImagenProducto(
 
 
 /* =========================================================
-   RENDER PRODUCTOS
+   RENDER PRODUCTS
 ========================================================== */
 
 function renderProductos(
@@ -2862,7 +2753,7 @@ function renderProductos(
 
 
 /* =========================================================
-   CREAR TARJETA PRODUCTO
+   CREAR TARJETA
 ========================================================== */
 
 function crearTarjetaProducto(
@@ -2982,7 +2873,7 @@ function crearTarjetaProducto(
 
 
     /*
-        TÍTULO
+        TITLE
     */
 
     const tituloInput =
@@ -3242,8 +3133,17 @@ function crearTarjetaProducto(
         "click",
         async () => {
 
+            if (
+                saveBtn.disabled
+            ) {
+
+                return;
+            }
+
+
             saveBtn.disabled =
                 true;
+
 
             saveBtn.textContent =
                 "⏳ Saving...";
@@ -3261,7 +3161,14 @@ function crearTarjetaProducto(
             catch (error) {
 
                 console.error(
+                    "Save error:",
                     error
+                );
+
+                mostrarMensaje(
+                    "❌ " +
+                    error.message,
+                    "error"
                 );
 
             }
@@ -3270,6 +3177,7 @@ function crearTarjetaProducto(
 
                 saveBtn.disabled =
                     false;
+
 
                 saveBtn.textContent =
                     "💾 Save";
@@ -3392,10 +3300,6 @@ async function subirImagenes(
     );
 
 
-    /*
-        Aceptar múltiples formatos.
-    */
-
     let lista = [];
 
 
@@ -3464,19 +3368,15 @@ async function subirImagenes(
     }
 
 
-    const cloudinary =
-        urls.filter(
-            esCloudinary
-        ).length;
-
-
     console.log(
         `✅ Uploaded: ${urls.length}`
     );
 
 
     console.log(
-        `☁️ Cloudinary: ${cloudinary}/${urls.length}`
+        `☁️ Cloudinary: ${
+            urls.filter(esCloudinary).length
+        }/${urls.length}`
     );
 
 
@@ -3500,10 +3400,6 @@ async function actualizarProducto(
         );
     }
 
-
-    /*
-        Obtener campos.
-    */
 
     const titulo =
         tarjeta
@@ -3563,10 +3459,6 @@ async function actualizarProducto(
                 '[data-field="images"]'
             );
 
-
-    /*
-        VALIDACIÓN
-    */
 
     if (!titulo) {
 
@@ -3631,7 +3523,7 @@ async function actualizarProducto(
 
 
     /*
-        IMÁGENES NUEVAS
+        NUEVAS IMÁGENES
     */
 
     let nuevasImagenes = [];
@@ -3657,8 +3549,7 @@ async function actualizarProducto(
 
 
     /*
-        CONSERVAR IMÁGENES EXISTENTES
-        + NUEVAS
+        CONSERVAR EXISTENTES
     */
 
     const imagenesFinales =
@@ -3737,13 +3628,6 @@ async function actualizarProducto(
     );
 
 
-    /*
-        El backend puede devolver:
-          producto
-          data
-          o directamente el producto.
-    */
-
     let productoRespuesta =
         data;
 
@@ -3768,11 +3652,6 @@ async function actualizarProducto(
             data.data;
     }
 
-
-    /*
-        Combinar respuesta con valores
-        que acabamos de enviar.
-    */
 
     const actualizado =
         normalizarProducto(
@@ -3997,10 +3876,6 @@ formProducto.addEventListener(
                 .value;
 
 
-        /*
-            VALIDACIÓN
-        */
-
         if (!titulo) {
 
             alert(
@@ -4113,12 +3988,6 @@ formProducto.addEventListener(
                 true;
 
 
-            /*
-                ============================================
-                1. UPLOAD IMAGES
-                ============================================
-            */
-
             let imagenes =
                 [];
 
@@ -4135,20 +4004,8 @@ formProducto.addEventListener(
                     await subirImagenes(
                         imagenesFileInput.files
                     );
-
-
-                console.log(
-                    "☁️ Uploaded URLs:",
-                    imagenes
-                );
             }
 
-
-            /*
-                ============================================
-                2. CREATE PRODUCT
-                ============================================
-            */
 
             const nuevoProducto = {
 
@@ -4216,12 +4073,6 @@ formProducto.addEventListener(
             );
 
 
-            /*
-                ============================================
-                3. OBTENER PRODUCTO CREADO
-                ============================================
-            */
-
             let creado =
                 data;
 
@@ -4263,17 +4114,6 @@ formProducto.addEventListener(
                 );
 
 
-            /*
-                ============================================
-                4. AGREGAR LOCALMENTE
-                ============================================
-            */
-
-            /*
-                Evitar duplicado si el backend
-                devolvió el mismo producto.
-            */
-
             productos =
                 productos.filter(
                     p =>
@@ -4289,22 +4129,10 @@ formProducto.addEventListener(
             );
 
 
-            /*
-                ============================================
-                5. RENDER
-                ============================================
-            */
-
             renderProductos(
                 searchInput.value
             );
 
-
-            /*
-                ============================================
-                6. RESET
-                ============================================
-            */
 
             formProducto.reset();
 
@@ -4312,21 +4140,10 @@ formProducto.addEventListener(
                 "";
 
 
-            /*
-                ============================================
-                7. MESSAGE
-                ============================================
-            */
-
             mostrarMensaje(
                 "✅ Product added successfully"
             );
 
-
-            console.log(
-                "🎉 Product created:",
-                productoCreado
-            );
 
         }
 
@@ -4418,21 +4235,21 @@ imagenesFileInput.addEventListener(
                     file.name;
 
 
-                img.loading =
-                    "lazy";
-
-
-                img.src =
+                const objectUrl =
                     URL.createObjectURL(
                         file
                     );
+
+
+                img.src =
+                    objectUrl;
 
 
                 img.onload =
                     () => {
 
                         URL.revokeObjectURL(
-                            img.src
+                            objectUrl
                         );
                     };
 
@@ -4507,15 +4324,6 @@ async function iniciarSesion() {
     }
 
 
-    /*
-        Basic Authentication.
-
-        El backend debe aceptar:
-
-            admin
-            042525
-    */
-
     AUTH_TOKEN =
         "Basic " +
         btoa(
@@ -4529,6 +4337,12 @@ async function iniciarSesion() {
 
     adminPanel.style.display =
         "block";
+
+
+    mostrarMensaje(
+        "🔐 Connecting to server...",
+        "loading"
+    );
 
 
     await iniciarSocket();
@@ -4556,8 +4370,24 @@ passwordInput.addEventListener(
             "Enter"
         ) {
 
+            event.preventDefault();
+
             iniciarSesion();
         }
+    }
+);
+
+
+/* =========================================================
+   EXIT LOGIN
+========================================================== */
+
+exitLoginBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "shop.html";
     }
 );
 
@@ -4579,6 +4409,8 @@ logoutBtn.addEventListener(
 
 
         if (socket) {
+
+            socket.removeAllListeners();
 
             socket.disconnect();
 
@@ -4656,6 +4488,11 @@ goShopBtn.addEventListener(
     "click",
     () => {
 
+        /*
+            ÚNICA función que navega
+            voluntariamente desde Admin.
+        */
+
         window.location.href =
             "shop.html";
     }
@@ -4720,10 +4557,20 @@ async function iniciarSocket() {
 
     try {
 
+        const socketUrl =
+            BASE_URL ||
+            window.location.origin;
+
+
+        console.log(
+            "🔌 Connecting Socket.IO:",
+            socketUrl
+        );
+
+
         socket =
             io(
-                BASE_URL ||
-                window.location.origin,
+                socketUrl,
                 {
                     transports: [
                         "websocket",
@@ -4732,9 +4579,15 @@ async function iniciarSocket() {
 
                     reconnection: true,
 
-                    reconnectionAttempts: 10,
+                    reconnectionAttempts: Infinity,
 
-                    timeout: 10000
+                    reconnectionDelay: 1000,
+
+                    reconnectionDelayMax: 5000,
+
+                    timeout: 10000,
+
+                    autoConnect: true
                 }
             );
 
@@ -4746,6 +4599,11 @@ async function iniciarSocket() {
                 console.log(
                     "🟢 Socket.IO connected:",
                     socket.id
+                );
+
+                actualizarEstadoServidor(
+                    true,
+                    "Connected"
                 );
             }
         );
@@ -4776,60 +4634,172 @@ async function iniciarSocket() {
 
 
         /*
-            IMPORTANTE:
+            =================================================
+            PRODUCTOS ACTUALIZADOS
+            =================================================
 
-            El servidor debe emitir
-            productos-actualizados.
+            MUY IMPORTANTE:
 
-            Puede devolver:
+            Este evento:
 
-                []
+            - NO redirige
+            - NO cambia location.href
+            - NO hace reload
+            - NO cambia window.location
+            - NO manda a Home
 
-            o:
-
-                {
-                    productos: []
-                }
+            Solamente actualiza la información
+            de los productos en Admin.
         */
 
         socket.on(
             "productos-actualizados",
             data => {
 
-                const lista =
-                    extraerProductos(
-                        data
-                    );
+                console.log(
+                    "🔄 Socket.IO → productos-actualizados"
+                );
 
 
                 if (
-                    !lista.length
+                    socketActualizando
                 ) {
+
+                    console.log(
+                        "⏳ Actualización Socket.IO ya en proceso."
+                    );
 
                     return;
                 }
 
 
-                console.log(
-                    "🔄 Products received through Socket.IO"
-                );
+                socketActualizando =
+                    true;
 
 
-                productos =
-                    lista.map(
-                        (
-                            p,
-                            index
-                        ) =>
-                            normalizarProducto(
+                try {
+
+                    const lista =
+                        extraerProductos(
+                            data
+                        );
+
+
+                    if (
+                        !Array.isArray(lista)
+                    ) {
+
+                        console.warn(
+                            "⚠️ Datos inválidos recibidos por Socket.IO."
+                        );
+
+                        return;
+                    }
+
+
+                    /*
+                        Una lista vacía no debe
+                        borrar accidentalmente todos
+                        los productos del Admin.
+                    */
+
+                    if (
+                        lista.length === 0
+                    ) {
+
+                        console.warn(
+                            "⚠️ Socket.IO envió lista vacía. No se modifica la interfaz."
+                        );
+
+                        return;
+                    }
+
+
+                    const nuevosProductos =
+                        lista.map(
+                            (
                                 p,
                                 index
-                            )
+                            ) =>
+                                normalizarProducto(
+                                    p,
+                                    index
+                                )
+                        );
+
+
+                    productos =
+                        nuevosProductos;
+
+
+                    /*
+                        SOLO render.
+
+                        No navegación.
+                        No reload.
+                    */
+
+                    renderProductos(
+                        searchInput.value
                     );
 
 
-                renderProductos(
-                    searchInput.value
+                    console.log(
+                        `✅ Admin actualizado: ${productos.length} productos`
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "❌ Error procesando Socket.IO:",
+                        error
+                    );
+
+                }
+
+                finally {
+
+                    socketActualizando =
+                        false;
+                }
+            }
+        );
+
+
+        /*
+            Algunos servidores pueden usar
+            nombres alternativos.
+        */
+
+        socket.on(
+            "product-updated",
+            data => {
+
+                console.log(
+                    "🔄 Socket.IO → product-updated"
+                );
+
+
+                procesarProductoSocket(
+                    data
+                );
+            }
+        );
+
+
+        socket.on(
+            "producto-actualizado",
+            data => {
+
+                console.log(
+                    "🔄 Socket.IO → producto-actualizado"
+                );
+
+
+                procesarProductoSocket(
+                    data
                 );
             }
         );
@@ -4851,7 +4821,327 @@ async function iniciarSocket() {
 
 
 /* =========================================================
-   DEBUG API
+   PROCESAR PRODUCTO INDIVIDUAL DESDE SOCKET
+========================================================== */
+
+function procesarProductoSocket(
+    data
+) {
+
+    try {
+
+        if (
+            !data ||
+            typeof data !== "object"
+        ) {
+
+            return;
+        }
+
+
+        const candidato =
+            data.producto ||
+            data.product ||
+            data.data ||
+            data;
+
+
+        if (
+            !candidato ||
+            typeof candidato !== "object"
+        ) {
+
+            return;
+        }
+
+
+        const actualizado =
+            normalizarProducto(
+                candidato
+            );
+
+
+        if (
+            actualizado.id === undefined ||
+            actualizado.id === null
+        ) {
+
+            return;
+        }
+
+
+        const existe =
+            productos.some(
+                p =>
+                    String(p.id) ===
+                    String(actualizado.id)
+            );
+
+
+        if (existe) {
+
+            productos =
+                productos.map(
+                    p =>
+                        String(p.id) ===
+                        String(actualizado.id)
+                            ? actualizado
+                            : p
+                );
+
+        } else {
+
+            productos.unshift(
+                actualizado
+            );
+        }
+
+
+        /*
+            Solamente actualizamos
+            la interfaz.
+        */
+
+        renderProductos(
+            searchInput.value
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Error product-updated:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   MIGRAR IMÁGENES
+========================================================== */
+
+btnMigrarImagenes.addEventListener(
+    "click",
+    migrarImagenesServidor
+);
+
+
+async function migrarImagenesServidor() {
+
+    if (!AUTH_TOKEN) {
+
+        alert(
+            "❌ Debes iniciar sesión como administrador."
+        );
+
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+            "¿Quieres actualizar las imágenes?\n\n" +
+            "Se buscarán las imágenes y se sincronizarán " +
+            "con el servidor y Cloudinary.\n\n" +
+            "Esto puede tardar."
+        );
+
+
+    if (!confirmar) {
+
+        return;
+    }
+
+
+    const textoOriginal =
+        btnMigrarImagenes.innerHTML;
+
+
+    try {
+
+        btnMigrarImagenes.disabled =
+            true;
+
+
+        btnMigrarImagenes.innerHTML =
+            "⏳ ACTUALIZANDO...";
+
+
+        mostrarMensaje(
+            "☁️ Actualizando imágenes...",
+            "loading"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "INICIANDO ACTUALIZACIÓN DE IMÁGENES"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        const response =
+            await fetch(
+                apiUrl(
+                    "/api/images/migrate-cloudinary"
+                ),
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Accept":
+                            "application/json",
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            AUTH_TOKEN
+                    },
+
+                    cache: "no-store"
+                }
+            );
+
+
+        let data;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+
+        catch {
+
+            throw new Error(
+                "El servidor no devolvió JSON válido."
+            );
+        }
+
+
+        console.log(
+            "RESULTADO:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                `HTTP ${response.status}`
+            );
+        }
+
+
+        const total =
+            Number(
+                data.total ??
+                data.found ??
+                data.imagesFound ??
+                0
+            );
+
+
+        const uploaded =
+            Number(
+                data.uploaded ??
+                data.success ??
+                data.migrated ??
+                0
+            );
+
+
+        const failed =
+            Number(
+                data.failed ??
+                data.errors ??
+                0
+            );
+
+
+        mostrarMensaje(
+            `✅ Imágenes actualizadas: ${uploaded}`
+        );
+
+
+        alert(
+            "✅ ACTUALIZACIÓN TERMINADA\n\n" +
+
+            "Imágenes encontradas: " +
+            total +
+
+            "\n\n" +
+
+            "Subidas a Cloudinary: " +
+            uploaded +
+
+            "\n\n" +
+
+            "Fallidas: " +
+            failed
+        );
+
+
+        /*
+            Después de la migración,
+            actualizar productos sin salir
+            del Admin.
+        */
+
+        await cargarProductos();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ ERROR ACTUALIZANDO IMÁGENES:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "❌ " + error.message,
+            "error"
+        );
+
+
+        alert(
+            "❌ ERROR ACTUALIZANDO IMÁGENES\n\n" +
+            error.message
+        );
+
+    }
+
+    finally {
+
+        btnMigrarImagenes.disabled =
+            false;
+
+
+        btnMigrarImagenes.innerHTML =
+            textoOriginal;
+    }
+}
+
+
+/* =========================================================
+   VERIFICAR SERVIDOR
 ========================================================== */
 
 async function verificarServidor() {
@@ -4870,15 +5160,7 @@ async function verificarServidor() {
             );
 
 
-        if (
-            response.ok
-        ) {
-
-            return true;
-        }
-
-
-        return false;
+        return response.ok;
 
     }
 
@@ -4923,7 +5205,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   DEBUG INFORMATION
+   DEBUG
 ========================================================== */
 
 console.log(
@@ -4964,6 +5246,13 @@ console.log(
 );
 
 console.log(
+    "Migration API:",
+    apiUrl(
+        "/api/images/migrate-cloudinary"
+    )
+);
+
+console.log(
     "HEIC decoder:",
     typeof heic2any
 );
@@ -4987,4 +5276,5 @@ passwordInput.focus();
 </script>
 
 </body>
+
 </html>
