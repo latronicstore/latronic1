@@ -1129,3008 +1129,1598 @@ No, exit
 
 </div>
 
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 
-    <script>
-    "use strict";
+<script>
+"use strict";
 
-    document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async function () {
 
-        /* =========================================================
-        CONFIG
-        ========================================================= */
+    /* =========================================================
+       CONFIG
+    ========================================================= */
 
-        const API_BASE = window.location.origin;
+    const API_BASE = window.location.origin;
 
-        const IMAGE_SERVER_BASE = window.location.origin;
+    /*
+     * Se mantiene como fallback para imágenes locales.
+     *
+     * IMPORTANTE:
+     * Las URLs Cloudinary que vienen de la DB se usan
+     * directamente y tienen prioridad.
+     */
+    const IMAGE_SERVER_BASE = window.location.origin;
 
-        const CLOUDINARY_HOST = "res.cloudinary.com";
+    const CLOUDINARY_HOST = "res.cloudinary.com";
 
-        const contenedor =
-            document.getElementById("contenedor-productos");
+    const contenedor =
+        document.getElementById("contenedor-productos");
 
-        const cartCount =
-            document.getElementById("cart-count");
+    const cartCount =
+        document.getElementById("cart-count");
 
 
-        /* =========================================================
-        HELPERS
-        ========================================================= */
+    /* =========================================================
+       HELPERS
+    ========================================================= */
 
-        function safeString(value) {
+    function safeString(value) {
 
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return "";
-            }
-
-            return String(value).trim();
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
         }
 
+        return String(value).trim();
+    }
 
-        function cleanUrl(value) {
 
-            const text =
-                safeString(value);
+    function cleanUrl(value) {
 
-            if (!text) {
-                return "";
-            }
+        return safeString(value).trim();
+    }
 
-            return text
-                .trim();
+
+    function isAbsoluteUrl(value) {
+
+        return /^https?:\/\//i.test(
+            safeString(value)
+        );
+    }
+
+
+    function isCloudinaryUrl(value) {
+
+        return safeString(value)
+            .toLowerCase()
+            .includes(CLOUDINARY_HOST);
+    }
+
+
+    function extractFilename(value) {
+
+        let raw =
+            safeString(value);
+
+        if (!raw) {
+            return "";
         }
 
-
-        function isAbsoluteUrl(value) {
-
-            return /^https?:\/\//i.test(
-                safeString(value)
-            );
-        }
-
-
-        function isCloudinaryUrl(value) {
-
-            return safeString(value)
-                .toLowerCase()
-                .includes(CLOUDINARY_HOST);
-        }
-
-
-        function extractFilename(value) {
-
-            let raw =
-                safeString(value);
-
-            if (!raw) {
-                return "";
-            }
-
-
-            if (isAbsoluteUrl(raw)) {
-
-                try {
-
-                    raw =
-                        new URL(raw).pathname;
-
-                } catch (error) {
-
-                    return "";
-                }
-            }
-
+        if (isAbsoluteUrl(raw)) {
 
             try {
 
                 raw =
-                    decodeURIComponent(raw);
+                    new URL(raw).pathname;
+
+            } catch (error) {
+
+                return "";
+            }
+        }
+
+        try {
+
+            raw =
+                decodeURIComponent(raw);
+
+        } catch (error) {}
+
+
+        raw =
+            raw
+                .split("?")[0]
+                .split("#")[0]
+                .replace(/\\/g, "/")
+                .replace(/^\/+/, "");
+
+
+        const parts =
+            raw
+                .split("/")
+                .filter(Boolean);
+
+
+        return parts.length
+            ? parts[parts.length - 1]
+            : "";
+    }
+
+
+    function optimizeCloudinaryUrl(value) {
+
+        const raw =
+            safeString(value);
+
+        if (
+            !raw ||
+            !isCloudinaryUrl(raw)
+        ) {
+            return "";
+        }
+
+        try {
+
+            const url =
+                new URL(raw);
+
+            const parts =
+                url.pathname
+                    .split("/")
+                    .filter(Boolean);
+
+            const uploadIndex =
+                parts.findIndex(
+                    part =>
+                        part.toLowerCase() === "upload"
+                );
+
+            if (
+                uploadIndex === -1
+            ) {
+
+                return raw;
+            }
+
+            const afterUpload =
+                parts.slice(
+                    uploadIndex + 1
+                );
+
+            const firstPart =
+                afterUpload[0] || "";
+
+            /*
+             * Si ya tiene una transformación de Cloudinary,
+             * NO tocamos la URL.
+             */
+            const hasTransformation =
+                firstPart.includes(",") ||
+                /^f_/i.test(firstPart) ||
+                /^q_/i.test(firstPart) ||
+                /^w_/i.test(firstPart) ||
+                /^h_/i.test(firstPart) ||
+                /^c_/i.test(firstPart) ||
+                /^dpr_/i.test(firstPart) ||
+                /^ar_/i.test(firstPart);
+
+            if (hasTransformation) {
+
+                return raw;
+            }
+
+            parts.splice(
+                uploadIndex + 1,
+                0,
+                "f_auto,q_auto"
+            );
+
+            url.pathname =
+                "/" +
+                parts.join("/");
+
+            return url.toString();
+
+        } catch (error) {
+
+            return raw;
+        }
+    }
+
+
+    /* =========================================================
+       IMAGE CANDIDATES
+
+       IMPORTANTE:
+
+       1. Cloudinary real = PRIMERA opción.
+       2. No fabricamos public_id.
+       3. No convertimos un ID en Cloudinary.
+       4. Si falla Cloudinary, probamos fallbacks locales.
+    ========================================================= */
+
+    function getImageCandidates(source) {
+
+        const cleaned =
+            cleanUrl(source);
+
+        if (!cleaned) {
+            return [];
+        }
+
+        const candidates = [];
+
+
+        /* =====================================================
+           CLOUDINARY REAL
+        ===================================================== */
+
+        if (
+            isCloudinaryUrl(cleaned)
+        ) {
+
+            /*
+             * LA URL REAL DE LA DB ES LA PRIMERA.
+             */
+            candidates.push(
+                cleaned
+            );
+
+            /*
+             * Solamente agregamos versión optimizada
+             * si realmente es diferente.
+             */
+            const optimized =
+                optimizeCloudinaryUrl(
+                    cleaned
+                );
+
+            if (
+                optimized &&
+                optimized !== cleaned
+            ) {
+
+                candidates.push(
+                    optimized
+                );
+            }
+
+            return [
+                ...new Set(
+                    candidates.filter(Boolean)
+                )
+            ];
+        }
+
+
+        /* =====================================================
+           URL ABSOLUTA NO CLOUDINARY
+        ===================================================== */
+
+        if (
+            isAbsoluteUrl(cleaned)
+        ) {
+
+            /*
+             * Primero probar exactamente la URL
+             * que viene de la DB.
+             */
+            candidates.push(
+                cleaned
+            );
+
+            const filename =
+                extractFilename(cleaned);
+
+            if (filename) {
+
+                candidates.push(
+                    IMAGE_SERVER_BASE +
+                    "/image/" +
+                    encodeURIComponent(filename)
+                );
+
+                candidates.push(
+                    IMAGE_SERVER_BASE +
+                    "/uploads/" +
+                    encodeURIComponent(filename)
+                );
+
+                candidates.push(
+                    IMAGE_SERVER_BASE +
+                    "/images/" +
+                    encodeURIComponent(filename)
+                );
+            }
+
+            return [
+                ...new Set(
+                    candidates.filter(Boolean)
+                )
+            ];
+        }
+
+
+        /* =====================================================
+           RUTA RELATIVA / NOMBRE
+        ===================================================== */
+
+        const relative =
+            cleaned
+                .replace(/^\/+/, "");
+
+        const filename =
+            extractFilename(relative);
+
+        if (!filename) {
+            return [];
+        }
+
+
+        /*
+         * Si ya es una ruta de la aplicación,
+         * probarla directamente.
+         */
+        if (
+            relative.startsWith("uploads/") ||
+            relative.startsWith("images/") ||
+            relative.startsWith("image/")
+        ) {
+
+            candidates.push(
+                IMAGE_SERVER_BASE +
+                "/" +
+                relative
+            );
+        }
+
+
+        /*
+         * Fallback /image
+         */
+        candidates.push(
+            IMAGE_SERVER_BASE +
+            "/image/" +
+            encodeURIComponent(filename)
+        );
+
+
+        /*
+         * Fallback /uploads
+         */
+        candidates.push(
+            IMAGE_SERVER_BASE +
+            "/uploads/" +
+            encodeURIComponent(filename)
+        );
+
+
+        /*
+         * Fallback /images
+         */
+        candidates.push(
+            IMAGE_SERVER_BASE +
+            "/images/" +
+            encodeURIComponent(filename)
+        );
+
+
+        /*
+         * Ruta relativa original
+         */
+        if (
+            !relative.startsWith("uploads/") &&
+            !relative.startsWith("images/") &&
+            !relative.startsWith("image/")
+        ) {
+
+            candidates.push(
+                "/" +
+                relative
+            );
+        }
+
+
+        return [
+            ...new Set(
+                candidates.filter(Boolean)
+            )
+        ];
+    }
+
+
+    /* =========================================================
+       NORMALIZE IMAGE VALUE
+    ========================================================= */
+
+    function normalizeSingleImageValue(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return [];
+        }
+
+
+        /*
+         * Objeto de imagen
+         */
+        if (
+            typeof value === "object" &&
+            !Array.isArray(value)
+        ) {
+
+            const candidate =
+                value.url ||
+                value.src ||
+                value.path ||
+                value.filename ||
+                value.file ||
+                value.image ||
+                value.imagen ||
+                value.secure_url ||
+                value.secureUrl ||
+                value.public_id ||
+                value.publicId ||
+                "";
+
+            if (candidate) {
+
+                return [
+                    safeString(candidate)
+                ];
+            }
+
+            return [];
+        }
+
+
+        const raw =
+            safeString(value);
+
+        if (!raw) {
+            return [];
+        }
+
+
+        /* =====================================================
+           JSON
+        ===================================================== */
+
+        if (
+            raw.startsWith("[") ||
+            raw.startsWith("{")
+        ) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(raw);
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+
+                    return parsed.flatMap(
+                        item =>
+                            normalizeSingleImageValue(
+                                item
+                            )
+                    );
+                }
+
+                if (
+                    parsed &&
+                    typeof parsed === "object"
+                ) {
+
+                    return normalizeSingleImageValue(
+                        parsed
+                    );
+                }
+
+            } catch (error) {}
+        }
+
+
+        /* =====================================================
+           COMMA SEPARATED
+
+           No dividir URLs.
+        ===================================================== */
+
+        if (
+            raw.includes(",") &&
+            !/^https?:\/\//i.test(raw)
+        ) {
+
+            return raw
+                .split(",")
+                .map(
+                    item =>
+                        item.trim()
+                )
+                .filter(Boolean);
+        }
+
+
+        return [
+            raw
+        ];
+    }
+
+
+    function normalizeImageArray(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return [];
+        }
+
+
+        if (
+            Array.isArray(value)
+        ) {
+
+            const result = [];
+
+            value.forEach(
+                item => {
+
+                    result.push(
+                        ...normalizeSingleImageValue(
+                            item
+                        )
+                    );
+                }
+            );
+
+            return [
+                ...new Set(
+                    result
+                        .map(safeString)
+                        .filter(Boolean)
+                )
+            ];
+        }
+
+
+        if (
+            typeof value === "string"
+        ) {
+
+            return [
+                ...new Set(
+                    normalizeSingleImageValue(
+                        value
+                    )
+                )
+            ];
+        }
+
+
+        if (
+            typeof value === "object"
+        ) {
+
+            return [
+                ...new Set(
+                    normalizeSingleImageValue(
+                        value
+                    )
+                )
+            ];
+        }
+
+
+        return [];
+    }
+
+
+    /* =========================================================
+       PRODUCT IMAGES
+    ========================================================= */
+
+    function getProductImages(product) {
+
+        if (!product) {
+            return [];
+        }
+
+
+        /*
+         * IMPORTANTE:
+         *
+         * Probamos todos los nombres posibles.
+         */
+        const fields = [
+            "imagenes",
+            "images",
+            "image",
+            "imagen",
+            "imageUrls",
+            "image_urls",
+            "fotos",
+            "photos"
+        ];
+
+
+        for (
+            const field of fields
+        ) {
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    product,
+                    field
+                )
+            ) {
+
+                const result =
+                    normalizeImageArray(
+                        product[field]
+                    );
+
+                if (result.length) {
+
+                    return result;
+                }
+            }
+        }
+
+
+        return [];
+    }
+
+
+    /* =========================================================
+       CATEGORY
+    ========================================================= */
+
+    function normalizeCategory(product) {
+
+        let categoria =
+            product?.categoria ??
+            product?.category ??
+            product?.categorias ??
+            {};
+
+
+        if (
+            typeof categoria === "string"
+        ) {
+
+            const value =
+                categoria.trim();
+
+            if (!value) {
+                return {};
+            }
+
+
+            try {
+
+                const parsed =
+                    JSON.parse(value);
+
+                if (
+                    parsed &&
+                    typeof parsed === "object"
+                ) {
+
+                    return parsed;
+                }
 
             } catch (error) {}
 
 
-            raw =
-                raw
-                    .split("?")[0]
-                    .split("#")[0]
-                    .replace(/\\/g, "/")
-                    .replace(/^\/+/, "");
-
-
-            const parts =
-                raw
-                    .split("/")
-                    .filter(Boolean);
-
-
-            return parts.length
-                ? parts[parts.length - 1]
-                : "";
-        }
-
-
-        function hasImageExtension(value) {
-
-            return /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i
-                .test(
-                    safeString(value)
-                );
-        }
-
-
-        function removeImageExtension(value) {
-
-            return safeString(value).replace(
-                /\.(jpe?g|png|webp|gif|avif|bmp|tiff?|heic|heif)$/i,
-                ""
-            );
-        }
-
-
-        /* =========================================================
-        CLOUDINARY REAL URL
-        
-        IMPORTANTE:
-        SOLO usamos Cloudinary si la DB ya entregó
-        una URL real de Cloudinary.
-        
-        NO fabricamos:
-        
-        /latronic/products/1778946821163
-        
-        porque puede no existir.
-        ========================================================= */
-
-        function optimizeCloudinaryUrl(value) {
-
-            const raw =
-                safeString(value);
-
-            if (
-                !raw ||
-                !isCloudinaryUrl(raw)
-            ) {
-                return "";
-            }
-
-
-            try {
-
-                const url =
-                    new URL(raw);
-
-
-                const parts =
-                    url.pathname
-                        .split("/")
-                        .filter(Boolean);
-
-
-                const uploadIndex =
-                    parts.indexOf("upload");
-
-
-                if (
-                    uploadIndex === -1
-                ) {
-                    return raw;
-                }
-
-
-                const afterUpload =
-                    parts.slice(
-                        uploadIndex + 1
-                    );
-
-
-                const firstPart =
-                    afterUpload[0] || "";
-
-
-                const hasTransformation =
-                    firstPart.includes(",") ||
-                    /^f_/i.test(firstPart) ||
-                    /^q_/i.test(firstPart) ||
-                    /^w_/i.test(firstPart) ||
-                    /^h_/i.test(firstPart) ||
-                    /^c_/i.test(firstPart) ||
-                    /^dpr_/i.test(firstPart);
-
-
-                if (!hasTransformation) {
-
-                    parts.splice(
-                        uploadIndex + 1,
-                        0,
-                        "f_auto,q_auto"
-                    );
-
-
-                    url.pathname =
-                        "/" +
-                        parts.join("/");
-                }
-
-
-                return url.toString();
-
-            } catch (error) {
-
-                return raw;
-            }
-        }
-
-
-        /* =========================================================
-        NO FABRICAR CLOUDINARY
-        
-        Esta función queda solamente como compatibilidad
-        para URLs Cloudinary reales.
-        
-        NO se usa para convertir:
-        
-        1778946821163
-        
-        en un public_id inventado.
-        ========================================================= */
-
-        function buildCloudinaryFromFilename() {
-
-            return "";
-        }
-
-
-        /* =========================================================
-        IMAGE CANDIDATES
-        
-        Cada registro de imagen conserva sus propios fallbacks.
-        
-        IMPORTANTE:
-        NO se agrega Cloudinary artificialmente.
-        ========================================================= */
-
-        function getImageCandidates(source) {
-
-            const raw =
-                safeString(source);
-
-
-            if (!raw) {
-                return [];
-            }
-
-
-            const cleaned =
-                cleanUrl(raw);
-
-
-            if (!cleaned) {
-                return [];
-            }
-
-
-            const candidates = [];
-
-
-            /* =====================================================
-            1. CLOUDINARY REAL
-            ===================================================== */
-
-            if (
-                isCloudinaryUrl(cleaned)
-            ) {
-
-                candidates.push(
-                    cleaned
-                );
-
-
-                const optimized =
-                    optimizeCloudinaryUrl(
-                        cleaned
-                    );
-
-
-                if (
-                    optimized &&
-                    optimized !== cleaned
-                ) {
-
-                    candidates.push(
-                        optimized
-                    );
-                }
-
-
-                return [
-                    ...new Set(
-                        candidates
-                    )
-                ];
-            }
-
-
-            /* =====================================================
-            2. URL ABSOLUTA
-            ===================================================== */
-
-            if (
-                isAbsoluteUrl(cleaned)
-            ) {
-
-                candidates.push(
-                    cleaned
-                );
-
-
-                const filename =
-                    extractFilename(
-                        cleaned
-                    );
-
-
-                if (filename) {
-
-                    /*
-                    * Servidor /image
-                    */
-
-                    candidates.push(
-                        IMAGE_SERVER_BASE +
-                        "/image/" +
-                        encodeURIComponent(
-                            filename
-                        )
-                    );
-
-
-                    /*
-                    * Servidor /uploads
-                    */
-
-                    candidates.push(
-                        IMAGE_SERVER_BASE +
-                        "/uploads/" +
-                        encodeURIComponent(
-                            filename
-                        )
-                    );
-
-
-                    /*
-                    * Servidor /images
-                    */
-
-                    candidates.push(
-                        IMAGE_SERVER_BASE +
-                        "/images/" +
-                        encodeURIComponent(
-                            filename
-                        )
-                    );
-                }
-
-
-                return [
-                    ...new Set(
-                        candidates.filter(
-                            Boolean
-                        )
-                    )
-                ];
-            }
-
-
-            /* =====================================================
-            3. RUTA RELATIVA
-            ===================================================== */
-
-            let relative =
-                cleaned
-                    .replace(/^\/+/, "");
-
-
-            const filename =
-                extractFilename(
-                    relative
-                );
-
-
-            if (!filename) {
-                return [];
-            }
-
-
-            /*
-            * Si la DB ya guarda una ruta Cloudinary
-            * pero sin dominio.
-            */
-
-            if (
-                relative.startsWith(
-                    "latronic/products/"
-                )
-            ) {
-
-                /*
-                * NO asumimos que existe.
-                * Solo se agrega si el valor tiene
-                * estructura de ruta Cloudinary real.
-                */
-
-                candidates.push(
-                    "https://res.cloudinary.com/ju0sskwe/image/upload/" +
-                    relative
-                );
-            }
-
-
-            /* =====================================================
-            /image
-            ===================================================== */
-
-            candidates.push(
-                IMAGE_SERVER_BASE +
-                "/image/" +
-                encodeURIComponent(
-                    filename
-                )
-            );
-
-
-            /* =====================================================
-            /uploads
-            ===================================================== */
-
-            candidates.push(
-                IMAGE_SERVER_BASE +
-                "/uploads/" +
-                encodeURIComponent(
-                    filename
-                )
-            );
-
-
-            /* =====================================================
-            /images
-            ===================================================== */
-
-            candidates.push(
-                IMAGE_SERVER_BASE +
-                "/images/" +
-                encodeURIComponent(
-                    filename
-                )
-            );
-
-
-            /* =====================================================
-            RUTA ORIGINAL
-            ===================================================== */
-
-            if (
-                relative.startsWith(
-                    "uploads/"
-                ) ||
-                relative.startsWith(
-                    "images/"
-                ) ||
-                relative.startsWith(
-                    "image/"
-                )
-            ) {
-
-                candidates.push(
-                    IMAGE_SERVER_BASE +
-                    "/" +
-                    relative
-                );
-
-            } else {
-
-                candidates.push(
-                    "/" +
-                    relative
-                );
-            }
-
-
-            return [
-                ...new Set(
-                    candidates.filter(
-                        Boolean
-                    )
-                )
-            ];
-        }
-
-
-        /* =========================================================
-        NORMALIZE SINGLE IMAGE
-        ========================================================= */
-
-        function normalizeSingleImageValue(value) {
-
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return [];
-            }
-
-
-            if (
-                typeof value === "object" &&
-                !Array.isArray(value)
-            ) {
-
-                const candidate =
-                    value.url ||
-                    value.src ||
-                    value.path ||
-                    value.filename ||
-                    value.file ||
-                    value.image ||
-                    value.imagen ||
-                    value.public_id ||
-                    value.publicId ||
-                    "";
-
-
-                if (candidate) {
-
-                    return [
-                        safeString(candidate)
-                    ];
-                }
-
-
-                return [];
-            }
-
-
-            const raw =
-                safeString(value);
-
-
-            if (!raw) {
-                return [];
-            }
-
-
-            /* =====================================================
-            JSON
-            ===================================================== */
-
-            if (
-                raw.startsWith("[") ||
-                raw.startsWith("{")
-            ) {
-
-                try {
-
-                    const parsed =
-                        JSON.parse(raw);
-
-
-                    if (
-                        Array.isArray(parsed)
-                    ) {
-
-                        return parsed.flatMap(
-                            item =>
-                                normalizeSingleImageValue(
-                                    item
-                                )
-                        );
-                    }
-
-
-                    if (
-                        parsed &&
-                        typeof parsed === "object"
-                    ) {
-
-                        return normalizeSingleImageValue(
-                            parsed
-                        );
-                    }
-
-                } catch (error) {}
-            }
-
-
-            /* =====================================================
-            COMMA SEPARATED
-            
-            Solo si NO es URL.
-            ===================================================== */
-
-            if (
-                raw.includes(",") &&
-                !/^https?:\/\//i.test(raw)
-            ) {
-
-                return raw
-                    .split(",")
-                    .map(
-                        item =>
-                            item.trim()
-                    )
-                    .filter(Boolean);
-            }
-
-
-            return [
-                raw
-            ].filter(Boolean);
-        }
-
-
-        /* =========================================================
-        NORMALIZE IMAGE ARRAY
-        ========================================================= */
-
-        function normalizeImageArray(value) {
-
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return [];
-            }
-
-
-            if (
-                Array.isArray(value)
-            ) {
-
-                const result = [];
-
-
-                value.forEach(
-                    item => {
-
-                        result.push(
-                            ...normalizeSingleImageValue(
-                                item
-                            )
-                        );
-                    }
-                );
-
-
-                return [
-                    ...new Set(
-                        result
-                            .map(
-                                safeString
-                            )
-                            .filter(Boolean)
-                    )
-                ];
-            }
-
-
-            if (
-                typeof value === "string"
-            ) {
-
-                return [
-                    ...new Set(
-                        normalizeSingleImageValue(
-                            value
-                        )
-                    )
-                ];
-            }
-
-
-            if (
-                typeof value === "object"
-            ) {
-
-                return normalizeSingleImageValue(
-                    value
-                );
-            }
-
-
-            return [];
-        }
-
-
-        /* =========================================================
-        PRODUCT IMAGES
-        ========================================================= */
-
-        function getProductImages(product) {
-
-            if (!product) {
-                return [];
-            }
-
-
-            let value = null;
-
-
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "imagenes"
-                )
-            ) {
-
-                value =
-                    product.imagenes;
-
-            } else if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "images"
-                )
-            ) {
-
-                value =
-                    product.images;
-
-            } else if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "image"
-                )
-            ) {
-
-                value =
-                    product.image;
-
-            } else if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "imagen"
-                )
-            ) {
-
-                value =
-                    product.imagen;
-            }
-
-
-            return normalizeImageArray(
-                value
-            );
-        }
-
-
-        /* =========================================================
-        CATEGORY
-        ========================================================= */
-
-        function normalizeCategory(product) {
-
-            let categoria =
-                product.categoria ||
-                product.category ||
-                product.categorias ||
-                {};
-
-
-            if (
-                typeof categoria === "string"
-            ) {
-
-                const value =
-                    categoria.trim();
-
-
-                if (!value) {
-                    return {};
-                }
-
-
-                try {
-
-                    const parsed =
-                        JSON.parse(value);
-
-
-                    if (
-                        parsed &&
-                        typeof parsed === "object"
-                    ) {
-
-                        return parsed;
-                    }
-
-                } catch (error) {}
-
-
-                return {
-                    main: value,
-                    sub: ""
-                };
-            }
-
-
-            if (
-                categoria &&
-                typeof categoria === "object"
-            ) {
-
-                return categoria;
-            }
-
-
-            return {};
-        }
-
-
-        /* =========================================================
-        TAGS
-        ========================================================= */
-
-        function normalizeTags(product) {
-
-            let tags =
-                product.tags ||
-                product.tag ||
-                [];
-
-
-            if (
-                Array.isArray(tags)
-            ) {
-
-                return tags
-                    .flat(Infinity)
-                    .map(
-                        safeString
-                    )
-                    .filter(Boolean);
-            }
-
-
-            if (
-                typeof tags === "string"
-            ) {
-
-                const trimmed =
-                    tags.trim();
-
-
-                if (!trimmed) {
-                    return [];
-                }
-
-
-                try {
-
-                    const parsed =
-                        JSON.parse(trimmed);
-
-
-                    if (
-                        Array.isArray(parsed)
-                    ) {
-
-                        return parsed
-                            .map(
-                                safeString
-                            )
-                            .filter(Boolean);
-                    }
-
-                } catch (error) {}
-
-
-                return trimmed
-                    .split(",")
-                    .map(
-                        item =>
-                            item.trim()
-                    )
-                    .filter(Boolean);
-            }
-
-
-            return [];
-        }
-
-
-        /* =========================================================
-        NORMALIZE PRODUCT
-        
-        IMPORTANTE:
-        Los campos pueden ser parciales.
-        NO asumimos que una actualización Socket
-        contiene todo el producto.
-        ========================================================= */
-
-        function normalizeProduct(product) {
-
-            if (
-                !product ||
-                typeof product !== "object"
-            ) {
-
-                return null;
-            }
-
-
-            const id =
-                product.id ??
-                product.productId ??
-                product._id ??
-                product.titulo ??
-                product.title;
-
-
-            if (
-                id === null ||
-                id === undefined ||
-                String(id).trim() === ""
-            ) {
-
-                return null;
-            }
-
-
-            const hasImages =
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "imagenes"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "images"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "image"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "imagen"
-                );
-
-
-            const hasPrice =
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "price"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "precio"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "precioVenta"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "salePrice"
-                );
-
-
-            const hasStock =
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "stock"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "cantidad"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "quantity"
-                );
-
-
-            const hasDescription =
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "description"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "descripcion"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "desc"
-                );
-
-
-            const hasTitle =
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "titulo"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "title"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "nombre"
-                );
-
-
-            const result = {
-                ...product,
-
-                id: id
+            return {
+                main: value,
+                sub: ""
             };
-
-
-            if (hasTitle) {
-
-                result.titulo =
-                    safeString(
-                        product.titulo ||
-                        product.title ||
-                        product.nombre ||
-                        "Untitled Product"
-                    );
-            }
-
-
-            if (hasDescription) {
-
-                result.description =
-                    safeString(
-                        product.description ??
-                        product.descripcion ??
-                        product.desc ??
-                        ""
-                    );
-            }
-
-
-            if (hasPrice) {
-
-                let price =
-                    product.price ??
-                    product.precio ??
-                    product.precioVenta ??
-                    product.salePrice ??
-                    0;
-
-
-                price =
-                    Number(price);
-
-
-                if (
-                    !Number.isFinite(price)
-                ) {
-
-                    price = 0;
-                }
-
-
-                result.price =
-                    price;
-            }
-
-
-            if (hasStock) {
-
-                let stock =
-                    product.stock ??
-                    product.cantidad ??
-                    product.quantity ??
-                    0;
-
-
-                stock =
-                    Number(stock);
-
-
-                if (
-                    !Number.isFinite(stock)
-                ) {
-
-                    stock = 0;
-                }
-
-
-                result.stock =
-                    stock;
-            }
-
-
-            if (hasImages) {
-
-                result.imagenes =
-                    getProductImages(
-                        product
-                    );
-            }
-
-
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "categoria"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "category"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "categorias"
-                )
-            ) {
-
-                result.categoria =
-                    normalizeCategory(
-                        product
-                    );
-            }
-
-
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "tags"
-                ) ||
-                Object.prototype.hasOwnProperty.call(
-                    product,
-                    "tag"
-                )
-            ) {
-
-                result.tags =
-                    normalizeTags(
-                        product
-                    );
-            }
-
-
-            return result;
         }
 
 
-        /* =========================================================
-        LOAD PRODUCTS
-        ========================================================= */
+        if (
+            categoria &&
+            typeof categoria === "object"
+        ) {
 
-        async function loadProducts() {
-
-            const apiUrls = [
-
-                API_BASE +
-                "/api/productos",
-
-                API_BASE +
-                "/api/products"
-
-            ];
+            return categoria;
+        }
 
 
-            for (
-                const apiUrl of apiUrls
-            ) {
-
-                try {
-
-                    console.log(
-                        "Loading products:",
-                        apiUrl
-                    );
+        return {};
+    }
 
 
-                    const response =
-                        await fetch(
-                            apiUrl +
-                            "?_=" +
-                            Date.now(),
-                            {
-                                method:
-                                    "GET",
+    /* =========================================================
+       TAGS
+    ========================================================= */
 
-                                cache:
-                                    "no-store",
+    function normalizeTags(product) {
 
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
+        let tags =
+            product?.tags ??
+            product?.tag ??
+            [];
 
 
-                    if (
-                        !response.ok
-                    ) {
+        if (
+            Array.isArray(tags)
+        ) {
 
-                        console.warn(
-                            "API failed:",
-                            apiUrl,
-                            response.status
-                        );
-
-                        continue;
-                    }
+            return tags
+                .flat(Infinity)
+                .map(safeString)
+                .filter(Boolean);
+        }
 
 
-                    const data =
-                        await response.json();
+        if (
+            typeof tags === "string"
+        ) {
 
+            const trimmed =
+                tags.trim();
 
-                    let products =
-                        data;
-
-
-                    if (
-                        data &&
-                        typeof data === "object" &&
-                        !Array.isArray(data)
-                    ) {
-
-                        products =
-                            data.productos ||
-                            data.products ||
-                            data.data ||
-                            data.items ||
-                            [];
-                    }
-
-
-                    if (
-                        !Array.isArray(products)
-                    ) {
-
-                        continue;
-                    }
-
-
-                    const normalized =
-                        products
-                            .map(
-                                normalizeProduct
-                            )
-                            .filter(Boolean);
-
-
-                    console.log(
-                        "Products loaded:",
-                        normalized.length
-                    );
-
-
-                    try {
-
-                        localStorage.setItem(
-                            "productos",
-                            JSON.stringify(
-                                normalized
-                            )
-                        );
-
-                    } catch (error) {
-
-                        console.warn(
-                            "localStorage:",
-                            error
-                        );
-                    }
-
-
-                    return normalized;
-
-                } catch (error) {
-
-                    console.error(
-                        "Error loading:",
-                        apiUrl,
-                        error
-                    );
-                }
+            if (!trimmed) {
+                return [];
             }
 
 
-            /* =====================================================
-            LOCAL STORAGE FALLBACK
-            ===================================================== */
-
             try {
 
-                const saved =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "productos"
-                        ) || "[]"
-                    );
-
+                const parsed =
+                    JSON.parse(trimmed);
 
                 if (
-                    Array.isArray(saved) &&
-                    saved.length
+                    Array.isArray(parsed)
                 ) {
 
-                    return saved
-                        .map(
-                            normalizeProduct
-                        )
+                    return parsed
+                        .map(safeString)
                         .filter(Boolean);
                 }
 
-            } catch (error) {
-
-                console.error(
-                    "localStorage error:",
-                    error
-                );
-            }
+            } catch (error) {}
 
 
-            return [];
-        }
-
-
-        /* =========================================================
-        MASTER PRODUCTS
-        ========================================================= */
-
-        let productosMaster =
-            await loadProducts();
-
-
-        /* =========================================================
-        CART
-        ========================================================= */
-
-        function getCart() {
-
-            try {
-
-                const cart =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "productos-en-cart"
-                        ) || "[]"
-                    );
-
-
-                return Array.isArray(cart)
-                    ? cart
-                    : [];
-
-            } catch (error) {
-
-                return [];
-            }
-        }
-
-
-        function updateCartCount() {
-
-            const cart =
-                getCart();
-
-
-            const total =
-                cart.reduce(
-                    (
-                        sum,
-                        item
-                    ) =>
-                        sum +
-                        Number(
-                            item.quantity || 0
-                        ),
-                    0
-                );
-
-
-            if (cartCount) {
-
-                cartCount.textContent =
-                    total;
-            }
-        }
-
-
-        updateCartCount();
-
-
-        /* =========================================================
-        CART BUTTON
-        ========================================================= */
-
-        document
-            .getElementById(
-                "cart-btn"
-            )
-            ?.addEventListener(
-                "click",
-                function () {
-
-                    window.location.href =
-                        "cart.html";
-                }
-            );
-
-
-        /* =========================================================
-        MOBILE MENU
-        ========================================================= */
-
-        const hamburger =
-            document.querySelector(
-                ".hamburger"
-            );
-
-
-        const aside =
-            document.querySelector(
-                "aside"
-            );
-
-
-        hamburger?.addEventListener(
-            "click",
-            function () {
-
-                aside?.classList.toggle(
-                    "active"
-                );
-            }
-        );
-
-
-        /* =========================================================
-        SUBMENUS
-        ========================================================= */
-
-        document
-            .querySelectorAll(
-                ".toggle-submenu"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            const submenu =
-                                button.nextElementSibling;
-
-
-                            if (!submenu) {
-                                return;
-                            }
-
-
-                            const open =
-                                submenu.style.display ===
-                                "block";
-
-
-                            document
-                                .querySelectorAll(
-                                    ".submenu"
-                                )
-                                .forEach(
-                                    menu => {
-
-                                        menu.style.display =
-                                            "none";
-                                    }
-                                );
-
-
-                            document
-                                .querySelectorAll(
-                                    ".toggle-submenu"
-                                )
-                                .forEach(
-                                    btn => {
-
-                                        btn.classList.remove(
-                                            "active"
-                                        );
-                                    }
-                                );
-
-
-                            if (!open) {
-
-                                submenu.style.display =
-                                    "block";
-
-                                button.classList.add(
-                                    "active"
-                                );
-                            }
-                        }
-                    );
-                }
-            );
-
-
-        /* =========================================================
-        CAPITALIZE
-        ========================================================= */
-
-        function capitalize(text) {
-
-            return String(
-                text || ""
-            )
-                .replace(
-                    /[-_]/g,
-                    " "
+            return trimmed
+                .split(",")
+                .map(
+                    item =>
+                        item.trim()
                 )
-                .replace(
-                    /\b\w/g,
-                    char =>
-                        char.toUpperCase()
-                );
+                .filter(Boolean);
         }
 
 
-        /* =========================================================
-        ZOOM MODAL
-        ========================================================= */
-
-        const zoomModal =
-            document.createElement(
-                "div"
-            );
+        return [];
+    }
 
 
-        zoomModal.id =
-            "zoom-modal";
+    /* =========================================================
+       NORMALIZE PRODUCT
+    ========================================================= */
 
+    function normalizeProduct(product) {
 
-        zoomModal.innerHTML = `
-
-            <button
-                id="zoom-prev"
-                class="zoom-control"
-                type="button"
-            >
-                &#9664;
-            </button>
-
-            <img
-                id="zoom-img"
-                alt="Product image"
-            >
-
-            <button
-                id="zoom-next"
-                class="zoom-control"
-                type="button"
-            >
-                &#9654;
-            </button>
-
-            <div id="zoom-desc"></div>
-
-        `;
-
-
-        document.body.appendChild(
-            zoomModal
-        );
-
-
-        const zoomImg =
-            document.getElementById(
-                "zoom-img"
-            );
-
-
-        const zoomDesc =
-            document.getElementById(
-                "zoom-desc"
-            );
-
-
-        const zoomPrev =
-            document.getElementById(
-                "zoom-prev"
-            );
-
-
-        const zoomNext =
-            document.getElementById(
-                "zoom-next"
-            );
-
-
-        let zoomImages = [];
-
-        let zoomIndex = 0;
-
-        let zoomProduct = null;
-
-
-        /* =========================================================
-        FIRST WORKING IMAGE
-        ========================================================= */
-
-        function getFirstWorkingImage(
-            source,
-            callback
+        if (
+            !product ||
+            typeof product !== "object"
         ) {
 
-            const candidates =
-                getImageCandidates(
-                    source
-                );
-
-
-            let index = 0;
-
-
-            function tryNext() {
-
-                if (
-                    index >=
-                    candidates.length
-                ) {
-
-                    callback(null);
-
-                    return;
-                }
-
-
-                const url =
-                    candidates[
-                        index++
-                    ];
-
-
-                const image =
-                    new Image();
-
-
-                image.onload =
-                    function () {
-
-                        callback(
-                            url
-                        );
-                    };
-
-
-                image.onerror =
-                    function () {
-
-                        tryNext();
-                    };
-
-
-                image.src =
-                    url;
-            }
-
-
-            tryNext();
+            return null;
         }
 
 
-        /* =========================================================
-        OPEN ZOOM
-        ========================================================= */
+        const id =
+            product.id ??
+            product.productId ??
+            product._id ??
+            product.titulo ??
+            product.title;
 
-        function openZoom(
-            product,
-            index
+
+        if (
+            id === null ||
+            id === undefined ||
+            String(id).trim() === ""
         ) {
 
-            zoomProduct =
-                product;
-
-
-            zoomImages =
-                Array.isArray(
-                    product.imagenes
-                )
-                    ? product.imagenes
-                    : [];
-
-
-            if (
-                !zoomImages.length
-            ) {
-
-                return;
-            }
-
-
-            zoomIndex =
-                Math.max(
-                    0,
-                    Math.min(
-                        Number(index) || 0,
-                        zoomImages.length - 1
-                    )
-                );
-
-
-            updateZoom();
-
-
-            zoomModal.style.display =
-                "flex";
+            return null;
         }
 
 
-        /* =========================================================
-        UPDATE ZOOM
-        ========================================================= */
-
-        function updateZoom() {
-
-            if (
-                !zoomImages.length
-            ) {
-
-                return;
-            }
-
-
-            const source =
-                zoomImages[
-                    zoomIndex
-                ];
-
-
-            zoomImg.style.opacity =
-                "0.5";
-
-
-            getFirstWorkingImage(
-                source,
-                function (url) {
-
-                    if (url) {
-
-                        zoomImg.src =
-                            url;
-
-                    } else {
-
-                        zoomImg.removeAttribute(
-                            "src"
-                        );
-                    }
-
-
-                    zoomImg.style.opacity =
-                        "1";
-                }
-            );
-
-
-            zoomDesc.textContent =
-                zoomProduct?.description ||
-                "";
-
-
-            const multiple =
-                zoomImages.length > 1;
-
-
-            zoomPrev.style.display =
-                multiple
-                    ? "block"
-                    : "none";
-
-
-            zoomNext.style.display =
-                multiple
-                    ? "block"
-                    : "none";
-        }
-
-
-        zoomPrev.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-
-                if (
-                    !zoomImages.length
-                ) {
-
-                    return;
-                }
-
-
-                zoomIndex =
-                    (
-                        zoomIndex -
-                        1 +
-                        zoomImages.length
-                    ) %
-                    zoomImages.length;
-
-
-                updateZoom();
-            }
-        );
-
-
-        zoomNext.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-
-                if (
-                    !zoomImages.length
-                ) {
-
-                    return;
-                }
-
-
-                zoomIndex =
-                    (
-                        zoomIndex +
-                        1
-                    ) %
-                    zoomImages.length;
-
-
-                updateZoom();
-            }
-        );
-
-
-        zoomImg.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-            }
-        );
-
-
-        zoomModal.addEventListener(
-            "click",
-            function () {
-
-                zoomModal.style.display =
-                    "none";
-
-
-                zoomImg.removeAttribute(
-                    "src"
-                );
-
-
-                zoomImages = [];
-
-                zoomProduct = null;
-            }
-        );
-
-
-        /* =========================================================
-        LOAD IMAGE
-        
-        Una imagen DB = una imagen visual.
-        ========================================================= */
-
-        function loadImage(
-            img,
-            product
-        ) {
-
-            const sourceImages =
-                Array.isArray(
-                    product.imagenes
-                )
-                    ? product.imagenes
-                    : [];
-
-
-            const gallery =
-                img.parentElement;
-
-
-            const loading =
-                gallery?.querySelector(
-                    ".image-loading"
-                );
-
-
-            const error =
-                gallery?.querySelector(
-                    ".image-error"
-                );
-
-
-            if (
-                !sourceImages.length
-            ) {
-
-                loading?.classList.add(
-                    "hidden"
-                );
-
-
-                error?.classList.add(
-                    "show"
-                );
-
-
-                return;
-            }
-
-
-            let imageIndex = 0;
-
-
-            function tryImage() {
-
-                if (
-                    imageIndex >=
-                    sourceImages.length
-                ) {
-
-                    loading?.classList.add(
-                        "hidden"
-                    );
-
-
-                    error?.classList.add(
-                        "show"
-                    );
-
-
-                    return;
-                }
-
-
-                const originalIndex =
-                    imageIndex;
-
-
-                const source =
-                    sourceImages[
-                        imageIndex++
-                    ];
-
-
-                const candidates =
-                    getImageCandidates(
-                        source
-                    );
-
-
-                let candidateIndex = 0;
-
-
-                function tryCandidate() {
-
-                    if (
-                        candidateIndex >=
-                        candidates.length
-                    ) {
-
-                        /*
-                        * Este registro de imagen
-                        * falló completamente.
-                        *
-                        * Probamos el siguiente
-                        * registro ORIGINAL.
-                        */
-
-                        tryImage();
-
-                        return;
-                    }
-
-
-                    const url =
-                        candidates[
-                            candidateIndex++
-                        ];
-
-
-                    console.log(
-                        "Trying image:",
-                        product.titulo,
-                        originalIndex,
-                        url
-                    );
-
-
-                    const test =
-                        new Image();
-
-
-                    test.onload =
-                        function () {
-
-                            img.src =
-                                url;
-
-
-                            img.dataset.index =
-                                String(
-                                    originalIndex
-                                );
-
-
-                            img.dataset.loadedUrl =
-                                url;
-
-
-                            img.classList.add(
-                                "loaded"
-                            );
-
-
-                            loading?.classList.add(
-                                "hidden"
-                            );
-
-
-                            error?.classList.remove(
-                                "show"
-                            );
-                        };
-
-
-                    test.onerror =
-                        function () {
-
-                            console.warn(
-                                "Image failed:",
-                                url
-                            );
-
-
-                            tryCandidate();
-                        };
-
-
-                    test.src =
-                        url;
-                }
-
-
-                tryCandidate();
-            }
-
-
-            tryImage();
-        }
-
-
-        /* =========================================================
-        RENDER PRODUCTS
-        ========================================================= */
-
-        function renderProducts(list) {
-
-            if (!contenedor) {
-
-                console.error(
-                    "Missing #contenedor-productos"
-                );
-
-                return;
-            }
-
-
-            contenedor.innerHTML =
-                "";
-
-
-            if (
-                !Array.isArray(list) ||
-                !list.length
-            ) {
-
-                contenedor.innerHTML = `
-
-                    <p style="
-                        width:100%;
-                        text-align:center;
-                        color:#888;
-                        padding:40px;
-                    ">
-                        Coming soon...
-                    </p>
-
-                `;
-
-
-                return;
-            }
-
-
-            const cart =
-                getCart();
-
-
-            /* =====================================================
-            DEDUP PRODUCTS
-            ===================================================== */
-
-            const uniqueProducts = [];
-
-            const productIds =
-                new Set();
-
-
-            list.forEach(
-                product => {
-
-                    const key =
-                        String(
-                            product.id ??
-                            product.titulo
-                        );
-
-
-                    if (
-                        productIds.has(
-                            key
-                        )
-                    ) {
-
-                        return;
-                    }
-
-
-                    productIds.add(
-                        key
-                    );
-
-
-                    uniqueProducts.push(
-                        product
-                    );
-                }
-            );
-
-
-            uniqueProducts.forEach(
-                product => {
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "producto";
-
-
-                    card.dataset.id =
-                        String(
-                            product.id
-                        );
-
-
-                    /* =================================================
-                    GALLERY
-                    ================================================= */
-
-                    const gallery =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    gallery.className =
-                        "galeria";
-
-
-                    const loading =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    loading.className =
-                        "image-loading";
-
-
-                    loading.textContent =
-                        "Loading...";
-
-
-                    const error =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    error.className =
-                        "image-error";
-
-
-                    error.innerHTML = `
-
-                        <i class="bi bi-image"></i>
-
-                        <span>
-                            Image unavailable
-                        </span>
-
-                    `;
-
-
-                    const img =
-                        document.createElement(
-                            "img"
-                        );
-
-
-                    img.className =
-                        "main-img";
-
-
-                    img.alt =
-                        product.titulo;
-
-
-                    img.loading =
-                        "lazy";
-
-
-                    img.decoding =
-                        "async";
-
-
-                    img.dataset.index =
-                        "0";
-
-
-                    gallery.append(
-                        loading,
-                        error,
-                        img
-                    );
-
-
-                    loadImage(
-                        img,
-                        product
-                    );
-
-
-                    img.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-
-                            openZoom(
-                                product,
-                                Number(
-                                    img.dataset.index
-                                ) || 0
-                            );
-                        }
-                    );
-
-
-                    /* =================================================
-                    TITLE
-                    ================================================= */
-
-                    const title =
-                        document.createElement(
-                            "h3"
-                        );
-
-
-                    title.textContent =
-                        product.titulo ||
-                        "Untitled Product";
-
-
-                    /* =================================================
-                    DESCRIPTION
-                    ================================================= */
-
-                    const description =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    description.className =
-                        "product-description";
-
-
-                    description.textContent =
-                        product.description ||
-                        "";
-
-
-                    /* =================================================
-                    CART
-                    ================================================= */
-
-                    const cartItem =
-                        cart.find(
-                            item =>
-                                String(
-                                    item.id
-                                ) ===
-                                String(
-                                    product.id
-                                )
-                        );
-
-
-                    const cartQuantity =
-                        Number(
-                            cartItem?.quantity ||
-                            0
-                        );
-
-
-                    const stock =
-                        Number(
-                            product.stock ||
-                            0
-                        );
-
-
-                    const remaining =
-                        Math.max(
-                            0,
-                            stock -
-                            cartQuantity
-                        );
-
-
-                    /* =================================================
-                    STOCK
-                    ================================================= */
-
-                    const stockEl =
-                        document.createElement(
-                            "p"
-                        );
-
-
-                    stockEl.className =
-                        "stock";
-
-
-                    stockEl.textContent =
-                        remaining > 0
-                            ? `Stock: ${remaining}`
-                            : "Out of stock";
-
-
-                    stockEl.style.color =
-                        remaining > 0
-                            ? "#888"
-                            : "#ff3333";
-
-
-                    /* =================================================
-                    PRICE
-                    ================================================= */
-
-                    const price =
-                        document.createElement(
-                            "p"
-                        );
-
-
-                    price.className =
-                        "price";
-
-
-                    price.textContent =
-                        "$" +
-                        Number(
-                            product.price || 0
-                        ).toFixed(2);
-
-
-                    /* =================================================
-                    ADD CART
-                    ================================================= */
-
-                    const add =
-                        document.createElement(
-                            "button"
-                        );
-
-
-                    add.className =
-                        "agregar-carrito";
-
-
-                    add.type =
-                        "button";
-
-
-                    add.textContent =
-                        remaining > 0
-                            ? (
-                                cartQuantity
-                                    ? `Add (${cartQuantity})`
-                                    : "Add"
-                            )
-                            : "Out of stock";
-
-
-                    add.disabled =
-                        remaining <= 0;
-
-
-                    add.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-
-                            const currentCart =
-                                getCart();
-
-
-                            const index =
-                                currentCart.findIndex(
-                                    item =>
-                                        String(
-                                            item.id
-                                        ) ===
-                                        String(
-                                            product.id
-                                        )
-                                );
-
-
-                            const current =
-                                index >= 0
-                                    ? Number(
-                                        currentCart[
-                                            index
-                                        ].quantity ||
-                                        0
-                                    )
-                                    : 0;
-
-
-                            if (
-                                current >=
-                                stock
-                            ) {
-
-                                return;
-                            }
-
-
-                            if (
-                                index >= 0
-                            ) {
-
-                                currentCart[
-                                    index
-                                ].quantity =
-                                    current + 1;
-
-                            } else {
-
-                                currentCart.push({
-
-                                    id:
-                                        product.id,
-
-                                    titulo:
-                                        product.titulo,
-
-                                    price:
-                                        product.price,
-
-                                    imagenes:
-                                        product.imagenes,
-
-                                    quantity:
-                                        1
-                                });
-                            }
-
-
-                            localStorage.setItem(
-                                "productos-en-cart",
-                                JSON.stringify(
-                                    currentCart
-                                )
-                            );
-
-
-                            updateCartCount();
-
-
-                            renderProducts(
-                                list
-                            );
-                        }
-                    );
-
-
-                    /* =================================================
-                    OFFER
-                    ================================================= */
-
-                    const offer =
-                        document.createElement(
-                            "button"
-                        );
-
-
-                    offer.className =
-                        "negociar";
-
-
-                    offer.type =
-                        "button";
-
-
-                    offer.textContent =
-                        "Make Offer";
-
-
-                    offer.addEventListener(
-                        "click",
-                        function (event) {
-
-                            event.stopPropagation();
-
-
-                            const modal =
-                                document.getElementById(
-                                    "negociar-modal"
-                                );
-
-
-                            const productName =
-                                document.getElementById(
-                                    "negociar-producto"
-                                );
-
-
-                            if (modal) {
-
-                                modal.style.display =
-                                    "flex";
-                            }
-
-
-                            if (productName) {
-
-                                productName.textContent =
-                                    product.titulo;
-                            }
-                        }
-                    );
-
-
-                    /* =================================================
-                    APPEND
-                    ================================================= */
-
-                    card.append(
-                        gallery,
-                        title
-                    );
-
-
-                    if (
-                        product.description &&
-                        product.description.trim()
-                    ) {
-
-                        card.append(
-                            description
-                        );
-                    }
-
-
-                    card.append(
-                        stockEl,
-                        price,
-                        add,
-                        offer
-                    );
-
-
-                    contenedor.appendChild(
-                        card
-                    );
-                }
-            );
-
-
-            updateCartCount();
-        }
-
-
-        /* =========================================================
-        VISIBLE PRODUCTS
-        ========================================================= */
-
-        function visibleProducts() {
-
-            return productosMaster.filter(
-                product => {
-
-                    const sub =
-                        String(
-                            product.categoria?.sub ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .trim();
-
-
-                    return (
-                        sub !==
-                        "adultmagazines"
-                    );
-                }
-            );
-        }
-
-
-        /* =========================================================
-        CURRENT VIEW
-        ========================================================= */
-
-        let currentView =
-            "all";
-
-
-        let currentCategoryMain =
-            "";
-
-
-        let currentCategorySub =
-            "";
-
-
-        function getCurrentProducts() {
-
-            if (
-                searchInput &&
-                searchInput.value.trim()
-            ) {
-
-                return getSearchResults();
-            }
-
-
-            if (
-                currentView ===
-                "category"
-            ) {
-
-                return productosMaster.filter(
-                    product => {
-
-                        const main =
-                            String(
-                                product.categoria?.main ||
-                                ""
-                            )
-                                .toLowerCase()
-                                .trim();
-
-
-                        const sub =
-                            String(
-                                product.categoria?.sub ||
-                                ""
-                            )
-                                .toLowerCase()
-                                .trim();
-
-
-                        return (
-                            main ===
-                            currentCategoryMain &&
-                            sub ===
-                            currentCategorySub
-                        );
-                    }
-                );
-            }
-
-
-            return visibleProducts();
-        }
-
-
-        /* =========================================================
-        SEARCH NORMALIZE
-        ========================================================= */
-
-        function normalizeText(text) {
-
-            return String(
-                text || ""
+        const result = {
+            ...product,
+            id: id
+        };
+
+
+        /* =====================================================
+           TITLE
+        ===================================================== */
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "titulo"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "title"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "nombre"
             )
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(
-                    /[\u0300-\u036f]/g,
+        ) {
+
+            result.titulo =
+                safeString(
+                    product.titulo ??
+                    product.title ??
+                    product.nombre ??
+                    "Untitled Product"
+                );
+        }
+
+
+        /*
+         * Para productos que vienen completos
+         */
+        if (!result.titulo) {
+
+            result.titulo =
+                "Untitled Product";
+        }
+
+
+        /* =====================================================
+           DESCRIPTION
+        ===================================================== */
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "description"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "descripcion"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "desc"
+            )
+        ) {
+
+            result.description =
+                safeString(
+                    product.description ??
+                    product.descripcion ??
+                    product.desc ??
                     ""
                 );
         }
 
 
-        /* =========================================================
-        SEARCH RESULTS
-        ========================================================= */
+        /* =====================================================
+           PRICE
+        ===================================================== */
 
-        function getSearchResults() {
+        if (
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "price"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "precio"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "precioVenta"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "salePrice"
+            )
+        ) {
 
-            if (!searchInput) {
-                return visibleProducts();
+            let price =
+                product.price ??
+                product.precio ??
+                product.precioVenta ??
+                product.salePrice ??
+                0;
+
+            price =
+                Number(price);
+
+            if (
+                !Number.isFinite(price)
+            ) {
+
+                price = 0;
             }
 
-
-            const query =
-                normalizeText(
-                    searchInput.value
-                ).trim();
-
-
-            if (!query) {
-                return visibleProducts();
-            }
-
-
-            const terms =
-                query
-                    .split(/\s+/)
-                    .filter(Boolean);
-
-
-            return productosMaster.filter(
-                product => {
-
-                    const sub =
-                        String(
-                            product.categoria?.sub ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .trim();
-
-
-                    if (
-                        sub ===
-                        "adultmagazines"
-                    ) {
-
-                        return false;
-                    }
-
-
-                    const fields = [
-
-                        normalizeText(
-                            product.titulo
-                        ),
-
-                        normalizeText(
-                            product.description
-                        ),
-
-                        normalizeText(
-                            product.categoria?.main
-                        ),
-
-                        normalizeText(
-                            product.categoria?.sub
-                        )
-
-                    ];
-
-
-                    fields.push(
-                        ...(
-                            Array.isArray(
-                                product.tags
-                            )
-                                ? product.tags
-                                : []
-                        ).map(
-                            normalizeText
-                        )
-                    );
-
-
-                    return terms.every(
-                        term =>
-                            fields.some(
-                                field =>
-                                    field.includes(
-                                        term
-                                    )
-                            )
-                    );
-                }
-            );
+            result.price =
+                price;
         }
 
 
-        /* =========================================================
-        SEARCH
-        ========================================================= */
+        /* =====================================================
+           STOCK
+        ===================================================== */
 
-        const searchInput =
-            document.getElementById(
-                "search-input"
-            );
+        if (
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "stock"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "cantidad"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "quantity"
+            )
+        ) {
 
+            let stock =
+                product.stock ??
+                product.cantidad ??
+                product.quantity ??
+                0;
 
-        const searchBtn =
-            document.getElementById(
-                "search-btn"
-            );
+            stock =
+                Number(stock);
 
+            if (
+                !Number.isFinite(stock)
+            ) {
 
-        function searchProducts() {
-
-            const query =
-                searchInput
-                    ?.value
-                    ?.trim() ||
-                "";
-
-
-            if (!query) {
-
-                currentView =
-                    "all";
-
-
-                currentCategoryMain =
-                    "";
-
-
-                currentCategorySub =
-                    "";
-
-
-                const title =
-                    document.getElementById(
-                        "titulo-principal"
-                    );
-
-
-                if (title) {
-
-                    title.textContent =
-                        "All Products";
-                }
-
-
-                renderProducts(
-                    visibleProducts()
-                );
-
-
-                return;
+                stock = 0;
             }
 
-
-            currentView =
-                "search";
-
-
-            const filtered =
-                getSearchResults();
-
-
-            const title =
-                document.getElementById(
-                    "titulo-principal"
-                );
-
-
-            if (title) {
-
-                title.textContent =
-                    `Search: "${query}" (${filtered.length})`;
-            }
-
-
-            renderProducts(
-                filtered
-            );
+            result.stock =
+                stock;
         }
 
 
-        searchBtn?.addEventListener(
-            "click",
-            searchProducts
-        );
+        /* =====================================================
+           IMAGES
+
+           MUY IMPORTANTE:
+
+           Solo ponemos imagenes si el producto
+           realmente las contiene.
+
+           Esto permite que Socket mande:
+             {id, price}
+
+           sin borrar las imágenes actuales.
+        ===================================================== */
+
+        const hasImages =
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "imagenes"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "images"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "image"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "imagen"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "imageUrls"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "image_urls"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "fotos"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "photos"
+            );
 
 
-        searchInput?.addEventListener(
-            "keydown",
-            function (event) {
+        if (hasImages) {
+
+            result.imagenes =
+                getProductImages(
+                    product
+                );
+        }
+
+
+        /* =====================================================
+           CATEGORY
+        ===================================================== */
+
+        const hasCategory =
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "categoria"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "category"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "categorias"
+            );
+
+
+        if (hasCategory) {
+
+            result.categoria =
+                normalizeCategory(
+                    product
+                );
+        }
+
+
+        /* =====================================================
+           TAGS
+        ===================================================== */
+
+        const hasTags =
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "tags"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                product,
+                "tag"
+            );
+
+
+        if (hasTags) {
+
+            result.tags =
+                normalizeTags(
+                    product
+                );
+        }
+
+
+        return result;
+    }
+
+
+    /* =========================================================
+       LOAD PRODUCTS
+    ========================================================= */
+
+    async function loadProducts() {
+
+        const apiUrls = [
+            API_BASE + "/api/productos",
+            API_BASE + "/api/products"
+        ];
+
+
+        for (
+            const apiUrl of apiUrls
+        ) {
+
+            try {
+
+                console.log(
+                    "Loading products:",
+                    apiUrl
+                );
+
+
+                const response =
+                    await fetch(
+                        apiUrl +
+                        "?_=" +
+                        Date.now(),
+                        {
+                            method: "GET",
+                            cache: "no-store",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
 
                 if (
-                    event.key ===
-                    "Enter"
+                    !response.ok
                 ) {
 
-                    searchProducts();
+                    console.warn(
+                        "API failed:",
+                        apiUrl,
+                        response.status
+                    );
+
+                    continue;
                 }
+
+
+                const data =
+                    await response.json();
+
+
+                let products =
+                    data;
+
+
+                if (
+                    data &&
+                    typeof data === "object" &&
+                    !Array.isArray(data)
+                ) {
+
+                    products =
+                        data.productos ||
+                        data.products ||
+                        data.data ||
+                        data.items ||
+                        [];
+                }
+
+
+                if (
+                    !Array.isArray(products)
+                ) {
+
+                    console.warn(
+                        "API did not return array:",
+                        apiUrl
+                    );
+
+                    continue;
+                }
+
+
+                const normalized =
+                    products
+                        .map(normalizeProduct)
+                        .filter(Boolean);
+
+
+                console.log(
+                    "Products loaded:",
+                    normalized.length
+                );
+
+
+                /*
+                 * DEBUG DE IMÁGENES
+                 */
+                let imageCount = 0;
+
+                normalized.forEach(
+                    product => {
+
+                        imageCount +=
+                            Array.isArray(
+                                product.imagenes
+                            )
+                                ? product.imagenes.length
+                                : 0;
+                    }
+                );
+
+
+                console.log(
+                    "Image records:",
+                    imageCount
+                );
+
+
+                try {
+
+                    localStorage.setItem(
+                        "productos",
+                        JSON.stringify(
+                            normalized
+                        )
+                    );
+
+                } catch (error) {
+
+                    console.warn(
+                        "localStorage:",
+                        error
+                    );
+                }
+
+
+                return normalized;
+
+            } catch (error) {
+
+                console.error(
+                    "Error loading:",
+                    apiUrl,
+                    error
+                );
+            }
+        }
+
+
+        /* =====================================================
+           LOCAL STORAGE FALLBACK
+        ===================================================== */
+
+        try {
+
+            const saved =
+                JSON.parse(
+                    localStorage.getItem(
+                        "productos"
+                    ) || "[]"
+                );
+
+
+            if (
+                Array.isArray(saved) &&
+                saved.length
+            ) {
+
+                console.warn(
+                    "Using localStorage fallback."
+                );
+
+
+                return saved
+                    .map(normalizeProduct)
+                    .filter(Boolean);
+            }
+
+        } catch (error) {
+
+            console.error(
+                "localStorage error:",
+                error
+            );
+        }
+
+
+        return [];
+    }
+
+
+    /* =========================================================
+       MASTER PRODUCTS
+    ========================================================= */
+
+    let productosMaster =
+        await loadProducts();
+
+
+    /* =========================================================
+       CART
+    ========================================================= */
+
+    function getCart() {
+
+        try {
+
+            const cart =
+                JSON.parse(
+                    localStorage.getItem(
+                        "productos-en-cart"
+                    ) || "[]"
+                );
+
+
+            return Array.isArray(cart)
+                ? cart
+                : [];
+
+        } catch (error) {
+
+            return [];
+        }
+    }
+
+
+    function updateCartCount() {
+
+        const cart =
+            getCart();
+
+
+        const total =
+            cart.reduce(
+                (
+                    sum,
+                    item
+                ) =>
+                    sum +
+                    Number(
+                        item.quantity || 0
+                    ),
+                0
+            );
+
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                total;
+        }
+    }
+
+
+    updateCartCount();
+
+
+    /* =========================================================
+       CART BUTTON
+    ========================================================= */
+
+    document
+        .getElementById("cart-btn")
+        ?.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "cart.html";
             }
         );
 
 
-        /* =========================================================
-        INITIAL RENDER
-        ========================================================= */
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
 
-        renderProducts(
-            visibleProducts()
+    const hamburger =
+        document.querySelector(
+            ".hamburger"
+        );
+
+    const aside =
+        document.querySelector(
+            "aside"
         );
 
 
-        /* =========================================================
-        CATEGORY FILTER
-        ========================================================= */
+    hamburger?.addEventListener(
+        "click",
+        function () {
 
-        aside?.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".submenu .boton-categoria"
-                    );
+            aside?.classList.toggle(
+                "active"
+            );
+        }
+    );
 
 
-                if (!button) {
-                    return;
-                }
+    /* =========================================================
+       SUBMENUS
+    ========================================================= */
+
+    document
+        .querySelectorAll(
+            ".toggle-submenu"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const submenu =
+                            button.nextElementSibling;
+
+                        if (!submenu) {
+                            return;
+                        }
 
 
-                const main =
+                        const open =
+                            submenu.style.display ===
+                            "block";
+
+
+                        document
+                            .querySelectorAll(
+                                ".submenu"
+                            )
+                            .forEach(
+                                menu => {
+
+                                    menu.style.display =
+                                        "none";
+                                }
+                            );
+
+
+                        document
+                            .querySelectorAll(
+                                ".toggle-submenu"
+                            )
+                            .forEach(
+                                btn => {
+
+                                    btn.classList.remove(
+                                        "active"
+                                    );
+                                }
+                            );
+
+
+                        if (!open) {
+
+                            submenu.style.display =
+                                "block";
+
+                            button.classList.add(
+                                "active"
+                            );
+                        }
+                    }
+                );
+            }
+        );
+
+
+    /* =========================================================
+       CAPITALIZE
+    ========================================================= */
+
+    function capitalize(text) {
+
+        return String(
+            text || ""
+        )
+            .replace(
+                /[-_]/g,
+                " "
+            )
+            .replace(
+                /\b\w/g,
+                char =>
+                    char.toUpperCase()
+            );
+    }
+
+
+    /* =========================================================
+       SEARCH
+       
+       Declaramos esto ANTES de funciones que lo utilizan.
+    ========================================================= */
+
+    const searchInput =
+        document.getElementById(
+            "search-input"
+        );
+
+    const searchBtn =
+        document.getElementById(
+            "search-btn"
+        );
+
+
+    /* =========================================================
+       SEARCH NORMALIZE
+    ========================================================= */
+
+    function normalizeText(text) {
+
+        return String(
+            text || ""
+        )
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            );
+    }
+
+
+    /* =========================================================
+       VISIBLE PRODUCTS
+    ========================================================= */
+
+    function visibleProducts() {
+
+        return productosMaster.filter(
+            product => {
+
+                const sub =
                     String(
-                        button.dataset.main ||
+                        product.categoria?.sub ||
                         ""
                     )
                         .toLowerCase()
                         .trim();
 
 
+                return (
+                    sub !==
+                    "adultmagazines"
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CURRENT VIEW
+    ========================================================= */
+
+    let currentView =
+        "all";
+
+    let currentCategoryMain =
+        "";
+
+    let currentCategorySub =
+        "";
+
+
+    /* =========================================================
+       SEARCH RESULTS
+    ========================================================= */
+
+    function getSearchResults() {
+
+        if (!searchInput) {
+
+            return visibleProducts();
+        }
+
+
+        const query =
+            normalizeText(
+                searchInput.value
+            ).trim();
+
+
+        if (!query) {
+
+            return visibleProducts();
+        }
+
+
+        const terms =
+            query
+                .split(/\s+/)
+                .filter(Boolean);
+
+
+        return productosMaster.filter(
+            product => {
+
                 const sub =
                     String(
-                        button.dataset.sub ||
+                        product.categoria?.sub ||
                         ""
                     )
                         .toLowerCase()
@@ -4142,132 +2732,1497 @@ No, exit
                     "adultmagazines"
                 ) {
 
-                    const answer =
-                        confirm(
-                            "This section contains adult material. Are you 18 or older?"
-                        );
-
-
-                    if (!answer) {
-
-                        return;
-                    }
+                    return false;
                 }
 
 
-                currentView =
-                    "category";
+                const fields = [
+
+                    normalizeText(
+                        product.titulo
+                    ),
+
+                    normalizeText(
+                        product.description
+                    ),
+
+                    normalizeText(
+                        product.categoria?.main
+                    ),
+
+                    normalizeText(
+                        product.categoria?.sub
+                    )
+
+                ];
 
 
-                currentCategoryMain =
-                    main;
-
-
-                currentCategorySub =
-                    sub;
-
-
-                if (searchInput) {
-
-                    searchInput.value =
-                        "";
-                }
-
-
-                const filtered =
-                    productosMaster.filter(
-                        product => {
-
-                            const productMain =
-                                String(
-                                    product.categoria?.main ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-
-                            const productSub =
-                                String(
-                                    product.categoria?.sub ||
-                                    ""
-                                )
-                                    .toLowerCase()
-                                    .trim();
-
-
-                            return (
-                                productMain ===
-                                main &&
-                                productSub ===
-                                sub
-                            );
-                        }
-                    );
-
-
-                const title =
-                    document.getElementById(
-                        "titulo-principal"
-                    );
-
-
-                if (title) {
-
-                    title.textContent =
-                        capitalize(main) +
-                        " · " +
-                        capitalize(sub);
-                }
-
-
-                renderProducts(
-                    filtered
+                fields.push(
+                    ...(
+                        Array.isArray(
+                            product.tags
+                        )
+                            ? product.tags
+                            : []
+                    ).map(
+                        normalizeText
+                    )
                 );
 
 
-                aside?.classList.remove(
-                    "active"
+                return terms.every(
+                    term =>
+                        fields.some(
+                            field =>
+                                field.includes(
+                                    term
+                                )
+                        )
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CURRENT PRODUCTS
+    ========================================================= */
+
+    function getCurrentProducts() {
+
+        if (
+            searchInput &&
+            searchInput.value.trim()
+        ) {
+
+            return getSearchResults();
+        }
+
+
+        if (
+            currentView ===
+            "category"
+        ) {
+
+            return productosMaster.filter(
+                product => {
+
+                    const main =
+                        String(
+                            product.categoria?.main ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .trim();
+
+
+                    const sub =
+                        String(
+                            product.categoria?.sub ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .trim();
+
+
+                    return (
+                        main ===
+                        currentCategoryMain &&
+                        sub ===
+                        currentCategorySub
+                    );
+                }
+            );
+        }
+
+
+        return visibleProducts();
+    }
+
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    function searchProducts() {
+
+        const query =
+            searchInput
+                ?.value
+                ?.trim() ||
+            "";
+
+
+        if (!query) {
+
+            currentView =
+                "all";
+
+            currentCategoryMain =
+                "";
+
+            currentCategorySub =
+                "";
+
+
+            const title =
+                document.getElementById(
+                    "titulo-principal"
+                );
+
+
+            if (title) {
+
+                title.textContent =
+                    "All Products";
+            }
+
+
+            renderProducts(
+                visibleProducts()
+            );
+
+
+            return;
+        }
+
+
+        currentView =
+            "search";
+
+
+        const filtered =
+            getSearchResults();
+
+
+        const title =
+            document.getElementById(
+                "titulo-principal"
+            );
+
+
+        if (title) {
+
+            title.textContent =
+                `Search: "${query}" (${filtered.length})`;
+        }
+
+
+        renderProducts(
+            filtered
+        );
+    }
+
+
+    searchBtn?.addEventListener(
+        "click",
+        searchProducts
+    );
+
+
+    searchInput?.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                searchProducts();
+            }
+        }
+    );
+
+
+    /* =========================================================
+       ZOOM MODAL
+    ========================================================= */
+
+    const zoomModal =
+        document.createElement(
+            "div"
+        );
+
+
+    zoomModal.id =
+        "zoom-modal";
+
+
+    zoomModal.innerHTML = `
+
+        <button
+            id="zoom-prev"
+            class="zoom-control"
+            type="button"
+        >
+            &#9664;
+        </button>
+
+        <img
+            id="zoom-img"
+            alt="Product image"
+        >
+
+        <button
+            id="zoom-next"
+            class="zoom-control"
+            type="button"
+        >
+            &#9654;
+        </button>
+
+        <div id="zoom-desc"></div>
+
+    `;
+
+
+    document.body.appendChild(
+        zoomModal
+    );
+
+
+    const zoomImg =
+        document.getElementById(
+            "zoom-img"
+        );
+
+    const zoomDesc =
+        document.getElementById(
+            "zoom-desc"
+        );
+
+    const zoomPrev =
+        document.getElementById(
+            "zoom-prev"
+        );
+
+    const zoomNext =
+        document.getElementById(
+            "zoom-next"
+        );
+
+
+    let zoomImages = [];
+
+    let zoomIndex = 0;
+
+    let zoomProduct = null;
+
+
+    /* =========================================================
+       FIRST WORKING IMAGE
+    ========================================================= */
+
+    function getFirstWorkingImage(
+        source,
+        callback
+    ) {
+
+        const candidates =
+            getImageCandidates(
+                source
+            );
+
+
+        let index = 0;
+
+
+        function tryNext() {
+
+            if (
+                index >=
+                candidates.length
+            ) {
+
+                callback(null);
+
+                return;
+            }
+
+
+            const url =
+                candidates[
+                    index++
+                ];
+
+
+            const image =
+                new Image();
+
+
+            image.onload =
+                function () {
+
+                    callback(
+                        url
+                    );
+                };
+
+
+            image.onerror =
+                function () {
+
+                    tryNext();
+                };
+
+
+            image.src =
+                url;
+        }
+
+
+        tryNext();
+    }
+
+
+    /* =========================================================
+       OPEN ZOOM
+    ========================================================= */
+
+    function openZoom(
+        product,
+        index
+    ) {
+
+        zoomProduct =
+            product;
+
+
+        zoomImages =
+            Array.isArray(
+                product.imagenes
+            )
+                ? product.imagenes
+                : [];
+
+
+        if (
+            !zoomImages.length
+        ) {
+
+            return;
+        }
+
+
+        zoomIndex =
+            Math.max(
+                0,
+                Math.min(
+                    Number(index) || 0,
+                    zoomImages.length - 1
+                )
+            );
+
+
+        updateZoom();
+
+
+        zoomModal.style.display =
+            "flex";
+    }
+
+
+    /* =========================================================
+       UPDATE ZOOM
+    ========================================================= */
+
+    function updateZoom() {
+
+        if (
+            !zoomImages.length
+        ) {
+
+            return;
+        }
+
+
+        const source =
+            zoomImages[
+                zoomIndex
+            ];
+
+
+        zoomImg.style.opacity =
+            "0.5";
+
+
+        getFirstWorkingImage(
+            source,
+            function (url) {
+
+                if (url) {
+
+                    zoomImg.src =
+                        url;
+
+                } else {
+
+                    zoomImg.removeAttribute(
+                        "src"
+                    );
+                }
+
+
+                zoomImg.style.opacity =
+                    "1";
+            }
+        );
+
+
+        zoomDesc.textContent =
+            zoomProduct?.description ||
+            "";
+
+
+        const multiple =
+            zoomImages.length > 1;
+
+
+        zoomPrev.style.display =
+            multiple
+                ? "block"
+                : "none";
+
+
+        zoomNext.style.display =
+            multiple
+                ? "block"
+                : "none";
+    }
+
+
+    zoomPrev.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+
+            if (
+                !zoomImages.length
+            ) {
+
+                return;
+            }
+
+
+            zoomIndex =
+                (
+                    zoomIndex -
+                    1 +
+                    zoomImages.length
+                ) %
+                zoomImages.length;
+
+
+            updateZoom();
+        }
+    );
+
+
+    zoomNext.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+
+            if (
+                !zoomImages.length
+            ) {
+
+                return;
+            }
+
+
+            zoomIndex =
+                (
+                    zoomIndex +
+                    1
+                ) %
+                zoomImages.length;
+
+
+            updateZoom();
+        }
+    );
+
+
+    zoomImg.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+        }
+    );
+
+
+    zoomModal.addEventListener(
+        "click",
+        function () {
+
+            zoomModal.style.display =
+                "none";
+
+
+            zoomImg.removeAttribute(
+                "src"
+            );
+
+
+            zoomImages = [];
+
+            zoomProduct = null;
+        }
+    );
+
+
+    /* =========================================================
+       LOAD IMAGE
+
+       AQUÍ ESTÁ EL CAMBIO PRINCIPAL.
+
+       La URL de Cloudinary se asigna directamente al <img>.
+
+       NO hacemos:
+           location.reload()
+           location.replace()
+           window.location.href
+
+       cuando una imagen falla.
+    ========================================================= */
+
+    function loadImage(
+        img,
+        product
+    ) {
+
+        const sourceImages =
+            Array.isArray(
+                product.imagenes
+            )
+                ? product.imagenes
+                : [];
+
+
+        const gallery =
+            img.parentElement;
+
+
+        const loading =
+            gallery?.querySelector(
+                ".image-loading"
+            );
+
+
+        const error =
+            gallery?.querySelector(
+                ".image-error"
+            );
+
+
+        if (
+            !sourceImages.length
+        ) {
+
+            loading?.classList.add(
+                "hidden"
+            );
+
+            error?.classList.add(
+                "show"
+            );
+
+            return;
+        }
+
+
+        let imageIndex = 0;
+
+
+        function tryImage() {
+
+            if (
+                imageIndex >=
+                sourceImages.length
+            ) {
+
+                loading?.classList.add(
+                    "hidden"
+                );
+
+                error?.classList.add(
+                    "show"
+                );
+
+                console.error(
+                    "No working images:",
+                    product.titulo,
+                    sourceImages
+                );
+
+                return;
+            }
+
+
+            const originalIndex =
+                imageIndex;
+
+
+            const source =
+                sourceImages[
+                    imageIndex++
+                ];
+
+
+            const candidates =
+                getImageCandidates(
+                    source
+                );
+
+
+            if (!candidates.length) {
+
+                tryImage();
+
+                return;
+            }
+
+
+            let candidateIndex = 0;
+
+
+            function tryCandidate() {
+
+                if (
+                    candidateIndex >=
+                    candidates.length
+                ) {
+
+                    /*
+                     * Esta imagen no funcionó.
+                     *
+                     * Probamos la siguiente imagen
+                     * del mismo producto.
+                     */
+                    tryImage();
+
+                    return;
+                }
+
+
+                const url =
+                    candidates[
+                        candidateIndex++
+                    ];
+
+
+                console.log(
+                    "Loading image:",
+                    product.titulo,
+                    originalIndex,
+                    "/",
+                    sourceImages.length,
+                    url
+                );
+
+
+                /*
+                 * IMPORTANTE:
+                 *
+                 * Usamos el MISMO <img>.
+                 *
+                 * No hacemos una segunda carga
+                 * innecesaria con new Image().
+                 */
+
+                img.onload =
+                    function () {
+
+                        img.dataset.index =
+                            String(
+                                originalIndex
+                            );
+
+
+                        img.dataset.loadedUrl =
+                            url;
+
+
+                        img.classList.add(
+                            "loaded"
+                        );
+
+
+                        loading?.classList.add(
+                            "hidden"
+                        );
+
+
+                        error?.classList.remove(
+                            "show"
+                        );
+
+
+                        console.log(
+                            "IMAGE OK:",
+                            product.titulo,
+                            url
+                        );
+                    };
+
+
+                img.onerror =
+                    function () {
+
+                        console.warn(
+                            "IMAGE FAILED:",
+                            product.titulo,
+                            url
+                        );
+
+
+                        /*
+                         * Limpiamos handlers antes
+                         * del siguiente intento.
+                         */
+                        img.onload = null;
+                        img.onerror = null;
+
+
+                        tryCandidate();
+                    };
+
+
+                /*
+                 * LA URL DE CLOUDINARY VA DIRECTAMENTE.
+                 */
+                img.src =
+                    url;
+            }
+
+
+            tryCandidate();
+        }
+
+
+        tryImage();
+    }
+
+
+    /* =========================================================
+       RENDER PRODUCTS
+    ========================================================= */
+
+    function renderProducts(list) {
+
+        if (!contenedor) {
+
+            console.error(
+                "Missing #contenedor-productos"
+            );
+
+            return;
+        }
+
+
+        contenedor.innerHTML =
+            "";
+
+
+        if (
+            !Array.isArray(list) ||
+            !list.length
+        ) {
+
+            contenedor.innerHTML = `
+
+                <p style="
+                    width:100%;
+                    text-align:center;
+                    color:#888;
+                    padding:40px;
+                ">
+                    Coming soon...
+                </p>
+
+            `;
+
+            return;
+        }
+
+
+        const cart =
+            getCart();
+
+
+        /* =====================================================
+           DEDUP PRODUCTS
+        ===================================================== */
+
+        const uniqueProducts = [];
+
+        const productIds =
+            new Set();
+
+
+        list.forEach(
+            product => {
+
+                const key =
+                    String(
+                        product.id ??
+                        product.titulo
+                    );
+
+
+                if (
+                    productIds.has(key)
+                ) {
+
+                    return;
+                }
+
+
+                productIds.add(
+                    key
+                );
+
+
+                uniqueProducts.push(
+                    product
                 );
             }
         );
 
 
-        /* =========================================================
-        OFFER MODAL
-        ========================================================= */
+        uniqueProducts.forEach(
+            product => {
 
-        const offerModal =
-            document.getElementById(
-                "negociar-modal"
-            );
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
 
-        document
-            .getElementById(
-                "cerrar-negociar"
-            )
-            ?.addEventListener(
-                "click",
-                function () {
+                card.className =
+                    "producto";
 
-                    if (offerModal) {
 
-                        offerModal.style.display =
-                            "none";
+                card.dataset.id =
+                    String(
+                        product.id
+                    );
+
+
+                /* =================================================
+                   GALLERY
+                ================================================= */
+
+                const gallery =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                gallery.className =
+                    "galeria";
+
+
+                const loading =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                loading.className =
+                    "image-loading";
+
+
+                loading.textContent =
+                    "Loading...";
+
+
+                const error =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                error.className =
+                    "image-error";
+
+
+                error.innerHTML = `
+
+                    <i class="bi bi-image"></i>
+
+                    <span>
+                        Image unavailable
+                    </span>
+
+                `;
+
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                img.className =
+                    "main-img";
+
+
+                img.alt =
+                    product.titulo ||
+                    "Product";
+
+
+                img.loading =
+                    "lazy";
+
+
+                img.decoding =
+                    "async";
+
+
+                img.dataset.index =
+                    "0";
+
+
+                gallery.append(
+                    loading,
+                    error,
+                    img
+                );
+
+
+                loadImage(
+                    img,
+                    product
+                );
+
+
+                img.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        openZoom(
+                            product,
+                            Number(
+                                img.dataset.index
+                            ) || 0
+                        );
                     }
-                }
-            );
+                );
 
 
-        offerModal?.addEventListener(
-            "click",
-            function (event) {
+                /* =================================================
+                   TITLE
+                ================================================= */
+
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
+
+
+                title.textContent =
+                    product.titulo ||
+                    "Untitled Product";
+
+
+                /* =================================================
+                   DESCRIPTION
+                ================================================= */
+
+                const description =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                description.className =
+                    "product-description";
+
+
+                description.textContent =
+                    product.description ||
+                    "";
+
+
+                /* =================================================
+                   CART
+                ================================================= */
+
+                const cartItem =
+                    cart.find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                product.id
+                            )
+                    );
+
+
+                const cartQuantity =
+                    Number(
+                        cartItem?.quantity ||
+                        0
+                    );
+
+
+                const stock =
+                    Number(
+                        product.stock ||
+                        0
+                    );
+
+
+                const remaining =
+                    Math.max(
+                        0,
+                        stock -
+                        cartQuantity
+                    );
+
+
+                /* =================================================
+                   STOCK
+                ================================================= */
+
+                const stockEl =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                stockEl.className =
+                    "stock";
+
+
+                stockEl.textContent =
+                    remaining > 0
+                        ? `Stock: ${remaining}`
+                        : "Out of stock";
+
+
+                stockEl.style.color =
+                    remaining > 0
+                        ? "#888"
+                        : "#ff3333";
+
+
+                /* =================================================
+                   PRICE
+                ================================================= */
+
+                const price =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                price.className =
+                    "price";
+
+
+                price.textContent =
+                    "$" +
+                    Number(
+                        product.price || 0
+                    ).toFixed(2);
+
+
+                /* =================================================
+                   ADD CART
+                ================================================= */
+
+                const add =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                add.className =
+                    "agregar-carrito";
+
+
+                add.type =
+                    "button";
+
+
+                add.textContent =
+                    remaining > 0
+                        ? (
+                            cartQuantity
+                                ? `Add (${cartQuantity})`
+                                : "Add"
+                        )
+                        : "Out of stock";
+
+
+                add.disabled =
+                    remaining <= 0;
+
+
+                add.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        const currentCart =
+                            getCart();
+
+
+                        const index =
+                            currentCart.findIndex(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        product.id
+                                    )
+                            );
+
+
+                        const current =
+                            index >= 0
+                                ? Number(
+                                    currentCart[
+                                        index
+                                    ].quantity ||
+                                    0
+                                )
+                                : 0;
+
+
+                        if (
+                            current >=
+                            stock
+                        ) {
+
+                            return;
+                        }
+
+
+                        if (
+                            index >= 0
+                        ) {
+
+                            currentCart[
+                                index
+                            ].quantity =
+                                current + 1;
+
+                        } else {
+
+                            currentCart.push({
+
+                                id:
+                                    product.id,
+
+                                titulo:
+                                    product.titulo,
+
+                                price:
+                                    product.price,
+
+                                imagenes:
+                                    product.imagenes,
+
+                                quantity:
+                                    1
+                            });
+                        }
+
+
+                        localStorage.setItem(
+                            "productos-en-cart",
+                            JSON.stringify(
+                                currentCart
+                            )
+                        );
+
+
+                        updateCartCount();
+
+
+                        renderProducts(
+                            getCurrentProducts()
+                        );
+                    }
+                );
+
+
+                /* =================================================
+                   OFFER
+                ================================================= */
+
+                const offer =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                offer.className =
+                    "negociar";
+
+
+                offer.type =
+                    "button";
+
+
+                offer.textContent =
+                    "Make Offer";
+
+
+                offer.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        const modal =
+                            document.getElementById(
+                                "negociar-modal"
+                            );
+
+
+                        const productName =
+                            document.getElementById(
+                                "negociar-producto"
+                            );
+
+
+                        if (modal) {
+
+                            modal.style.display =
+                                "flex";
+                        }
+
+
+                        if (productName) {
+
+                            productName.textContent =
+                                product.titulo;
+                        }
+                    }
+                );
+
+
+                /* =================================================
+                   APPEND
+                ================================================= */
+
+                card.append(
+                    gallery,
+                    title
+                );
+
 
                 if (
-                    event.target ===
-                    offerModal
+                    product.description &&
+                    product.description.trim()
                 ) {
+
+                    card.append(
+                        description
+                    );
+                }
+
+
+                card.append(
+                    stockEl,
+                    price,
+                    add,
+                    offer
+                );
+
+
+                contenedor.appendChild(
+                    card
+                );
+            }
+        );
+
+
+        updateCartCount();
+    }
+
+
+    /* =========================================================
+       INITIAL RENDER
+    ========================================================= */
+
+    renderProducts(
+        visibleProducts()
+    );
+
+
+    /* =========================================================
+       CATEGORY FILTER
+    ========================================================= */
+
+    aside?.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".submenu .boton-categoria"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const main =
+                String(
+                    button.dataset.main ||
+                    ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+
+            const sub =
+                String(
+                    button.dataset.sub ||
+                    ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+
+            if (
+                sub ===
+                "adultmagazines"
+            ) {
+
+                const answer =
+                    confirm(
+                        "This section contains adult material. Are you 18 or older?"
+                    );
+
+
+                if (!answer) {
+
+                    return;
+                }
+            }
+
+
+            currentView =
+                "category";
+
+
+            currentCategoryMain =
+                main;
+
+
+            currentCategorySub =
+                sub;
+
+
+            if (searchInput) {
+
+                searchInput.value =
+                    "";
+            }
+
+
+            const filtered =
+                productosMaster.filter(
+                    product => {
+
+                        const productMain =
+                            String(
+                                product.categoria?.main ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .trim();
+
+
+                        const productSub =
+                            String(
+                                product.categoria?.sub ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .trim();
+
+
+                        return (
+                            productMain ===
+                            main &&
+                            productSub ===
+                            sub
+                        );
+                    }
+                );
+
+
+            const title =
+                document.getElementById(
+                    "titulo-principal"
+                );
+
+
+            if (title) {
+
+                title.textContent =
+                    capitalize(main) +
+                    " · " +
+                    capitalize(sub);
+            }
+
+
+            renderProducts(
+                filtered
+            );
+
+
+            aside?.classList.remove(
+                "active"
+            );
+        }
+    );
+
+
+    /* =========================================================
+       OFFER MODAL
+    ========================================================= */
+
+    const offerModal =
+        document.getElementById(
+            "negociar-modal"
+        );
+
+
+    document
+        .getElementById(
+            "cerrar-negociar"
+        )
+        ?.addEventListener(
+            "click",
+            function () {
+
+                if (offerModal) {
 
                     offerModal.style.display =
                         "none";
@@ -4276,704 +4231,811 @@ No, exit
         );
 
 
-        /* =========================================================
-        SEND OFFER
-        ========================================================= */
+    offerModal?.addEventListener(
+        "click",
+        function (event) {
 
-        document
-            .getElementById(
-                "enviar-negociacion"
-            )
-            ?.addEventListener(
-                "click",
-                async function () {
+            if (
+                event.target ===
+                offerModal
+            ) {
 
-                    const email =
-                        document
-                            .getElementById(
-                                "negociar-email"
-                            )
-                            ?.value
-                            .trim();
+                offerModal.style.display =
+                    "none";
+            }
+        }
+    );
 
 
-                    const oferta =
-                        document
-                            .getElementById(
-                                "negociar-precio"
-                            )
-                            ?.value
-                            .trim();
+    /* =========================================================
+       SEND OFFER
+    ========================================================= */
+
+    document
+        .getElementById(
+            "enviar-negociacion"
+        )
+        ?.addEventListener(
+            "click",
+            async function () {
+
+                const email =
+                    document
+                        .getElementById(
+                            "negociar-email"
+                        )
+                        ?.value
+                        .trim();
 
 
-                    const producto =
-                        document
-                            .getElementById(
-                                "negociar-producto"
-                            )
-                            ?.textContent ||
-                        "";
+                const oferta =
+                    document
+                        .getElementById(
+                            "negociar-precio"
+                        )
+                        ?.value
+                        .trim();
 
 
-                    const status =
-                        document.getElementById(
-                            "negociar-status"
+                const producto =
+                    document
+                        .getElementById(
+                            "negociar-producto"
+                        )
+                        ?.textContent ||
+                    "";
+
+
+                const status =
+                    document.getElementById(
+                        "negociar-status"
+                    );
+
+
+                if (
+                    !email ||
+                    !oferta
+                ) {
+
+                    alert(
+                        "Please complete all fields."
+                    );
+
+                    return;
+                }
+
+
+                try {
+
+                    if (status) {
+
+                        status.textContent =
+                            "Sending offer...";
+                    }
+
+
+                    const response =
+                        await fetch(
+                            API_BASE +
+                            "/api/send-offer",
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+                                        producto,
+                                        email,
+                                        oferta
+                                    })
+                            }
                         );
+
+
+                    const data =
+                        await response.json();
 
 
                     if (
-                        !email ||
-                        !oferta
+                        !response.ok
                     ) {
 
-                        alert(
-                            "Please complete all fields."
+                        throw new Error(
+                            data.error ||
+                            "Error sending offer"
                         );
+                    }
 
+
+                    if (status) {
+
+                        status.textContent =
+                            "Offer sent!";
+                    }
+
+
+                    setTimeout(
+                        function () {
+
+                            if (
+                                offerModal
+                            ) {
+
+                                offerModal.style.display =
+                                    "none";
+                            }
+
+
+                            if (status) {
+
+                                status.textContent =
+                                    "";
+                            }
+
+                        },
+                        900
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Offer error:",
+                        error
+                    );
+
+
+                    if (status) {
+
+                        status.textContent =
+                            "Error sending offer.";
+                    }
+                }
+            }
+        );
+
+
+    /* =========================================================
+       AGE CHECK
+    ========================================================= */
+
+    const ageModal =
+        document.getElementById(
+            "ageCheckModal"
+        );
+
+
+    const ageYes =
+        document.getElementById(
+            "ageYes"
+        );
+
+
+    const ageNo =
+        document.getElementById(
+            "ageNo"
+        );
+
+
+    ageYes?.addEventListener(
+        "click",
+        function () {
+
+            sessionStorage.setItem(
+                "latronic-age-confirmed",
+                "1"
+            );
+
+
+            ageModal?.classList.remove(
+                "show"
+            );
+        }
+    );
+
+
+    ageNo?.addEventListener(
+        "click",
+        function () {
+
+            /*
+             * Esta es la única redirección
+             * intencional de este script.
+             *
+             * NO es ejecutada por Socket.IO.
+             */
+
+            window.location.href =
+                "index.html";
+        }
+    );
+
+
+    /* =========================================================
+       SOCKET.IO
+       
+       =========================================================
+
+       MUY IMPORTANTE:
+
+       Este bloque NO contiene:
+
+           location.reload()
+           location.replace()
+           window.location.href
+
+       para actualizaciones de productos.
+
+       Si Admin cambia:
+
+           precio
+           stock
+           descripción
+           título
+           imágenes
+           categoría
+           tags
+
+       Shop actualiza solamente el producto afectado.
+
+       Si Admin manda solamente:
+
+           { id, price }
+
+       las imágenes existentes permanecen.
+
+       Si Admin manda:
+
+           { id, stock }
+
+       las imágenes permanecen.
+
+       Si Admin manda:
+
+           { id, description }
+
+       las imágenes permanecen.
+
+       Si Admin manda imágenes:
+
+           { id, imagenes: [...] }
+
+       se reemplazan solamente las imágenes de ese producto.
+    ========================================================= */
+
+    let socket = null;
+
+
+    if (
+        typeof io ===
+        "function"
+    ) {
+
+        try {
+
+            console.log(
+                "Connecting Socket.IO:",
+                API_BASE
+            );
+
+
+            socket =
+                io(
+                    API_BASE,
+                    {
+                        transports: [
+                            "websocket",
+                            "polling"
+                        ],
+
+                        reconnection:
+                            true,
+
+                        reconnectionAttempts:
+                            Infinity,
+
+                        reconnectionDelay:
+                            1000,
+
+                        reconnectionDelayMax:
+                            5000,
+
+                        timeout:
+                            20000
+                    }
+                );
+
+
+            socket.on(
+                "connect",
+                function () {
+
+                    console.log(
+                        "Socket.IO connected:",
+                        socket.id
+                    );
+                }
+            );
+
+
+            socket.on(
+                "disconnect",
+                function (reason) {
+
+                    console.log(
+                        "Socket.IO disconnected:",
+                        reason
+                    );
+                }
+            );
+
+
+            socket.on(
+                "connect_error",
+                function (error) {
+
+                    console.warn(
+                        "Socket.IO connection error:",
+                        error?.message ||
+                        error
+                    );
+                }
+            );
+
+
+            /* =====================================================
+               PRODUCT UPDATE
+            ===================================================== */
+
+            socket.on(
+                "actualizar-productos",
+                function (updated) {
+
+                    console.log(
+                        "SOCKET PRODUCT UPDATE:",
+                        updated
+                    );
+
+
+                    const updates =
+                        Array.isArray(
+                            updated
+                        )
+                            ? updated
+                            : [updated];
+
+
+                    let changed =
+                        false;
+
+
+                    updates.forEach(
+                        item => {
+
+                            if (
+                                !item ||
+                                typeof item !== "object"
+                            ) {
+
+                                return;
+                            }
+
+
+                            const normalized =
+                                normalizeProduct(
+                                    item
+                                );
+
+
+                            if (!normalized) {
+
+                                return;
+                            }
+
+
+                            const index =
+                                productosMaster.findIndex(
+                                    p =>
+                                        String(
+                                            p.id
+                                        ) ===
+                                        String(
+                                            normalized.id
+                                        )
+                                );
+
+
+                            /* =====================================
+                               PRODUCTO EXISTENTE
+                            ===================================== */
+
+                            if (
+                                index >= 0
+                            ) {
+
+                                const current =
+                                    productosMaster[
+                                        index
+                                    ];
+
+
+                                /*
+                                 * IMPORTANTE:
+                                 *
+                                 * Comenzamos con TODO el producto
+                                 * actual.
+                                 */
+                                const merged = {
+                                    ...current
+                                };
+
+
+                                /*
+                                 * Copiar solamente las propiedades
+                                 * que realmente llegaron del socket.
+                                 */
+                                Object.keys(
+                                    normalized
+                                ).forEach(
+                                    key => {
+
+                                        /*
+                                         * id siempre se conserva.
+                                         */
+                                        if (
+                                            key === "id"
+                                        ) {
+
+                                            return;
+                                        }
+
+
+                                        /*
+                                         * Si llegó imagenes,
+                                         * usamos las nuevas.
+                                         */
+                                        merged[key] =
+                                            normalized[key];
+                                    }
+                                );
+
+
+                                /*
+                                 * PROTECCIÓN EXTRA:
+                                 *
+                                 * Si el socket NO envió imágenes,
+                                 * jamás borrar las actuales.
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "imagenes"
+                                    )
+                                ) {
+
+                                    merged.imagenes =
+                                        Array.isArray(
+                                            current.imagenes
+                                        )
+                                            ? current.imagenes
+                                            : [];
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN DE TÍTULO
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "titulo"
+                                    )
+                                ) {
+
+                                    merged.titulo =
+                                        current.titulo;
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN DESCRIPTION
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "description"
+                                    )
+                                ) {
+
+                                    merged.description =
+                                        current.description;
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN PRICE
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "price"
+                                    )
+                                ) {
+
+                                    merged.price =
+                                        current.price;
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN STOCK
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "stock"
+                                    )
+                                ) {
+
+                                    merged.stock =
+                                        current.stock;
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN CATEGORY
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "categoria"
+                                    )
+                                ) {
+
+                                    merged.categoria =
+                                        current.categoria ||
+                                        {};
+                                }
+
+
+                                /*
+                                 * PROTECCIÓN TAGS
+                                 */
+                                if (
+                                    !Object.prototype.hasOwnProperty.call(
+                                        normalized,
+                                        "tags"
+                                    )
+                                ) {
+
+                                    merged.tags =
+                                        current.tags ||
+                                        [];
+                                }
+
+
+                                /*
+                                 * Guardar producto fusionado.
+                                 */
+                                productosMaster[
+                                    index
+                                ] =
+                                    merged;
+
+
+                                console.log(
+                                    "Product merged:",
+                                    merged.id
+                                );
+
+                            } else {
+
+                                /* =================================
+                                   PRODUCTO NUEVO
+                                ================================= */
+
+                                if (
+                                    !Array.isArray(
+                                        normalized.imagenes
+                                    )
+                                ) {
+
+                                    normalized.imagenes =
+                                        [];
+                                }
+
+
+                                if (
+                                    !normalized.titulo
+                                ) {
+
+                                    normalized.titulo =
+                                        "Untitled Product";
+                                }
+
+
+                                if (
+                                    normalized.description ===
+                                    undefined
+                                ) {
+
+                                    normalized.description =
+                                        "";
+                                }
+
+
+                                if (
+                                    normalized.price ===
+                                    undefined
+                                ) {
+
+                                    normalized.price =
+                                        0;
+                                }
+
+
+                                if (
+                                    normalized.stock ===
+                                    undefined
+                                ) {
+
+                                    normalized.stock =
+                                        0;
+                                }
+
+
+                                if (
+                                    !normalized.categoria
+                                ) {
+
+                                    normalized.categoria =
+                                        {};
+                                }
+
+
+                                if (
+                                    !Array.isArray(
+                                        normalized.tags
+                                    )
+                                ) {
+
+                                    normalized.tags =
+                                        [];
+                                }
+
+
+                                productosMaster.push(
+                                    normalized
+                                );
+
+
+                                console.log(
+                                    "New product added:",
+                                    normalized.id
+                                );
+                            }
+
+
+                            changed =
+                                true;
+                        }
+                    );
+
+
+                    if (!changed) {
 
                         return;
                     }
 
 
-                    try {
+                    /* =================================================
+                       DEDUP MASTER
+                    ================================================= */
 
-                        if (status) {
-
-                            status.textContent =
-                                "Sending offer...";
-                        }
+                    const map =
+                        new Map();
 
 
-                        const response =
-                            await fetch(
-                                API_BASE +
-                                "/api/send-offer",
-                                {
-                                    method:
-                                        "POST",
+                    productosMaster.forEach(
+                        product => {
 
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
+                            const key =
+                                String(
+                                    product.id
+                                );
 
-                                    body:
-                                        JSON.stringify({
-                                            producto,
-                                            email,
-                                            oferta
-                                        })
-                                }
+
+                            if (
+                                !map.has(key)
+                            ) {
+
+                                map.set(
+                                    key,
+                                    product
+                                );
+
+                                return;
+                            }
+
+
+                            const existing =
+                                map.get(
+                                    key
+                                );
+
+
+                            const merged = {
+                                ...existing,
+                                ...product
+                            };
+
+
+                            /*
+                             * No perder imágenes durante dedup.
+                             */
+                            if (
+                                !Array.isArray(
+                                    product.imagenes
+                                )
+                            ) {
+
+                                merged.imagenes =
+                                    Array.isArray(
+                                        existing.imagenes
+                                    )
+                                        ? existing.imagenes
+                                        : [];
+                            }
+
+
+                            map.set(
+                                key,
+                                merged
                             );
-
-
-                        const data =
-                            await response.json();
-
-
-                        if (
-                            !response.ok
-                        ) {
-
-                            throw new Error(
-                                data.error ||
-                                "Error sending offer"
-                            );
-                        }
-
-
-                        if (status) {
-
-                            status.textContent =
-                                "Offer sent!";
-                        }
-
-
-                        setTimeout(
-                            function () {
-
-                                if (
-                                    offerModal
-                                ) {
-
-                                    offerModal.style.display =
-                                        "none";
-                                }
-
-
-                                if (status) {
-
-                                    status.textContent =
-                                        "";
-                                }
-
-                            },
-                            900
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Offer error:",
-                            error
-                        );
-
-
-                        if (status) {
-
-                            status.textContent =
-                                "Error sending offer.";
-                        }
-                    }
-                }
-            );
-
-
-        /* =========================================================
-        AGE CHECK
-        ========================================================= */
-
-        const ageModal =
-            document.getElementById(
-                "ageCheckModal"
-            );
-
-
-        const ageYes =
-            document.getElementById(
-                "ageYes"
-            );
-
-
-        const ageNo =
-            document.getElementById(
-                "ageNo"
-            );
-
-
-        ageYes?.addEventListener(
-            "click",
-            function () {
-
-                sessionStorage.setItem(
-                    "latronic-age-confirmed",
-                    "1"
-                );
-
-
-                ageModal?.classList.remove(
-                    "show"
-                );
-            }
-        );
-
-
-        ageNo?.addEventListener(
-            "click",
-            function () {
-
-                /*
-                * Esta es la única redirección
-                * relacionada con el age check.
-                */
-
-                window.location.href =
-                    "index.html";
-            }
-        );
-
-
-        /* =========================================================
-        SOCKET.IO
-        
-        IMPORTANTE:
-        
-        NO:
-        location.reload()
-        location.replace()
-        window.location.href
-        
-        cuando cambia un producto.
-        ========================================================= */
-
-        if (
-            typeof io ===
-            "function"
-        ) {
-
-            try {
-
-                const socket =
-                    io(
-                        API_BASE,
-                        {
-                            transports: [
-                                "websocket",
-                                "polling"
-                            ],
-
-                            reconnection:
-                                true,
-
-                            reconnectionAttempts:
-                                Infinity,
-
-                            reconnectionDelay:
-                                1000,
-
-                            reconnectionDelayMax:
-                                5000
                         }
                     );
 
 
-                socket.on(
-                    "connect",
-                    function () {
-
-                        console.log(
-                            "Socket.IO connected:",
-                            socket.id
+                    productosMaster =
+                        Array.from(
+                            map.values()
                         );
-                    }
-                );
 
 
-                socket.on(
-                    "disconnect",
-                    function (reason) {
+                    /* =================================================
+                       LOCAL STORAGE
+                    ================================================= */
 
-                        console.log(
-                            "Socket.IO disconnected:",
-                            reason
+                    try {
+
+                        localStorage.setItem(
+                            "productos",
+                            JSON.stringify(
+                                productosMaster
+                            )
                         );
-                    }
-                );
 
-
-                socket.on(
-                    "connect_error",
-                    function (error) {
+                    } catch (error) {
 
                         console.warn(
-                            "Socket.IO connection error:",
-                            error?.message ||
+                            "Could not update localStorage:",
                             error
                         );
                     }
-                );
 
 
-                /* =================================================
-                PRODUCT UPDATE
-                
-                Soporta:
-                
-                {
-                    id,
-                    price
-                }
-                
-                o
-                
-                {
-                    id,
-                    stock
-                }
-                
-                o
-                
-                producto completo.
-                
-                NO reemplaza campos que no llegaron.
-                ================================================= */
+                    /* =================================================
+                       RENDER CURRENT VIEW
+                       
+                       NO RELOAD
+                       NO REDIRECT
+                    ================================================= */
 
-                socket.on(
-                    "actualizar-productos",
-                    function (updated) {
-
-                        console.log(
-                            "SOCKET PRODUCT UPDATE:",
-                            updated
-                        );
-
-
-                        const updates =
-                            Array.isArray(
-                                updated
-                            )
-                                ? updated
-                                : [updated];
-
-
-                        let changed =
-                            false;
-
-
-                        updates.forEach(
-                            item => {
-
-                                if (
-                                    !item ||
-                                    typeof item !== "object"
-                                ) {
-
-                                    return;
-                                }
-
-
-                                const normalized =
-                                    normalizeProduct(
-                                        item
-                                    );
-
-
-                                if (!normalized) {
-
-                                    return;
-                                }
-
-
-                                const index =
-                                    productosMaster.findIndex(
-                                        p =>
-                                            String(
-                                                p.id
-                                            ) ===
-                                            String(
-                                                normalized.id
-                                            )
-                                    );
-
-
-                                /* =================================
-                                PRODUCT EXISTS
-                                ================================= */
-
-                                if (
-                                    index >= 0
-                                ) {
-
-                                    const current =
-                                        productosMaster[
-                                            index
-                                        ];
-
-
-                                    /*
-                                    * IMPORTANTÍSIMO:
-                                    *
-                                    * No reemplazar imágenes
-                                    * si el socket no las mandó.
-                                    */
-
-                                    const merged = {
-
-                                        ...current,
-
-                                        ...normalized
-                                    };
-
-
-                                    /*
-                                    * Si normalized NO contiene
-                                    * imagenes, conservar las actuales.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "imagenes"
-                                        )
-                                    ) {
-
-                                        merged.imagenes =
-                                            current.imagenes || [];
-                                    }
-
-
-                                    /*
-                                    * Igual para título.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "titulo"
-                                        )
-                                    ) {
-
-                                        merged.titulo =
-                                            current.titulo;
-                                    }
-
-
-                                    /*
-                                    * Igual descripción.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "description"
-                                        )
-                                    ) {
-
-                                        merged.description =
-                                            current.description;
-                                    }
-
-
-                                    /*
-                                    * Igual precio.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "price"
-                                        )
-                                    ) {
-
-                                        merged.price =
-                                            current.price;
-                                    }
-
-
-                                    /*
-                                    * Igual stock.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "stock"
-                                        )
-                                    ) {
-
-                                        merged.stock =
-                                            current.stock;
-                                    }
-
-
-                                    /*
-                                    * Igual categoría.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "categoria"
-                                        )
-                                    ) {
-
-                                        merged.categoria =
-                                            current.categoria || {};
-                                    }
-
-
-                                    /*
-                                    * Igual tags.
-                                    */
-
-                                    if (
-                                        !Object.prototype.hasOwnProperty.call(
-                                            normalized,
-                                            "tags"
-                                        )
-                                    ) {
-
-                                        merged.tags =
-                                            current.tags || [];
-                                    }
-
-
-                                    productosMaster[
-                                        index
-                                    ] =
-                                        merged;
-
-                                } else {
-
-                                    /*
-                                    * Producto nuevo.
-                                    */
-
-                                    if (
-                                        !Array.isArray(
-                                            normalized.imagenes
-                                        )
-                                    ) {
-
-                                        normalized.imagenes =
-                                            [];
-                                    }
-
-
-                                    if (
-                                        !normalized.titulo
-                                    ) {
-
-                                        normalized.titulo =
-                                            "Untitled Product";
-                                    }
-
-
-                                    if (
-                                        normalized.description ===
-                                        undefined
-                                    ) {
-
-                                        normalized.description =
-                                            "";
-                                    }
-
-
-                                    if (
-                                        normalized.price ===
-                                        undefined
-                                    ) {
-
-                                        normalized.price =
-                                            0;
-                                    }
-
-
-                                    if (
-                                        normalized.stock ===
-                                        undefined
-                                    ) {
-
-                                        normalized.stock =
-                                            0;
-                                    }
-
-
-                                    if (
-                                        !normalized.categoria
-                                    ) {
-
-                                        normalized.categoria =
-                                            {};
-                                    }
-
-
-                                    if (
-                                        !Array.isArray(
-                                            normalized.tags
-                                        )
-                                    ) {
-
-                                        normalized.tags =
-                                            [];
-                                    }
-
-
-                                    productosMaster.push(
-                                        normalized
-                                    );
-                                }
-
-
-                                changed =
-                                    true;
-                            }
-                        );
-
-
-                        if (!changed) {
-
-                            return;
-                        }
-
-
-                        /* =================================================
-                        DEDUP MASTER
-                        ================================================= */
-
-                        const map =
-                            new Map();
-
-
-                        productosMaster.forEach(
-                            product => {
-
-                                const key =
-                                    String(
-                                        product.id
-                                    );
-
-
-                                if (
-                                    !map.has(key)
-                                ) {
-
-                                    map.set(
-                                        key,
-                                        product
-                                    );
-
-                                } else {
-
-                                    const existing =
-                                        map.get(
-                                            key
-                                        );
-
-
-                                    map.set(
-                                        key,
-                                        {
-                                            ...existing,
-                                            ...product,
-
-                                            imagenes:
-                                                Array.isArray(
-                                                    product.imagenes
-                                                )
-                                                    ? product.imagenes
-                                                    : existing.imagenes || []
-                                        }
-                                    );
-                                }
-                            }
-                        );
-
-
-                        productosMaster =
-                            Array.from(
-                                map.values()
-                            );
-
-
-                        /* =================================================
-                        LOCAL STORAGE
-                        ================================================= */
-
-                        try {
-
-                            localStorage.setItem(
-                                "productos",
-                                JSON.stringify(
-                                    productosMaster
-                                )
-                            );
-
-                        } catch (error) {
-
-                            console.warn(
-                                "Could not update localStorage:",
-                                error
-                            );
-                        }
-
-
-                        /* =================================================
-                        RENDER CURRENT VIEW
-                        
-                        NO RELOAD.
-                        NO REDIRECT.
-                        ================================================= */
+                    try {
 
                         if (
                             currentView ===
@@ -4987,12 +5049,8 @@ No, exit
                             "category"
                         ) {
 
-                            const filtered =
-                                getCurrentProducts();
-
-
                             renderProducts(
-                                filtered
+                                getCurrentProducts()
                             );
 
                         } else {
@@ -5002,149 +5060,192 @@ No, exit
                             );
                         }
 
+                    } catch (renderError) {
 
-                        console.log(
-                            "Product update applied without reload/redirect."
+                        console.error(
+                            "Render after socket update failed:",
+                            renderError
                         );
                     }
-                );
 
 
-            } catch (error) {
+                    console.log(
+                        "Product update applied WITHOUT reload/redirect."
+                    );
+                }
+            );
 
-                console.warn(
-                    "Socket.IO initialization failed:",
-                    error
-                );
-            }
+
+        } catch (error) {
+
+            console.warn(
+                "Socket.IO initialization failed:",
+                error
+            );
         }
 
+    } else {
 
-        /* =========================================================
-        IMAGE PRELOAD
-        
-        SOLO primeras 30.
-        NO genera Cloudinary falso.
-        ========================================================= */
+        console.warn(
+            "Socket.IO is not available."
+        );
+    }
 
-        setTimeout(
-            function () {
 
-                const products =
-                    visibleProducts()
-                        .slice(
-                            0,
-                            30
+    /* =========================================================
+       IMAGE PRELOAD
+       
+       Usa la URL REAL DE CLOUDINARY.
+       
+       No fabrica URLs.
+    ========================================================= */
+
+    setTimeout(
+        function () {
+
+            const products =
+                visibleProducts()
+                    .slice(
+                        0,
+                        30
+                    );
+
+
+            products.forEach(
+                product => {
+
+                    const first =
+                        product.imagenes?.[0];
+
+
+                    if (!first) {
+                        return;
+                    }
+
+
+                    const candidates =
+                        getImageCandidates(
+                            first
                         );
 
 
-                products.forEach(
-                    product => {
+                    if (
+                        !candidates.length
+                    ) {
 
-                        const first =
-                            product.imagenes?.[0];
-
-
-                        if (!first) {
-                            return;
-                        }
-
-
-                        const candidates =
-                            getImageCandidates(
-                                first
-                            );
-
-
-                        if (
-                            !candidates.length
-                        ) {
-
-                            return;
-                        }
-
-
-                        /*
-                        * Solo precargamos la primera
-                        * candidata.
-                        */
-
-                        const image =
-                            new Image();
-
-
-                        image.src =
-                            candidates[0];
+                        return;
                     }
-                );
-
-            },
-            1500
-        );
 
 
-        /* =========================================================
-        FINAL DEBUG
-        ========================================================= */
-
-        let totalImages =
-            0;
+                    const image =
+                        new Image();
 
 
-        productosMaster.forEach(
-            product => {
+                    /*
+                     * Cloudinary real primero.
+                     */
+                    image.src =
+                        candidates[0];
+                }
+            );
+
+        },
+        1500
+    );
+
+
+    /* =========================================================
+       FINAL DEBUG
+    ========================================================= */
+
+    let totalImages =
+        0;
+
+
+    let productsWithImages =
+        0;
+
+
+    productosMaster.forEach(
+        product => {
+
+            if (
+                Array.isArray(
+                    product.imagenes
+                ) &&
+                product.imagenes.length
+            ) {
+
+                productsWithImages++;
 
                 totalImages +=
-                    Array.isArray(
-                        product.imagenes
-                    )
-                        ? product.imagenes.length
-                        : 0;
+                    product.imagenes.length;
             }
-        );
+        }
+    );
 
 
-        console.log(
-            "========================================"
-        );
+    console.log(
+        "========================================"
+    );
 
 
-        console.log(
-            "LaTRONIC SHOP READY"
-        );
+    console.log(
+        "LaTRONIC SHOP READY"
+    );
 
 
-        console.log(
-            "Products:",
-            productosMaster.length
-        );
+    console.log(
+        "Products:",
+        productosMaster.length
+    );
 
 
-        console.log(
-            "REAL IMAGE RECORDS:",
-            totalImages
-        );
+    console.log(
+        "Products with images:",
+        productsWithImages
+    );
 
 
-        console.log(
-            "Socket.IO:",
-            typeof io === "function"
-                ? "AVAILABLE"
-                : "NOT AVAILABLE"
-        );
+    console.log(
+        "REAL IMAGE RECORDS:",
+        totalImages
+    );
 
 
-        console.log(
-            "Image server:",
-            IMAGE_SERVER_BASE
-        );
+    console.log(
+        "Socket.IO:",
+        typeof io === "function"
+            ? "AVAILABLE"
+            : "NOT AVAILABLE"
+    );
 
 
-        console.log(
-            "========================================"
-        );
+    console.log(
+        "Socket connected:",
+        socket?.connected
+            ? "YES"
+            : "NO"
+    );
 
-    });
-    </script>
+
+    console.log(
+        "Image server:",
+        IMAGE_SERVER_BASE
+    );
+
+
+    console.log(
+        "API:",
+        API_BASE + "/api/productos"
+    );
+
+
+    console.log(
+        "========================================"
+    );
+
+});
+</script>
 </body>
 </html>
