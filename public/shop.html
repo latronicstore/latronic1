@@ -2492,6 +2492,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
+
+        /* =========================================================
+   ADMIN ACCESS BUTTON
+   ========================================================= */
+
+const adminAccess =
+    document.getElementById("admin-access");
+
+adminAccess?.addEventListener(
+    "click",
+    function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log("Opening admin.html...");
+
+        window.location.href = "admin.html";
+    }
+);
     /* =========================================================
        MOBILE MENU
     ========================================================= */
