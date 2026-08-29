@@ -31,1012 +31,1723 @@
     </script>
 
 
-    <style>
+<style>
+/* ============================================================
+   LaTRONIC ADMIN — DARK 3D / ORANGE GLOW
+   MISMO DISEÑO VISUAL DEL SHOP
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:wght@100..700&display=swap');
+
+:root {
+    --orange: #f16413;
+    --orange-light: #ff9a52;
+    --orange-dark: #a83d08;
+    --orange-glow: rgba(241,100,19,.35);
+
+    --black: #090909;
+    --black-2: #0e0e0e;
+    --panel: #151515;
+    --panel-2: #1b1b1b;
+
+    --text: #e8e8e8;
+    --muted: #888;
+}
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    min-height: 100%;
+    background: #070707;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        "Josefin Sans",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 75% 0%,
+            rgba(241,100,19,.10),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 10% 80%,
+            rgba(241,100,19,.055),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            #0b0b0b,
+            #090909 45%,
+            #050505
+        );
+
+    color: var(--text);
+
+    overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #070707;
+}
+
+::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(
+            180deg,
+            #ff8a3d,
+            #f16413,
+            #8d3105
+        );
+
+    border-radius: 20px;
 
-        /* =====================================================
-           GLOBAL
-        ====================================================== */
+    box-shadow:
+        0 0 10px rgba(241,100,19,.3);
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+::-webkit-scrollbar-thumb:hover {
+    background: #ff9a52;
+}
 
-        html {
-            background: #111;
-        }
+/* ============================================================
+   LOGIN SCREEN
+   ============================================================ */
 
-        body {
-            background: #1b1b1b;
-            color: #fff;
-            min-height: 100vh;
-        }
+#login-screen {
+    position: fixed;
 
-        button,
-        input,
-        textarea {
-            font: inherit;
-        }
+    inset: 0;
 
-        button {
-            cursor: pointer;
-        }
+    display: flex;
 
+    justify-content: center;
+    align-items: center;
 
-        /* =====================================================
-           LOGIN
-        ====================================================== */
+    padding: 20px;
 
-        #login-screen {
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(241,100,19,.10),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at center,
+            #181818 0%,
+            #0b0b0b 55%,
+            #050505 100%
+        );
+}
 
-            display: flex;
+/* ============================================================
+   LOGIN BOX
+   ============================================================ */
 
-            justify-content: center;
+#login-box {
+    position: relative;
 
-            align-items: center;
+    width: 100%;
+    max-width: 400px;
 
-            min-height: 100vh;
+    padding: 34px 30px;
 
-            padding: 20px;
+    text-align: center;
 
-            background:
-                radial-gradient(
-                    circle at center,
-                    #292929 0%,
-                    #111 65%
-                );
-        }
+    border-radius: 18px;
 
-        #login-box {
+    border:
+        1px solid rgba(241,100,19,.45);
 
-            width: 100%;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.065),
+            rgba(255,255,255,.018) 35%,
+            rgba(0,0,0,.65)
+        ),
+        #111;
 
-            max-width: 380px;
+    box-shadow:
+        0 30px 70px rgba(0,0,0,.85),
+        0 0 35px rgba(241,100,19,.12),
+        inset 0 1px 0 rgba(255,255,255,.07);
 
-            background: #252525;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
 
-            padding: 30px;
+/* línea superior */
 
-            border-radius: 14px;
+#login-box::before {
+    content: "";
 
-            border: 1px solid #3b3b3b;
+    position: absolute;
 
-            box-shadow:
-                0 20px 60px
-                rgba(0,0,0,.6);
+    top: 0;
+    left: 10%;
 
-            text-align: center;
-        }
+    width: 80%;
+    height: 2px;
 
-        #login-box h1 {
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #f16413,
+            #ff9a52,
+            #f16413,
+            transparent
+        );
 
-            margin-bottom: 8px;
+    box-shadow:
+        0 0 12px rgba(241,100,19,.7);
+}
 
-            font-size: 28px;
-        }
+/* ============================================================
+   LOGIN TITLE
+   ============================================================ */
 
-        #login-box h6 {
+#login-box h1 {
+    font-family:
+        "Bebas Neue",
+        sans-serif;
 
-            color: #ff4444;
+    font-size: 2.7rem;
 
-            margin-bottom: 20px;
+    letter-spacing: 3px;
 
-            font-size: 12px;
-        }
+    margin-bottom: 7px;
 
-        #login-box input {
+    text-transform: uppercase;
 
-            width: 100%;
+    background:
+        linear-gradient(
+            180deg,
+            #ff9a52,
+            #f16413 55%,
+            #a83d08
+        );
 
-            padding: 13px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 
-            border: 1px solid #3a3a3a;
+    filter:
+        drop-shadow(
+            0 0 10px rgba(241,100,19,.25)
+        );
+}
 
-            border-radius: 7px;
+#login-box h6 {
+    color: #888;
 
-            background: #151515;
+    font-size: .72rem;
 
-            color: white;
+    letter-spacing: .5px;
 
-            outline: none;
+    margin-bottom: 24px;
+}
 
-            margin-bottom: 10px;
-        }
+/* ============================================================
+   LOGIN INPUT
+   ============================================================ */
 
-        #login-box input:focus {
+#login-box input {
+    width: 100%;
 
-            border-color: #e28f2f;
+    padding: 13px 15px;
 
-            box-shadow:
-                0 0 10px
-                rgba(226,143,47,.25);
-        }
+    margin-bottom: 10px;
 
-        #login-box button {
+    border-radius: 9px;
 
-            width: 100%;
+    border:
+        1px solid rgba(241,100,19,.20);
 
-            padding: 13px;
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #0b0b0b
+        );
 
-            border: none;
+    color: #fff;
 
-            border-radius: 7px;
+    outline: none;
 
-            margin-top: 8px;
+    box-shadow:
+        inset 0 3px 8px rgba(0,0,0,.65),
+        0 3px 8px rgba(0,0,0,.25);
 
-            font-weight: bold;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-            background: #e28f2f;
+#login-box input::placeholder {
+    color: #666;
+}
 
-            color: #000;
-        }
+#login-box input:focus {
+    border-color: var(--orange);
 
-        #login-box button:hover {
+    box-shadow:
+        inset 0 3px 8px rgba(0,0,0,.65),
+        0 0 15px rgba(241,100,19,.25);
+}
 
-            background: #d65011;
+/* ============================================================
+   LOGIN BUTTONS
+   ============================================================ */
 
-            color: white;
-        }
+#login-box button {
+    width: 100%;
 
+    padding: 13px;
 
-        #login-box .btn-gray {
+    border-radius: 9px;
 
-            background: #444;
+    border:
+        1px solid rgba(255,170,110,.65);
 
-            color: white;
-        }
+    margin-top: 8px;
 
-        #login-box .btn-gray:hover {
+    font-weight: 900;
 
-            background: #555;
-        }
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413,
+            #a83d08
+        );
 
+    color: #111;
 
-        /* =====================================================
-           ADMIN
-        ====================================================== */
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.55),
+        0 0 14px rgba(241,100,19,.20),
+        inset 0 2px 0 rgba(255,255,255,.4);
 
-        #admin-panel {
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
 
-            display: none;
+#login-box button:hover {
+    transform: translateY(-2px);
 
-            width: 100%;
+    box-shadow:
+        0 9px 20px rgba(0,0,0,.65),
+        0 0 22px rgba(241,100,19,.4),
+        inset 0 2px 0 rgba(255,255,255,.5);
+}
 
-            max-width: 1500px;
+#login-box .btn-gray {
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #171717
+        );
 
-            margin: 0 auto;
+    border-color: #444;
 
-            padding: 20px;
-        }
+    color: #ddd;
 
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
 
-        /* =====================================================
-           HEADER
-        ====================================================== */
+#login-box .btn-gray:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #444,
+            #202020
+        );
 
-        .admin-header {
+    color: #fff;
+}
 
-            display: flex;
+/* ============================================================
+   ADMIN PANEL
+   ============================================================ */
 
-            justify-content: space-between;
+#admin-panel {
+    display: none;
 
-            align-items: center;
+    width: 100%;
 
-            gap: 15px;
+    max-width: 1500px;
 
-            flex-wrap: wrap;
+    margin: 0 auto;
 
-            margin-bottom: 20px;
-        }
+    padding:
+        25px 22px 40px;
+}
 
-        .admin-header h1 {
+/* ============================================================
+   HEADER
+   ============================================================ */
 
-            font-size: 28px;
-        }
+.admin-header {
+    position: relative;
 
-        .header-buttons {
+    display: flex;
 
-            display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-            gap: 8px;
+    gap: 15px;
 
-            flex-wrap: wrap;
-        }
+    flex-wrap: wrap;
 
+    margin-bottom: 20px;
 
-        /* =====================================================
-           BUTTONS
-        ====================================================== */
+    padding-bottom: 18px;
 
-        .btn {
+    border-bottom:
+        1px solid rgba(241,100,19,.18);
+}
 
-            border: none;
+.admin-header h1 {
+    font-family:
+        "Bebas Neue",
+        sans-serif;
 
-            border-radius: 7px;
+    font-size: 3rem;
 
-            padding: 10px 14px;
+    letter-spacing: 3px;
 
-            font-weight: bold;
+    text-transform: uppercase;
 
-            cursor: pointer;
+    background:
+        linear-gradient(
+            180deg,
+            #ff9a52,
+            #f16413 55%,
+            #9d3707
+        );
 
-            transition: .15s;
-        }
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 
-        .btn:hover {
+    filter:
+        drop-shadow(
+            0 0 10px rgba(241,100,19,.20)
+        );
+}
 
-            transform: translateY(-1px);
-        }
+.header-buttons {
+    display: flex;
 
-        .btn-orange {
+    gap: 8px;
 
-            background: #e28f2f;
+    flex-wrap: wrap;
+}
 
-            color: #000;
-        }
+/* ============================================================
+   BUTTON BASE
+   ============================================================ */
 
-        .btn-orange:hover {
+.btn {
+    position: relative;
 
-            background: #d65011;
+    border-radius: 9px;
 
-            color: white;
-        }
+    padding: 10px 14px;
 
-        .btn-red {
+    border:
+        1px solid rgba(255,255,255,.08);
 
-            background: #b52b2b;
+    font-weight: 900;
 
-            color: white;
-        }
+    cursor: pointer;
 
-        .btn-red:hover {
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
 
-            background: #e33b3b;
-        }
+.btn:hover {
+    transform: translateY(-2px);
+}
 
-        .btn-gray {
+/* ============================================================
+   ORANGE BUTTON
+   ============================================================ */
 
-            background: #444;
+.btn-orange {
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413,
+            #a83d08
+        );
 
-            color: white;
-        }
+    color: #111;
 
-        .btn-gray:hover {
+    border-color:
+        rgba(255,175,115,.7);
 
-            background: #555;
-        }
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.5),
+        0 0 12px rgba(241,100,19,.18),
+        inset 0 2px 0 rgba(255,255,255,.35);
+}
 
-        .btn-green {
+.btn-orange:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #ffad6d,
+            #ff7a26,
+            #f16413
+        );
 
-            background: #2d9b52;
+    box-shadow:
+        0 9px 20px rgba(0,0,0,.6),
+        0 0 22px rgba(241,100,19,.4),
+        inset 0 2px 0 rgba(255,255,255,.45);
+}
 
-            color: white;
-        }
+/* ============================================================
+   GRAY BUTTON
+   ============================================================ */
 
-        .btn-green:hover {
+.btn-gray {
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #161616
+        );
 
-            background: #36b961;
-        }
+    color: #ddd;
 
-        .btn:disabled {
+    border-color: #444;
 
-            opacity: .5;
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
 
-            cursor: not-allowed;
+.btn-gray:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #444,
+            #202020
+        );
 
-            transform: none;
-        }
+    color: #fff;
 
+    box-shadow:
+        0 8px 16px rgba(0,0,0,.55);
+}
 
-        /* =====================================================
-           SERVER STATUS
-        ====================================================== */
+/* ============================================================
+   RED BUTTON
+   ============================================================ */
 
-        #server-status {
+.btn-red {
+    background:
+        linear-gradient(
+            145deg,
+            #c83939,
+            #7e1717
+        );
 
-            background: #252525;
+    color: #fff;
 
-            border: 1px solid #333;
+    border-color:
+        rgba(255,100,100,.35);
 
-            border-radius: 8px;
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.45);
+}
 
-            padding: 12px 15px;
+.btn-red:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #ed4d4d,
+            #a91f1f
+        );
 
-            margin-bottom: 15px;
+    box-shadow:
+        0 8px 18px rgba(180,30,30,.35);
+}
 
-            font-size: 14px;
-        }
+/* ============================================================
+   GREEN BUTTON
+   ============================================================ */
 
-        .status-loading {
+.btn-green {
+    background:
+        linear-gradient(
+            145deg,
+            #35b966,
+            #18753b
+        );
 
-            color: #e28f2f;
+    color: #fff;
 
-            font-weight: bold;
-        }
+    border-color:
+        rgba(90,220,130,.35);
 
-        .status-ok {
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.45);
+}
 
-            color: #39d56a;
+.btn-green:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #46d879,
+            #21944b
+        );
+}
 
-            font-weight: bold;
-        }
+/* ============================================================
+   DISABLED
+   ============================================================ */
 
-        .status-error {
+.btn:disabled {
+    opacity: .45;
 
-            color: #ff4d4d;
+    cursor: not-allowed;
 
-            font-weight: bold;
-        }
+    transform: none !important;
 
+    box-shadow: none;
+}
 
-        /* =====================================================
-           SEARCH
-        ====================================================== */
+/* ============================================================
+   SERVER STATUS
+   ============================================================ */
 
-        .search-row {
+#server-status {
+    position: relative;
 
-            display: flex;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.01),
+            rgba(0,0,0,.55)
+        );
 
-            gap: 8px;
+    border:
+        1px solid rgba(241,100,19,.20);
 
-            margin-bottom: 18px;
-        }
+    border-radius: 11px;
 
-        #search-input {
+    padding: 13px 16px;
 
-            flex: 1;
+    margin-bottom: 16px;
 
-            min-width: 0;
+    font-size: 13px;
 
-            padding: 13px;
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.4),
+        inset 0 1px 0 rgba(255,255,255,.04);
+}
 
-            border: 1px solid #363636;
+.status-loading {
+    color: #ff9a52;
 
-            border-radius: 8px;
+    font-weight: 900;
 
-            background: #252525;
+    text-shadow:
+        0 0 8px rgba(241,100,19,.4);
+}
 
-            color: white;
+.status-ok {
+    color: #45df75;
 
-            outline: none;
-        }
+    font-weight: 900;
 
-        #search-input:focus {
+    text-shadow:
+        0 0 8px rgba(69,223,117,.25);
+}
 
-            border-color: #e28f2f;
+.status-error {
+    color: #ff4d4d;
 
-            box-shadow:
-                0 0 10px
-                rgba(226,143,47,.2);
-        }
+    font-weight: 900;
+}
 
+/* ============================================================
+   SEARCH
+   ============================================================ */
 
-        /* =====================================================
-           ADD PRODUCT
-        ====================================================== */
+.search-row {
+    display: flex;
 
-        #form-producto {
+    gap: 9px;
 
-            background: #252525;
+    margin-bottom: 20px;
+}
 
-            border: 1px solid #333;
+#search-input {
+    flex: 1;
 
-            padding: 20px;
+    min-width: 0;
 
-            border-radius: 12px;
+    padding: 13px 16px;
 
-            margin-bottom: 25px;
-        }
+    border:
+        1px solid rgba(241,100,19,.20);
 
-        #form-producto h2 {
+    border-radius: 999px;
 
-            margin-bottom: 15px;
-        }
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #0b0b0b
+        );
 
-        .upload-info {
+    color: #fff;
 
-            background: #171717;
+    outline: none;
 
-            border-left: 4px solid #e28f2f;
+    box-shadow:
+        inset 0 3px 8px rgba(0,0,0,.7),
+        0 4px 12px rgba(0,0,0,.3);
 
-            padding: 12px;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-            margin-bottom: 15px;
+#search-input::placeholder {
+    color: #666;
+}
 
-            border-radius: 5px;
+#search-input:focus {
+    border-color: var(--orange);
 
-            color: #bbb;
+    box-shadow:
+        inset 0 3px 8px rgba(0,0,0,.7),
+        0 0 16px rgba(241,100,19,.25);
+}
 
-            font-size: 13px;
+/* ============================================================
+   ADD PRODUCT PANEL
+   ============================================================ */
 
-            line-height: 1.5;
-        }
+#form-producto {
+    position: relative;
 
-        .upload-info code {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.012) 35%,
+            rgba(0,0,0,.62)
+        );
 
-            color: #e28f2f;
-        }
+    border:
+        1px solid rgba(241,100,19,.25);
 
-        .form-grid {
+    padding: 22px;
 
-            display: grid;
+    border-radius: 15px;
 
-            grid-template-columns:
-                repeat(2, minmax(0,1fr));
+    margin-bottom: 28px;
 
-            gap: 10px;
-        }
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.55),
+        0 0 20px rgba(241,100,19,.06),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
 
-        .form-full {
+#form-producto::before {
+    content: "";
 
-            grid-column: 1 / -1;
-        }
+    position: absolute;
 
-        #form-producto input,
-        #form-producto textarea {
+    top: 0;
+    left: 7%;
 
-            width: 100%;
+    width: 86%;
+    height: 1px;
 
-            padding: 12px;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,145,75,.8),
+            transparent
+        );
+}
 
-            border: 1px solid #393939;
+#form-producto h2 {
+    font-family:
+        "Bebas Neue",
+        sans-serif;
 
-            border-radius: 7px;
+    font-size: 1.8rem;
 
-            background: #171717;
+    letter-spacing: 2px;
 
-            color: white;
+    color: #ff7a26;
 
-            outline: none;
-        }
+    margin-bottom: 16px;
 
-        #form-producto textarea {
+    text-shadow:
+        0 0 9px rgba(241,100,19,.25);
+}
 
-            min-height: 110px;
+/* ============================================================
+   UPLOAD INFO
+   ============================================================ */
 
-            resize: vertical;
-        }
+.upload-info {
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #0c0c0c
+        );
 
-        #form-producto input:focus,
-        #form-producto textarea:focus {
+    border-left:
+        3px solid #f16413;
 
-            border-color: #e28f2f;
-        }
+    padding: 13px;
 
-        #imagenes-file {
+    margin-bottom: 16px;
 
-            cursor: pointer;
-        }
+    border-radius: 8px;
 
+    color: #aaa;
 
-        /* =====================================================
-           ADD PREVIEW
-        ====================================================== */
+    font-size: 12px;
 
-        #add-preview {
+    line-height: 1.55;
 
-            display: flex;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.025),
+        0 4px 10px rgba(0,0,0,.3);
+}
 
-            flex-wrap: wrap;
+.upload-info strong {
+    color: #ff9a52;
+}
 
-            gap: 8px;
+.upload-info code {
+    color: #f16413;
 
-            margin: 10px 0;
-        }
+    background: rgba(241,100,19,.08);
 
-        .preview-item {
+    padding: 2px 4px;
 
-            width: 90px;
+    border-radius: 3px;
+}
 
-            height: 90px;
+/* ============================================================
+   FORM GRID
+   ============================================================ */
 
-            border-radius: 7px;
+.form-grid {
+    display: grid;
 
-            overflow: hidden;
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
 
-            border: 1px solid #444;
+    gap: 10px;
+}
 
-            background: #111;
+.form-full {
+    grid-column: 1 / -1;
+}
 
-            position: relative;
-        }
+/* ============================================================
+   FORM INPUTS
+   ============================================================ */
 
-        .preview-item img {
+#form-producto input,
+#form-producto textarea {
+    width: 100%;
 
-            width: 100%;
+    padding: 12px 13px;
 
-            height: 100%;
+    border:
+        1px solid rgba(241,100,19,.16);
 
-            object-fit: cover;
-        }
+    border-radius: 8px;
 
-        .preview-number {
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #0c0c0c
+        );
 
-            position: absolute;
+    color: #fff;
 
-            bottom: 3px;
+    outline: none;
 
-            right: 3px;
+    box-shadow:
+        inset 0 3px 7px rgba(0,0,0,.55);
 
-            background: rgba(0,0,0,.8);
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-            color: white;
+#form-producto input::placeholder,
+#form-producto textarea::placeholder {
+    color: #666;
+}
 
-            padding: 2px 5px;
+#form-producto input:focus,
+#form-producto textarea:focus {
+    border-color: #f16413;
 
-            font-size: 10px;
+    box-shadow:
+        inset 0 3px 7px rgba(0,0,0,.55),
+        0 0 13px rgba(241,100,19,.20);
+}
 
-            border-radius: 3px;
-        }
+#form-producto textarea {
+    min-height: 110px;
 
-        #agregar-btn {
+    resize: vertical;
+}
 
-            width: 100%;
+#imagenes-file {
+    cursor: pointer;
+}
 
-            padding: 13px;
+/* ============================================================
+   IMAGE PREVIEW
+   ============================================================ */
 
-            border: none;
+#add-preview {
+    display: flex;
 
-            border-radius: 7px;
+    flex-wrap: wrap;
 
-            background: #e28f2f;
+    gap: 9px;
 
-            color: #000;
+    margin: 10px 0;
+}
 
-            font-weight: bold;
+.preview-item {
+    width: 90px;
+    height: 90px;
 
-            cursor: pointer;
+    border-radius: 9px;
 
-            margin-top: 5px;
-        }
+    overflow: hidden;
 
-        #agregar-btn:hover {
+    border:
+        1px solid rgba(241,100,19,.30);
 
-            background: #d65011;
+    background: #0c0c0c;
 
-            color: white;
-        }
+    position: relative;
 
-        #agregar-btn:disabled {
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.5);
+}
 
-            opacity: .5;
+.preview-item img {
+    width: 100%;
+    height: 100%;
 
-            cursor: not-allowed;
-        }
+    object-fit: cover;
+}
 
+.preview-number {
+    position: absolute;
 
-        /* =====================================================
-           PRODUCTS
-        ====================================================== */
+    bottom: 4px;
+    right: 4px;
 
-        .products-header {
+    background:
+        rgba(0,0,0,.85);
 
-            display: flex;
+    color: #ff9a52;
 
-            justify-content: space-between;
+    padding: 3px 6px;
 
-            align-items: center;
+    font-size: 10px;
 
-            gap: 10px;
+    border-radius: 4px;
 
-            margin-bottom: 12px;
+    border:
+        1px solid rgba(241,100,19,.3);
+}
 
-            flex-wrap: wrap;
-        }
+/* ============================================================
+   ADD BUTTON
+   ============================================================ */
 
-        .products-header h2 {
+#agregar-btn {
+    width: 100%;
 
-            font-size: 21px;
-        }
+    padding: 13px;
 
-        #product-count {
+    border-radius: 9px;
 
-            color: #aaa;
+    border:
+        1px solid rgba(255,175,115,.7);
 
-            font-size: 13px;
-        }
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413,
+            #a83d08
+        );
 
-        .productos {
+    color: #111;
 
-            display: grid;
+    font-weight: 900;
 
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(270px,1fr)
-                );
+    cursor: pointer;
 
-            gap: 15px;
-        }
+    margin-top: 5px;
 
-        .producto {
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.55),
+        0 0 15px rgba(241,100,19,.18),
+        inset 0 2px 0 rgba(255,255,255,.4);
 
-            background: #252525;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
 
-            border: 1px solid #363636;
+#agregar-btn:hover {
+    transform: translateY(-2px);
 
-            border-radius: 11px;
+    box-shadow:
+        0 10px 20px rgba(0,0,0,.65),
+        0 0 23px rgba(241,100,19,.38),
+        inset 0 2px 0 rgba(255,255,255,.5);
+}
 
-            padding: 13px;
+#agregar-btn:disabled {
+    opacity: .45;
 
-            overflow: hidden;
-        }
+    cursor: not-allowed;
 
-        .producto:hover {
+    transform: none;
 
-            border-color: #555;
-        }
+    box-shadow: none;
+}
 
-        .producto-id {
+/* ============================================================
+   PRODUCTS HEADER
+   ============================================================ */
 
-            font-size: 11px;
+.products-header {
+    display: flex;
 
-            color: #777;
+    justify-content: space-between;
+    align-items: center;
 
-            margin-bottom: 8px;
+    gap: 10px;
 
-            word-break: break-all;
-        }
+    margin-bottom: 14px;
 
+    flex-wrap: wrap;
+}
 
-        /* =====================================================
-           IMAGE GRID
-        ====================================================== */
+.products-header h2 {
+    font-family:
+        "Bebas Neue",
+        sans-serif;
 
-        .mini-images {
+    font-size: 2rem;
 
-            display: grid;
+    letter-spacing: 2px;
 
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(75px,1fr)
-                );
+    color: #ff7a26;
 
-            gap: 7px;
+    text-shadow:
+        0 0 8px rgba(241,100,19,.25);
+}
 
-            margin-bottom: 10px;
-        }
+#product-count {
+    color: #777;
 
-        .image-wrapper {
+    font-size: 12px;
 
-            position: relative;
+    font-weight: 700;
+}
 
-            width: 100%;
+/* ============================================================
+   PRODUCT GRID
+   ============================================================ */
 
-            aspect-ratio: 1 / 1;
+.productos {
+    display: grid;
 
-            background: #111;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(270px,1fr)
+        );
 
-            border-radius: 6px;
+    gap: 15px;
+}
 
-            overflow: hidden;
+/* ============================================================
+   PRODUCT CARD
+   ============================================================ */
 
-            border: 1px solid #444;
-        }
+.producto {
+    position: relative;
 
-        .image-wrapper img {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.012) 35%,
+            rgba(0,0,0,.60)
+        );
 
-            width: 100%;
+    border:
+        1px solid rgba(241,100,19,.22);
 
-            height: 100%;
+    border-radius: 14px;
 
-            object-fit: cover;
+    padding: 13px;
 
-            display: block;
-        }
+    overflow: hidden;
 
-        .image-wrapper img.loading {
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.04);
 
-            opacity: .25;
-        }
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
 
-        .image-error {
+.producto::before {
+    content: "";
 
-            position: absolute;
+    position: absolute;
 
-            inset: 0;
+    top: 0;
+    left: 8%;
 
-            display: flex;
+    width: 84%;
+    height: 1px;
 
-            justify-content: center;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,145,75,.75),
+            transparent
+        );
+}
 
-            align-items: center;
+.producto:hover {
+    transform:
+        translateY(-5px);
 
-            text-align: center;
+    border-color:
+        rgba(241,100,19,.55);
 
-            padding: 5px;
+    box-shadow:
+        0 16px 32px rgba(0,0,0,.65),
+        0 0 18px rgba(241,100,19,.12),
+        inset 0 1px 0 rgba(255,255,255,.07);
+}
 
-            color: #ff5555;
+.producto-id {
+    font-size: 10px;
 
-            background: #211515;
+    color: #666;
 
-            font-size: 10px;
+    margin-bottom: 8px;
 
-            z-index: 2;
-        }
+    word-break: break-all;
+}
 
-        .image-number {
+/* ============================================================
+   MINI IMAGE GRID
+   ============================================================ */
 
-            position: absolute;
+.mini-images {
+    display: grid;
 
-            bottom: 3px;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(75px,1fr)
+        );
 
-            right: 3px;
+    gap: 7px;
 
-            background: rgba(0,0,0,.85);
+    margin-bottom: 10px;
+}
 
-            color: white;
+.image-wrapper {
+    position: relative;
 
-            font-size: 9px;
+    width: 100%;
 
-            padding: 2px 4px;
+    aspect-ratio: 1 / 1;
 
-            border-radius: 3px;
+    background:
+        radial-gradient(
+            circle,
+            #252525,
+            #0e0e0e
+        );
 
-            z-index: 3;
-        }
+    border-radius: 8px;
 
-        .image-debug {
+    overflow: hidden;
 
-            margin-top: 5px;
+    border:
+        1px solid rgba(241,100,19,.18);
 
-            margin-bottom: 9px;
+    box-shadow:
+        inset 0 0 15px rgba(0,0,0,.7);
+}
 
-            padding: 6px;
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
 
-            background: #111;
+    object-fit: cover;
 
-            border-radius: 5px;
+    display: block;
 
-            color: #777;
+    transition:
+        transform .25s ease,
+        opacity .25s ease;
+}
 
-            font-size: 9px;
+.image-wrapper:hover img {
+    transform: scale(1.05);
+}
 
-            word-break: break-all;
+.image-wrapper img.loading {
+    opacity: .25;
+}
 
-            line-height: 1.35;
-        }
+/* ============================================================
+   IMAGE ERROR
+   ============================================================ */
 
-        .image-debug.ok {
+.image-error {
+    position: absolute;
 
-            color: #53d97b;
-        }
+    inset: 0;
 
-        .image-debug.error {
+    display: flex;
 
-            color: #ff5555;
-        }
+    justify-content: center;
+    align-items: center;
 
-        .image-count {
+    text-align: center;
 
-            color: #aaa;
+    padding: 5px;
 
-            font-size: 12px;
+    color: #ff5555;
 
-            margin-bottom: 10px;
-        }
+    background:
+        linear-gradient(
+            145deg,
+            #251414,
+            #100909
+        );
 
+    font-size: 10px;
 
-        /* =====================================================
-           PRODUCT INPUTS
-        ====================================================== */
+    z-index: 2;
+}
 
-        .producto input,
-        .producto textarea {
+/* ============================================================
+   IMAGE NUMBER
+   ============================================================ */
 
-            width: 100%;
+.image-number {
+    position: absolute;
 
-            padding: 10px;
+    bottom: 3px;
+    right: 3px;
 
-            margin-bottom: 7px;
+    background:
+        rgba(0,0,0,.88);
 
-            border: 1px solid #383838;
+    color: #ff9a52;
 
-            border-radius: 6px;
+    font-size: 9px;
 
-            background: #171717;
+    padding: 2px 5px;
 
-            color: white;
+    border-radius: 4px;
 
-            outline: none;
-        }
+    z-index: 3;
 
-        .producto input:focus,
-        .producto textarea:focus {
+    border:
+        1px solid rgba(241,100,19,.25);
+}
 
-            border-color: #e28f2f;
-        }
+/* ============================================================
+   IMAGE DEBUG
+   ============================================================ */
 
-        .producto textarea {
+.image-debug {
+    margin-top: 5px;
 
-            min-height: 90px;
+    margin-bottom: 9px;
 
-            resize: vertical;
-        }
+    padding: 7px;
 
+    background:
+        linear-gradient(
+            145deg,
+            #111,
+            #090909
+        );
 
-        /* =====================================================
-           PRODUCT ACTIONS
-        ====================================================== */
+    border:
+        1px solid rgba(255,255,255,.04);
 
-        .product-actions {
+    border-radius: 6px;
 
-            display: flex;
+    color: #666;
 
-            gap: 7px;
+    font-size: 9px;
 
-            flex-wrap: wrap;
+    word-break: break-all;
 
-            margin-top: 5px;
-        }
+    line-height: 1.35;
+}
 
-        .product-actions button {
+.image-debug.ok {
+    color: #53d97b;
 
-            flex: 1;
+    border-color:
+        rgba(83,217,123,.15);
+}
 
-            min-width: 100px;
+.image-debug.error {
+    color: #ff5555;
 
-            padding: 9px;
+    border-color:
+        rgba(255,85,85,.15);
+}
 
-            border: none;
+.image-count {
+    color: #888;
 
-            border-radius: 6px;
+    font-size: 11px;
 
-            font-weight: bold;
+    margin-bottom: 10px;
+}
 
-            cursor: pointer;
-        }
+/* ============================================================
+   PRODUCT INPUTS
+   ============================================================ */
 
-        .save-btn {
+.producto input,
+.producto textarea {
+    width: 100%;
 
-            background: #e28f2f;
+    padding: 10px;
 
-            color: #000;
-        }
+    margin-bottom: 7px;
 
-        .save-btn:hover {
+    border:
+        1px solid rgba(241,100,19,.16);
 
-            background: #d65011;
+    border-radius: 7px;
 
-            color: white;
-        }
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #0b0b0b
+        );
 
-        .delete-btn {
+    color: #fff;
 
-            background: #a92b2b;
+    outline: none;
 
-            color: white;
-        }
+    box-shadow:
+        inset 0 3px 7px rgba(0,0,0,.55);
 
-        .delete-btn:hover {
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-            background: #dc3b3b;
-        }
+.producto input::placeholder,
+.producto textarea::placeholder {
+    color: #666;
+}
 
+.producto input:focus,
+.producto textarea:focus {
+    border-color: #f16413;
 
-        /* =====================================================
-           EMPTY / LOADING
-        ====================================================== */
+    box-shadow:
+        inset 0 3px 7px rgba(0,0,0,.55),
+        0 0 12px rgba(241,100,19,.18);
+}
 
-        .loading-box,
-        .empty-box {
+.producto textarea {
+    min-height: 90px;
 
-            grid-column: 1 / -1;
+    resize: vertical;
+}
 
-            padding: 35px;
+/* ============================================================
+   PRODUCT ACTIONS
+   ============================================================ */
 
-            text-align: center;
+.product-actions {
+    display: flex;
 
-            background: #252525;
+    gap: 7px;
 
-            border-radius: 10px;
+    flex-wrap: wrap;
 
-            color: #e28f2f;
-        }
+    margin-top: 5px;
+}
 
-        .empty-box {
+.product-actions button {
+    flex: 1;
 
-            color: #aaa;
-        }
+    min-width: 100px;
 
+    padding: 9px;
 
-        /* =====================================================
-           MESSAGE
-        ====================================================== */
+    border-radius: 7px;
 
-        #mensaje-guardado {
+    border: none;
 
-            position: fixed;
+    font-weight: 900;
 
-            top: 20px;
+    cursor: pointer;
 
-            right: 20px;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
 
-            max-width: 420px;
+.product-actions button:hover {
+    transform: translateY(-2px);
+}
 
-            padding: 13px 17px;
+/* SAVE */
 
-            background: #2d9b52;
+.save-btn {
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413,
+            #a83d08
+        );
 
-            color: white;
+    color: #111;
 
-            border-radius: 7px;
+    border:
+        1px solid rgba(255,170,110,.55) !important;
 
-            box-shadow:
-                0 8px 30px
-                rgba(0,0,0,.5);
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.45),
+        0 0 10px rgba(241,100,19,.15),
+        inset 0 2px 0 rgba(255,255,255,.3);
+}
 
-            display: none;
+.save-btn:hover {
+    box-shadow:
+        0 8px 17px rgba(0,0,0,.6),
+        0 0 18px rgba(241,100,19,.32),
+        inset 0 2px 0 rgba(255,255,255,.4);
+}
 
-            z-index: 99999;
+/* DELETE */
 
-            font-weight: bold;
-        }
+.delete-btn {
+    background:
+        linear-gradient(
+            145deg,
+            #c83b3b,
+            #791717
+        );
 
+    color: #fff;
 
-        /* =====================================================
-           RESPONSIVE
-        ====================================================== */
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.45);
+}
 
-        @media (max-width: 800px) {
+.delete-btn:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #ef4b4b,
+            #a82020
+        );
 
-            #admin-panel {
+    box-shadow:
+        0 8px 17px rgba(120,20,20,.4);
+}
 
-                padding: 10px;
-            }
+/* ============================================================
+   LOADING / EMPTY
+   ============================================================ */
 
-            .form-grid {
+.loading-box,
+.empty-box {
+    grid-column: 1 / -1;
 
-                grid-template-columns: 1fr;
-            }
+    padding: 40px;
 
-            .form-full {
+    text-align: center;
 
-                grid-column: auto;
-            }
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(0,0,0,.6)
+        );
 
-            .productos {
+    border:
+        1px solid rgba(241,100,19,.18);
 
-                grid-template-columns:
-                    repeat(
-                        auto-fill,
-                        minmax(220px,1fr)
-                    );
-            }
-        }
+    border-radius: 12px;
 
-        @media (max-width: 500px) {
+    color: #ff8a3d;
 
-            .admin-header {
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.4);
+}
 
-                align-items: stretch;
-            }
+.empty-box {
+    color: #777;
+}
 
-            .header-buttons {
+/* ============================================================
+   SUCCESS MESSAGE
+   ============================================================ */
 
-                width: 100%;
-            }
+#mensaje-guardado {
+    position: fixed;
 
-            .header-buttons .btn {
+    top: 20px;
+    right: 20px;
 
-                flex: 1;
-            }
+    max-width: 420px;
 
-            .search-row {
+    padding: 14px 18px;
 
-                flex-direction: column;
-            }
+    background:
+        linear-gradient(
+            145deg,
+            #35b966,
+            #18753b
+        );
 
-            .productos {
+    color: white;
 
-                grid-template-columns: 1fr;
-            }
-        }
+    border:
+        1px solid rgba(100,230,140,.4);
 
-    </style>
+    border-radius: 9px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.65),
+        0 0 18px rgba(50,190,100,.18);
+
+    display: none;
+
+    z-index: 99999;
+
+    font-weight: 900;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    #admin-panel {
+        padding:
+            18px 12px 30px;
+    }
+
+    .admin-header h1 {
+        font-size: 2.4rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-full {
+        grid-column: auto;
+    }
+
+    .productos {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(220px,1fr)
+            );
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — PHONE
+   ============================================================ */
+
+@media (max-width: 500px) {
+
+    #admin-panel {
+        padding:
+            12px 8px 25px;
+    }
+
+    .admin-header {
+        align-items: stretch;
+
+        padding-bottom: 14px;
+    }
+
+    .admin-header h1 {
+        width: 100%;
+
+        text-align: center;
+
+        font-size: 2.2rem;
+
+        letter-spacing: 2px;
+    }
+
+    .header-buttons {
+        width: 100%;
+    }
+
+    .header-buttons .btn {
+        flex: 1;
+
+        min-width: 0;
+
+        padding:
+            9px 6px;
+
+        font-size: .68rem;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    #search-input {
+        width: 100%;
+    }
+
+    .productos {
+        grid-template-columns: 1fr;
+    }
+
+    #form-producto {
+        padding: 15px;
+    }
+
+    #login-box {
+        padding:
+            28px 20px;
+    }
+
+    #login-box h1 {
+        font-size: 2.3rem;
+    }
+
+    .products-header h2 {
+        font-size: 1.7rem;
+    }
+
+    .producto {
+        border-radius: 12px;
+    }
+
+    #mensaje-guardado {
+        left: 10px;
+        right: 10px;
+
+        max-width: none;
+
+        top: 10px;
+    }
+}
+
+/* ============================================================
+   EXTRA SMALL
+   ============================================================ */
+
+@media (max-width: 360px) {
+
+    .header-buttons .btn {
+        font-size: .60rem;
+    }
+
+    .admin-header h1 {
+        font-size: 1.95rem;
+    }
+
+    #login-box h1 {
+        font-size: 2rem;
+    }
+}
+</style>
 
 </head>
 

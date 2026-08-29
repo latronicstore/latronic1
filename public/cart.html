@@ -1,315 +1,2147 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>LaTRONIC Cart</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&display=swap"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+>
+
 <style>
-  body { margin:0; font-family: Arial, sans-serif; background:#121212; color:#fff; display:flex; min-height:100vh; }
-  aside { 
-    width:250px; 
-    background:#1e1e1e; 
-    padding:1rem; 
-    position:sticky; 
-    top:0; 
-    height:100vh; 
-    display:flex; 
-    flex-direction:column; 
-    justify-content:space-between; 
-    overflow-y:auto; 
-  }
-  aside h2 { font-size:1.2rem; margin-bottom:1rem; }
-  .menu { list-style:none; padding:0; margin:0; }
-  .menu>li { margin-bottom:0.5rem; position:relative; }
-  .boton-categoria { 
-    display:block; 
-    background:none; 
-    border:none; 
-    color:#fff; 
-    text-align:left; 
-    width:100%; 
-    padding:0.5rem; 
-    font-size:1rem; 
-    cursor:pointer; 
-    transition: background 0.3s; 
-    text-decoration:none; 
-    border-radius:5px; 
-  }
-  .boton-categoria:hover, .boton-categoria.active { 
-    background:#e28e2fa9; 
-    color:black; 
-  }
-  main { flex:1; padding:2rem; }
-  footer { text-align:center; padding:1rem 0; color:rgba(128,128,128,0.6); font-size:0.9rem; }
-  .logo { font-family:"Bebas Neue",sans-serif; font-size:3rem; letter-spacing:2px; text-align:center; text-transform:uppercase; display:inline-block; position:relative; color:#f16413b9; padding:1rem 2rem; border-radius:12px; }
-  .cart-producto { display:flex; justify-content:space-between; align-items:center; background:#1e1e1e; padding:1rem; border-radius:10px; margin-bottom:1rem; box-shadow:0 4px 8px rgba(0,0,0,0.5); }
-  .cart-producto img { width:80px; height:80px; border-radius:8px; object-fit:cover; margin-right:1rem; }
-  .cart-producto-info { flex:1; }
-  .cart-producto-info h3 { margin:0 0 0.3rem 0; font-size:1rem; }
-  .cart-producto-info p { margin:0.2rem 0; display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; }
-  .boton-carrito { font-family:"Oswald", sans-serif; border:none; padding:0.8rem 1.2rem; border-radius:8px; cursor:pointer; font-size:0.9rem; transition:0.3s; background:#e28f2f; color:black; font-weight:bold; }
-  .boton-carrito:hover { background:#f16413; color:white; }
-  .boton-cantidad { background:#e28f2f; color:white; border:none; border-radius:5px; padding:0.2rem 0.6rem; cursor:pointer; font-weight:bold; transition:0.3s; }
-  .boton-cantidad:hover { background:#f16413b9; color:black; }
-  .boton-cantidad:disabled { background:#555; color:#ccc; cursor:not-allowed; }
-  .cart-acciones { margin-top:2rem; display:flex; justify-content:space-between; align-items:center; background:#1e1e1e; padding:1rem; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.5); flex-wrap:wrap; gap:1rem; }
-  #cart-vacio { font-size:1.2rem; text-align:center; margin-top:2rem; color:#ccc; }
-  .cart-button-container button { font-family:"Bebas Neue", sans-serif; background:none; border:none; color:#fff; text-align:left; width:100%; padding:0.6rem 1rem; font-size:1.1rem; cursor:pointer; transition:0.3s; border-radius:5px; }
-  .cart-button-container button:hover { background:#e28e2fa9; color:black; }
-  .back-menu { margin-bottom:1rem; font-family:"Oswald", sans-serif; background:#e28f2f; color:black; border:none; padding:0.6rem 1rem; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
-  .back-menu:hover { background:#f16413; color:white; }
-  .input-group { margin-top:1rem; }
-  .input-group label { font-size:0.9rem; font-weight:600; margin-bottom:4px; display:block; }
-  .input-group select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:0.9rem; background:#1e1e1e; color:#fff; }
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: #111;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #242424 0%,
+            #151515 38%,
+            #0d0d0d 100%
+        );
+
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+aside {
+    width: 235px;
+    min-width: 235px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #202020 0%,
+            #171717 100%
+        );
+
+    border-right: 1px solid #333;
+
+    padding: 1rem;
+
+    position: sticky;
+    top: 0;
+
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    overflow-y: auto;
+
+    box-shadow:
+        8px 0 30px rgba(0,0,0,.35);
+}
+
+
+/* =========================================================
+   LOGO — SAME AS SHOP
+========================================================= */
+
+aside h2 {
+    position: relative;
+
+    font-family: "Bebas Neue", sans-serif;
+
+    font-size: 2.65rem;
+
+    text-align: center;
+
+    margin: 0 0 25px;
+
+    letter-spacing: 3px;
+
+    color: #181818;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ff8b35 0%,
+            #f16413 45%,
+            #a83d08 100%
+        );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow:
+        0 2px 0 rgba(0,0,0,.85),
+        0 4px 12px rgba(241,100,19,.35);
+
+    filter:
+        drop-shadow(
+            0 0 8px rgba(241,100,19,.25)
+        );
+}
+
+
+/* Línea debajo del logo */
+
+aside h2::after {
+    content: "";
+
+    display: block;
+
+    width: 70%;
+    height: 2px;
+
+    margin: 8px auto 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #f16413,
+            #ff9a52,
+            #f16413,
+            transparent
+        );
+
+    box-shadow:
+        0 0 8px rgba(241,100,19,.65);
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu > li {
+    margin-bottom: 7px;
+    position: relative;
+}
+
+
+/* =========================================================
+   MENU BUTTONS
+========================================================= */
+
+.boton-categoria,
+.cart-button-container button {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.035),
+            rgba(0,0,0,.18)
+        );
+
+    color: #f16413b6;
+
+    border:
+        1px solid rgba(241,100,19,.16);
+
+    text-align: left;
+
+    text-decoration: none;
+
+    font-family:
+        "Josefin Sans",
+        Arial,
+        sans-serif;
+
+    font-weight: 800;
+
+    font-size: .88rem;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.035),
+        0 3px 8px rgba(0,0,0,.25);
+
+    text-shadow:
+        0 1px 0 rgba(255,255,255,.35);
+}
+
+.boton-categoria:hover,
+.cart-button-container button:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff7a26,
+            #f16413
+        );
+
+    color: #111;
+
+    border-color:
+        rgba(255,145,75,.85);
+
+    transform:
+        translateX(4px)
+        translateY(-1px);
+
+    box-shadow:
+        0 7px 16px rgba(0,0,0,.5),
+        0 0 14px rgba(241,100,19,.28),
+        inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+.cart-button-container button {
+    border: 1px solid rgba(241,100,19,.16);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+
+    text-align: center;
+
+    padding:
+        1.5rem 0 .5rem;
+
+    color: #666;
+
+    font-size: .63rem;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+
+    flex: 1;
+
+    width: 100%;
+
+    max-width: 1400px;
+
+    padding:
+        35px;
+
+    margin:
+        0 auto;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-menu {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 25px;
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413
+        );
+
+    color: #111;
+
+    border:
+        1px solid rgba(255,170,110,.7);
+
+    padding:
+        .7rem 1.15rem;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    letter-spacing: .3px;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.4),
+        inset 0 2px 0 rgba(255,255,255,.3);
+}
+
+.back-menu:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff9d55,
+            #ff7628
+        );
+
+    color: #111;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 20px rgba(241,100,19,.25);
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
+.titulo-principal {
+
+    font-family:
+        "Bebas Neue",
+        sans-serif;
+
+    font-size:
+        clamp(
+            2.2rem,
+            5vw,
+            3.5rem
+        );
+
+    letter-spacing: 2px;
+
+    margin-bottom: 25px;
+
+    color: #fff;
+
+    text-shadow:
+        0 3px 12px rgba(0,0,0,.6);
+}
+
+.titulo-principal::after {
+
+    content: "";
+
+    display: block;
+
+    width: 75px;
+
+    height: 4px;
+
+    margin-top: 8px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #a83d08,
+            #f16413,
+            #ff9a52
+        );
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 0 10px rgba(241,100,19,.45);
+}
+
+
+/* =========================================================
+   EMPTY CART
+========================================================= */
+
+#cart-vacio {
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    font-size: 1.3rem;
+
+    text-align: center;
+
+    margin-top: 3rem;
+
+    padding:
+        45px 20px;
+
+    color: #aaa;
+
+    background:
+        linear-gradient(
+            145deg,
+            #222,
+            #181818
+        );
+
+    border:
+        1px solid #333;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.35);
+}
+
+#cart-vacio i {
+
+    color: #f16413;
+
+    margin-left: 6px;
+
+    font-size: 1.5rem;
+}
+
+
+/* =========================================================
+   CART PRODUCTS
+========================================================= */
+
+#cart-productos {
+    width: 100%;
+}
+
+.cart-producto {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #252525,
+            #1b1b1b
+        );
+
+    border:
+        1px solid #353535;
+
+    padding: 16px;
+
+    border-radius: 13px;
+
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.35);
+
+    transition:
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.cart-producto:hover {
+
+    border-color:
+        rgba(241,100,19,.5);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,.5),
+        0 0 15px rgba(241,100,19,.06);
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+.cart-producto img {
+
+    width: 95px;
+    height: 95px;
+
+    min-width: 95px;
+
+    border-radius: 9px;
+
+    object-fit: cover;
+
+    background: #111;
+
+    border:
+        1px solid #444;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.4);
+}
+
+
+/* =========================================================
+   PRODUCT INFO
+========================================================= */
+
+.cart-producto-info {
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+.cart-producto-info h3 {
+
+    margin:
+        0 0 7px;
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    font-size:
+        1.15rem;
+
+    font-weight: 600;
+
+    color: #fff;
+
+    word-break:
+        break-word;
+}
+
+.cart-producto-info p {
+
+    margin: 6px 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: .92rem;
+
+    color: #aaa;
+}
+
+.cart-producto-info p:first-of-type {
+
+    color: #f16413;
+
+    font-weight: bold;
+}
+
+.stock-text {
+
+    color: #888 !important;
+
+    font-size: .82rem !important;
+}
+
+
+/* =========================================================
+   QUANTITY BUTTONS
+========================================================= */
+
+.boton-cantidad {
+
+    width: 30px;
+    height: 30px;
+
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413
+        );
+
+    color: #111;
+
+    border:
+        1px solid rgba(255,170,110,.5);
+
+    border-radius: 6px;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    font-size: 1.1rem;
+
+    font-weight: bold;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.25);
+}
+
+.boton-cantidad:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff9d55,
+            #ff7628
+        );
+
+    color: #111;
+
+    transform:
+        scale(1.05);
+}
+
+.boton-cantidad:disabled {
+
+    background: #444;
+
+    color: #777;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   CART BUTTONS
+========================================================= */
+
+.boton-carrito {
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    border: none;
+
+    padding:
+        .7rem 1rem;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: .9rem;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413
+        );
+
+    color: #111;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.4),
+        inset 0 2px 0 rgba(255,255,255,.25);
+}
+
+.boton-carrito:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff9d55,
+            #ff7628
+        );
+
+    color: #111;
+
+    transform:
+        translateY(-2px);
+}
+
+.cart-eliminar {
+
+    background:
+        linear-gradient(
+            145deg,
+            #b73535,
+            #8d2020
+        );
+
+    color: #fff;
+
+    min-width: 80px;
+}
+
+.cart-eliminar:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #df4848,
+            #b52d2d
+        );
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   CART ACTIONS
+========================================================= */
+
+.cart-acciones {
+
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #242424,
+            #191919
+        );
+
+    border:
+        1px solid #353535;
+
+    padding: 18px;
+
+    border-radius: 13px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.35);
+
+    flex-wrap: wrap;
+}
+
+.cart-acciones .boton-carrito {
+
+    min-width: 120px;
+}
+
+
+/* =========================================================
+   STATE SELECT
+========================================================= */
+
+.input-group {
+
+    min-width: 230px;
+
+    margin-left: auto;
+}
+
+.input-group label {
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    font-size: .85rem;
+
+    font-weight: 600;
+
+    color: #bbb;
+
+    margin-bottom: 6px;
+
+    display: block;
+}
+
+.input-group select {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    border:
+        1px solid #414141;
+
+    font-size: .9rem;
+
+    background: #111;
+
+    color: #fff;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.input-group select:focus {
+
+    border-color:
+        #f16413;
+
+    box-shadow:
+        0 0 10px rgba(241,100,19,.2);
+}
+
+.input-group select option {
+
+    background: #1b1b1b;
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   TOTALS
+========================================================= */
+
+.cart-totales {
+
+    width: 100%;
+
+    max-width: 450px;
+
+    margin-left: auto;
+
+    margin-top: 20px !important;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #252525,
+            #191919
+        );
+
+    border:
+        1px solid #353535;
+
+    border-radius: 13px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.35);
+}
+
+.cart-totales p {
+
+    margin: 8px 0;
+
+    color: #aaa;
+
+    font-family:
+        "Oswald",
+        sans-serif;
+
+    font-size: 1rem;
+}
+
+.cart-totales p span {
+
+    color: #fff;
+}
+
+#total-display {
+
+    margin-top: 14px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid #3b3b3b;
+
+    color:
+        #f16413 !important;
+
+    font-family:
+        "Bebas Neue",
+        sans-serif !important;
+
+    font-size:
+        1.8rem !important;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   HAMBURGER
+========================================================= */
+
+.hamburger {
+
+    display: none;
+
+    position: fixed;
+
+    top: 12px;
+    left: 12px;
+
+    width: 44px;
+    height: 44px;
+
+    font-size: 25px;
+
+    color: #111;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ff923f,
+            #f16413
+        );
+
+    border:
+        1px solid rgba(255,170,110,.7);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    z-index: 3000;
+
+    text-align: center;
+
+    line-height: 44px;
+
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.55),
+        0 0 12px rgba(241,100,19,.25);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        display: block;
+    }
+
+    aside {
+
+        position: fixed;
+
+        left: -255px;
+
+        top: 0;
+
+        width: 235px;
+
+        min-width: 235px;
+
+        height: 100vh;
+
+        z-index: 2500;
+
+        transition:
+            left .3s ease;
+    }
+
+    aside.active {
+        left: 0;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    main {
+
+        margin-left: 0;
+
+        padding:
+            70px 15px 25px;
+    }
+
+    .titulo-principal {
+
+        font-size:
+            2.35rem;
+
+        letter-spacing:
+            3px;
+    }
+
+    .cart-producto {
+
+        align-items:
+            flex-start;
+
+        flex-wrap:
+            wrap;
+    }
+
+    .cart-producto img {
+
+        width: 80px;
+
+        height: 80px;
+
+        min-width: 80px;
+    }
+
+    .cart-eliminar {
+
+        width: 100%;
+    }
+
+    .cart-acciones {
+
+        align-items:
+            stretch;
+    }
+
+    .cart-acciones .boton-carrito {
+
+        flex: 1;
+    }
+
+    .input-group {
+
+        width: 100%;
+
+        min-width: 0;
+
+        margin-left: 0;
+    }
+
+    .cart-totales {
+
+        max-width:
+            100%;
+    }
+
+    aside h2 {
+
+        font-size:
+            2.5rem;
+
+        padding-top:
+            8px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .titulo-principal {
+
+        font-size:
+            2.4rem;
+    }
+
+    .cart-producto {
+
+        padding:
+            12px;
+
+        gap:
+            12px;
+    }
+
+    .cart-producto-info h3 {
+
+        font-size:
+            1rem;
+    }
+
+    .cart-producto-info p {
+
+        font-size:
+            .84rem;
+    }
+
+    .cart-acciones {
+
+        flex-direction:
+            column;
+    }
+
+    .cart-acciones .boton-carrito {
+
+        width: 100%;
+    }
+
+    .cart-totales {
+
+        padding:
+            16px;
+    }
+}
+
+
+/* =========================================================
+   EXTRA SMALL
+========================================================= */
+
+@media (max-width: 420px) {
+
+    main {
+
+        padding:
+            70px 10px 25px;
+    }
+
+    .titulo-principal {
+
+        font-size:
+            2rem;
+    }
+
+    .cart-producto-info {
+
+        width:
+            calc(100% - 95px);
+    }
+
+    aside h2 {
+
+        font-size:
+            2.35rem;
+    }
+}
+
 </style>
+
 </head>
+
 <body>
+
+<!-- =========================================================
+     MOBILE HAMBURGER
+========================================================= -->
+
+<div
+    class="hamburger"
+    id="hamburger"
+>
+    ☰
+</div>
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
 <aside>
-  <h1 class="logo">LaTRONIC</h1>
-  <ul class="menu">
-    <li><a class="boton-categoria" href="index.html">Home</a></li>
-    <li class="cart-button-container">
-      <button id="ir-carrito">🛒 Cart (<span id="cart-count">0</span>)</button>
-    </li>
-  </ul>
-  <footer>
-    <div>✉️latronicstore@gmail.com</div>
-    <div>Located in Connecticut, USA</div>
-    <div>ⓒ 2025 LaTRONIC LLC</div>
-  </footer>
+
+<div>
+
+    <!-- MISMO LOGO DE SHOP -->
+
+    <h2>
+        LaTRONIC
+    </h2>
+
+
+    <ul class="menu">
+
+        <li>
+
+            <a
+                class="boton-categoria"
+                href="index.html"
+            >
+                🏠 Home
+            </a>
+
+        </li>
+
+
+        <li class="cart-button-container">
+
+            <button id="ir-carrito">
+
+                🛒 Cart
+                (<span id="cart-count">0</span>)
+
+            </button>
+
+        </li>
+
+    </ul>
+
+</div>
+
+
+<footer>
+
+    <div>
+        ✉️ latronicstore@gmail.com
+    </div>
+
+    <div>
+        Located in Connecticut, USA
+    </div>
+
+    <div>
+        ⓒ 2026 LaTRONIC LLC
+    </div>
+
+</footer>
+
 </aside>
 
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
 <main>
-  <button class="back-menu" onclick="window.location.href='shop.html'">← Back to Menu</button>
-  <h1 class="titulo-principal">Your Cart</h1>
-  <div id="cart-vacio" style="display:none;">Your cart is empty <i class="bi bi-emoji-frown"></i></div>
-  <div id="cart-productos"></div>
 
-  <div class="cart-acciones" id="cart-acciones" style="display:none;">
-    <button id="cart-acciones-vaciar" class="boton-carrito">Empty Cart</button>
-    <button id="cart-acciones-buy" class="boton-carrito">Buy Now</button>
+
+<button
+    class="back-menu"
+    onclick="window.location.href='shop.html'"
+>
+    ← Back to Menu
+</button>
+
+
+<h1 class="titulo-principal">
+    Your Cart
+</h1>
+
+
+<!-- EMPTY CART -->
+
+<div
+    id="cart-vacio"
+    style="display:none;"
+>
+
+    Your cart is empty
+
+    <i class="bi bi-emoji-frown"></i>
+
+</div>
+
+
+<!-- PRODUCTS -->
+
+<div id="cart-productos"></div>
+
+
+<!-- =====================================================
+     CART ACTIONS
+====================================================== -->
+
+<div
+    class="cart-acciones"
+    id="cart-acciones"
+    style="display:none;"
+>
+
+    <button
+        id="cart-acciones-vaciar"
+        class="boton-carrito"
+    >
+        Empty Cart
+    </button>
+
+
+    <button
+        id="cart-acciones-buy"
+        class="boton-carrito"
+    >
+        Buy Now
+    </button>
+
+
     <div class="input-group">
-      <label for="estado">Select your state:</label>
-      <select id="estado">
-        <option value="AL">Alabama</option>
-        <option value="AK">Alaska</option>
-        <option value="AZ">Arizona</option>
-        <option value="AR">Arkansas</option>
-        <option value="CA">California</option>
-        <option value="CO">Colorado</option>
-        <option value="CT">Connecticut</option>
-        <option value="DE">Delaware</option>
-        <option value="FL">Florida</option>
-        <option value="GA">Georgia</option>
-        <option value="HI">Hawaii</option>
-        <option value="ID">Idaho</option>
-        <option value="IL">Illinois</option>
-        <option value="IN">Indiana</option>
-        <option value="IA">Iowa</option>
-        <option value="KS">Kansas</option>
-        <option value="KY">Kentucky</option>
-        <option value="LA">Louisiana</option>
-        <option value="ME">Maine</option>
-        <option value="MD">Maryland</option>
-        <option value="MA">Massachusetts</option>
-        <option value="MI">Michigan</option>
-        <option value="MN">Minnesota</option>
-        <option value="MS">Mississippi</option>
-        <option value="MO">Missouri</option>
-        <option value="MT">Montana</option>
-        <option value="NE">Nebraska</option>
-        <option value="NV">Nevada</option>
-        <option value="NH">New Hampshire</option>
-        <option value="NJ">New Jersey</option>
-        <option value="NM">New Mexico</option>
-        <option value="NY">New York</option>
-        <option value="NC">North Carolina</option>
-        <option value="ND">North Dakota</option>
-        <option value="OH">Ohio</option>
-        <option value="OK">Oklahoma</option>
-        <option value="OR">Oregon</option>
-        <option value="PA">Pennsylvania</option>
-        <option value="RI">Rhode Island</option>
-        <option value="SC">South Carolina</option>
-        <option value="SD">South Dakota</option>
-        <option value="TN">Tennessee</option>
-        <option value="TX">Texas</option>
-        <option value="UT">Utah</option>
-        <option value="VT">Vermont</option>
-        <option value="VA">Virginia</option>
-        <option value="WA">Washington</option>
-        <option value="WV">West Virginia</option>
-        <option value="WI">Wisconsin</option>
-        <option value="WY">Wyoming</option>
-      </select>
-    </div>
-  </div>
 
-  <!-- BLOQUE DE TOTALES AGREGADO -->
-  <div class="cart-totales" style="margin-top:1rem; text-align:right;">
-    <p>Subtotal: $<span id="subtotal">0.00</span></p>
-    <p>Taxes: $<span id="taxes">0.00</span></p>
-    <p id="total-display">Total: $0.00</p>
-  </div>
+        <label for="estado">
+            Select your state:
+        </label>
+
+        <select id="estado">
+
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <option value="CT">Connecticut</option>
+            <option value="DE">Delaware</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="HI">Hawaii</option>
+            <option value="ID">Idaho</option>
+            <option value="IL">Illinois</option>
+            <option value="IN">Indiana</option>
+            <option value="IA">Iowa</option>
+            <option value="KS">Kansas</option>
+            <option value="KY">Kentucky</option>
+            <option value="LA">Louisiana</option>
+            <option value="ME">Maine</option>
+            <option value="MD">Maryland</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MI">Michigan</option>
+            <option value="MN">Minnesota</option>
+            <option value="MS">Mississippi</option>
+            <option value="MO">Missouri</option>
+            <option value="MT">Montana</option>
+            <option value="NE">Nebraska</option>
+            <option value="NV">Nevada</option>
+            <option value="NH">New Hampshire</option>
+            <option value="NJ">New Jersey</option>
+            <option value="NM">New Mexico</option>
+            <option value="NY">New York</option>
+            <option value="NC">North Carolina</option>
+            <option value="ND">North Dakota</option>
+            <option value="OH">Ohio</option>
+            <option value="OK">Oklahoma</option>
+            <option value="OR">Oregon</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="RI">Rhode Island</option>
+            <option value="SC">South Carolina</option>
+            <option value="SD">South Dakota</option>
+            <option value="TN">Tennessee</option>
+            <option value="TX">Texas</option>
+            <option value="UT">Utah</option>
+            <option value="VT">Vermont</option>
+            <option value="VA">Virginia</option>
+            <option value="WA">Washington</option>
+            <option value="WV">West Virginia</option>
+            <option value="WI">Wisconsin</option>
+            <option value="WY">Wyoming</option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOTALS
+====================================================== -->
+
+<div
+    class="cart-totales"
+    style="margin-top:1rem; text-align:right;"
+>
+
+    <p>
+        Subtotal:
+        $<span id="subtotal">0.00</span>
+    </p>
+
+    <p>
+        Taxes:
+        $<span id="taxes">0.00</span>
+    </p>
+
+    <p id="total-display">
+        Total: $0.00
+    </p>
+
+</div>
+
+
 </main>
 
 <script>
-// --- CARRITO SINCRONIZADO CON SHOP + CONTROL DE STOCK ---
-let cart = JSON.parse(localStorage.getItem("productos-en-cart")) || [];
-let productos = JSON.parse(localStorage.getItem("productos")) || [];
 
-// Garantizar stockOriginal
-productos.forEach(p => { if (p.stockOriginal === undefined) p.stockOriginal = p.stock; });
+/* =========================================================
+   CART
+========================================================= */
 
-function actualizarCarrito() {
-  const cartProductosEl = document.getElementById("cart-productos");
-  const cartAccionesEl = document.getElementById("cart-acciones");
-  const cartVacioEl = document.getElementById("cart-vacio");
+let cart =
+    JSON.parse(
+        localStorage.getItem("productos-en-cart")
+    ) || [];
 
-  if (!cart || cart.length === 0) {
-    cartVacioEl.style.display = "block";
-    cartAccionesEl.style.display = "none";
-    cartProductosEl.innerHTML = "";
-    actualizarTotales(0);
-    return;
-  }
 
-  cartVacioEl.style.display = "none";
-  cartAccionesEl.style.display = "flex";
-  cartProductosEl.innerHTML = "";
+let productos =
+    JSON.parse(
+        localStorage.getItem("productos")
+    ) || [];
 
-  let subtotal = 0;
 
-  cart.forEach(p => {
-    // --- Asegurarse de que el producto tenga imágenes ---
-    if (!p.imagenes || p.imagenes.length === 0) {
-      const prodOriginal = productos.find(pr => pr.id === p.id);
-      if (prodOriginal && prodOriginal.imagenes) {
-        p.imagenes = prodOriginal.imagenes;
-      }
+/* =========================================================
+   GUARANTY ORIGINAL STOCK
+========================================================= */
+
+productos.forEach(p => {
+
+    if (p.stockOriginal === undefined) {
+
+        p.stockOriginal =
+            p.stock;
+
     }
 
-    const imagenSrc = p.imagenes?.[0] || "https://via.placeholder.com/80";
-    const cantidad = p.quantity || 1;
-    subtotal += parseFloat(p.price) * cantidad;
-
-    const div = document.createElement("div");
-    div.className = "cart-producto";
-    div.innerHTML = `
-      <img src="${imagenSrc}" alt="${p.titulo}">
-      <div class="cart-producto-info">
-        <h3>${p.titulo}</h3>
-        <p>Price: $${parseFloat(p.price).toFixed(2)}</p>
-        <p>Quantity:
-          <button class="boton-cantidad" data-id="${p.id}" data-action="minus">−</button>
-          <span>${cantidad}</span>
-          <button class="boton-cantidad" data-id="${p.id}" data-action="plus">+</button>
-        </p>
-        <p class="stock-text">Stock: ${productos.find(pr => pr.id === p.id)?.stock ?? "N/A"}</p>
-      </div>
-      <button class="boton-carrito cart-eliminar" data-id="${p.id}">Delete</button>
-    `;
-    cartProductosEl.appendChild(div);
-  });
-
-  // --- Eventos para eliminar producto ---
-  document.querySelectorAll(".cart-eliminar").forEach(btn => {
-    btn.onclick = () => {
-      cart = cart.filter(p => p.id !== btn.dataset.id);
-      guardarCarrito();
-      actualizarCarrito();
-    };
-  });
-
-  // --- Eventos para aumentar/disminuir cantidad ---
-  document.querySelectorAll(".boton-cantidad").forEach(btn => {
-    btn.onclick = () => {
-      const id = btn.dataset.id;
-      const accion = btn.dataset.action;
-      const productoCarrito = cart.find(p => p.id === id);
-      const productoOriginal = productos.find(p => p.id === id);
-      if (!productoCarrito || !productoOriginal) return;
-
-      if (accion === "plus") {
-        if (productoCarrito.quantity >= productoOriginal.stockOriginal) {
-          alert(`Not enough stock for ${productoCarrito.titulo}. Only ${productoOriginal.stockOriginal} left.`);
-          return;
-        }
-        productoCarrito.quantity++;
-      } else if (accion === "minus") {
-        productoCarrito.quantity = Math.max((productoCarrito.quantity || 1) - 1, 1);
-      }
-      guardarCarrito();
-      actualizarCarrito();
-    };
-  });
-
-  actualizarTotales(subtotal);
-}
-
-function guardarCarrito() {
-  localStorage.setItem("productos-en-cart", JSON.stringify(cart));
-  productos.forEach(p => {
-    if (p.stockOriginal === undefined) p.stockOriginal = p.stock;
-    p.stock = p.stockOriginal;
-  });
-  localStorage.setItem("productos", JSON.stringify(productos));
-  window.dispatchEvent(new Event("storage"));
-}
-
-function actualizarTotales(subtotal) {
-  const estadoCliente = document.getElementById("estado")?.value || "";
-  const taxRateCT = 0.0635;
-  const taxes = estadoCliente === "CT" ? subtotal * taxRateCT : 0;
-  const total = subtotal + taxes;
-
-  document.getElementById("subtotal").textContent = subtotal.toFixed(2);
-  document.getElementById("taxes").textContent = taxes.toFixed(2);
-  document.getElementById("total-display").textContent = `Total: $${total.toFixed(2)}`;
-  document.getElementById("cart-count").textContent = cart.reduce((a, p) => a + (p.quantity || 1), 0);
-}
-
-// --- EVENTO PARA ACTUALIZAR TAXES AL CAMBIAR ESTADO ---
-const estadoSelect = document.getElementById("estado");
-estadoSelect.addEventListener("change", () => {
-  localStorage.setItem("estado-cliente", estadoSelect.value);
-  const subtotal = cart.reduce((acc, p) => acc + (parseFloat(p.price) * (p.quantity || 1)), 0);
-  actualizarTotales(subtotal);
 });
 
-// --- Vaciar carrito ---
-document.getElementById("cart-acciones-vaciar").onclick = () => {
-  cart = [];
-  guardarCarrito();
-  actualizarCarrito();
-};
 
-// --- Comprar ahora ---
-document.getElementById("cart-acciones-buy").onclick = () => {
-  if (cart.length === 0) {
-    alert("Your cart is empty! ❌");
-    return;
-  }
-  cart.forEach(p => {
-    const prod = productos.find(pr => pr.id === p.id);
-    if (prod) prod.stock = Math.max(prod.stock - (p.quantity || 1), 0);
-  });
+/* =========================================================
+   UPDATE CART
+========================================================= */
 
-  localStorage.setItem("productos", JSON.stringify(productos));
-  localStorage.setItem("productos-en-cart", JSON.stringify(cart));
-  window.location.href = "card-charge.html";
-};
+function actualizarCarrito() {
 
-// --- Restaurar estado del cliente ---
-const estadoGuardado = localStorage.getItem("estado-cliente");
-if (estadoSelect && estadoGuardado) estadoSelect.value = estadoGuardado;
+    const cartProductosEl =
+        document.getElementById(
+            "cart-productos"
+        );
 
-// --- Inicializar carrito ---
+    const cartAccionesEl =
+        document.getElementById(
+            "cart-acciones"
+        );
+
+    const cartVacioEl =
+        document.getElementById(
+            "cart-vacio"
+        );
+
+
+    if (!cart || cart.length === 0) {
+
+        cartVacioEl.style.display =
+            "block";
+
+        cartAccionesEl.style.display =
+            "none";
+
+        cartProductosEl.innerHTML =
+            "";
+
+        actualizarTotales(0);
+
+        return;
+    }
+
+
+    cartVacioEl.style.display =
+        "none";
+
+    cartAccionesEl.style.display =
+        "flex";
+
+    cartProductosEl.innerHTML =
+        "";
+
+
+    let subtotal = 0;
+
+
+    cart.forEach(p => {
+
+
+        /* =================================================
+           ENSURE IMAGES
+        ================================================= */
+
+        if (
+            !p.imagenes ||
+            p.imagenes.length === 0
+        ) {
+
+            const prodOriginal =
+                productos.find(
+                    pr =>
+                        pr.id === p.id
+                );
+
+
+            if (
+                prodOriginal &&
+                prodOriginal.imagenes
+            ) {
+
+                p.imagenes =
+                    prodOriginal.imagenes;
+
+            }
+
+        }
+
+
+        const imagenSrc =
+            p.imagenes?.[0] ||
+            "https://via.placeholder.com/80";
+
+
+        const cantidad =
+            p.quantity || 1;
+
+
+        subtotal +=
+            parseFloat(p.price || 0) *
+            cantidad;
+
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.className =
+            "cart-producto";
+
+
+        const tituloSeguro =
+            String(
+                p.titulo || "Product"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            );
+
+
+        div.innerHTML = `
+
+            <img
+                src="${imagenSrc}"
+                alt="${tituloSeguro}"
+                onerror="
+                    this.src='https://via.placeholder.com/80';
+                "
+            >
+
+
+            <div class="cart-producto-info">
+
+                <h3>
+                    ${p.titulo || "Product"}
+                </h3>
+
+
+                <p>
+
+                    Price:
+
+                    $${parseFloat(
+                        p.price || 0
+                    ).toFixed(2)}
+
+                </p>
+
+
+                <p>
+
+                    Quantity:
+
+                    <button
+                        class="boton-cantidad"
+                        data-id="${p.id}"
+                        data-action="minus"
+                    >
+                        −
+                    </button>
+
+
+                    <span>
+                        ${cantidad}
+                    </span>
+
+
+                    <button
+                        class="boton-cantidad"
+                        data-id="${p.id}"
+                        data-action="plus"
+                    >
+                        +
+                    </button>
+
+                </p>
+
+
+                <p class="stock-text">
+
+                    Stock:
+
+                    ${
+                        productos.find(
+                            pr =>
+                                pr.id === p.id
+                        )?.stock ??
+                        "N/A"
+                    }
+
+                </p>
+
+            </div>
+
+
+            <button
+                class="boton-carrito cart-eliminar"
+                data-id="${p.id}"
+            >
+                Delete
+            </button>
+
+        `;
+
+
+        cartProductosEl.appendChild(
+            div
+        );
+
+    });
+
+
+    /* =====================================================
+       DELETE
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            ".cart-eliminar"
+        )
+        .forEach(btn => {
+
+            btn.onclick = () => {
+
+                cart =
+                    cart.filter(
+                        p =>
+                            String(p.id) !==
+                            String(
+                                btn.dataset.id
+                            )
+                    );
+
+
+                guardarCarrito();
+
+                actualizarCarrito();
+
+            };
+
+        });
+
+
+    /* =====================================================
+       QUANTITY
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            ".boton-cantidad"
+        )
+        .forEach(btn => {
+
+            btn.onclick = () => {
+
+                const id =
+                    btn.dataset.id;
+
+
+                const accion =
+                    btn.dataset.action;
+
+
+                const productoCarrito =
+                    cart.find(
+                        p =>
+                            String(p.id) ===
+                            String(id)
+                    );
+
+
+                const productoOriginal =
+                    productos.find(
+                        p =>
+                            String(p.id) ===
+                            String(id)
+                    );
+
+
+                if (
+                    !productoCarrito ||
+                    !productoOriginal
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    accion === "plus"
+                ) {
+
+                    if (
+                        productoCarrito.quantity >=
+                        productoOriginal.stockOriginal
+                    ) {
+
+                        alert(
+                            `Not enough stock for ${productoCarrito.titulo}. Only ${productoOriginal.stockOriginal} left.`
+                        );
+
+                        return;
+
+                    }
+
+
+                    productoCarrito.quantity++;
+
+                }
+
+
+                else if (
+                    accion === "minus"
+                ) {
+
+                    productoCarrito.quantity =
+                        Math.max(
+                            (
+                                productoCarrito.quantity ||
+                                1
+                            ) - 1,
+                            1
+                        );
+
+                }
+
+
+                guardarCarrito();
+
+                actualizarCarrito();
+
+            };
+
+        });
+
+
+    actualizarTotales(
+        subtotal
+    );
+
+}
+
+
+/* =========================================================
+   SAVE CART
+========================================================= */
+
+function guardarCarrito() {
+
+    localStorage.setItem(
+        "productos-en-cart",
+        JSON.stringify(cart)
+    );
+
+
+    productos.forEach(p => {
+
+        if (
+            p.stockOriginal === undefined
+        ) {
+
+            p.stockOriginal =
+                p.stock;
+
+        }
+
+
+        p.stock =
+            p.stockOriginal;
+
+    });
+
+
+    localStorage.setItem(
+        "productos",
+        JSON.stringify(productos)
+    );
+
+
+    window.dispatchEvent(
+        new Event("storage")
+    );
+
+}
+
+
+/* =========================================================
+   TOTALS
+========================================================= */
+
+function actualizarTotales(
+    subtotal
+) {
+
+    const estadoCliente =
+        document.getElementById(
+            "estado"
+        )?.value || "";
+
+
+    const taxRateCT =
+        0.0635;
+
+
+    const taxes =
+        estadoCliente === "CT"
+            ? subtotal * taxRateCT
+            : 0;
+
+
+    const total =
+        subtotal + taxes;
+
+
+    document.getElementById(
+        "subtotal"
+    ).textContent =
+        subtotal.toFixed(2);
+
+
+    document.getElementById(
+        "taxes"
+    ).textContent =
+        taxes.toFixed(2);
+
+
+    document.getElementById(
+        "total-display"
+    ).textContent =
+        `Total: $${total.toFixed(2)}`;
+
+
+    document.getElementById(
+        "cart-count"
+    ).textContent =
+        cart.reduce(
+            (a, p) =>
+                a +
+                (
+                    p.quantity ||
+                    1
+                ),
+            0
+        );
+
+}
+
+
+/* =========================================================
+   STATE / TAX
+========================================================= */
+
+const estadoSelect =
+    document.getElementById(
+        "estado"
+    );
+
+
+if (estadoSelect) {
+
+    estadoSelect.addEventListener(
+        "change",
+        () => {
+
+            localStorage.setItem(
+                "estado-cliente",
+                estadoSelect.value
+            );
+
+
+            const subtotal =
+                cart.reduce(
+                    (acc, p) =>
+                        acc +
+                        (
+                            parseFloat(
+                                p.price || 0
+                            ) *
+                            (
+                                p.quantity ||
+                                1
+                            )
+                        ),
+                    0
+                );
+
+
+            actualizarTotales(
+                subtotal
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   EMPTY CART
+========================================================= */
+
+document
+    .getElementById(
+        "cart-acciones-vaciar"
+    )
+    .onclick = () => {
+
+        cart = [];
+
+        guardarCarrito();
+
+        actualizarCarrito();
+
+    };
+
+
+/* =========================================================
+   BUY NOW
+========================================================= */
+
+document
+    .getElementById(
+        "cart-acciones-buy"
+    )
+    .onclick = () => {
+
+
+        if (cart.length === 0) {
+
+            alert(
+                "Your cart is empty! ❌"
+            );
+
+            return;
+
+        }
+
+
+        cart.forEach(p => {
+
+            const prod =
+                productos.find(
+                    pr =>
+                        String(pr.id) ===
+                        String(p.id)
+                );
+
+
+            if (prod) {
+
+                prod.stock =
+                    Math.max(
+                        (
+                            prod.stock || 0
+                        ) -
+                        (
+                            p.quantity ||
+                            1
+                        ),
+                        0
+                    );
+
+            }
+
+        });
+
+
+        localStorage.setItem(
+            "productos",
+            JSON.stringify(productos)
+        );
+
+
+        localStorage.setItem(
+            "productos-en-cart",
+            JSON.stringify(cart)
+        );
+
+
+        window.location.href =
+            "card-charge.html";
+
+    };
+
+
+/* =========================================================
+   RESTORE STATE
+========================================================= */
+
+const estadoGuardado =
+    localStorage.getItem(
+        "estado-cliente"
+    );
+
+
+if (
+    estadoSelect &&
+    estadoGuardado
+) {
+
+    estadoSelect.value =
+        estadoGuardado;
+
+}
+
+
+/* =========================================================
+   CART BUTTON
+========================================================= */
+
+document
+    .getElementById(
+        "ir-carrito"
+    )
+    .onclick = () => {
+
+        window.location.href =
+            "cart.html";
+
+    };
+
+
+/* =========================================================
+   HAMBURGER
+========================================================= */
+
+const hamburger =
+    document.getElementById(
+        "hamburger"
+    );
+
+
+const sidebar =
+    document.querySelector(
+        "aside"
+    );
+
+
+if (hamburger) {
+
+    hamburger.onclick = () => {
+
+        sidebar.classList.toggle(
+            "active"
+        );
+
+    };
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
 actualizarCarrito();
+
 </script>
 
-
 </body>
+
 </html>
