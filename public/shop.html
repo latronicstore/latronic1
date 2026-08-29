@@ -1412,6 +1412,9 @@ footer {
     .hamburger {
         display: block;
     }
+    .hamburger.hidden {
+    display: none !important;
+}
 
     main {
         margin-left: 0;
@@ -3314,100 +3317,310 @@ adminAccess?.addEventListener(
         window.location.href = "admin.html";
     }
 );
-    /* =========================================================
-       MOBILE MENU
-    ========================================================= */
+  
 
-    const hamburger =
-        document.querySelector(
-            ".hamburger"
-        );
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
 
-    const aside =
-        document.querySelector(
-            "aside"
-        );
+const hamburger =
+    document.querySelector(".hamburger");
 
+const aside =
+    document.querySelector("aside");
 
-    hamburger?.addEventListener(
+if (hamburger && aside) {
+
+    /* =====================================================
+       ABRIR / CERRAR HAMBURGER
+       ===================================================== */
+
+    hamburger.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            aside?.classList.toggle(
-                "active"
+            event.preventDefault();
+            event.stopPropagation();
+
+            /* Abrir / cerrar sidebar */
+            aside.classList.toggle("active");
+
+            /*
+             * IMPORTANTE:
+             * El hamburger NUNCA desaparece.
+             */
+            hamburger.classList.remove(
+                "hidden"
             );
+
         }
     );
 
 
-    /* =========================================================
-       SUBMENUS
-    ========================================================= */
+    /* =====================================================
+       CERRAR MENU AL PRESIONAR HOME U OTRO ENLACE
+       ===================================================== */
 
-    document
-        .querySelectorAll(
-            ".toggle-submenu"
-        )
+    aside
+        .querySelectorAll("a")
         .forEach(
-            button => {
+            link => {
 
-                button.addEventListener(
+                link.addEventListener(
                     "click",
                     function () {
 
-                        const submenu =
-                            button.nextElementSibling;
+                        /*
+                         * En móvil cerramos automáticamente
+                         * el sidebar.
+                         */
 
-                        if (!submenu) {
-                            return;
-                        }
+                        if (
+                            window.innerWidth <= 768
+                        ) {
 
-
-                        const open =
-                            submenu.style.display ===
-                            "block";
-
-
-                        document
-                            .querySelectorAll(
-                                ".submenu"
-                            )
-                            .forEach(
-                                menu => {
-
-                                    menu.style.display =
-                                        "none";
-                                }
-                            );
-
-
-                        document
-                            .querySelectorAll(
-                                ".toggle-submenu"
-                            )
-                            .forEach(
-                                btn => {
-
-                                    btn.classList.remove(
-                                        "active"
-                                    );
-                                }
-                            );
-
-
-                        if (!open) {
-
-                            submenu.style.display =
-                                "block";
-
-                            button.classList.add(
+                            aside.classList.remove(
                                 "active"
                             );
+
+                            /*
+                             * El hamburger permanece visible
+                             * para poder abrirlo nuevamente.
+                             */
+                            hamburger.classList.remove(
+                                "hidden"
+                            );
+
+                            /*
+                             * Cerrar cualquier submenu abierto.
+                             */
+                            aside
+                                .querySelectorAll(
+                                    ".submenu"
+                                )
+                                .forEach(
+                                    submenu => {
+
+                                        submenu.style.display =
+                                            "none";
+
+                                    }
+                                );
+
+                            /*
+                             * Quitar estado active
+                             * de los botones principales.
+                             */
+                            aside
+                                .querySelectorAll(
+                                    ".toggle-submenu"
+                                )
+                                .forEach(
+                                    button => {
+
+                                        button.classList.remove(
+                                            "active"
+                                        );
+
+                                    }
+                                );
+
                         }
+
                     }
                 );
+
             }
         );
+
+
+    /* =====================================================
+       CERRAR MENU AL SELECCIONAR UN SUBMENU
+       ===================================================== */
+
+    aside
+        .querySelectorAll(
+            ".submenu .boton-categoria"
+        )
+        .forEach(
+            submenuButton => {
+
+                submenuButton.addEventListener(
+                    "click",
+                    function () {
+
+                        /*
+                         * Dejamos que primero se ejecuten
+                         * las demás funciones asociadas
+                         * al botón de categoría.
+                         */
+
+                        if (
+                            window.innerWidth <= 768
+                        ) {
+
+                            setTimeout(
+                                function () {
+
+                                    /*
+                                     * CERRAR SIDEBAR
+                                     */
+                                    aside.classList.remove(
+                                        "active"
+                                    );
+
+
+                                    /*
+                                     * HAMBURGER SIEMPRE VISIBLE
+                                     */
+                                    hamburger.classList.remove(
+                                        "hidden"
+                                    );
+
+
+                                    /*
+                                     * CERRAR TODOS LOS SUBMENUS
+                                     */
+                                    aside
+                                        .querySelectorAll(
+                                            ".submenu"
+                                        )
+                                        .forEach(
+                                            submenu => {
+
+                                                submenu.style.display =
+                                                    "none";
+
+                                            }
+                                        );
+
+
+                                    /*
+                                     * QUITAR ACTIVE
+                                     */
+                                    aside
+                                        .querySelectorAll(
+                                            ".toggle-submenu"
+                                        )
+                                        .forEach(
+                                            button => {
+
+                                                button.classList.remove(
+                                                    "active"
+                                                );
+
+                                            }
+                                        );
+
+                                },
+                                50
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SUBMENUS
+   ========================================================= */
+
+document
+    .querySelectorAll(
+        ".toggle-submenu"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const submenu =
+                        button.nextElementSibling;
+
+                    if (!submenu) {
+                        return;
+                    }
+
+
+                    /* =================================================
+                       COMPROBAR SI YA ESTÁ ABIERTO
+                       ================================================= */
+
+                    const open =
+                        submenu.style.display ===
+                        "block";
+
+
+                    /* =================================================
+                       CERRAR TODOS LOS SUBMENUS
+                       ================================================= */
+
+                    document
+                        .querySelectorAll(
+                            ".submenu"
+                        )
+                        .forEach(
+                            menu => {
+
+                                menu.style.display =
+                                    "none";
+
+                            }
+                        );
+
+
+                    /* =================================================
+                       QUITAR ACTIVE
+                       ================================================= */
+
+                    document
+                        .querySelectorAll(
+                            ".toggle-submenu"
+                        )
+                        .forEach(
+                            btn => {
+
+                                btn.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                    /* =================================================
+                       ABRIR EL SUBMENU SELECCIONADO
+                       ================================================= */
+
+                    if (!open) {
+
+                        submenu.style.display =
+                            "block";
+
+                        button.classList.add(
+                            "active"
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
 
 
     /* =========================================================
