@@ -300,6 +300,68 @@ const pool = new Pool({
 });
 
 // ============================================================
+// CREAR COLUMNAS TOP CARD / DEAL
+// ============================================================
+
+async function agregarColumnasTopsDeals() {
+
+    try {
+
+        await pool.query(`
+            ALTER TABLE productos
+            ADD COLUMN IF NOT EXISTS "topCard"
+            BOOLEAN NOT NULL DEFAULT FALSE
+        `);
+
+        await pool.query(`
+            ALTER TABLE productos
+            ADD COLUMN IF NOT EXISTS deal
+            BOOLEAN NOT NULL DEFAULT FALSE
+        `);
+
+        console.log(
+            "✅ Columnas topCard y deal verificadas/creadas."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Error creando columnas topCard/deal:",
+            error
+        );
+
+    }
+
+}
+
+agregarColumnasTopsDeals();
+
+
+async function verificarColumnasProductos() {
+    try {
+        const result = await pool.query(`
+            SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'productos'
+            ORDER BY ordinal_position
+        `);
+
+        console.log("\n====================================");
+        console.log("COLUMNAS DE LA TABLA productos:");
+        console.table(result.rows);
+        console.log("====================================\n");
+
+    } catch (error) {
+        console.error(
+            "❌ ERROR CONSULTANDO COLUMNAS:",
+            error
+        );
+    }
+}
+
+verificarColumnasProductos();
+
+// ============================================================
 // TEST DATABASE
 // ============================================================
 
@@ -351,15 +413,15 @@ async function obtenerProducto(id) {
 async function guardarProducto(nuevo) {
 
     const {
-
         id,
         titulo,
         description,
         price,
         stock,
         categoria,
-        imagenes
-
+        imagenes,
+        topCard,
+        deal
     } = nuevo;
 
     const query = `
@@ -371,7 +433,9 @@ async function guardarProducto(nuevo) {
             price,
             stock,
             categoria,
-            imagenes
+            imagenes,
+            "topCard",
+            deal
         )
         VALUES
         (
@@ -381,7 +445,9 @@ async function guardarProducto(nuevo) {
             $4,
             $5,
             $6,
-            $7
+            $7,
+            $8,
+            $9
         )
         RETURNING *
     `;
@@ -404,7 +470,11 @@ async function guardarProducto(nuevo) {
 
         JSON.stringify(
             imagenes || []
-        )
+        ),
+
+        topCard === true,
+
+        deal === true
 
     ];
 
@@ -430,21 +500,15 @@ async function guardarProducto(nuevo) {
 //
 
 const ALLOWED_PRODUCT_FIELDS = [
-
     "titulo",
-
     "description",
-
     "price",
-
     "stock",
-
     "categoria",
-
     "imagenes",
-
-    "tags"
-
+    "tags",
+    "topCard",
+    "deal"
 ];
 
 // ============================================================
