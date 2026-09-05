@@ -1747,13 +1747,50 @@ button {
         font-size: 2rem;
     }
 }
+
+
+/* =========================================================
+   TOPS / DEALS OPTIONS
+========================================================= */
+
+.featured-options {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 14px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.featured-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.featured-option input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #ff7a00;
+}
 </style>
 
 </head>
 
 
 <body>
-
 
 <!-- =========================================================
      LOGIN
@@ -1801,11 +1838,6 @@ button {
 ========================================================== -->
 
 <section id="admin-panel">
-
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
 
     <div class="admin-header">
 
@@ -2030,6 +2062,42 @@ button {
             </div>
 
 
+            <!-- =================================================
+                 FEATURED OPTIONS FOR NEW PRODUCT
+            ================================================== -->
+
+            <div class="form-full">
+
+                <div class="featured-options">
+
+                    <label class="featured-option">
+
+                        <input
+                            type="checkbox"
+                            id="topCard"
+                        >
+
+                        ⭐ Tops
+
+                    </label>
+
+
+                    <label class="featured-option">
+
+                        <input
+                            type="checkbox"
+                            id="deal"
+                        >
+
+                        🔥 Deals
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
             <div class="form-full">
 
                 <button
@@ -2106,99 +2174,61 @@ const ADMIN_PASSWORD = "042525";
 ========================================================== */
 
 const loginScreen =
-    document.getElementById(
-        "login-screen"
-    );
+    document.getElementById("login-screen");
 
 const loginBtn =
-    document.getElementById(
-        "login-btn"
-    );
+    document.getElementById("login-btn");
 
 const passwordInput =
-    document.getElementById(
-        "admin-password"
-    );
+    document.getElementById("admin-password");
 
 const exitLoginBtn =
-    document.getElementById(
-        "exit-login-btn"
-    );
+    document.getElementById("exit-login-btn");
 
 const adminPanel =
-    document.getElementById(
-        "admin-panel"
-    );
+    document.getElementById("admin-panel");
 
 const logoutBtn =
-    document.getElementById(
-        "logout-btn"
-    );
+    document.getElementById("logout-btn");
 
 const reloadBtn =
-    document.getElementById(
-        "reload-btn"
-    );
+    document.getElementById("reload-btn");
 
 const goShopBtn =
-    document.getElementById(
-        "go-shop-btn"
-    );
+    document.getElementById("go-shop-btn");
 
 const btnMigrarImagenes =
-    document.getElementById(
-        "btnMigrarImagenes"
-    );
+    document.getElementById("btnMigrarImagenes");
 
 const statusText =
-    document.getElementById(
-        "status-text"
-    );
+    document.getElementById("status-text");
 
 const searchInput =
-    document.getElementById(
-        "search-input"
-    );
+    document.getElementById("search-input");
 
 const clearSearchBtn =
-    document.getElementById(
-        "clear-search-btn"
-    );
+    document.getElementById("clear-search-btn");
 
 const listaProductos =
-    document.getElementById(
-        "lista-productos"
-    );
+    document.getElementById("lista-productos");
 
 const productCount =
-    document.getElementById(
-        "product-count"
-    );
+    document.getElementById("product-count");
 
 const formProducto =
-    document.getElementById(
-        "form-producto"
-    );
+    document.getElementById("form-producto");
 
 const agregarBtn =
-    document.getElementById(
-        "agregar-btn"
-    );
+    document.getElementById("agregar-btn");
 
 const imagenesFileInput =
-    document.getElementById(
-        "imagenes-file"
-    );
+    document.getElementById("imagenes-file");
 
 const addPreview =
-    document.getElementById(
-        "add-preview"
-    );
+    document.getElementById("add-preview");
 
 const mensajeGuardado =
-    document.getElementById(
-        "mensaje-guardado"
-    );
+    document.getElementById("mensaje-guardado");
 
 
 /* =========================================================
@@ -2231,8 +2261,8 @@ function apiUrl(path) {
     const cleanPath =
         String(path || "")
             .startsWith("/")
-            ? path
-            : "/" + path;
+                ? path
+                : "/" + path;
 
     return base + cleanPath;
 }
@@ -2247,9 +2277,7 @@ function mostrarMensaje(
     tipo = "success"
 ) {
 
-    mensajeGuardado.textContent =
-        texto;
-
+    mensajeGuardado.textContent = texto;
 
     if (tipo === "error") {
 
@@ -2267,15 +2295,12 @@ function mostrarMensaje(
             "#2d9b52";
     }
 
-
     mensajeGuardado.style.display =
         "block";
-
 
     clearTimeout(
         mostrarMensaje.timer
     );
-
 
     mostrarMensaje.timer =
         setTimeout(
@@ -2299,9 +2324,7 @@ function actualizarEstadoServidor(
     texto
 ) {
 
-    statusText.textContent =
-        texto;
-
+    statusText.textContent = texto;
 
     statusText.className =
         ok
@@ -2316,29 +2339,12 @@ function actualizarEstadoServidor(
 
 function escaparHtml(valor) {
 
-    return String(
-        valor ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -2365,16 +2371,13 @@ function prepararCloudinary(url) {
         return "";
     }
 
-
     let value =
         String(url).trim();
-
 
     if (!esCloudinary(value)) {
 
         return value;
     }
-
 
     if (
         /\/image\/upload\/[^/]*(f_auto|q_auto)/i.test(
@@ -2385,11 +2388,8 @@ function prepararCloudinary(url) {
         return value;
     }
 
-
     if (
-        value.includes(
-            "/image/upload/"
-        )
+        value.includes("/image/upload/")
     ) {
 
         return value.replace(
@@ -2397,7 +2397,6 @@ function prepararCloudinary(url) {
             "/image/upload/f_auto,q_auto/"
         );
     }
-
 
     return value;
 }
@@ -2407,33 +2406,25 @@ function prepararCloudinary(url) {
    NORMALIZAR URL
 ========================================================== */
 
-function normalizarImagenUrl(
-    url
-) {
+function normalizarImagenUrl(url) {
 
     if (!url) {
 
         return "";
     }
 
-
     let value =
         String(url).trim();
-
 
     if (!value) {
 
         return "";
     }
 
-
     if (esCloudinary(value)) {
 
-        return prepararCloudinary(
-            value
-        );
+        return prepararCloudinary(value);
     }
-
 
     if (
         /^data:/i.test(value) ||
@@ -2443,28 +2434,14 @@ function normalizarImagenUrl(
         return value;
     }
 
-
     value =
-        value.replace(
-            /\\/g,
-            "/"
-        );
-
+        value.replace(/\\/g, "/");
 
     value =
         value.replace(
             /^file:\/+/i,
             "/"
         );
-
-
-    /*
-        IMPORTANTE:
-
-        Si alguna URL vieja contiene localhost,
-        eliminamos el host para que el navegador
-        use el mismo dominio actual.
-    */
 
     try {
 
@@ -2474,12 +2451,10 @@ function normalizarImagenUrl(
                 window.location.origin
             );
 
-
         const hostname =
             String(
                 parsed.hostname || ""
             ).toLowerCase();
-
 
         if (
             hostname === "localhost" ||
@@ -2498,13 +2473,11 @@ function normalizarImagenUrl(
         // Ruta relativa.
     }
 
-
     value =
         value.replace(
             /^\.\//,
             ""
         );
-
 
     if (
         /^https?:\/\//i.test(value)
@@ -2512,7 +2485,6 @@ function normalizarImagenUrl(
 
         return value;
     }
-
 
     if (
         value.startsWith("/")
@@ -2522,42 +2494,27 @@ function normalizarImagenUrl(
 
             return (
                 IMAGE_SERVER_URL
-                    .replace(
-                        /\/+$/,
-                        ""
-                    ) +
+                    .replace(/\/+$/, "") +
                 value
             );
         }
 
-
         return value;
     }
-
 
     if (IMAGE_SERVER_URL) {
 
         return (
             IMAGE_SERVER_URL
-                .replace(
-                    /\/+$/,
-                    ""
-                ) +
+                .replace(/\/+$/, "") +
             "/" +
-            value.replace(
-                /^\/+/,
-                ""
-            )
+            value.replace(/^\/+/, "")
         );
     }
 
-
     return (
         "/" +
-        value.replace(
-            /^\/+/,
-            ""
-        )
+        value.replace(/^\/+/, "")
     );
 }
 
@@ -2566,15 +2523,12 @@ function normalizarImagenUrl(
    EXTRAER URL DE OBJETO
 ========================================================== */
 
-function extraerUrlImagen(
-    item
-) {
+function extraerUrlImagen(item) {
 
     if (!item) {
 
         return "";
     }
-
 
     if (
         typeof item === "string"
@@ -2583,14 +2537,12 @@ function extraerUrlImagen(
         return item.trim();
     }
 
-
     if (
         typeof item !== "object"
     ) {
 
         return "";
     }
-
 
     return String(
         item.secure_url ||
@@ -2619,46 +2571,35 @@ function normalizarListaImagenes(
         return [];
     }
 
-
     const resultado = [];
 
     const vistos = new Set();
-
 
     for (
         const item of imagenes
     ) {
 
         let url =
-            extraerUrlImagen(
-                item
-            );
-
+            extraerUrlImagen(item);
 
         if (!url) {
 
             continue;
         }
-
 
         url =
-            normalizarImagenUrl(
-                url
-            );
-
+            normalizarImagenUrl(url);
 
         if (!url) {
 
             continue;
         }
-
 
         const clave =
             url
                 .split("?")[0]
                 .split("#")[0]
                 .toLowerCase();
-
 
         if (
             vistos.has(clave)
@@ -2667,12 +2608,10 @@ function normalizarListaImagenes(
             continue;
         }
 
-
         vistos.add(clave);
 
         resultado.push(url);
     }
-
 
     return resultado;
 }
@@ -2682,15 +2621,12 @@ function normalizarListaImagenes(
    OBTENER IMÁGENES DEL PRODUCTO
 ========================================================== */
 
-function obtenerImagenesProducto(
-    p
-) {
+function obtenerImagenesProducto(p) {
 
     if (!p || typeof p !== "object") {
 
         return [];
     }
-
 
     const posibles = [
 
@@ -2708,7 +2644,6 @@ function obtenerImagenesProducto(
 
     ];
 
-
     for (
         const lista of posibles
     ) {
@@ -2723,13 +2658,11 @@ function obtenerImagenesProducto(
         }
     }
 
-
     const una =
         p.imagen ||
         p.image ||
         p.imageUrl ||
         p.image_url;
-
 
     if (una) {
 
@@ -2737,7 +2670,6 @@ function obtenerImagenesProducto(
             [una]
         );
     }
-
 
     return [];
 }
@@ -2760,10 +2692,8 @@ function normalizarProducto(
         p = {};
     }
 
-
     let categoria =
         p.categoria;
-
 
     if (
         !categoria ||
@@ -2773,14 +2703,12 @@ function normalizarProducto(
         categoria = {};
     }
 
-
     const id =
         p.id ??
         p.productId ??
         p.product_id ??
         p.ID ??
         `temp-${Date.now()}-${index}`;
-
 
     return {
 
@@ -2801,9 +2729,7 @@ function normalizarProducto(
             "",
 
         imagenes:
-            obtenerImagenesProducto(
-                p
-            ),
+            obtenerImagenesProducto(p),
 
         categoria: {
 
@@ -2837,7 +2763,26 @@ function normalizarProducto(
                 p.inventario ??
                 p.quantity ??
                 0
-            ) || 0
+            ) || 0,
+
+        /* =================================================
+           TOPS
+        ================================================== */
+
+        topCard:
+            p.topCard === true ||
+            p.top_card === true ||
+            p.isTopCard === true ||
+            p.is_top_card === true,
+
+        /* =================================================
+           DEALS
+        ================================================== */
+
+        deal:
+            p.deal === true ||
+            p.isDeal === true ||
+            p.is_deal === true
     };
 }
 
@@ -2853,22 +2798,17 @@ async function obtenerErrorRespuesta(
     let mensaje =
         `HTTP ${response.status} ${response.statusText}`;
 
-
     try {
 
         const text =
             await response.text();
-
 
         if (text) {
 
             try {
 
                 const data =
-                    JSON.parse(
-                        text
-                    );
-
+                    JSON.parse(text);
 
                 mensaje =
                     data.error ||
@@ -2894,7 +2834,6 @@ async function obtenerErrorRespuesta(
         // mantener error HTTP
     }
 
-
     return mensaje;
 }
 
@@ -2913,12 +2852,10 @@ async function apiFetch(
             options.headers || {}
         );
 
-
     headers.set(
         "Accept",
         "application/json"
     );
-
 
     if (AUTH_TOKEN) {
 
@@ -2927,7 +2864,6 @@ async function apiFetch(
             AUTH_TOKEN
         );
     }
-
 
     const response =
         await fetch(
@@ -2938,7 +2874,6 @@ async function apiFetch(
             }
         );
 
-
     if (!response.ok) {
 
         const mensaje =
@@ -2946,12 +2881,8 @@ async function apiFetch(
                 response
             );
 
-
-        throw new Error(
-            mensaje
-        );
+        throw new Error(mensaje);
     }
-
 
     return response;
 }
@@ -2961,9 +2892,7 @@ async function apiFetch(
    EXTRAER PRODUCTOS
 ========================================================== */
 
-function extraerProductos(
-    data
-) {
+function extraerProductos(data) {
 
     if (
         Array.isArray(data)
@@ -2971,7 +2900,6 @@ function extraerProductos(
 
         return data;
     }
-
 
     const posibles = [
 
@@ -2987,7 +2915,6 @@ function extraerProductos(
 
     ];
 
-
     for (
         const item of posibles
     ) {
@@ -2999,7 +2926,6 @@ function extraerProductos(
             return item;
         }
     }
-
 
     return [];
 }
@@ -3016,40 +2942,25 @@ async function cargarProductos() {
         return;
     }
 
-
     if (!AUTH_TOKEN) {
 
         return;
     }
 
-
-    cargandoProductos =
-        true;
-
+    cargandoProductos = true;
 
     actualizarEstadoServidor(
         true,
         "Loading products..."
     );
 
-
-    listaProductos.innerHTML =
-        `
+    listaProductos.innerHTML = `
         <div class="loading-box">
             ⏳ Loading products...
         </div>
-        `;
-
+    `;
 
     try {
-
-        console.log(
-            "GET",
-            apiUrl(
-                "/api/productos"
-            )
-        );
-
 
         const response =
             await apiFetch(
@@ -3060,16 +2971,11 @@ async function cargarProductos() {
                 }
             );
 
-
         const data =
             await response.json();
 
-
         const lista =
-            extraerProductos(
-                data
-            );
-
+            extraerProductos(data);
 
         productos =
             lista.map(
@@ -3083,11 +2989,9 @@ async function cargarProductos() {
                     )
             );
 
-
         let totalImagenes = 0;
 
         let cloudinaryImagenes = 0;
-
 
         for (
             const p of productos
@@ -3096,24 +3000,20 @@ async function cargarProductos() {
             totalImagenes +=
                 p.imagenes.length;
 
-
             cloudinaryImagenes +=
                 p.imagenes.filter(
                     esCloudinary
                 ).length;
         }
 
-
         actualizarEstadoServidor(
             true,
             `Connected — ${productos.length} products — ${totalImagenes} images — ${cloudinaryImagenes} Cloudinary`
         );
 
-
         renderProductos(
             searchInput.value
         );
-
 
         console.log(
             "✅ Productos cargados:",
@@ -3129,15 +3029,12 @@ async function cargarProductos() {
             error
         );
 
-
         actualizarEstadoServidor(
             false,
             "Connection error"
         );
 
-
-        listaProductos.innerHTML =
-            `
+        listaProductos.innerHTML = `
             <div
                 class="empty-box"
                 style="
@@ -3145,7 +3042,6 @@ async function cargarProductos() {
                     background:#351c1c;
                 "
             >
-
                 <h3>
                     ❌ No se pudieron cargar los productos
                 </h3>
@@ -3153,9 +3049,7 @@ async function cargarProductos() {
                 <br>
 
                 <div>
-                    ${escaparHtml(
-                        error.message
-                    )}
+                    ${escaparHtml(error.message)}
                 </div>
 
                 <br>
@@ -3163,21 +3057,17 @@ async function cargarProductos() {
                 <small>
                     API:
                     ${escaparHtml(
-                        apiUrl(
-                            "/api/productos"
-                        )
+                        apiUrl("/api/productos")
                     )}
                 </small>
-
             </div>
-            `;
+        `;
 
     }
 
     finally {
 
-        cargandoProductos =
-            false;
+        cargandoProductos = false;
     }
 }
 
@@ -3193,99 +3083,65 @@ function crearImagenProducto(
 ) {
 
     const wrapper =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     wrapper.className =
         "image-wrapper";
 
-
     const img =
-        document.createElement(
-            "img"
-        );
-
+        document.createElement("img");
 
     img.alt =
         titulo || "Product image";
 
-
     img.loading =
         "lazy";
-
 
     img.decoding =
         "async";
 
-
     img.referrerPolicy =
         "no-referrer";
-
 
     img.className =
         "loading";
 
-
     const numero =
-        document.createElement(
-            "span"
-        );
-
+        document.createElement("span");
 
     numero.className =
         "image-number";
 
-
     numero.textContent =
         String(index + 1);
 
-
     const debug =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     debug.className =
         "image-debug";
 
-
     const finalUrl =
-        normalizarImagenUrl(
-            url
-        );
-
+        normalizarImagenUrl(url);
 
     if (!finalUrl) {
 
         const error =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         error.className =
             "image-error";
 
-
         error.textContent =
             "❌ Invalid image URL";
 
-
-        wrapper.appendChild(
-            error
-        );
-
+        wrapper.appendChild(error);
 
         return wrapper;
     }
 
-
     debug.textContent =
         finalUrl;
-
 
     img.onload =
         () => {
@@ -3294,15 +3150,12 @@ function crearImagenProducto(
                 "loading"
             );
 
-
             debug.className =
                 "image-debug ok";
-
 
             debug.textContent =
                 "✅ " + finalUrl;
         };
-
 
     img.onerror =
         () => {
@@ -3312,37 +3165,27 @@ function crearImagenProducto(
                 finalUrl
             );
 
-
             img.classList.remove(
                 "loading"
             );
 
-
             img.style.display =
                 "none";
-
 
             debug.className =
                 "image-debug error";
 
-
             debug.textContent =
                 "❌ " + finalUrl;
 
-
             const error =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             error.className =
                 "image-error";
 
-
             error.textContent =
                 "❌ Image unavailable";
-
 
             wrapper.insertBefore(
                 error,
@@ -3350,29 +3193,17 @@ function crearImagenProducto(
             );
         };
 
-
     img.src =
         finalUrl;
 
+    wrapper.appendChild(img);
 
-    wrapper.appendChild(
-        img
-    );
+    wrapper.appendChild(numero);
 
-
-    wrapper.appendChild(
-        numero
-    );
-
-
-    wrapper.appendChild(
-        debug
-    );
-
+    wrapper.appendChild(debug);
 
     wrapper.title =
         finalUrl;
-
 
     return wrapper;
 }
@@ -3386,17 +3217,12 @@ function renderProductos(
     filter = ""
 ) {
 
-    listaProductos.innerHTML =
-        "";
-
+    listaProductos.innerHTML = "";
 
     const texto =
-        String(
-            filter || ""
-        )
+        String(filter || "")
             .toLowerCase()
             .trim();
-
 
     const filtrados =
         productos.filter(
@@ -3416,39 +3242,32 @@ function renderProductos(
 
                 ];
 
-
                 return valores.some(
                     valor =>
                         String(
                             valor ?? ""
                         )
                             .toLowerCase()
-                            .includes(
-                                texto
-                            )
+                            .includes(texto)
                 );
             }
         );
 
-
     productCount.textContent =
         `${filtrados.length} of ${productos.length} products`;
-
 
     if (
         filtrados.length === 0
     ) {
 
-        listaProductos.innerHTML =
-            `
+        listaProductos.innerHTML = `
             <div class="empty-box">
                 No products found.
             </div>
-            `;
+        `;
 
         return;
     }
-
 
     for (
         const producto of filtrados
@@ -3467,56 +3286,40 @@ function renderProductos(
    CREAR TARJETA
 ========================================================== */
 
-function crearTarjetaProducto(
-    p
-) {
+function crearTarjetaProducto(p) {
 
     const div =
-        document.createElement(
-            "article"
-        );
-
+        document.createElement("article");
 
     div.className =
         "producto";
 
 
-    /*
-        ID
-    */
+    /* =====================================================
+       ID
+    ====================================================== */
 
     const idDiv =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     idDiv.className =
         "producto-id";
 
-
     idDiv.textContent =
         `ID: ${p.id}`;
 
-
-    div.appendChild(
-        idDiv
-    );
+    div.appendChild(idDiv);
 
 
-    /*
-        IMÁGENES
-    */
+    /* =====================================================
+       IMÁGENES
+    ====================================================== */
 
     const miniImgs =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     miniImgs.className =
         "mini-images";
-
 
     if (
         p.imagenes.length
@@ -3540,8 +3343,7 @@ function crearTarjetaProducto(
 
     } else {
 
-        miniImgs.innerHTML =
-            `
+        miniImgs.innerHTML = `
             <div
                 style="
                     color:#777;
@@ -3551,294 +3353,307 @@ function crearTarjetaProducto(
             >
                 No images
             </div>
-            `;
+        `;
     }
 
-
-    div.appendChild(
-        miniImgs
-    );
+    div.appendChild(miniImgs);
 
 
-    /*
-        IMAGE COUNT
-    */
+    /* =====================================================
+       IMAGE COUNT
+    ====================================================== */
 
     const imageCount =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     imageCount.className =
         "image-count";
 
-
     imageCount.textContent =
         `📸 ${p.imagenes.length} image(s)`;
 
-
-    div.appendChild(
-        imageCount
-    );
+    div.appendChild(imageCount);
 
 
-    /*
-        TITLE
-    */
+    /* =====================================================
+       TITLE
+    ====================================================== */
 
     const tituloInput =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     tituloInput.type =
         "text";
 
-
     tituloInput.value =
         p.titulo || "";
-
 
     tituloInput.placeholder =
         "Product title";
 
-
     tituloInput.dataset.field =
         "titulo";
 
-
-    div.appendChild(
-        tituloInput
-    );
+    div.appendChild(tituloInput);
 
 
-    /*
-        DESCRIPTION
-    */
+    /* =====================================================
+       DESCRIPTION
+    ====================================================== */
 
     const desc =
-        document.createElement(
-            "textarea"
-        );
-
+        document.createElement("textarea");
 
     desc.value =
         p.description || "";
 
-
     desc.placeholder =
         "Description";
-
 
     desc.dataset.field =
         "description";
 
-
-    div.appendChild(
-        desc
-    );
+    div.appendChild(desc);
 
 
-    /*
-        MAIN CATEGORY
-    */
+    /* =====================================================
+       MAIN CATEGORY
+    ====================================================== */
 
     const mainCat =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     mainCat.type =
         "text";
 
-
     mainCat.value =
         p.categoria?.main || "";
-
 
     mainCat.placeholder =
         "Main category";
 
-
     mainCat.dataset.field =
         "mainCat";
 
-
-    div.appendChild(
-        mainCat
-    );
+    div.appendChild(mainCat);
 
 
-    /*
-        SUBCATEGORY
-    */
+    /* =====================================================
+       SUBCATEGORY
+    ====================================================== */
 
     const subCat =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     subCat.type =
         "text";
 
-
     subCat.value =
         p.categoria?.sub || "";
-
 
     subCat.placeholder =
         "Subcategory";
 
-
     subCat.dataset.field =
         "subCat";
 
-
-    div.appendChild(
-        subCat
-    );
+    div.appendChild(subCat);
 
 
-    /*
-        PRICE
-    */
+    /* =====================================================
+       PRICE
+    ====================================================== */
 
     const price =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     price.type =
         "number";
 
-
     price.step =
         "0.01";
-
 
     price.min =
         "0";
 
-
     price.value =
         p.price;
-
 
     price.dataset.field =
         "price";
 
-
-    div.appendChild(
-        price
-    );
+    div.appendChild(price);
 
 
-    /*
-        STOCK
-    */
+    /* =====================================================
+       STOCK
+    ====================================================== */
 
     const stock =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     stock.type =
         "number";
 
-
     stock.step =
         "1";
-
 
     stock.min =
         "0";
 
-
     stock.value =
         p.stock;
-
 
     stock.dataset.field =
         "stock";
 
+    div.appendChild(stock);
 
-    div.appendChild(
-        stock
+
+    /* =====================================================
+       TOPS / DEALS
+       ESTO ES LO NUEVO PARA CADA PRODUCTO
+    ====================================================== */
+
+    const featuredBox =
+        document.createElement("div");
+
+    featuredBox.className =
+        "featured-options";
+
+
+    /* =====================================================
+       TOPS
+    ====================================================== */
+
+    const topLabel =
+        document.createElement("label");
+
+    topLabel.className =
+        "featured-option";
+
+
+    const topCheckbox =
+        document.createElement("input");
+
+    topCheckbox.type =
+        "checkbox";
+
+    topCheckbox.dataset.field =
+        "topCard";
+
+    topCheckbox.checked =
+        p.topCard === true;
+
+
+    topLabel.appendChild(
+        topCheckbox
+    );
+
+    topLabel.appendChild(
+        document.createTextNode(
+            " ⭐ Tops"
+        )
     );
 
 
-    /*
-        NUEVAS IMÁGENES
-    */
+    /* =====================================================
+       DEALS
+    ====================================================== */
+
+    const dealLabel =
+        document.createElement("label");
+
+    dealLabel.className =
+        "featured-option";
+
+
+    const dealCheckbox =
+        document.createElement("input");
+
+    dealCheckbox.type =
+        "checkbox";
+
+    dealCheckbox.dataset.field =
+        "deal";
+
+    dealCheckbox.checked =
+        p.deal === true;
+
+
+    dealLabel.appendChild(
+        dealCheckbox
+    );
+
+    dealLabel.appendChild(
+        document.createTextNode(
+            " 🔥 Deals"
+        )
+    );
+
+
+    featuredBox.appendChild(
+        topLabel
+    );
+
+    featuredBox.appendChild(
+        dealLabel
+    );
+
+
+    div.appendChild(
+        featuredBox
+    );
+
+
+    /* =====================================================
+       NUEVAS IMÁGENES
+    ====================================================== */
 
     const fileInput =
-        document.createElement(
-            "input"
-        );
-
+        document.createElement("input");
 
     fileInput.type =
         "file";
 
-
     fileInput.multiple =
         true;
-
 
     fileInput.accept =
         "image/*,.webp,.heif,.heic";
 
-
     fileInput.dataset.field =
         "images";
 
-
-    div.appendChild(
-        fileInput
-    );
+    div.appendChild(fileInput);
 
 
-    /*
-        ACTIONS
-    */
+    /* =====================================================
+       ACTIONS
+    ====================================================== */
 
     const actions =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     actions.className =
         "product-actions";
 
 
-    /*
-        SAVE
-    */
+    /* =====================================================
+       SAVE
+    ====================================================== */
 
     const saveBtn =
-        document.createElement(
-            "button"
-        );
-
+        document.createElement("button");
 
     saveBtn.type =
         "button";
 
-
     saveBtn.className =
         "save-btn";
 
-
     saveBtn.textContent =
         "💾 Save";
-
 
     saveBtn.addEventListener(
         "click",
@@ -3851,14 +3666,11 @@ function crearTarjetaProducto(
                 return;
             }
 
-
             saveBtn.disabled =
                 true;
 
-
             saveBtn.textContent =
                 "⏳ Saving...";
-
 
             try {
 
@@ -3889,40 +3701,32 @@ function crearTarjetaProducto(
                 saveBtn.disabled =
                     false;
 
-
                 saveBtn.textContent =
                     "💾 Save";
             }
         }
     );
 
-
     actions.appendChild(
         saveBtn
     );
 
 
-    /*
-        DELETE
-    */
+    /* =====================================================
+       DELETE
+    ====================================================== */
 
     const deleteBtn =
-        document.createElement(
-            "button"
-        );
-
+        document.createElement("button");
 
     deleteBtn.type =
         "button";
 
-
     deleteBtn.className =
         "delete-btn";
 
-
     deleteBtn.textContent =
         "🗑️ Delete";
-
 
     deleteBtn.addEventListener(
         "click",
@@ -3934,16 +3738,11 @@ function crearTarjetaProducto(
         }
     );
 
-
     actions.appendChild(
         deleteBtn
     );
 
-
-    div.appendChild(
-        actions
-    );
-
+    div.appendChild(actions);
 
     return div;
 }
@@ -3953,9 +3752,7 @@ function crearTarjetaProducto(
    SUBIR IMÁGENES
 ========================================================== */
 
-async function subirImagenes(
-    files
-) {
+async function subirImagenes(files) {
 
     if (
         !files ||
@@ -3965,10 +3762,8 @@ async function subirImagenes(
         return [];
     }
 
-
     const formData =
         new FormData();
-
 
     for (
         let i = 0;
@@ -3983,43 +3778,29 @@ async function subirImagenes(
         );
     }
 
-
     console.log(
         `📤 Uploading ${files.length} image(s)`
     );
-
 
     const response =
         await apiFetch(
             "/api/subir-imagenes",
             {
                 method: "POST",
-
-                body:
-                    formData
+                body: formData
             }
         );
-
 
     const data =
         await response.json();
 
-
-    console.log(
-        "📥 Upload response:",
-        data
-    );
-
-
     let lista = [];
-
 
     if (
         Array.isArray(data)
     ) {
 
-        lista =
-            data;
+        lista = data;
 
     } else {
 
@@ -4039,7 +3820,6 @@ async function subirImagenes(
 
         ];
 
-
         for (
             const item of posibles
         ) {
@@ -4048,48 +3828,24 @@ async function subirImagenes(
                 Array.isArray(item)
             ) {
 
-                lista =
-                    item;
+                lista = item;
 
                 break;
             }
         }
     }
 
-
     const urls =
-        normalizarListaImagenes(
-            lista
-        );
-
+        normalizarListaImagenes(lista);
 
     if (
         urls.length === 0
     ) {
 
-        console.error(
-            "❌ Upload server response:",
-            data
-        );
-
-
         throw new Error(
             "El servidor recibió las imágenes pero no devolvió URLs."
         );
     }
-
-
-    console.log(
-        `✅ Uploaded: ${urls.length}`
-    );
-
-
-    console.log(
-        `☁️ Cloudinary: ${
-            urls.filter(esCloudinary).length
-        }/${urls.length}`
-    );
-
 
     return urls;
 }
@@ -4171,6 +3927,38 @@ async function actualizarProducto(
             );
 
 
+    /* =====================================================
+       TOPS
+    ====================================================== */
+
+    const topCardInput =
+        tarjeta.querySelector(
+            '[data-field="topCard"]'
+        );
+
+
+    const topCard =
+        topCardInput
+            ? topCardInput.checked
+            : false;
+
+
+    /* =====================================================
+       DEALS
+    ====================================================== */
+
+    const dealInput =
+        tarjeta.querySelector(
+            '[data-field="deal"]'
+        );
+
+
+    const deal =
+        dealInput
+            ? dealInput.checked
+            : false;
+
+
     if (!titulo) {
 
         throw new Error(
@@ -4200,15 +3988,11 @@ async function actualizarProducto(
 
 
     const price =
-        Number(
-            priceValue
-        );
+        Number(priceValue);
 
 
     const stock =
-        Number(
-            stockValue
-        );
+        Number(stockValue);
 
 
     if (
@@ -4233,9 +4017,9 @@ async function actualizarProducto(
     }
 
 
-    /*
-        NUEVAS IMÁGENES
-    */
+    /* =====================================================
+       NUEVAS IMÁGENES
+    ====================================================== */
 
     let nuevasImagenes = [];
 
@@ -4259,9 +4043,9 @@ async function actualizarProducto(
     }
 
 
-    /*
-        CONSERVAR EXISTENTES
-    */
+    /* =====================================================
+       CONSERVAR IMÁGENES EXISTENTES
+    ====================================================== */
 
     const imagenesFinales =
         normalizarListaImagenes(
@@ -4271,6 +4055,10 @@ async function actualizarProducto(
             ]
         );
 
+
+    /* =====================================================
+       PRODUCTO ACTUALIZADO
+    ====================================================== */
 
     const updated = {
 
@@ -4292,7 +4080,17 @@ async function actualizarProducto(
         stock,
 
         imagenes:
-            imagenesFinales
+            imagenesFinales,
+
+        /* ===============================================
+           NUEVOS CAMPOS
+        ================================================ */
+
+        topCard:
+            topCard,
+
+        deal:
+            deal
     };
 
 
@@ -4316,27 +4114,18 @@ async function actualizarProducto(
                 method: "PUT",
 
                 headers: {
-
                     "Content-Type":
                         "application/json"
                 },
 
                 body:
-                    JSON.stringify(
-                        updated
-                    )
+                    JSON.stringify(updated)
             }
         );
 
 
     const data =
         await response.json();
-
-
-    console.log(
-        "✅ PUT response:",
-        data
-    );
 
 
     let productoRespuesta =
@@ -4364,9 +4153,14 @@ async function actualizarProducto(
     }
 
 
+    /* =====================================================
+       ACTUALIZAR OBJETO LOCAL
+    ====================================================== */
+
     const actualizado =
         normalizarProducto(
             {
+
                 ...producto,
 
                 ...productoRespuesta,
@@ -4396,7 +4190,19 @@ async function actualizarProducto(
 
                 imagenes:
                     productoRespuesta?.imagenes ??
-                    updated.imagenes
+                    updated.imagenes,
+
+                /* =========================================
+                   IMPORTANTE
+                ========================================== */
+
+                topCard:
+                    productoRespuesta?.topCard ??
+                    updated.topCard,
+
+                deal:
+                    productoRespuesta?.deal ??
+                    updated.deal
             }
         );
 
@@ -4433,9 +4239,7 @@ async function actualizarProducto(
    ELIMINAR PRODUCTO
 ========================================================== */
 
-async function eliminarProducto(
-    id
-) {
+async function eliminarProducto(id) {
 
     const producto =
         productos.find(
@@ -4443,7 +4247,6 @@ async function eliminarProducto(
                 String(p.id) ===
                 String(id)
         );
-
 
     if (!producto) {
 
@@ -4454,18 +4257,15 @@ async function eliminarProducto(
         return;
     }
 
-
     const confirmado =
         confirm(
             `Are you sure you want to delete "${producto.titulo}"?`
         );
 
-
     if (!confirmado) {
 
         return;
     }
-
 
     try {
 
@@ -4474,14 +4274,12 @@ async function eliminarProducto(
             "loading"
         );
 
-
         await apiFetch(
             `/api/productos/${encodeURIComponent(id)}`,
             {
                 method: "DELETE"
             }
         );
-
 
         productos =
             productos.filter(
@@ -4490,11 +4288,9 @@ async function eliminarProducto(
                     String(id)
             );
 
-
         renderProductos(
             searchInput.value
         );
-
 
         mostrarMensaje(
             "✅ Product deleted"
@@ -4508,7 +4304,6 @@ async function eliminarProducto(
             "❌ Delete error:",
             error
         );
-
 
         mostrarMensaje(
             "❌ " + error.message,
@@ -4528,7 +4323,6 @@ formProducto.addEventListener(
 
         event.preventDefault();
 
-
         if (operacionEnCurso) {
 
             return;
@@ -4537,54 +4331,58 @@ formProducto.addEventListener(
 
         const titulo =
             document
-                .getElementById(
-                    "titulo"
-                )
+                .getElementById("titulo")
                 .value
                 .trim();
 
 
         const description =
             document
-                .getElementById(
-                    "description"
-                )
+                .getElementById("description")
                 .value
                 .trim();
 
 
         const mainCat =
             document
-                .getElementById(
-                    "mainCat"
-                )
+                .getElementById("mainCat")
                 .value
                 .trim();
 
 
         const subCat =
             document
-                .getElementById(
-                    "subCat"
-                )
+                .getElementById("subCat")
                 .value
                 .trim();
 
 
         const priceValue =
             document
-                .getElementById(
-                    "price"
-                )
+                .getElementById("price")
                 .value;
 
 
         const stockValue =
             document
-                .getElementById(
-                    "stock"
-                )
+                .getElementById("stock")
                 .value;
+
+
+        /* =================================================
+           TOP / DEAL PARA PRODUCTO NUEVO
+        ================================================== */
+
+        const topCard =
+            document
+                .getElementById("topCard")
+                .checked;
+
+
+        const deal =
+            document
+                .getElementById("deal")
+                .checked;
 
 
         if (!titulo) {
@@ -4652,15 +4450,11 @@ formProducto.addEventListener(
 
 
         const price =
-            Number(
-                priceValue
-            );
+            Number(priceValue);
 
 
         const stock =
-            Number(
-                stockValue
-            );
+            Number(stockValue);
 
 
         if (
@@ -4699,8 +4493,7 @@ formProducto.addEventListener(
                 true;
 
 
-            let imagenes =
-                [];
+            let imagenes = [];
 
 
             if (
@@ -4717,6 +4510,10 @@ formProducto.addEventListener(
                     );
             }
 
+
+            /* =================================================
+               NUEVO PRODUCTO
+            ================================================== */
 
             const nuevoProducto = {
 
@@ -4740,7 +4537,17 @@ formProducto.addEventListener(
 
                 price,
 
-                stock
+                stock,
+
+                /* =============================================
+                   TOPS / DEALS
+                ============================================== */
+
+                topCard:
+                    topCard,
+
+                deal:
+                    deal
             };
 
 
@@ -4778,12 +4585,6 @@ formProducto.addEventListener(
                 await response.json();
 
 
-            console.log(
-                "✅ POST response:",
-                data
-            );
-
-
             let creado =
                 data;
 
@@ -4812,6 +4613,7 @@ formProducto.addEventListener(
             const productoCreado =
                 normalizarProducto(
                     {
+
                         ...nuevoProducto,
 
                         ...creado,
@@ -4819,7 +4621,15 @@ formProducto.addEventListener(
                         imagenes:
                             creado?.imagenes ??
                             creado?.images ??
-                            nuevoProducto.imagenes
+                            nuevoProducto.imagenes,
+
+                        topCard:
+                            creado?.topCard ??
+                            nuevoProducto.topCard,
+
+                        deal:
+                            creado?.deal ??
+                            nuevoProducto.deal
                     },
                     0
                 );
@@ -4847,6 +4657,7 @@ formProducto.addEventListener(
 
             formProducto.reset();
 
+
             addPreview.innerHTML =
                 "";
 
@@ -4854,7 +4665,6 @@ formProducto.addEventListener(
             mostrarMensaje(
                 "✅ Product added successfully"
             );
-
 
         }
 
@@ -4865,12 +4675,10 @@ formProducto.addEventListener(
                 error
             );
 
-
             mostrarMensaje(
                 "❌ " + error.message,
                 "error"
             );
-
 
             alert(
                 "❌ Error agregando producto:\n\n" +
@@ -4884,10 +4692,8 @@ formProducto.addEventListener(
             operacionEnCurso =
                 false;
 
-
             agregarBtn.disabled =
                 false;
-
 
             agregarBtn.textContent =
                 "➕ Agregar producto";
@@ -4907,18 +4713,15 @@ imagenesFileInput.addEventListener(
         addPreview.innerHTML =
             "";
 
-
         const files =
             Array.from(
                 imagenesFileInput.files || []
             );
 
-
         if (!files.length) {
 
             return;
         }
-
 
         files.forEach(
             (
@@ -4931,30 +4734,24 @@ imagenesFileInput.addEventListener(
                         "div"
                     );
 
-
                 item.className =
                     "preview-item";
-
 
                 const img =
                     document.createElement(
                         "img"
                     );
 
-
                 img.alt =
                     file.name;
-
 
                 const objectUrl =
                     URL.createObjectURL(
                         file
                     );
 
-
                 img.src =
                     objectUrl;
-
 
                 img.onload =
                     () => {
@@ -4964,34 +4761,22 @@ imagenesFileInput.addEventListener(
                         );
                     };
 
-
                 const number =
                     document.createElement(
                         "span"
                     );
 
-
                 number.className =
                     "preview-number";
-
 
                 number.textContent =
                     String(index + 1);
 
+                item.appendChild(img);
 
-                item.appendChild(
-                    img
-                );
+                item.appendChild(number);
 
-
-                item.appendChild(
-                    number
-                );
-
-
-                addPreview.appendChild(
-                    item
-                );
+                addPreview.appendChild(item);
             }
         );
     }
@@ -5007,7 +4792,6 @@ async function iniciarSesion() {
     const password =
         passwordInput.value;
 
-
     if (!password) {
 
         alert(
@@ -5018,7 +4802,6 @@ async function iniciarSesion() {
 
         return;
     }
-
 
     if (
         password !==
@@ -5034,27 +4817,22 @@ async function iniciarSesion() {
         return;
     }
 
-
     AUTH_TOKEN =
         "Basic " +
         btoa(
             `admin:${password}`
         );
 
-
     loginScreen.style.display =
         "none";
 
-
     adminPanel.style.display =
         "block";
-
 
     mostrarMensaje(
         "🔐 Connecting to server...",
         "loading"
     );
-
 
     await iniciarSocket();
 
@@ -5077,8 +4855,7 @@ passwordInput.addEventListener(
     event => {
 
         if (
-            event.key ===
-            "Enter"
+            event.key === "Enter"
         ) {
 
             event.preventDefault();
@@ -5111,13 +4888,9 @@ logoutBtn.addEventListener(
     "click",
     () => {
 
-        AUTH_TOKEN =
-            "";
+        AUTH_TOKEN = "";
 
-
-        productos =
-            [];
-
+        productos = [];
 
         if (socket) {
 
@@ -5125,26 +4898,20 @@ logoutBtn.addEventListener(
 
             socket.disconnect();
 
-            socket =
-                null;
+            socket = null;
         }
-
 
         listaProductos.innerHTML =
             "";
 
-
         adminPanel.style.display =
             "none";
-
 
         loginScreen.style.display =
             "flex";
 
-
         passwordInput.value =
             "";
-
 
         passwordInput.focus();
     }
@@ -5164,14 +4931,11 @@ reloadBtn.addEventListener(
             return;
         }
 
-
         reloadBtn.disabled =
             true;
 
-
         reloadBtn.textContent =
             "⏳ Loading...";
-
 
         try {
 
@@ -5198,11 +4962,6 @@ reloadBtn.addEventListener(
 goShopBtn.addEventListener(
     "click",
     () => {
-
-        /*
-            ÚNICA función que navega
-            voluntariamente desde Admin.
-        */
 
         window.location.href =
             "shop.html";
@@ -5252,10 +5011,8 @@ async function iniciarSocket() {
         return;
     }
 
-
     if (
-        typeof io !==
-        "function"
+        typeof io !== "function"
     ) {
 
         console.warn(
@@ -5265,19 +5022,11 @@ async function iniciarSocket() {
         return;
     }
 
-
     try {
 
         const socketUrl =
             BASE_URL ||
             window.location.origin;
-
-
-        console.log(
-            "🔌 Connecting Socket.IO:",
-            socketUrl
-        );
-
 
         socket =
             io(
@@ -5290,15 +5039,20 @@ async function iniciarSocket() {
 
                     reconnection: true,
 
-                    reconnectionAttempts: Infinity,
+                    reconnectionAttempts:
+                        Infinity,
 
-                    reconnectionDelay: 1000,
+                    reconnectionDelay:
+                        1000,
 
-                    reconnectionDelayMax: 5000,
+                    reconnectionDelayMax:
+                        5000,
 
-                    timeout: 10000,
+                    timeout:
+                        10000,
 
-                    autoConnect: true
+                    autoConnect:
+                        true
                 }
             );
 
@@ -5344,49 +5098,19 @@ async function iniciarSocket() {
         );
 
 
-        /*
-            =================================================
-            PRODUCTOS ACTUALIZADOS
-            =================================================
-
-            MUY IMPORTANTE:
-
-            Este evento:
-
-            - NO redirige
-            - NO cambia location.href
-            - NO hace reload
-            - NO cambia window.location
-            - NO manda a Home
-
-            Solamente actualiza la información
-            de los productos en Admin.
-        */
-
         socket.on(
             "productos-actualizados",
             data => {
-
-                console.log(
-                    "🔄 Socket.IO → productos-actualizados"
-                );
-
 
                 if (
                     socketActualizando
                 ) {
 
-                    console.log(
-                        "⏳ Actualización Socket.IO ya en proceso."
-                    );
-
                     return;
                 }
 
-
                 socketActualizando =
                     true;
-
 
                 try {
 
@@ -5395,36 +5119,19 @@ async function iniciarSocket() {
                             data
                         );
 
-
                     if (
                         !Array.isArray(lista)
                     ) {
 
-                        console.warn(
-                            "⚠️ Datos inválidos recibidos por Socket.IO."
-                        );
-
                         return;
                     }
-
-
-                    /*
-                        Una lista vacía no debe
-                        borrar accidentalmente todos
-                        los productos del Admin.
-                    */
 
                     if (
                         lista.length === 0
                     ) {
 
-                        console.warn(
-                            "⚠️ Socket.IO envió lista vacía. No se modifica la interfaz."
-                        );
-
                         return;
                     }
-
 
                     const nuevosProductos =
                         lista.map(
@@ -5438,25 +5145,11 @@ async function iniciarSocket() {
                                 )
                         );
 
-
                     productos =
                         nuevosProductos;
 
-
-                    /*
-                        SOLO render.
-
-                        No navegación.
-                        No reload.
-                    */
-
                     renderProductos(
                         searchInput.value
-                    );
-
-
-                    console.log(
-                        `✅ Admin actualizado: ${productos.length} productos`
                     );
 
                 }
@@ -5464,7 +5157,7 @@ async function iniciarSocket() {
                 catch (error) {
 
                     console.error(
-                        "❌ Error procesando Socket.IO:",
+                        "❌ Error Socket.IO:",
                         error
                     );
 
@@ -5479,19 +5172,9 @@ async function iniciarSocket() {
         );
 
 
-        /*
-            Algunos servidores pueden usar
-            nombres alternativos.
-        */
-
         socket.on(
             "product-updated",
             data => {
-
-                console.log(
-                    "🔄 Socket.IO → product-updated"
-                );
-
 
                 procesarProductoSocket(
                     data
@@ -5503,11 +5186,6 @@ async function iniciarSocket() {
         socket.on(
             "producto-actualizado",
             data => {
-
-                console.log(
-                    "🔄 Socket.IO → producto-actualizado"
-                );
-
 
                 procesarProductoSocket(
                     data
@@ -5524,9 +5202,7 @@ async function iniciarSocket() {
             error
         );
 
-
-        socket =
-            null;
+        socket = null;
     }
 }
 
@@ -5549,13 +5225,11 @@ function procesarProductoSocket(
             return;
         }
 
-
         const candidato =
             data.producto ||
             data.product ||
             data.data ||
             data;
-
 
         if (
             !candidato ||
@@ -5565,12 +5239,10 @@ function procesarProductoSocket(
             return;
         }
 
-
         const actualizado =
             normalizarProducto(
                 candidato
             );
-
 
         if (
             actualizado.id === undefined ||
@@ -5580,14 +5252,12 @@ function procesarProductoSocket(
             return;
         }
 
-
         const existe =
             productos.some(
                 p =>
                     String(p.id) ===
                     String(actualizado.id)
             );
-
 
         if (existe) {
 
@@ -5607,16 +5277,9 @@ function procesarProductoSocket(
             );
         }
 
-
-        /*
-            Solamente actualizamos
-            la interfaz.
-        */
-
         renderProductos(
             searchInput.value
         );
-
 
     }
 
@@ -5651,7 +5314,6 @@ async function migrarImagenesServidor() {
         return;
     }
 
-
     const confirmar =
         confirm(
             "¿Quieres actualizar las imágenes?\n\n" +
@@ -5660,45 +5322,26 @@ async function migrarImagenesServidor() {
             "Esto puede tardar."
         );
 
-
     if (!confirmar) {
 
         return;
     }
 
-
     const textoOriginal =
         btnMigrarImagenes.innerHTML;
-
 
     try {
 
         btnMigrarImagenes.disabled =
             true;
 
-
         btnMigrarImagenes.innerHTML =
             "⏳ ACTUALIZANDO...";
-
 
         mostrarMensaje(
             "☁️ Actualizando imágenes...",
             "loading"
         );
-
-
-        console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "INICIANDO ACTUALIZACIÓN DE IMÁGENES"
-        );
-
-        console.log(
-            "=========================================="
-        );
-
 
         const response =
             await fetch(
@@ -5724,9 +5367,7 @@ async function migrarImagenesServidor() {
                 }
             );
 
-
         let data;
-
 
         try {
 
@@ -5742,13 +5383,6 @@ async function migrarImagenesServidor() {
             );
         }
 
-
-        console.log(
-            "RESULTADO:",
-            data
-        );
-
-
         if (!response.ok) {
 
             throw new Error(
@@ -5758,7 +5392,6 @@ async function migrarImagenesServidor() {
             );
         }
 
-
         const total =
             Number(
                 data.total ??
@@ -5766,7 +5399,6 @@ async function migrarImagenesServidor() {
                 data.imagesFound ??
                 0
             );
-
 
         const uploaded =
             Number(
@@ -5776,7 +5408,6 @@ async function migrarImagenesServidor() {
                 0
             );
 
-
         const failed =
             Number(
                 data.failed ??
@@ -5784,35 +5415,21 @@ async function migrarImagenesServidor() {
                 0
             );
 
-
         mostrarMensaje(
             `✅ Imágenes actualizadas: ${uploaded}`
         );
 
-
         alert(
             "✅ ACTUALIZACIÓN TERMINADA\n\n" +
-
             "Imágenes encontradas: " +
             total +
-
             "\n\n" +
-
             "Subidas a Cloudinary: " +
             uploaded +
-
             "\n\n" +
-
             "Fallidas: " +
             failed
         );
-
-
-        /*
-            Después de la migración,
-            actualizar productos sin salir
-            del Admin.
-        */
 
         await cargarProductos();
 
@@ -5825,12 +5442,10 @@ async function migrarImagenesServidor() {
             error
         );
 
-
         mostrarMensaje(
             "❌ " + error.message,
             "error"
         );
-
 
         alert(
             "❌ ERROR ACTUALIZANDO IMÁGENES\n\n" +
@@ -5843,7 +5458,6 @@ async function migrarImagenesServidor() {
 
         btnMigrarImagenes.disabled =
             false;
-
 
         btnMigrarImagenes.innerHTML =
             textoOriginal;
@@ -5869,7 +5483,6 @@ async function verificarServidor() {
                     cache: "no-store"
                 }
             );
-
 
         return response.ok;
 
@@ -5933,8 +5546,7 @@ console.log(
 
 console.log(
     "BASE_URL:",
-    BASE_URL ||
-    "(same origin)"
+    BASE_URL || "(same origin)"
 );
 
 console.log(
@@ -5944,23 +5556,17 @@ console.log(
 
 console.log(
     "Products API:",
-    apiUrl(
-        "/api/productos"
-    )
+    apiUrl("/api/productos")
 );
 
 console.log(
     "Upload API:",
-    apiUrl(
-        "/api/subir-imagenes"
-    )
+    apiUrl("/api/subir-imagenes")
 );
 
 console.log(
     "Migration API:",
-    apiUrl(
-        "/api/images/migrate-cloudinary"
-    )
+    apiUrl("/api/images/migrate-cloudinary")
 );
 
 console.log(
@@ -5987,5 +5593,3 @@ passwordInput.focus();
 </script>
 
 </body>
-
-</html>
