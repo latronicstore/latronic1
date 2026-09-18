@@ -5683,11 +5683,10 @@ document.addEventListener("click", function (event) {
 
 
               openZoom(
-                product,
-                Number(
-                  img.dataset.index
-                ) || 0
-              );
+    product,
+    Number(img.dataset.index) || 0,
+    img.currentSrc || img.src || ""
+);
 
             }
           );
